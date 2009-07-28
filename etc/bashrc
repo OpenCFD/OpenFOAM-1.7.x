@@ -33,7 +33,7 @@
 #------------------------------------------------------------------------------
 
 export WM_PROJECT=OpenFOAM
-export WM_PROJECT_VERSION=1.6
+export WM_PROJECT_VERSION=1.6.x
 
 ################################################################################
 # USER EDITABLE PART
