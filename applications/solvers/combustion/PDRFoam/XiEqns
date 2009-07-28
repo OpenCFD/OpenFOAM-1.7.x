@@ -1,0 +1,91 @@
+    // Calculate Xi according to the selected flame wrinkling model
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    // Calculate coefficients for Gulder's flame speed correlation
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    volScalarField up = uPrimeCoef*sqrt((2.0/3.0)*k);
+    volScalarField epsilonPlus = pow(uPrimeCoef, 3)*epsilon;
+
+    volScalarField tauEta = sqrt(mag(thermo->muu()/(rhou*epsilonPlus)));
+    volScalarField Reta = up/
+    (
+        sqrt(epsilonPlus*tauEta)
+      + dimensionedScalar("1e-8", up.dimensions(), 1e-8)
+    );
+
+    else if (XiModel == "algebraic")
+    {
+        // Simple algebraic model for Xi based on Gulders correlation
+        // with a linear correction function to give a plausible profile for Xi
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        volScalarField GEta = GEtaCoef/tauEta;
+        volScalarField XiEqEta = 1.0 + XiCoef*sqrt(up/(Su + SuMin))*Reta;
+
+        volScalarField R = 
+            GEta*XiEqEta/(XiEqEta - 0.999) + GIn*XiIn/(XiIn - 0.999);
+
+        volScalarField XiEqStar = R/(R - GEta - GIn);
+
+        //- Calculate the unweighted b
+        //volScalarField Rrho = thermo->rhou()/thermo->rhob();
+        //volScalarField bbar = b/(b + (Rrho*(1.0 - b)));
+
+        Xi == 1.0 + (1.0 + (2*XiShapeCoef)*(0.5 - b))*(XiEqStar - 1.0);
+    }
+    else if (XiModel == "transport")
+    {
+        // Calculate Xi transport coefficients based on Gulders correlation
+        // and DNS data for the rate of generation
+        // with a linear correction function to give a plausible profile for Xi
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        volScalarField GEta = GEtaCoef/tauEta;
+        volScalarField XiEqEta = 1.0 + XiCoef*sqrt(up/(Su + SuMin))*Reta;
+
+        volScalarField R = 
+            GEta*XiEqEta/(XiEqEta - 0.999) + GIn*XiIn/(XiIn - 0.999);
+
+        volScalarField XiEqStar = R/(R - GEta - GIn);
+
+        volScalarField XiEq =
+            1.0 + (1.0 + (2*XiShapeCoef)*(0.5 - b))*(XiEqStar - 1.0);
+
+        volScalarField G = R*(XiEq - 1.0)/XiEq;
+
+    // Calculate Xi flux
+    // ~~~~~~~~~~~~~~~~~
+    surfaceScalarField phiXi =
+        phiSt
+      + (
+          - fvc::interpolate(fvc::laplacian(Dbf, b)/mgb)*nf
+          + fvc::interpolate(rho)*fvc::interpolate(Su*(1.0/Xi - Xi))*nf
+        );
+
+
+        // Solve for the flame wrinkling
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        solve
+        (
+            betav*fvm::ddt(rho, Xi)
+          + mvConvection->fvmDiv(phi, Xi)
+          + fvm::div(phiXi, Xi, "div(phiXi,Xi)")
+          - fvm::Sp(fvc::div(phiXi), Xi)
+         ==
+            betav*rho*R
+          - fvm::Sp(betav*rho*(R - G), Xi)
+        );
+
+
+        // Correct boundedness of Xi
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~
+        Xi.max(1.0);
+        Xi = min(Xi, 2.0*XiEq);
+        Info<< "max(Xi) = " << max(Xi).value() << endl;
+        Info<< "max(XiEq) = " << max(XiEq).value() << endl;
+    }
+    else
+    {
+        FatalError
+            << args.executable() << " : Unknown Xi model " << XiModel
+            << abort(FatalError);
+    }

@@ -1,0 +1,48 @@
+#!/usr/bin/perl -w
+use strict;
+use File::Find ();
+
+# -----------------------------------------------------------------------------
+#
+# Script
+#     find-its
+#
+# Description
+#     Search for *.[CH] files with "it's"
+#     This contraction (== "it is") looks too much like "its" (possesive)
+#     and confuses non-native (and some native) English speakers.
+#
+#     - print filename and lineNumber
+#
+# -----------------------------------------------------------------------------
+
+my $re_filespec = qr{^.+\.[CH]$};
+
+# for the convenience of &wanted calls, including -eval statements:
+## use vars qw( *name *dir *prune );
+## *name   = *File::Find::name;
+## *dir    = *File::Find::dir;
+## *prune  = *File::Find::prune;
+
+sub wanted {
+    unless ( lstat($_) and -f _ and -r _ and not -l _ and /$re_filespec/ ) {
+        return;
+    }
+
+    local @ARGV = $_;
+    while (<>) {
+        if (m{it\'s}) {
+            print "$File::Find::name  line=$.\n";
+        }
+    }
+
+    close ARGV;
+}
+
+## Traverse desired filesystems
+for my $dir (@ARGV) {
+    no warnings 'File::Find';
+    warn "(**) checking '$dir' ...\n";
+    File::Find::find( { wanted => \&wanted }, $dir );
+}
+

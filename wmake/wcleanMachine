@@ -1,0 +1,73 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#-------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     wcleanMachine
+#
+# Description
+#     Searches the directories below the current directory for the object
+#     file directories of the specified machine type(s) and deletes them
+#
+#     Usage: wcleanMachine <machineType> [ .. <machineTypeN> ]
+#
+#------------------------------------------------------------------------------
+usage() {
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+usage: ${0##*/} machineType [... machineTypeN]
+
+  Searches the directories below the current directory for the object file
+  directories of the specified machine type(s) and deletes them
+
+USAGE
+    exit 1
+}
+
+# needs some machine types ... or provide immediate help
+if [ "$#" -lt 1 -o "$1" = "-h" -o "$1" = "-help" ]
+then
+    usage
+fi
+
+[ -d lib -a -d src ] || usage "not in the project top level directory"
+
+
+for machType
+do
+    echo "Cleaning machine type: $machType"
+
+    find `find . -depth \( -name "Make.[A-Za-z]*" -o -name Make \) -type d -print` \
+        -depth \( -type d -name "*$machType" -o -name "*$machType$WM_MPLIB" \) -exec rm -r {} \;
+
+    # find . -depth -type d \( -name ii_files -o -name Templates.DB \) -exec rm -rf {} \;
+
+    for dir in lib/$machType applications/bin/$machType
+    do
+        [ -d $dir ] && rm -rf $dir
+    done
+
+done
+
+#------------------------------------------------------------------------------

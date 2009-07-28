@@ -1,0 +1,83 @@
+#---------------------------------*- sh -*-------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     RunFunctions
+#
+# Description
+#
+#------------------------------------------------------------------------------
+
+getApplication ()
+{
+    grep application system/controlDict | sed "s/application *\([a-zA-Z]*\);/\1/"
+}
+
+runApplication ()
+{
+    APP_RUN=$1; shift
+    APP_NAME=${APP_RUN##*/}
+
+    if [ -f log.$APP_NAME ] ; then
+        echo "$APP_NAME already run on $PWD: remove log file to run"
+    else
+        echo "Running $APP_RUN on $PWD"
+        $APP_RUN $* > log.$APP_NAME 2>&1
+    fi
+}
+
+runParallel ()
+{
+    APP_RUN=$1; shift
+
+    if [ -f $log.$APP_RUN ] ; then
+        echo "$APP_RUN already run on $PWD: remove log file to run"
+    else
+        echo "Running $APP_RUN in parallel on $PWD using $1 processes"
+        ( mpirun -np $1 $APP_RUN -parallel < /dev/null > log.$APP_RUN 2>&1 )
+    fi
+}
+
+compileApplication ()
+{
+    echo "Compiling $1 application"
+    wmake $1
+}
+
+cloneCase ()
+{
+    if [ -d $2 ] ; then
+        echo "Case already cloned: remove case directory $2 to clone"
+    else
+        echo "Cloning $2 case from $1"
+        mkdir $2
+        cpfiles="0 system constant"
+        for f in $cpfiles
+        do
+            cp -r $1/$f $2
+        done
+    fi
+}
+
+#------------------------------------------------------------------------------

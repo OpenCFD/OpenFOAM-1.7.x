@@ -1,0 +1,16 @@
+EXE_INC = \
+    /* -g -DFULLDEBUG -O0 */ \
+    -I$(LIB_SRC)/decompositionMethods/decompositionMethods/lnInclude \
+    -I$(LIB_SRC)/autoMesh/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/triSurface/lnInclude \
+    -I$(LIB_SRC)/dynamicMesh/lnInclude \
+    -I$(LIB_SRC)/edgeMesh/lnInclude \
+    -I$(LIB_SRC)/finiteVolume/lnInclude
+
+EXE_LIBS = \
+    -lfiniteVolume \
+    -ldecompositionMethods \
+    -lmeshTools \
+    -ldynamicMesh \
+    -lautoMesh

@@ -1,0 +1,135 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// General m4 macros
+
+  
+
+
+
+
+
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// User-defined parameters
+
+convertToMeters 1;
+
+       // Length of tank (x-direction)
+       // Breadth of tank (y-direction)
+       // Depth of tank (z-direction)
+
+      // Depth to the top (height) of lower chamfer
+     // Height of upper chamfer
+
+ // Angle of lower chamfer to the horizontal
+ // Angle of upper chamfer to the horizontal
+
+  // Centre of gravity in y-direction
+         // Centre of gravity in z-direction
+
+      // Number of cells in the length (1 for 2D)
+      // Number of cells in the breadth
+     // Number of cells in the height of the lower champfer
+      // Number of cells in the height between the chamfers
+    // Number of cells in the height of the upper champfer
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// Derived parameters
+
+ // Breadth to the top (height) of lower chamfer
+ // Breadth of upper chamfer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// Parametric description
+
+vertices
+(
+    (-10 -15 -10.0) // Vertex bllcb = 0 
+    (-10 -20 -5)  // Vertex bllc = 1 
+    (-10 -20 10)  // Vertex bluc = 2 
+    (-10 -10 20) // Vertex bluct = 3 
+    (-10 15 -10.0) // Vertex brlcb = 4 
+    (-10 20 -5)  // Vertex brlc = 5 
+    (-10 20 10)  // Vertex bruc = 6 
+    (-10 10 20) // Vertex bruct = 7 
+
+    (10 -15 -10.0) // Vertex fllcb = 8 
+    (10 -20 -5)  // Vertex fllc = 9 
+    (10 -20 10)  // Vertex fluc = 10 
+    (10 -10 20) // Vertex fluct = 11 
+    (10 15 -10.0) // Vertex frlcb = 12 
+    (10 20 -5)  // Vertex frlc = 13 
+    (10 20 10)  // Vertex fruc = 14 
+    (10 10 20) // Vertex fruct = 15 
+);
+
+blocks
+(
+    // block0
+    hex (0 4 5 1 8 12 13 9)
+    (40 6 19)
+    simpleGrading (1 1 1)
+
+    // block1
+    hex (1 5 6 2 9 13 14 10)
+    (40 16 19)
+    simpleGrading (1 1 1)
+
+    // block2
+    hex (2 6 7 3 10 14 15 11)
+    (40 12 19)
+    simpleGrading (1 1 1)
+);
+
+patches
+(
+    patch walls
+    (
+        (0 4 12 8)
+        (4 5 13 12)
+        (5 6 14 13)
+        (6 7 15 14)
+        (7 3 11 15)
+        (3 2 10 11)
+        (2 1 9 10)
+        (1 0 8 9)
+        (8 12 13 9)
+        (9 13 14 10)
+        (10 14 15 11)
+        (0 1 5 4)
+        (1 2 6 5)
+        (2 3 7 6)
+    )
+);
+
+// ************************************************************************* //

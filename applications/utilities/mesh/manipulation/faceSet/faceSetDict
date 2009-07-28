@@ -1,0 +1,82 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      faceSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Name of set to operate on
+name f0;
+
+// One of clear/new/invert/add/delete|subset/list
+action new;
+
+// Actions to apply to pointSet. These are all the topoSetSource's ending
+// in ..ToFace (see the meshTools library).
+topoSetSources
+(
+    // Copy elements from faceSet
+    faceToFace
+    {
+        set f1;
+    }
+
+    // Select based on cellSet
+    cellToFace
+    {
+        set c0;
+        option all;         // All faces of cells
+        //option both;      // Only faces whose owner&neighbour are in cellSet
+    }
+
+    // Select based on pointSet
+    pointToFace
+    {
+        set p0;
+        option any;         // Faces using any point in pointSet
+        //option all        // Faces with all points in pointSet
+    }
+
+    //  Select by explicitly providing face labels
+    labelToFace
+    {
+        value (12 13 56);   // labels of faces
+    }
+
+    // All faces of patch
+    patchToFace
+    {
+        name ".*Wall";      // Name of patch, regular expressions allowed
+    }
+
+    // All faces of faceZone
+    zoneToFace
+    {
+        name ".*Zone1";     // Name of faceZone, regular expressions allowed
+    }
+
+    // Faces with face centre within box
+    boxToFace
+    {
+        box  (0 0 0) (1 1 1);
+    }
+
+    // Faces with normal to within certain angle aligned with vector.
+    normalToFace
+    {
+        normal (0 0 1);     // Vector
+        cos     0.01;       // Tolerance (max cos of angle)
+    }
+);
+
+// ************************************************************************* //

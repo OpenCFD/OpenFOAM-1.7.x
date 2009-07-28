@@ -1,0 +1,17 @@
+EXE_INC = \
+    -I../buoyantSimpleFoam \
+    -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/radiation/lnInclude \
+    -I$(LIB_SRC)/turbulenceModels \
+    -I$(LIB_SRC)/turbulenceModels/compressible/RAS/lnInclude \
+    -I$(LIB_SRC)/turbulenceModels/RAS \
+    -I$(LIB_SRC)/finiteVolume/cfdTools \
+    -I$(LIB_SRC)/finiteVolume/lnInclude
+
+EXE_LIBS = \
+    -lbasicThermophysicalModels \
+    -lspecie \
+    -lradiation \
+    -lcompressibleRASModels \
+    -lfiniteVolume \
+    -lmeshTools

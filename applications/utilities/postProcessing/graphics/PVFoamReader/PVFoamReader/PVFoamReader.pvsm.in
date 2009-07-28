@@ -1,0 +1,154 @@
+<ServerManagerConfiguration>
+    <ProxyGroup name="sources">
+    <SourceProxy
+
+        name="FoamReader" 
+        class="vtkFoamReader">
+
+        <StringVectorProperty
+            name="FileName"
+            command="SetFileName"
+            number_of_elements="1">
+            <StringListDomain name="files"/>
+        </StringVectorProperty>
+
+        <IntVectorProperty 
+            name="UpdateGUI" 
+            command="SetUpdateGUI" 
+            number_of_elements="1"
+            default_values="0"> 
+            <BooleanDomain name="bool"/>
+        </IntVectorProperty>
+
+        <IntVectorProperty 
+            name="CacheMesh" 
+            command="SetCacheMesh" 
+            number_of_elements="1"
+            default_values="1">
+            <BooleanDomain name="bool"/>
+        </IntVectorProperty>
+
+        <IntVectorProperty 
+            name="TimeStepRangeInfo"
+            command="GetTimeStepRange"
+            information_only="1">
+            <SimpleIntInformationHelper/>
+        </IntVectorProperty>
+        <IntVectorProperty
+            name="TimeStep"
+            command="SetTimeStep"
+            number_of_elements="1"
+            animateable="1"
+            default_values="0">
+            <IntRangeDomain name="range">
+                <RequiredProperties>
+                    <Property name="TimeStepRangeInfo" function="Range"/>
+                </RequiredProperties>
+            </IntRangeDomain>
+        </IntVectorProperty>
+
+        <IntVectorProperty 
+            name="TimeStepLimitsInfo"
+            command="GetTimeStepLimits"
+            information_only="1">
+            <SimpleIntInformationHelper/>
+        </IntVectorProperty>
+        <IntVectorProperty
+            name="TimeStepLimits"
+            command="SetTimeStepLimits"
+            number_of_elements="2"
+            default_values="2 5" >
+            <IntRangeDomain name="range">
+                <RequiredProperties>
+                    <Property name="TimeStepLimitsInfo" function="Range"/>
+                </RequiredProperties>
+            </IntRangeDomain>
+        </IntVectorProperty>
+
+        <StringVectorProperty 
+            name="TimeArrayInfo"
+            information_only="1">
+            <ArraySelectionInformationHelper attribute_name="Time"/>
+        </StringVectorProperty>
+        <StringVectorProperty
+            name="TimeStatus"
+            command="SetTimeArrayStatus"
+            number_of_elements="0" 
+            repeat_command="1"
+            number_of_elements_per_command="2"
+            element_types="2 0"
+    	    information_property="TimeArrayInfo">
+            <ArraySelectionDomain name="array_list">
+                <RequiredProperties>
+                    <Property name="TimeArrayInfo"
+                    function="ArrayList"/>
+                </RequiredProperties>
+            </ArraySelectionDomain>
+        </StringVectorProperty>
+
+        <StringVectorProperty 
+            name="RegionArrayInfo"
+            information_only="1">
+            <ArraySelectionInformationHelper attribute_name="Region"/>
+        </StringVectorProperty>
+        <StringVectorProperty
+            name="RegionStatus"
+            command="SetRegionArrayStatus"
+            number_of_elements="0" 
+            repeat_command="1"
+            number_of_elements_per_command="2"
+            element_types="2 0"
+    	    information_property="RegionArrayInfo">
+            <ArraySelectionDomain name="array_list">
+                <RequiredProperties>
+                    <Property name="RegionArrayInfo"
+                        function="ArrayList"/>
+                </RequiredProperties>
+            </ArraySelectionDomain>
+        </StringVectorProperty>
+
+        <StringVectorProperty 
+            name="VolFieldArrayInfo"
+            information_only="1">
+            <ArraySelectionInformationHelper attribute_name="VolField"/>
+        </StringVectorProperty>
+        <StringVectorProperty
+            name="VolFieldStatus"
+            command="SetVolFieldArrayStatus"
+            number_of_elements="0" 
+            repeat_command="1"
+            number_of_elements_per_command="2"
+            element_types="2 0"
+    	    information_property="VolFieldArrayInfo">
+            <ArraySelectionDomain name="array_list">
+                <RequiredProperties>
+                    <Property name="VolFieldArrayInfo"
+                        function="ArrayList"/>
+                </RequiredProperties>
+            </ArraySelectionDomain>
+        </StringVectorProperty>
+
+        <StringVectorProperty 
+            name="PointFieldArrayInfo"
+            information_only="1">
+            <ArraySelectionInformationHelper attribute_name="PointField"/>
+        </StringVectorProperty>
+        <StringVectorProperty
+            name="PointFieldStatus"
+            command="SetPointFieldArrayStatus"
+            number_of_elements="0" 
+            repeat_command="1"
+            number_of_elements_per_command="2"
+            element_types="2 0"
+	        information_property="PointFieldArrayInfo">
+            <ArraySelectionDomain name="array_list">
+                <RequiredProperties>
+                    <Property name="PointFieldArrayInfo"
+                        function="ArrayList"/>
+                </RequiredProperties>
+            </ArraySelectionDomain>
+        </StringVectorProperty>
+
+    </SourceProxy>
+    </ProxyGroup>
+</ServerManagerConfiguration>

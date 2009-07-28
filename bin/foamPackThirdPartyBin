@@ -1,0 +1,89 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#-------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     foamPackThirdPartyBin <archOptions> [outputDir]
+#
+# Description
+#     Packs and compresses binary version of OpenFOAM ThirdParty for release
+#
+#------------------------------------------------------------------------------
+
+if [ $# -eq 0 ]
+then
+    echo "Error: archOptions type expected, exiting"
+    echo
+    echo "Usage : ${0##*/} <archOptions> [outputDir]"
+    echo
+    exit 1
+fi
+archOptions=$1
+arch=${archOptions%%G*}  # TODO: works for Gcc only
+arch3264=$(echo "$arch" | sed -e 's@64@-64@')
+
+echo "archOptions=$archOptions"
+echo "arch=$arch"
+echo "arch3264=$arch3264"
+
+timeStamp=$(date +%Y-%m-%d)
+packDir=${WM_THIRD_PARTY_DIR:-ThirdParty}
+packDir=${packDir##*/}
+packFile=${packDir}.${archOptions}_${timeStamp}.gtgz
+
+if [ ! -d $packDir ]
+then
+    echo "Error: directory $packDir does not exist"
+    exit 1
+fi
+
+# add optional output directory
+if [ -d "$2" ]
+then
+    packFile="$2/$packFile"
+fi
+
+if [ -f $packFile ]
+then
+    echo "Error: $packFile already exists"
+    exit 1
+fi
+
+# get list of directories
+dirList=`find $packDir -type d -name $arch -o -type d -name $archOptions'*' -o -type l -name $arch3264`
+echo
+echo "Packing $archOptions port of $packDir into $packFile"
+echo
+
+tar czpf $packFile $dirList
+
+if [ $? -eq 0 ]
+then
+    echo "Finished packing and compressing file $packFile"
+else
+    echo "Error: failure packing $packFile"
+    rm -f $packFile 2>/dev/null
+fi
+
+#------------------------------------------------------------------------------

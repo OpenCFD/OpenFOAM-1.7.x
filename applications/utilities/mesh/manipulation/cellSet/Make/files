@@ -1,0 +1,4 @@
+cellSet.C
+
+EXE = $(FOAM_APPBIN)/cellSet
+

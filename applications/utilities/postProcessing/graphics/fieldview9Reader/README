@@ -1,0 +1,56 @@
+Fieldview9 reader module
+------------------------
+This is a version of the fvbin executable with a built-in reader for Foam
+data.
+
+1] Limitations
+--------------
+- only volScalarFields and volVectorFields and only on points, not on boundary.
+- handles polyhedra by decomposition (introduces cell centre)
+- no surface fields, no lagrangian fields, no tetFem fields.
+- does not run in parallel
+
+2] Building
+-----------
+It has only been tested on Linux. Other platforms should build with a little
+bit of effort. Have a look at the Fieldview link script and see which options
+you need to add to Make/options to make it build.
+
+Instructions:
+0. Make sure FV_HOME is set to the root of the FieldView installation.
+(i.e. $FV_HOME/user should exist)
+
+1. Add $FV_HOME/bin to your path and make sure you can actually run fv.
+
+2. Make the new fv executable by typing
+
+    wmake
+
+   This should create an 'fvbinFoam' executable.
+
+3. On Linux you can directly run this executable instead of through the 'fv'
+script. On other machines you might have to backup the old $FV_HOME/bin/fvbin
+executable and move the fvbinFoam one into its position. Now you can use the
+fv script to start it all up.
+
+
+3] Running
+----------
+After starting it up (see step above) you should have a 'Foam Reader' under
+the 'Data Files' pull-down menu. This will open a file selection box. Go to the
+case directory and click on any file. The reader will recognize that the
+current directory is a case directory (it has checks for a 'constant' directory)
+and start reading the mesh. It will
+pop-up a box with time steps and a list of variables as usual.
+
+In case of a case with topology changes (i.e. more than one mesh) it
+will ask for the time step a second time. This is due to a limitation in
+Fieldview. Choose the same time as before.
+
+In the terminal window it will print various informational messages.
+
+A not fairly well tested feature is cellSet displaying. Instead of selecting
+a case directory selecting a cellSet (in a polyMesh/sets/ directory) it
+will try to subset the mesh using the selected cellSet. It is not possible
+to display fields on subsetted meshes.
+

@@ -1,0 +1,2 @@
+maxMem.C
+SEXE = $(FOAM_USER_APPBIN)/maxMem

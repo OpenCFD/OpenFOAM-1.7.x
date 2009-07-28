@@ -1,0 +1,106 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#-------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     foamPackSource <directory> <tarFile>
+#
+# Description
+#     Packs and compresses the .C and .H files and Make/options
+#     and Make/files in a given directory.
+#
+#------------------------------------------------------------------------------
+tmpFile=${TMPDIR:-/tmp}/foamPackFiles.$$
+
+if [ $# -ne 2 ]
+then
+    echo "Usage : ${0##*/} directory tarFile"
+    echo ""
+    echo "Packs all .C and .H files and Make/options and Make/files into"
+    echo "<tarFile>"
+    echo ""
+    exit 1
+fi
+
+# canonical form (no double and no trailing dashes)
+packDir=$(echo "$1" | sed -e 's@//*@/@g' -e 's@/$@@')
+packFile=$2
+
+if [ ! -d $packDir ]
+then
+    echo "Error: directory $packDir does not exist"
+    exit 1
+fi
+
+if [ -f $packFile ]
+then
+    echo "Error: $packFile already exists"
+    exit 1
+fi
+
+# Clean up on termination and on Ctrl-C
+trap 'rm -f $tmpFile 2>/dev/null; exit 0' EXIT TERM INT
+
+find -H $packDir               \
+    ! -type d                  \
+   \( -type f -o -type l \)    \
+    ! -name "*~"               \
+ -a ! -name ".*~"              \
+ -a ! -name "*.orig"           \
+ -a ! -name "*.dep"            \
+ -a ! -name "*.o"              \
+ -a ! -name "*.so"             \
+ -a ! -name "*.a"              \
+ -a ! -name "*.tgz"            \
+ -a ! -name "core"             \
+ -a ! -name "core.[1-9]*"      \
+ -a ! -name "log[0-9]*"        \
+ -a ! -name "libccmio*"        \
+| sed                          \
+ -e "\@$packDir/lib/@d"        \
+ -e '\@/\.git/@d'              \
+ -e '\@/\.tags/@d'             \
+ -e '\@applications/bin/@d'    \
+ -e '\@wmake/bin/@d'           \
+ -e '\@/t/@d'                  \
+ -e '\@/Make[.A-Za-z]*/[^/]*/@d'\
+ -e '\@/platforms/@d'          \
+ -e '\@libccmio.*/@d'          \
+ > $tmpFile
+
+
+# provide some feedback
+wc $tmpFile | awk '{print "Packing",$1,"files - this could take some time ..."}'
+
+tar czpf $packFile --files-from $tmpFile
+
+if [ $? -eq 0 ]
+then
+    echo "Finished packing and compressing $packDir into file $packFile"
+else
+    echo "Error: failure packing $packDir into file $packFile"
+    rm -f $packFile 2>/dev/null
+fi
+
+#------------------------------------------------------------------------------

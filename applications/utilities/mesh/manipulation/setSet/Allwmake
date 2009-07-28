@@ -1,0 +1,15 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+READLINE=0
+if [ -f /usr/include/readline/readline.h ]
+then
+    echo "Found readline/readline.h  --  enabling readline support."
+    READLINE=1
+    export READLINELINK="-lreadline -lncurses"
+    break
+fi
+export READLINE
+wmake
+
+# ----------------------------------------------------------------- end-of-file

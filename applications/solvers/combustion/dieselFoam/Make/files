@@ -1,0 +1,3 @@
+dieselFoam.C
+
+EXE = $(FOAM_APPBIN)/dieselFoam

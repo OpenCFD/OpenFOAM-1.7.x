@@ -1,0 +1,6 @@
+liquidMixture = liquidMixture
+
+$(liquidMixture)/liquidMixture.C
+$(liquidMixture)/liquidMixtureIO.C
+
+LIB = $(FOAM_LIBBIN)/libliquidMixture

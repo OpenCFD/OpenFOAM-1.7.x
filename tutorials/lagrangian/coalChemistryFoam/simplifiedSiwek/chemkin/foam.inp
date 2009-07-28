@@ -1,0 +1,22 @@
+species
+6
+(
+N2
+O2
+CH4
+H2
+CO2
+H2O
+)
+;
+
+reactions
+2
+(
+irreversibleArrheniusReaction
+    CH4 + 2O2^1.0 = CO2 + 2H2O^1.0
+    (7e+06 0 10063.8)
+irreversibleArrheniusReaction
+    H2 + 0.5O2^1.0 = H2O
+    (4.74342e+12 0 10063.8)
+);

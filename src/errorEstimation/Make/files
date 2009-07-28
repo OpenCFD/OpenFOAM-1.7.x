@@ -1,0 +1,9 @@
+errorDrivenRefinement   = errorDrivenRefinement
+errorEstimate           = errorEstimate
+evaluateError           = evaluateError
+
+$(evaluateError)/evaluateError.C
+$(errorDrivenRefinement)/errorDrivenRefinement.C
+
+LIB = $(FOAM_LIBBIN)/liberrorEstimation
+

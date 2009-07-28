@@ -1,0 +1,76 @@
+body { color: #000000 ; background: #ffffff; margin: 0px; font-family: verdana, arial, helvetica, sans-serif; text-decoration: none; font-size: 12px; }
+a:link { text-decoration: none; color: #0000ff ; }
+a:link:hover { text-decoration: none; color: #0000ff ; }
+a:visited { text-decoration: none; color: #0000ff ; }
+a:visited:hover { text-decoration: none; color: #0000ff ; }
+a:link img { border: 0; }
+a:visited img { border: 0; }
+a:active img { border: 0; }
+a.menuLefton { color: #0000ff; font-size: 12px; font-weight: bold; }
+td.leftmenu { font-family: verdana, arial, helvetica, sans-serif; text-decoration: none; background: #ddddff; text-align: left; font-size: 14px; height: 20px; width: 200px; }
+a.menuTopoff { color: #000000; font-size: 14px; }
+a.menuTopoff:visited { color: #000000; font-size: 14px; }
+a.menuTopoff:hover { color: #0000ff; font-size: 14px; }
+td.topmenu { font-family: verdana, arial, helvetica, sans-serif; background: #ddddff; text-align: center; font-size: 16px; width: 150px; font-weight: bold; }
+h1 { font-size: 18px; }
+h2 { font-size: 16px; }
+h3 { font-size: 14px; }
+
+/* formatting for member functions:
+ * Since the OpenFOAM code already has nice line-breaks, wrapping the lines
+ * just looks terrible.
+ * Give a slightly different background to make it easier to find.
+*/
+.memitem {
+    padding: 4px;
+    background-color: #eef3f5;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #dedeee;
+}
+
+.memproto {
+    background-color: #d5e1e8;
+    width: 100%;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #84b0c7;
+    font-weight: bold;
+}
+
+table.memname {
+    width: 100%;
+    background: #f7f7ff;
+    white-space: nowrap;
+}
+
+
+.indexkey {
+    vertical-align: top;
+    background: #f7f7ff;
+}
+
+.indexvalue {
+    vertical-align: top;
+    background: #f7f7ff;
+}
+
+.paramkey {
+    width: 5%;
+}
+
+.memItemLeft {
+    background: #f7f7ff;
+}
+
+.memItemRight {
+    background: #f7f7ff;
+}
+
+.mdescLeft {
+    margin: 0px;
+}
+
+.mdescRight {
+    font-style: italic;
+}

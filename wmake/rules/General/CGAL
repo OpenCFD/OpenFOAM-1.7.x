@@ -1,0 +1,7 @@
+CGAL_PATH = ${WM_THIRD_PARTY_DIR}/CGAL-${CGAL_VERSION}
+
+CGAL_INC = \
+    -Wno-old-style-cast \
+    -I${CGAL_SRC}/include \
+    -I${CGAL_PATH} \
+    -I${BOOST_SRC}

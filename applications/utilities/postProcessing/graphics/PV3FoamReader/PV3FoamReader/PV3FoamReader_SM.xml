@@ -1,0 +1,209 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="sources">
+  <SourceProxy
+    name="PV3FoamReader"
+    class="vtkPV3FoamReader">
+
+    <!-- File name - compulsory -->
+    <StringVectorProperty
+      name="FileName"
+      command="SetFileName"
+      number_of_elements="1"
+      animateable="0">
+      <FileListDomain name="files"/>
+      <Documentation>
+        Specifies the filename for the OpenFOAM Reader.
+      </Documentation>
+    </StringVectorProperty>
+
+    <!-- Send discrete time info to the animation panel -->
+    <DoubleVectorProperty
+      name="TimestepValues"
+      repeatable="1"
+      information_only="1">
+      <TimeStepsInformationHelper/>
+      <Documentation>
+        Available timestep values.
+      </Documentation>
+    </DoubleVectorProperty>
+
+
+    <!-- Global settings -->
+
+    <!-- Extrapolate Patches check-box -->
+    <IntVectorProperty
+      name="ExtrapolatePatches"
+      command="SetExtrapolatePatches"
+      number_of_elements="1"
+      default_values="0"
+      animateable="0">
+      <BooleanDomain name="bool"/>
+      <Documentation>
+        Extrapolate internalField to non-constraint patches
+      </Documentation>
+    </IntVectorProperty>
+
+    <!-- Include Sets check-box -->
+    <IntVectorProperty
+      name="IncludeSets"
+      command="SetIncludeSets"
+      number_of_elements="1"
+      default_values="0"
+      animateable="0">
+      <Documentation>
+        Searches the polyMesh/sets/ directory
+      </Documentation>
+      <BooleanDomain name="bool"/>
+    </IntVectorProperty>
+
+    <!-- Include Zones check-box -->
+    <IntVectorProperty
+      name="IncludeZones"
+      command="SetIncludeZones"
+      number_of_elements="1"
+      default_values="0"
+      animateable="0">
+      <Documentation>
+        ZoneMesh information is used to find {cell,face,point}Zones.
+        The polyMesh/ directory is only checked on startup.
+      </Documentation>
+      <BooleanDomain name="bool"/>
+    </IntVectorProperty>
+
+    <!-- Show Patch Names check-box -->
+    <IntVectorProperty
+      name="ShowPatchNames"
+      command="SetShowPatchNames"
+      number_of_elements="1"
+      default_values="0"
+      animateable="0">
+      <BooleanDomain name="bool"/>
+      <Documentation>
+        Show patch names in render window.
+      </Documentation>
+    </IntVectorProperty>
+
+    <!-- Cache Mesh check-box -->
+    <IntVectorProperty
+      name="CacheMesh"
+      command="SetCacheMesh"
+      number_of_elements="1"
+      default_values="1"
+      animateable="0">
+      <BooleanDomain name="bool"/>
+      <Documentation>
+        Cache the fvMesh in memory.
+      </Documentation>
+    </IntVectorProperty>
+
+
+    <!-- Update GUI check box -->
+    <IntVectorProperty
+      name="UpdateGUI"
+      command="SetUpdateGUI"
+      number_of_elements="1"
+      default_values="0"
+      animateable="0">
+      <BooleanDomain name="bool"/>
+      <Documentation>
+        A simple way cause a reader GUI modification.
+      </Documentation>
+    </IntVectorProperty>
+
+
+    <!-- Selections -->
+
+    <!-- Available Parts (volume, patches, lagrangian) array -->
+    <StringVectorProperty
+      name="PartArrayInfo"
+      information_only="1">
+      <ArraySelectionInformationHelper attribute_name="Part"/>
+    </StringVectorProperty>
+    <StringVectorProperty
+      name="PartStatus"
+      label="Mesh Parts"
+      command="SetPartArrayStatus"
+      number_of_elements="0"
+      repeat_command="1"
+      number_of_elements_per_command="2"
+      element_types="2 0"
+      information_property="PartArrayInfo"
+      animateable="0">
+      <ArraySelectionDomain name="array_list">
+        <RequiredProperties>
+          <Property name="PartArrayInfo" function="ArrayList"/>
+        </RequiredProperties>
+      </ArraySelectionDomain>
+    </StringVectorProperty>
+
+    <!-- Available volFields array -->
+    <StringVectorProperty
+      name="VolFieldArrayInfo"
+      information_only="1">
+      <ArraySelectionInformationHelper attribute_name="VolField"/>
+    </StringVectorProperty>
+    <StringVectorProperty
+      name="VolFieldStatus"
+      label="Volume Fields"
+      command="SetVolFieldArrayStatus"
+      number_of_elements="0"
+      repeat_command="1"
+      number_of_elements_per_command="2"
+      element_types="2 0"
+      information_property="VolFieldArrayInfo"
+      animateable="0">
+      <ArraySelectionDomain name="array_list">
+        <RequiredProperties>
+          <Property name="VolFieldArrayInfo" function="ArrayList"/>
+        </RequiredProperties>
+      </ArraySelectionDomain>
+    </StringVectorProperty>
+
+    <!-- Available Lagrangian fields array -->
+    <StringVectorProperty
+      name="LagrangianFieldArrayInfo"
+      information_only="1">
+      <ArraySelectionInformationHelper attribute_name="LagrangianField"/>
+    </StringVectorProperty>
+    <StringVectorProperty
+      name="LagrangianFieldStatus"
+      label="Lagrangian Fields"
+      command="SetLagrangianFieldArrayStatus"
+      number_of_elements="0"
+      repeat_command="1"
+      number_of_elements_per_command="2"
+      element_types="2 0"
+      information_property="LagrangianFieldArrayInfo"
+      animateable="0">
+      <ArraySelectionDomain name="array_list">
+        <RequiredProperties>
+          <Property name="LagrangianFieldArrayInfo" function="ArrayList"/>
+        </RequiredProperties>
+      </ArraySelectionDomain>
+    </StringVectorProperty>
+
+    <!-- Available pointFields array -->
+    <StringVectorProperty
+      name="PointFieldArrayInfo"
+      information_only="1">
+      <ArraySelectionInformationHelper attribute_name="PointField"/>
+    </StringVectorProperty>
+    <StringVectorProperty
+      name="PointFieldStatus"
+      label="Point Fields"
+      command="SetPointFieldArrayStatus"
+      number_of_elements="0"
+      repeat_command="1"
+      number_of_elements_per_command="2"
+      element_types="2 0"
+      information_property="PointFieldArrayInfo"
+      animateable="0">
+      <ArraySelectionDomain name="array_list">
+        <RequiredProperties>
+          <Property name="PointFieldArrayInfo" function="ArrayList"/>
+        </RequiredProperties>
+      </ArraySelectionDomain>
+    </StringVectorProperty>
+  </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>

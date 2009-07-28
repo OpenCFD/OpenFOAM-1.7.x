@@ -1,0 +1,3 @@
+foamCalc.C
+
+EXE = $(FOAM_APPBIN)/foamCalc

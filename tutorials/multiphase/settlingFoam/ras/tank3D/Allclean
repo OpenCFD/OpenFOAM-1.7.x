@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Clean time folders only
+
+rm -rf *[1-9]*
+rm log.*

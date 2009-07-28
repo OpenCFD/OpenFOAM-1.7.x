@@ -1,0 +1,167 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software; you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation; either version 2 of the License, or (at your
+    option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM; if not, write to the Free Software Foundation,
+    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+
+Class
+    Foam::simpleMatrix
+
+Description
+    Foam::simpleMatrix
+
+SourceFiles
+    simpleMatrix.C
+
+\*---------------------------------------------------------------------------*/
+
+#ifndef simpleMatrix_H
+#define simpleMatrix_H
+
+#include "scalarMatrices.H"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+
+// Forward declaration of friend functions and operators
+
+template<class Type>
+class simpleMatrix;
+
+template<class Type>
+Ostream& operator<<
+(
+    Ostream&,
+    const simpleMatrix<Type>&
+);
+
+
+/*---------------------------------------------------------------------------*\
+                           Class simpleMatrix Declaration
+\*---------------------------------------------------------------------------*/
+
+template<class Type>
+class simpleMatrix
+:
+    public scalarSquareMatrix
+{
+    // Private data
+
+        Field<Type> source_;
+
+
+public:
+
+    // Constructors
+
+        //- Construct given size
+        simpleMatrix(const label);
+
+        //- Construct from components
+        simpleMatrix(const scalarSquareMatrix&, const Field<Type>&);
+
+        //- Construct from Istream
+        simpleMatrix(Istream&);
+
+        //- Construct as copy
+        simpleMatrix(const simpleMatrix<Type>&);
+
+
+    // Member Functions
+
+        // Access
+
+            Field<Type>& source()
+            {
+                return source_;
+            }
+
+            const Field<Type>& source() const
+            {
+                return source_;
+            }
+
+
+        //- Solve the matrix using Gaussian elimination with pivoting
+        //  and return the solution
+        Field<Type> solve() const;
+
+        //- Solve the matrix using LU decomposition with pivoting
+        //  and return the solution
+        Field<Type> LUsolve() const;
+
+
+    // Member Operators
+
+        void operator=(const simpleMatrix<Type>&);
+
+
+    // Ostream Operator
+
+        friend Ostream& operator<< <Type>
+        (
+            Ostream&,
+            const simpleMatrix<Type>&
+        );
+};
+
+
+// Global operators
+
+template<class Type>
+simpleMatrix<Type> operator+
+(
+    const simpleMatrix<Type>&,
+    const simpleMatrix<Type>&
+);
+
+template<class Type>
+simpleMatrix<Type> operator-
+(
+    const simpleMatrix<Type>&,
+    const simpleMatrix<Type>&
+);
+
+template<class Type>
+simpleMatrix<Type> operator*
+(
+    const scalar,
+    const simpleMatrix<Type>&
+);
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+#   include "simpleMatrix.C"
+#endif
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#endif
+
+// ************************************************************************* //

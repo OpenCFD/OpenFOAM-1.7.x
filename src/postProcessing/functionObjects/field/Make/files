@@ -1,0 +1,9 @@
+fieldAverage/fieldAverage/fieldAverage.C
+fieldAverage/fieldAverageItem/fieldAverageItem.C
+fieldAverage/fieldAverageItem/fieldAverageItemIO.C
+fieldAverage/fieldAverageFunctionObject/fieldAverageFunctionObject.C
+
+fieldMinMax/fieldMinMax.C
+fieldMinMax/fieldMinMaxFunctionObject.C
+
+LIB = $(FOAM_LIBBIN)/libfieldFunctionObjects

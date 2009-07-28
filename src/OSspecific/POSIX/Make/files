@@ -1,0 +1,18 @@
+signals/sigFpe.C
+signals/sigSegv.C
+signals/sigInt.C
+signals/sigQuit.C
+regExp.C
+timer.C
+fileStat.C
+POSIX.C
+cpuTime/cpuTime.C
+clockTime/clockTime.C
+
+#ifdef SunOS64
+dummyPrintStack.C
+#else
+printStack.C
+#endif
+
+LIB = $(FOAM_LIBBIN)/libOSspecific

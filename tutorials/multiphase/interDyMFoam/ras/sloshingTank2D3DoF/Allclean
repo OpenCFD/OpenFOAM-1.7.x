@@ -1,0 +1,4 @@
+#!/bin/sh
+
+foamCleanTutorials cases
+rm -rf 0/alpha1.gz probes wallPressure pRefProbe

@@ -1,0 +1,15 @@
+ParMGridGen = $(WM_THIRD_PARTY_DIR)/ParMGridGen-1.0
+
+TYPE_REAL=
+#if defined(WM_SP)
+TYPE_REAL=-DTYPE_REAL
+#endif
+
+EXE_INC = \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(ParMGridGen)/MGridGen/Lib/lnInclude \
+    -I$(ParMGridGen)/MGridGen/IMlib/lnInclude \
+    $(TYPE_REAL)
+
+LIB_LIBS = \
+    -lMGridGen

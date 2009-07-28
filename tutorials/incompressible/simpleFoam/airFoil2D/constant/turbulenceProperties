@@ -1,0 +1,174 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      turbulenceProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+turbulenceModel SpalartAllmaras;
+
+turbulence      on;
+
+laminarCoeffs
+{
+}
+
+kEpsilonCoeffs
+{
+    Cmu             Cmu [ 0 0 0 0 0 0 0 ] 0.09;
+    C1              C1 [ 0 0 0 0 0 0 0 ] 1.44;
+    C2              C2 [ 0 0 0 0 0 0 0 ] 1.92;
+    alphaEps        alphaEps [ 0 0 0 0 0 0 0 ] 0.76923;
+}
+
+RNGkEpsilonCoeffs
+{
+    Cmu             Cmu [ 0 0 0 0 0 0 0 ] 0.0845;
+    C1              C1 [ 0 0 0 0 0 0 0 ] 1.42;
+    C2              C2 [ 0 0 0 0 0 0 0 ] 1.68;
+    alphak          alphaK [ 0 0 0 0 0 0 0 ] 1.39;
+    alphaEps        alphaEps [ 0 0 0 0 0 0 0 ] 1.39;
+    eta0            eta0 [ 0 0 0 0 0 0 0 ] 4.38;
+    beta            beta [ 0 0 0 0 0 0 0 ] 0.012;
+}
+
+NonlinearKEShihCoeffs
+{
+    Cmu             Cmu [ 0 0 0 0 0 0 0 ] 0.09;
+    C1              C1 [ 0 0 0 0 0 0 0 ] 1.44;
+    C2              C2 [ 0 0 0 0 0 0 0 ] 1.92;
+    alphak          alphak [ 0 0 0 0 0 0 0 ] 1;
+    alphaEps        alphaEps [ 0 0 0 0 0 0 0 ] 0.76932;
+    A1              A1 [ 0 0 0 0 0 0 0 ] 1.25;
+    A2              A2 [ 0 0 0 0 0 0 0 ] 1000;
+    Ctau1           Ctau1 [ 0 0 0 0 0 0 0 ] -4;
+    Ctau2           Ctau2 [ 0 0 0 0 0 0 0 ] 13;
+    Ctau3           Ctau3 [ 0 0 0 0 0 0 0 ] -2;
+    alphaKsi        alphaKsi [ 0 0 0 0 0 0 0 ] 0.9;
+}
+
+LienCubicKECoeffs
+{
+    C1              C1 [ 0 0 0 0 0 0 0 ] 1.44;
+    C2              C2 [ 0 0 0 0 0 0 0 ] 1.92;
+    alphak          alphak [ 0 0 0 0 0 0 0 ] 1;
+    alphaEps        alphaEps [ 0 0 0 0 0 0 0 ] 0.76923;
+    A1              A1 [ 0 0 0 0 0 0 0 ] 1.25;
+    A2              A2 [ 0 0 0 0 0 0 0 ] 1000;
+    Ctau1           Ctau1 [ 0 0 0 0 0 0 0 ] -4;
+    Ctau2           Ctau2 [ 0 0 0 0 0 0 0 ] 13;
+    Ctau3           Ctau3 [ 0 0 0 0 0 0 0 ] -2;
+    alphaKsi        alphaKsi [ 0 0 0 0 0 0 0 ] 0.9;
+}
+
+QZetaCoeffs
+{
+    Cmu             Cmu [ 0 0 0 0 0 0 0 ] 0.09;
+    C1              C1 [ 0 0 0 0 0 0 0 ] 1.44;
+    C2              C2 [ 0 0 0 0 0 0 0 ] 1.92;
+    alphaZeta       alphaZeta [ 0 0 0 0 0 0 0 ] 0.76923;
+    anisotropic     no;
+}
+
+LaunderSharmaKECoeffs
+{
+    Cmu             Cmu [ 0 0 0 0 0 0 0 ] 0.09;
+    C1              C1 [ 0 0 0 0 0 0 0 ] 1.44;
+    C2              C2 [ 0 0 0 0 0 0 0 ] 1.92;
+    alphaEps        alphaEps [ 0 0 0 0 0 0 0 ] 0.76923;
+}
+
+LamBremhorstKECoeffs
+{
+    Cmu             Cmu [ 0 0 0 0 0 0 0 ] 0.09;
+    C1              C1 [ 0 0 0 0 0 0 0 ] 1.44;
+    C2              C2 [ 0 0 0 0 0 0 0 ] 1.92;
+    alphaEps        alphaEps [ 0 0 0 0 0 0 0 ] 0.76923;
+}
+
+LienCubicKELowReCoeffs
+{
+    Cmu             Cmu [ 0 0 0 0 0 0 0 ] 0.09;
+    C1              C1 [ 0 0 0 0 0 0 0 ] 1.44;
+    C2              C2 [ 0 0 0 0 0 0 0 ] 1.92;
+    alphak          alphak [ 0 0 0 0 0 0 0 ] 1;
+    alphaEps        alphaEps [ 0 0 0 0 0 0 0 ] 0.76923;
+    A1              A1 [ 0 0 0 0 0 0 0 ] 1.25;
+    A2              A2 [ 0 0 0 0 0 0 0 ] 1000;
+    Ctau1           Ctau1 [ 0 0 0 0 0 0 0 ] -4;
+    Ctau2           Ctau2 [ 0 0 0 0 0 0 0 ] 13;
+    Ctau3           Ctau3 [ 0 0 0 0 0 0 0 ] -2;
+    alphaKsi        alphaKsi [ 0 0 0 0 0 0 0 ] 0.9;
+    Am              Am [ 0 0 0 0 0 0 0 ] 0.016;
+    Aepsilon        Aepsilon [ 0 0 0 0 0 0 0 ] 0.263;
+    Amu             Amu [ 0 0 0 0 0 0 0 ] 0.00222;
+}
+
+LienLeschzinerLowReCoeffs
+{
+    Cmu             Cmu [ 0 0 0 0 0 0 0 ] 0.09;
+    C1              C1 [ 0 0 0 0 0 0 0 ] 1.44;
+    C2              C2 [ 0 0 0 0 0 0 0 ] 1.92;
+    alphak          alphak [ 0 0 0 0 0 0 0 ] 1;
+    alphaEps        alphaEps [ 0 0 0 0 0 0 0 ] 0.76923;
+    Am              Am [ 0 0 0 0 0 0 0 ] 0.016;
+    Aepsilon        Aepsilon [ 0 0 0 0 0 0 0 ] 0.263;
+    Amu             Amu [ 0 0 0 0 0 0 0 ] 0.00222;
+}
+
+LRRCoeffs
+{
+    Cmu             Cmu [ 0 0 0 0 0 0 0 ] 0.09;
+    Clrr1           Clrr1 [ 0 0 0 0 0 0 0 ] 1.8;
+    Clrr2           Clrr2 [ 0 0 0 0 0 0 0 ] 0.6;
+    C1              C1 [ 0 0 0 0 0 0 0 ] 1.44;
+    C2              C2 [ 0 0 0 0 0 0 0 ] 1.92;
+    Cs              Cs [ 0 0 0 0 0 0 0 ] 0.25;
+    Ceps            Ceps [ 0 0 0 0 0 0 0 ] 0.15;
+    alphaEps        alphaEps [ 0 0 0 0 0 0 0 ] 0.76923;
+}
+
+LaunderGibsonRSTMCoeffs
+{
+    Cmu             Cmu [ 0 0 0 0 0 0 0 ] 0.09;
+    Clg1            Clg1 [ 0 0 0 0 0 0 0 ] 1.8;
+    Clg2            Clg2 [ 0 0 0 0 0 0 0 ] 0.6;
+    C1              C1 [ 0 0 0 0 0 0 0 ] 1.44;
+    C2              C2 [ 0 0 0 0 0 0 0 ] 1.92;
+    C1Ref           C1Ref [ 0 0 0 0 0 0 0 ] 0.5;
+    C2Ref           C2Ref [ 0 0 0 0 0 0 0 ] 0.3;
+    Cs              Cs [ 0 0 0 0 0 0 0 ] 0.25;
+    Ceps            Ceps [ 0 0 0 0 0 0 0 ] 0.15;
+    alphaEps        alphaEps [ 0 0 0 0 0 0 0 ] 0.76923;
+    alphaR          alphaR [ 0 0 0 0 0 0 0 ] 1.22;
+}
+
+SpalartAllmarasCoeffs
+{
+    alphaNut        alphaNut [ 0 0 0 0 0 0 0 ] 1.5;
+    Cb1             Cb1 [ 0 0 0 0 0 0 0 ] 0.1355;
+    Cb2             Cb2 [ 0 0 0 0 0 0 0 ] 0.622;
+    Cw2             Cw2 [ 0 0 0 0 0 0 0 ] 0.3;
+    Cw3             Cw3 [ 0 0 0 0 0 0 0 ] 2;
+    Cv1             Cv1 [ 0 0 0 0 0 0 0 ] 7.1;
+    Cv2             Cv2 [ 0 0 0 0 0 0 0 ] 5;
+}
+
+wallFunctionCoeffs
+{
+    kappa           kappa [ 0 0 0 0 0 0 0 ] 0.4187;
+    E               E [ 0 0 0 0 0 0 0 ] 9;
+}
+
+
+// ************************************************************************* //

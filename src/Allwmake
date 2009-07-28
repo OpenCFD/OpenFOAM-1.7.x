@@ -1,0 +1,50 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+set -x
+
+# update OpenFOAM version strings if required
+wmakePrintBuild -check || /bin/rm -f OpenFOAM/Make/$WM_OPTIONS/global.? 2>/dev/null
+
+wmakeLnInclude OpenFOAM
+wmakeLnInclude OSspecific/$WM_OSTYPE
+Pstream/Allwmake
+
+wmake libo  OSspecific/$WM_OSTYPE
+wmake libso OpenFOAM
+
+wmake libso lagrangian/basic
+
+wmake libso triSurface
+wmake libso edgeMesh
+wmake libso surfMesh
+
+# Decomposition methods needed by meshTools
+decompositionMethods/Allwmake
+
+wmake libso meshTools
+wmake libso finiteVolume
+
+wmake libso sampling
+
+wmake libso dynamicMesh
+wmake libso dynamicFvMesh
+wmake libso topoChangerFvMesh
+wmake libso fvMotionSolver
+wmake libso engine
+
+wmake libso ODE
+wmake libso randomProcesses
+
+thermophysicalModels/Allwmake
+transportModels/Allwmake
+turbulenceModels/Allwmake
+lagrangian/Allwmake
+postProcessing/Allwmake
+conversion/Allwmake
+
+wmake libso autoMesh
+wmake libso errorEstimation
+
+fvAgglomerationMethods/Allwmake
+
+# ----------------------------------------------------------------- end-of-file

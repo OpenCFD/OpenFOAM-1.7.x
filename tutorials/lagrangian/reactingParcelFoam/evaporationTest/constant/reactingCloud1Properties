@@ -1,0 +1,129 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      reactingCloud1Properties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+InjectionModel  ManualInjection;
+
+DragModel       SphereDrag;
+
+DispersionModel none;
+
+PatchInteractionModel StandardWallInteraction;
+
+HeatTransferModel RanzMarshall;
+
+CompositionModel SinglePhaseMixture;
+
+PhaseChangeModel LiquidEvaporation;
+
+PostProcessingModel none;
+
+radiation       off;
+
+coupled         true;
+
+cellValueSourceCorrection on;
+
+parcelTypeId    1;
+
+constantProperties
+{
+    rhoMin          rhoMin [ 1 -3 0 0 0 ] 1e-15;
+    TMin            TMin [ 0 0 0 1 0 ] 200;
+    pMin            pMin [ 1 -1 2 0 0 ] 1000;
+    rho0            rho0 [ 1 -3 0 0 0 ] 1000;
+    minParticleMass minParticleMass [ 1 0 0 0 0 ] 1e-15;
+    T0              T0 [ 0 0 0 1 0 ] 300;
+    cp0             cp0 [ 0 2 -2 -1 0 ] 4187;
+    epsilon0        epsilon0 [ 0 0 0 0 0 ] 1;
+    f0              f0 [ 0 0 0 0 0 ] 0.5;
+    Tvap            Tvap [ 0 0 0 1 0 ] 273;
+    Tbp             Tvap [ 0 0 0 1 0 ] 373;
+    constantVolume  false;
+}
+
+interpolationSchemes
+{
+    rho             cell;
+    U               cellPointFace;
+    mu              cell;
+    T               cell;
+    Cp              cell;
+    p               cell;
+}
+
+integrationSchemes
+{
+    U               Euler;
+    T               Analytical;
+}
+
+particleForces
+{
+    gravity         off;
+    virtualMass     off;
+    pressureGradient off;
+}
+
+ManualInjectionCoeffs
+{
+    massTotal       massTotal [ 1 0 0 0 0 ] 1e-8;
+    parcelBasisType mass;
+    SOI             0;
+    positionsFile   "reactingCloud1Positions";
+    U0              ( 0 0 0 );
+    parcelPDF
+    {
+        pdfType         uniform;
+        uniformPDF
+        {
+            minValue        1e-04;
+            maxValue        1e-04;
+        }
+    }
+}
+
+StandardWallInteractionCoeffs
+{
+    e               e [ 0 0 0 0 0 ] 1;
+    mu              mu [ 0 0 0 0 0 ] 0;
+}
+
+RanzMarshallCoeffs
+{
+    Pr              Pr [ 0 0 0 0 0 ] 0.7;
+}
+
+SinglePhaseMixtureCoeffs
+{
+    phases
+    (
+        liquid
+        {
+            H2O 1;
+        }
+    );
+}
+
+LiquidEvaporationCoeffs
+{
+    activeLiquids
+    (
+        H2O
+    );
+}
+
+// ************************************************************************* //

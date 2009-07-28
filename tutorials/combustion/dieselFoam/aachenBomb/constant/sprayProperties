@@ -1,0 +1,152 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      binary;
+    class       dictionary;
+    location    "constant";
+    object      sprayProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+interpolationSchemes
+{
+    U               cellPointFace;
+    rho             cell;
+    p               cell;
+    T               cell;
+}
+
+subCycles       2;
+
+atomizationModel off;
+
+includeOscillation yes;
+
+breakupModel    ReitzKHRT;
+
+injectorModel   hollowConeInjector;
+
+collisionModel  off;
+
+evaporationModel standardEvaporationModel;
+
+heatTransferModel RanzMarshall;
+
+dispersionModel off;
+
+dragModel       standardDragModel;
+
+wallModel       reflect;
+
+specConstAtomizationCoeffs
+{
+    dropletNozzleDiameterRatio ( 0.4 );
+    sprayAngle      ( 10 );
+}
+
+TABCoeffs
+{
+    y0              0;
+    yDot0           0;
+    Cmu             10;
+    Comega          8;
+    WeCrit          12;
+}
+
+ETABCoeffs
+{
+    Cmu             10;
+    Comega          8;
+    WeCrit          12;
+    k1              0.2;
+    k2              0.2;
+    WeTransition    100;
+}
+
+ReitzDiwakarCoeffs
+{
+    Cbag            6;
+    Cb              0.785;
+    Cstrip          0.5;
+    Cs              10;
+}
+
+ReitzKHRTCoeffs
+{
+    B0              0.61;
+    B1              40;
+    Ctau            1;
+    CRT             0.1;
+    msLimit         0.2;
+    WeberLimit      6;
+}
+
+trajectoryCoeffs
+{
+    cSpace          1;
+    cTime           0.3;
+}
+
+standardDragModelCoeffs
+{
+    preReFactor     0.166667;
+    ReExponent      0.666667;
+    ReLimiter       1000;
+    CdLimiter       0.44;
+    Cdistort        2.632;
+}
+
+standardEvaporationModelCoeffs
+{
+    evaporationScheme explicit;
+    preReScFactor   0.6;
+    ReExponent      0.5;
+    ScExponent      0.333333;
+}
+
+RanzMarshallCoeffs
+{
+    preRePrFactor   0.6;
+    ReExponent      0.5;
+    PrExponent      0.333333;
+}
+
+hollowConeInjectorCoeffs
+{
+    dropletPDF
+    {
+        pdfType         RosinRammler;
+        RosinRammlerPDF
+        {
+            minValue        1e-06;
+            maxValue        0.00015;
+            d               ( 0.00015 );
+            n               ( 3 );
+        }
+
+        exponentialPDF
+        {
+            minValue        0.0001;
+            maxValue        0.001;
+            lambda          ( 10000 );
+        }
+    }
+
+    innerConeAngle  ( 0 );
+    outerConeAngle  ( 20 );
+}
+
+reflectCoeffs
+{
+    elasticity      0.9;
+}
+
+
+// ************************************************************************* //

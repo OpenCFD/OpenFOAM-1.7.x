@@ -1,0 +1,73 @@
+#!/usr/bin/perl -w
+use strict;
+use File::Find ();
+
+# -----------------------------------------------------------------------------
+#
+# Script
+#     find-placeholderDescription
+#
+# Description
+#     Search for *.[H] files with a Description that looks like it is
+#     a placeholder
+#     eg, Foam::className
+#
+#     - print filename '#' and the description
+#
+# -----------------------------------------------------------------------------
+
+my $minLength   = 16;
+my $re_filespec = qr{^.+\.[H]$};
+
+# for the convenience of &wanted calls, including -eval statements:
+## use vars qw( *name *dir *prune );
+## *name   = *File::Find::name;
+## *dir    = *File::Find::dir;
+## *prune  = *File::Find::prune;
+
+sub wanted {
+    unless ( lstat($_) and -f _ and -r _ and not -l _ and /$re_filespec/ ) {
+        return;
+    }
+
+    my ( $tag, $description );
+
+    local @ARGV = $_;
+    while (<>) {
+        my $name;
+
+        ## examine the class/typedef name
+        if (/^(Class|Typedef)\s*$/) {
+            $_ = <>;
+            ($tag) = split;
+        }
+        if (/^Description\s*$/) {
+            $_ = <>;
+            ( $description = $_ ) =~ s{^\s+|\s+$}{}g;
+
+            # remove trailing punctuation as being noise
+            $description =~ s{\s*[.,:]+$}{};
+            last;
+        }
+    }
+
+    $description ||= '';
+
+    ## we have 'Class/Typedef' tag
+    if ( defined $tag ) {
+        # description looks like a class name
+        if (
+            $description =~ m{^\w+(::\w+)+$}
+        ) {
+            print "$File::Find::name   # $description\n";
+        }
+    }
+}
+
+## Traverse desired filesystems
+for my $dir (@ARGV) {
+    no warnings 'File::Find';
+    warn "(**) checking '$dir' ...\n";
+    File::Find::find( { wanted => \&wanted }, $dir );
+}
+

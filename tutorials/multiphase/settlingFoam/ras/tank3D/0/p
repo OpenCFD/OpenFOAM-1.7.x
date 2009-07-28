@@ -1,0 +1,138 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [1 -1 -2 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    SYMP3
+    {
+        type            symmetryPlane;
+    }
+
+    INLE1
+    {
+        type            zeroGradient;
+    }
+
+    OUTL9
+    {
+        type            zeroGradient;
+    }
+
+    OUTL10
+    {
+        type            zeroGradient;
+    }
+
+    OUTL11
+    {
+        type            zeroGradient;
+    }
+
+    OUTL12
+    {
+        type            zeroGradient;
+    }
+
+    WALL6
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL8
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL61
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL62
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL63
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL64
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL65
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL66
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL67
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL68
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL69
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL7
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    WALL70
+    {
+        type            buoyantPressure;
+        value           uniform 0;
+    }
+
+    OUTL15
+    {
+        type            fixedValue;
+        value           uniform 0;
+    }
+}
+
+// ************************************************************************* //

@@ -1,0 +1,6 @@
+.SUFFIXES: .l
+
+ltoo = flex $$SOURCE ; mv lex.yy.c $*.c ; $(cc) $(cFLAGS) -c $*.c -o $@ 
+
+.l.dep:
+	$(MAKE_DEP)

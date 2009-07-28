@@ -1,0 +1,3 @@
+solidMixture/solidMixture.C
+
+LIB = $(FOAM_LIBBIN)/libsolidMixture

@@ -1,0 +1,232 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software; you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation; either version 2 of the License, or (at your
+    option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM; if not, write to the Free Software Foundation,
+    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+
+\*---------------------------------------------------------------------------*/
+
+#include "fv.H"
+#include "HashTable.H"
+#include "surfaceInterpolate.H"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace fv
+{
+
+// * * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * //
+
+template<class Type>
+tmp<ddtScheme<Type> > ddtScheme<Type>::New
+(
+    const fvMesh& mesh,
+    Istream& schemeData
+)
+{
+    if (fv::debug)
+    {
+        Info<< "ddtScheme<Type>::New(const fvMesh&, Istream&) : "
+               "constructing ddtScheme<Type>"
+            << endl;
+    }
+
+    if (schemeData.eof())
+    {
+        FatalIOErrorIn
+        (
+            "ddtScheme<Type>::New(const fvMesh&, Istream&)",
+            schemeData
+        )   << "Ddt scheme not specified" << endl << endl
+            << "Valid ddt schemes are :" << endl
+            << IstreamConstructorTablePtr_->toc()
+            << exit(FatalIOError);
+    }
+
+    word schemeName(schemeData);
+
+    typename IstreamConstructorTable::iterator cstrIter =
+        IstreamConstructorTablePtr_->find(schemeName);
+
+    if (cstrIter == IstreamConstructorTablePtr_->end())
+    {
+        FatalIOErrorIn
+        (
+            "ddtScheme<Type>::New(const fvMesh&, Istream&)",
+            schemeData
+        )   << "unknown ddt scheme " << schemeName << endl << endl
+            << "Valid ddt schemes are :" << endl
+            << IstreamConstructorTablePtr_->toc()
+            << exit(FatalIOError);
+    }
+
+    return cstrIter()(mesh, schemeData);
+}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+template<class Type>
+ddtScheme<Type>::~ddtScheme()
+{}
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+template<class Type>
+tmp<surfaceScalarField> ddtScheme<Type>::fvcDdtPhiCoeff
+(
+    const GeometricField<Type, fvPatchField, volMesh>& U,
+    const fluxFieldType& phi,
+    const fluxFieldType& phiCorr
+)
+{
+    tmp<surfaceScalarField> tddtCouplingCoeff = scalar(1)
+      - min
+        (
+            mag(phiCorr)
+           /(mag(phi) + dimensionedScalar("small", phi.dimensions(), SMALL)),
+            scalar(1)
+        );
+
+    surfaceScalarField& ddtCouplingCoeff = tddtCouplingCoeff();
+
+    forAll (U.boundaryField(), patchi)
+    {
+        if (U.boundaryField()[patchi].fixesValue())
+        {
+            ddtCouplingCoeff.boundaryField()[patchi] = 0.0;
+        }
+    }
+
+    if (debug > 1)
+    {
+        Info<< "ddtCouplingCoeff mean max min = "
+            << gAverage(ddtCouplingCoeff.internalField())
+            << " " << gMax(ddtCouplingCoeff.internalField())
+            << " " << gMin(ddtCouplingCoeff.internalField())
+            << endl;
+    }
+
+    return tddtCouplingCoeff;
+}
+
+
+template<class Type>
+tmp<surfaceScalarField> ddtScheme<Type>::fvcDdtPhiCoeff
+(
+    const GeometricField<Type, fvPatchField, volMesh>& U,
+    const fluxFieldType& phi
+)
+{
+    dimensionedScalar rDeltaT = 1.0/mesh().time().deltaT();
+
+    tmp<surfaceScalarField> tddtCouplingCoeff = scalar(1)
+      - min
+        (
+            mag(phi - (mesh().Sf() & fvc::interpolate(U)))
+           /(mag(phi) + dimensionedScalar("small", phi.dimensions(), VSMALL)),
+           //(rDeltaT*mesh().magSf()/mesh().deltaCoeffs()),
+            scalar(1)
+        );
+
+    surfaceScalarField& ddtCouplingCoeff = tddtCouplingCoeff();
+
+    forAll (U.boundaryField(), patchi)
+    {
+        if (U.boundaryField()[patchi].fixesValue())
+        {
+            ddtCouplingCoeff.boundaryField()[patchi] = 0.0;
+        }
+    }
+
+    if (debug > 1)
+    {
+        Info<< "ddtCouplingCoeff mean max min = "
+            << gAverage(ddtCouplingCoeff.internalField())
+            << " " << gMax(ddtCouplingCoeff.internalField())
+            << " " << gMin(ddtCouplingCoeff.internalField())
+            << endl;
+    }
+
+    return tddtCouplingCoeff;
+}
+
+
+template<class Type>
+tmp<surfaceScalarField> ddtScheme<Type>::fvcDdtPhiCoeff
+(
+    const volScalarField& rho,
+    const GeometricField<Type, fvPatchField, volMesh>& rhoU,
+    const fluxFieldType& phi
+)
+{
+    dimensionedScalar rDeltaT = 1.0/mesh().time().deltaT();
+
+    tmp<surfaceScalarField> tddtCouplingCoeff = scalar(1)
+      - min
+        (
+            mag(phi - (mesh().Sf() & fvc::interpolate(rhoU)))
+           /(
+                mag(phi) + dimensionedScalar("small", phi.dimensions(), VSMALL)
+                //fvc::interpolate(rho)*rDeltaT
+                //*mesh().magSf()/mesh().deltaCoeffs()
+            ),
+            scalar(1)
+        );
+
+    surfaceScalarField& ddtCouplingCoeff = tddtCouplingCoeff();
+
+    forAll (rhoU.boundaryField(), patchi)
+    {
+        if (rhoU.boundaryField()[patchi].fixesValue())
+        {
+            ddtCouplingCoeff.boundaryField()[patchi] = 0.0;
+        }
+    }
+
+    if (debug > 1)
+    {
+        Info<< "ddtCouplingCoeff mean max min = "
+            << gAverage(ddtCouplingCoeff.internalField())
+            << " " << gMax(ddtCouplingCoeff.internalField())
+            << " " << gMin(ddtCouplingCoeff.internalField())
+            << endl;
+    }
+
+    return tddtCouplingCoeff;
+}
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace fv
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace Foam
+
+// ************************************************************************* //

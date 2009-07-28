@@ -1,0 +1,84 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      pointSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Name of set to operate on
+name p0;
+
+// One of clear/new/invert/add/delete|subset/list
+action new;
+
+// Actions to apply to pointSet. These are all the topoSetSource's ending
+// in ..ToPoint (see the meshTools library).
+topoSetSources
+(
+    // Copy elements from pointSet
+    pointToPoint
+    {
+        set p1;
+    }
+
+    // Select based on cellSet
+    cellToPoint
+    {
+        set c0;
+        option all;         // all points of cell
+    }
+
+    // Select based on faceSet
+    faceToPoint
+    {
+        set f0;             // name of faceSet
+        option all;         // all points of face
+    }
+
+    // Select by explicitly providing point labels
+    labelToPoint
+    {
+        value (12 13 56);   // labels of points
+    }
+
+    // All points in pointzone
+    zoneToPoint
+    {
+        name ".*Zone";      // name of pointZone, regular expressions allowed
+    }
+
+    // Points nearest to coordinates
+    nearestToPoint
+    {
+       points ((0 0 0) (1 1 1));
+    }
+
+    // Points with coordinate within box
+    boxToPoint
+    {
+       box   (0 0 0) (1 1 1);
+    }
+
+    // Select based on surface
+    surfaceToPoint
+    {
+        file            "www.avl.com-geometry.stl";
+        nearDistance    0.1;    // points near to surface
+        includeInside   false;  // points on inside of surface
+                                // (requires closed surface with consistent
+                                //  normals)
+        includeOutside  false;  //   ,,    outside  ,,
+    }
+);
+
+// ************************************************************************* //

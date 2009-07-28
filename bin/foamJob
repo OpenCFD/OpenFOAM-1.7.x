@@ -1,0 +1,236 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#-------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     foamJob
+#
+# Description
+#
+#------------------------------------------------------------------------------
+usage() {
+   while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+   cat<<USAGE
+
+usage: ${0##*/} [OPTION] <application> ...
+
+options:
+  -case dir     specify case directory
+  -s            also sends output to screen
+  -p            parallel run of processors
+  -v ver        specify OpenFOAM version
+  -help         this usage
+
+* run an OpenFOAM job in background.
+  Redirects the output to 'log' in the case directory
+
+USAGE
+   exit 1
+}
+
+unset version
+
+# replacement for possibly buggy 'which'
+findExec() {
+   case "$1" in
+   */*)
+      if [ -x "$1" ] ; then
+         echo "$1"
+         return 0
+      fi
+      ;;
+   esac
+
+   oldIFS=$IFS
+   IFS=':'
+   for d in $PATH
+   do
+      # echo "testing: $d/$1" 1>&2
+      if [ -x "$d/$1" -a ! -d "$d/$1" ] ; then
+         # echo "Found exec: $d/$1" 1>&2
+         IFS=$oldIFS
+         echo "$d/$1"
+         return 0
+      fi
+   done
+   IFS=$oldIFS
+   echo ""
+   return 1
+}
+
+# grep for $1
+getPID() {
+   ps -u $LOGNAME -o 'pid,args' | fgrep "$1 " | fgrep -v grep | head -1 | awk '{ print $1 }'
+}
+
+
+consultGuide() {
+cat<<EOF
+
+Please consult the User Guide for details of parallel running
+EOF
+}
+
+# MAIN SCRIPT
+#~~~~~~~~~~~~
+SCREEN=no
+PARALLEL=no
+
+
+# parse options
+while [ "$#" -gt 0 ]
+do
+   case "$1" in
+   -h | -help)
+      usage
+      ;;
+   -case)
+      [ "$#" -ge 2 ] || usage "'-case' option requires an argument"
+      caseDir=$2
+      shift 2
+      cd "$caseDir" 2>/dev/null || usage "directory does not exist:  '$caseDir'"
+      ;;
+   -s)
+      SCREEN=yes
+      shift
+      ;;
+   -p)
+      PARALLEL=yes
+      shift
+      ;;
+   -v)
+      shift
+      version=$1
+      shift
+      ;;
+   --)
+      shift
+      break
+      ;;
+   -*)
+      usage "invalid option '$1'"
+      ;;
+   *)
+      break
+      ;;
+   esac
+done
+
+if [ "$#" -lt 1 ]; then
+   usage "No application specified"
+fi
+
+# use foamExec for a specified version and for remote (parallel) runs
+if [ -n "$version" -o "$PARALLEL" = yes ]; then
+   APPLICATION=`findExec foamExec`
+   if [ $? -ne 0 ]; then
+      usage "'foamExec' not found"
+   fi
+   if [ -n "$version" ]; then
+      APPLICATION="$APPLICATION -v $version"
+   fi
+else
+   APPLICATION=`findExec $1`
+   if [ $? -ne 0 ]; then
+      usage "Application '$1' executable not found"
+   fi
+   echo "Application : $1"
+   shift
+fi
+
+if [ "$PARALLEL" = no ]; then
+#
+#   RUN ON SINGLE PROCESSOR
+#
+    if [ "$SCREEN" = no ]; then
+       echo "Executing: $APPLICATION $@ > log 2>&1 &"
+       $APPLICATION $@ > log 2>&1 &
+    else
+       echo "Executing: $APPLICATION $@ | tee log &"
+       $APPLICATION $@ | tee log &
+       wait $!
+    fi
+else
+
+#
+#   IS THE CASE DECOMPOSED?
+#
+   if [ -r "processor0" ] ; then
+      NPROCS="`/bin/ls -1d processor* | wc -l`"
+   else
+      echo "Case is not currently decomposed"
+      if [ -r system/decomposeParDict ] ; then
+         echo "system/decomposeParDict exists"
+         echo "Try decomposing with \"foamJob decomposePar\""
+         exit 1
+      else
+         echo "Cannot find system/decomposeParDict file required to decompose the case for parallel running."
+         consultGuide
+         exit 1
+      fi
+   fi
+#
+#   LOCATE MPIRUN
+#
+   mpirun=`findExec mpirun`
+   if [ $? -ne 0 ]; then
+      usage "'mpirun' not found"
+   fi
+   mpiopts="-np $NPROCS"
+
+#
+#   IS THE MACHINE READY TO RUN PARALLEL?
+#
+   echo "Parallel processing using $WM_MPLIB with $NPROCS processors"
+   case "$WM_MPLIB" in
+   OPENMPI)
+      # add hostfile info
+      for hostfile in \
+         hostfile \
+         machines \
+         system/hostfile \
+         system/machines \
+      ;
+      do
+         if [ -r $hostfile ]; then
+            mpiopts="$mpiopts -hostfile $hostfile"
+            break
+         fi
+      done
+      ;;
+   esac
+
+#
+#   RUN IN PARALLEL
+#
+   if [ "$SCREEN" = no ] ; then
+      echo "Executing: mpirun $mpiopts $APPLICATION $@ -parallel > log 2>&1"
+      $mpirun $mpiopts $APPLICATION $@ -parallel > log 2>&1 &
+   else
+      echo "Executing: mpirun $mpiopts $APPLICATION $@ -parallel | tee log"
+      $mpirun $mpiopts $APPLICATION $@ -parallel  | tee log
+   fi
+fi
+
+#------------------------------------------------------------------------------

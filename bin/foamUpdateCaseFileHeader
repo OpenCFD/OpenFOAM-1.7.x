@@ -1,0 +1,143 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     foamUpdateCaseFileHeader
+#
+# Description
+#     Updates the header of application files.
+#     By default, writes current version in the header.
+#     Alternatively version can be specified with -v option.
+#     Also removes consecutive blank lines from file.
+#
+#------------------------------------------------------------------------------
+foamVersion=$WM_PROJECT_VERSION
+
+usage() {
+    cat<<USAGE
+
+usage: ${0##*/} [OPTION] <file1> ... <fileN>
+
+options:
+  -v VER  specifies the version to be written in the header
+  -h      help
+
+  Updates the header of application files and removes consecutive blank lines.
+  By default, writes current OpenFOAM version in the header.
+  An alternative version can be specified with the -v option.
+
+USAGE
+    exit 1
+}
+
+
+printHeader() {
+    cat<<HEADER
+/*--------------------------------*- C++ -*----------------------------------*\\
+| =========                 |                                                 |
+| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\\\    /   O peration     | Version:  ${foamVersion}  |
+|   \\\\  /    A nd           |                                                 |
+|    \\\\/     M anipulation  |                                www.OpenFOAM.org |
+\\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ${1};
+    class       ${2};
+    object      ${3};
+}
+HEADER
+}
+
+
+#
+# extract attribute '$1' from file '$2'
+#
+FoamFileAttribute() {
+    sed -n -e 's/[ ;]*$//' -e "s/^ *$1 *//p" $2
+}
+
+
+#
+# OPTIONS
+#
+opts=$(getopt hv: $*)
+if [ $? -ne 0 ]
+then
+    echo "Aborting due to invalid option"
+    usage
+fi
+eval set -- '$opts'
+while [ "$1" != "--" ]
+do
+    case $1 in
+    -v)
+        foamVersion=$2
+        shift
+        ;;
+    -h)
+        usage
+        ;;
+    esac
+    shift
+done
+shift
+
+[ $# -ge 1 ] || usage
+
+
+# constant width for version
+foamVersion=$(printf %-36s $foamVersion)
+
+#
+# MAIN
+#
+unset NOTE
+
+for caseFile
+do
+    if grep FoamFile $caseFile >/dev/null 2>&1
+    then
+        echo "Updating case file: $caseFile"
+        sed -n '/FoamFile/,/}/p' $caseFile > FoamFile.tmp
+
+        FORMAT=$(FoamFileAttribute format FoamFile.tmp)
+        CLASS=$(FoamFileAttribute  class  FoamFile.tmp)
+        OBJECT=$(FoamFileAttribute object FoamFile.tmp)
+        # extract NOTE?
+
+        printHeader $FORMAT $CLASS $OBJECT $NOTE > FoamFile.tmp
+        sed '1,/}/d' $caseFile | sed '/./,/^$/!d' >> FoamFile.tmp
+
+        # use cat to avoid removing/replace soft-links
+        [ -s FoamFile.tmp ] && cat FoamFile.tmp >| $caseFile
+        rm -f FoamFile.tmp 2>/dev/null
+    else
+        echo " Invalid case file: $caseFile" 1>&2
+    fi
+done
+
+#------------------------------------------------------------------------------

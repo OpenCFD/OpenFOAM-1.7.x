@@ -1,0 +1,20 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+set -x
+
+wmake libso specie
+wmake libso thermophysicalFunctions
+wmake libso liquids
+wmake libso liquidMixture
+wmake libso solids
+wmake libso solidMixture
+
+wmake libso basic
+wmake libso reactionThermo
+wmake libso laminarFlameSpeed
+wmake libso chemistryModel
+wmake libso pdfs
+wmake libso radiation
+wmake libso barotropicCompressibilityModel
+
+# ----------------------------------------------------------------- end-of-file

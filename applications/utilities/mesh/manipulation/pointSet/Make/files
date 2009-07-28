@@ -1,0 +1,4 @@
+pointSet.C
+
+EXE = $(FOAM_APPBIN)/pointSet
+

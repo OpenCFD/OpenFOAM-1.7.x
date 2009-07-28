@@ -1,0 +1,122 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#-------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     foamPackDoxygen [-prefix DIR] [-o outputDir]
+#
+# Description
+#     Packs and compresses the OpenFOAM doxygen html for release
+#
+#------------------------------------------------------------------------------
+packDir=$WM_PROJECT-$WM_PROJECT_VERSION
+packTag=_Doxygen.gtgz
+
+usage() {
+    while [ $# -gt 0 ]; do echo "$1" 1>&2; shift; done
+cat <<USAGE 1>&2
+Usage: ${0##*/} [-prefix DIR] [-o outputDir]
+
+    Packs and compresses the OpenFOAM doxygen html for release
+
+USAGE
+    exit 1
+}
+
+unset prefix outputDir
+
+while [ "$#" -gt 0 ]
+do
+    case $1 in
+    -prefix | --prefix )
+        prefix=${2%%/}
+        shift 2
+        ;;
+    -o | -output )
+        outputDir=${2%%/}
+        shift 2
+        ;;
+    -h | -help )
+        usage
+        ;;
+    -*)
+        usage "unknown option: '$*'"
+        ;;
+    esac
+done
+
+# if packing from within the directory, use -prefix form
+if [ "${PWD##*/}" = "$packDir" ]
+then
+    : ${prefix:=$packDir}
+fi
+
+# pack the directories directly and add prefix afterwards
+if [ -n "$prefix" ]
+then
+    packDir="$prefix"
+elif [ ! -d $packDir ]
+then
+    echo "Error: directory $packDir does not exist" 1>&2
+    exit 1
+fi
+
+#
+# add optional output directory
+#
+if [ -d "$outputDir" ]
+then
+    packFile="$outputDir/$packDir$packTag"
+else
+    packFile="$packDir$packTag"
+fi
+
+
+if [ -f $packFile ]
+then
+    echo "Error: $packFile already exists"
+    exit 1
+fi
+
+# Pack and compress the packFile using GNU tar
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+echo
+echo "Packing doxygen html into $packFile"
+echo
+
+if [ -n "$prefix" ]
+then
+    tar czpf $packFile --transform="s@^@$prefix/@" doc/Doxygen/html
+else
+    tar czpf $packFile $packDir/doc/Doxygen/html
+fi
+
+if [ $? -eq 0 ]
+then
+    echo "Finished packing doxygen html into file $packFile"
+else
+    echo "Error: failure packing doxygen html file $packFile"
+fi
+
+#------------------------------------------------------------------------------

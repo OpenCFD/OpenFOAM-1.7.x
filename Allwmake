@@ -1,0 +1,19 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+set -x
+
+# wmake is required for subsequent targets
+( cd wmake/src && make )
+
+# build ThirdParty sources
+( cd $WM_THIRD_PARTY_DIR && ./Allwmake )
+
+src/Allwmake
+applications/Allwmake
+
+if [ "$1" = doc ]
+then
+    doc/Allwmake
+fi
+
+# ----------------------------------------------------------------- end-of-file

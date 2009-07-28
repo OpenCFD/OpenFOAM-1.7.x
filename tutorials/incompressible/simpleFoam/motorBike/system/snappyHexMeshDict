@@ -1,0 +1,582 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Which of the steps to run
+castellatedMesh true;
+snap            true;
+addLayers       true;
+
+
+// Geometry. Definition of all surfaces. All surfaces are of class
+// searchableSurface.
+// Surfaces are used
+// - to specify refinement for any mesh cell intersecting it
+// - to specify refinement for any mesh cell inside/outside/near
+// - to 'snap' the mesh boundary to the surface
+geometry
+{
+    motorBike.stl
+    {
+        type triSurfaceMesh;
+        name motorBike;
+    }
+
+    refinementBox
+    {
+        type searchableBox;
+        min (-1.0 -0.7 0.0);
+        max ( 8.0  0.7 2.5);
+    }
+};
+
+
+
+// Settings for the castellatedMesh generation.
+castellatedMeshControls
+{
+
+    // Refinement parameters
+    // ~~~~~~~~~~~~~~~~~~~~~
+
+    // While refining maximum number of cells per processor. This is basically
+    // the number of cells that fit on a processor. If you choose this too small
+    // it will do just more refinement iterations to obtain a similar mesh.
+    maxLocalCells 1000000;
+
+    // Overall cell limit (approximately). Refinement will stop immediately
+    // upon reaching this number so a refinement level might not complete.
+    // Note that this is the number of cells before removing the part which
+    // is not 'visible' from the keepPoint. The final number of cells might
+    // actually be a lot less.
+    maxGlobalCells 2000000;
+
+    // The surface refinement loop might spend lots of iterations refining just a
+    // few cells. This setting will cause refinement to stop if <= minimumRefine
+    // are selected for refinement. Note: it will at least do one iteration
+    // (unless the number of cells to refine is 0)
+    minRefinementCells 10;
+
+    // Number of buffer layers between different levels.
+    // 1 means normal 2:1 refinement restriction, larger means slower
+    // refinement.
+    nCellsBetweenLevels 3;
+
+
+
+    // Explicit feature edge refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    // Specifies a level for any cell intersected by its edges.
+    // This is a featureEdgeMesh, read from constant/triSurface for now.
+    features
+    (
+        //{
+        //    file "someLine.eMesh";
+        //    level 2;
+        //}
+    );
+
+
+
+    // Surface based refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    // Specifies two levels for every surface. The first is the minimum level,
+    // every cell intersecting a surface gets refined up to the minimum level.
+    // The second level is the maximum level. Cells that 'see' multiple
+    // intersections where the intersections make an
+    // angle > resolveFeatureAngle get refined up to the maximum level.
+
+    refinementSurfaces
+    {
+        motorBike
+        {
+            // Surface-wise min and max refinement level
+            level (5 6);
+        }
+    }
+
+    // Resolve sharp angles
+    resolveFeatureAngle 30;
+
+
+    // Region-wise refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~
+
+    // Specifies refinement level for cells in relation to a surface. One of
+    // three modes
+    // - distance. 'levels' specifies per distance to the surface the
+    //   wanted refinement level. The distances need to be specified in
+    //   descending order.
+    // - inside. 'levels' is only one entry and only the level is used. All
+    //   cells inside the surface get refined up to the level. The surface
+    //   needs to be closed for this to be possible.
+    // - outside. Same but cells outside.
+
+    refinementRegions
+    {
+        refinementBox
+        {
+            mode inside;
+            levels ((1E15 4));
+        }
+    }
+
+
+    // Mesh selection
+    // ~~~~~~~~~~~~~~
+
+    // After refinement patches get added for all refinementSurfaces and
+    // all cells intersecting the surfaces get put into these patches. The
+    // section reachable from the locationInMesh is kept.
+    // NOTE: This point should never be on a face, always inside a cell, even
+    // after refinement.
+    locationInMesh (3 3 0.43);
+}
+
+
+
+// Settings for the snapping.
+snapControls
+{
+    //- Number of patch smoothing iterations before finding correspondence
+    //  to surface
+    nSmoothPatch 3;
+
+    //- Relative distance for points to be attracted by surface feature point
+    //  or edge. True distance is this factor times local
+    //  maximum edge length.
+    tolerance 4.0;
+
+    //- Number of mesh displacement relaxation iterations.
+    nSolveIter 30;
+
+    //- Maximum number of snapping relaxation iterations. Should stop
+    //  before upon reaching a correct mesh.
+    nRelaxIter 5;
+}
+
+
+
+// Settings for the layer addition.
+addLayersControls
+{
+    relativeSizes true;
+
+    // Per final patch (so not geometry!) the layer information
+    layers
+    {
+        minZ
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_frt-fairing:001%1
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_windshield:002%2
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rr-wh-rim:005%5
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rr-wh-rim:010%10
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fr-wh-rim:011%11
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fr-wh-brake-disk:012%12
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_frame:016-shadow%13
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-susp:014%14
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-susp:014-shadow%15
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_frame:016%16
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rr-wh-rim:005-shadow%17
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rr-wh-chain-hub:022%22
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rearseat%24
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_frt-fairing%25
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_windshield%26
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_headlights%27
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_driversseat%28
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-body%29
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fuel-tank%30
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_exhaust%31
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rr-wh-rim%32
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fr-mud-guard%33
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fr-wh-rim%34
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fr-wh-brake-disk%35
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fr-brake-caliper%36
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fr-wh-tyre%37
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_hbars%38
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fr-forks%39
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_chain%40
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rr-wh-tyre%41
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_square-dial%42
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_round-dial%43
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_dial-holder%44
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-susp%45
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-brake-lights%46
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-light-bracket%47
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_frame%48
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-mud-guard%49
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-susp-spring-damp%50
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fairing-inner-plate%51
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_clutch-housing%52
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_radiator%53
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_water-pipe%54
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_water-pump%55
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_engine%56
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-shock-link%57
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-brake-fluid-pot-bracket%58
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-brake-fluid-pot%59
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_footpeg%60
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rr-wh-chain-hub%61
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-brake-caliper%62
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rider-helmet%65
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rider-visor%66
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rider-boots%67
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rider-gloves%68
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rider-body%69
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_frame:0%70
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_frt-fairing:001-shadow%74
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_windshield-shadow%75
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fr-mud-guard-shadow%81
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_fr-wh-brake-disk-shadow%83
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-mud-guard-shadow%84
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-susp-spring-damp-shadow%85
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_radiator-shadow%86
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-shock-link-shadow%87
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rear-brake-fluid-pot-bracket-shadow%88
+        {
+            nSurfaceLayers 1;
+        }
+        motorBike_rr-wh-chain-hub-shadow%89
+        {
+            nSurfaceLayers 1;
+        }
+    }
+
+    // Expansion factor for layer mesh
+    expansionRatio 1.0;
+
+    //- Wanted thickness of final added cell layer. If multiple layers
+    //  is the
+    //  thickness of the layer furthest away from the wall.
+    //  Relative to undistorted size of cell outside layer.
+    finalLayerThickness 0.3;
+
+    //- Minimum thickness of cell layer. If for any reason layer
+    //  cannot be above minThickness do not add layer.
+    //  Relative to undistorted size of cell outside layer.
+    minThickness 0.1;
+
+    //- If points get not extruded do nGrow layers of connected faces that are
+    //  also not grown. This helps convergence of the layer addition process
+    //  close to features.
+    nGrow 1;
+
+
+    // Advanced settings
+
+    //- When not to extrude surface. 0 is flat surface, 90 is when two faces
+    //  make straight angle.
+    featureAngle 30;
+
+    //- Maximum number of snapping relaxation iterations. Should stop
+    //  before upon reaching a correct mesh.
+    nRelaxIter 3;
+
+    // Number of smoothing iterations of surface normals
+    nSmoothSurfaceNormals 1;
+
+    // Number of smoothing iterations of interior mesh movement direction
+    nSmoothNormals 3;
+
+    // Smooth layer thickness over surface patches
+    nSmoothThickness 10;
+
+    // Stop layer growth on highly warped cells
+    maxFaceThicknessRatio 0.5;
+
+    // Reduce layer growth where ratio thickness to medial
+    // distance is large
+    maxThicknessToMedialRatio 0.3;
+
+    // Angle used to pick up medial axis points
+    minMedianAxisAngle 130;
+
+    // Create buffer region for new layer terminations
+    nBufferCellsNoExtrude 0;
+
+    // Overall max number of layer addition iterations
+    nLayerIter 50;
+}
+
+
+
+// Generic mesh quality settings. At any undoable phase these determine
+// where to undo.
+meshQualityControls
+{
+    //- Maximum non-orthogonality allowed. Set to 180 to disable.
+    maxNonOrtho 65;
+
+    //- Max skewness allowed. Set to <0 to disable.
+    maxBoundarySkewness 20;
+    maxInternalSkewness 4;
+
+    //- Max concaveness allowed. Is angle (in degrees) below which concavity
+    //  is allowed. 0 is straight face, <0 would be convex face.
+    //  Set to 180 to disable.
+    maxConcave 80;
+
+    //- Minimum projected area v.s. actual area. Set to -1 to disable.
+    minFlatness 0.5;
+
+    //- Minimum pyramid volume. Is absolute volume of cell pyramid.
+    //  Set to very negative number (e.g. -1E30) to disable.
+    minVol 1e-13;
+
+    //- Minimum face area. Set to <0 to disable.
+    minArea -1;
+
+    //- Minimum face twist. Set to <-1 to disable. dot product of face normal
+    //- and face centre triangles normal
+    minTwist 0.02;
+
+    //- minimum normalised cell determinant
+    //- 1 = hex, <= 0 = folded or flattened illegal cell
+    minDeterminant 0.001;
+
+    //- minFaceWeight (0 -> 0.5)
+    minFaceWeight 0.02;
+
+    //- minVolRatio (0 -> 1)
+    minVolRatio 0.01;
+
+    //must be >0 for Fluent compatibility
+    minTriangleTwist -1;
+
+
+    // Advanced
+
+    //- Number of error distribution iterations
+    nSmoothScale 4;
+    //- amount to scale back displacement at error points
+    errorReduction 0.75;
+}
+
+
+// Advanced
+
+// Flags for optional output
+// 0 : only write final meshes
+// 1 : write intermediate meshes
+// 2 : write volScalarField with cellLevel for postprocessing
+// 4 : write current intersections as .obj files
+debug 0;
+
+
+// Merge tolerance. Is fraction of overall bounding box of initial mesh.
+// Note: the write tolerance needs to be higher than this.
+mergeTolerance 1E-6;
+
+
+// ************************************************************************* //

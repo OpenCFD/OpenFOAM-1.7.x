@@ -1,0 +1,77 @@
+#!/usr/bin/perl -w
+use strict;
+use File::Find ();
+
+# -----------------------------------------------------------------------------
+#
+# Script
+#     find-tinyDescription
+#
+# Description
+#     Search for *.[H] files with 'Class' starting in the first column
+#     and a missing Description, or a tiny Description.
+#     A tiny Description is less than XX letters and does not resemble
+#     the class name. We'll look for descriptions matching the class name
+#     in a later pass.
+#
+#     - print filename '#' and the description
+#
+# -----------------------------------------------------------------------------
+
+my $minLength   = 16;
+my $re_filespec = qr{^.+\.[H]$};
+
+# for the convenience of &wanted calls, including -eval statements:
+## use vars qw( *name *dir *prune );
+## *name   = *File::Find::name;
+## *dir    = *File::Find::dir;
+## *prune  = *File::Find::prune;
+
+sub wanted {
+    unless ( lstat($_) and -f _ and -r _ and not -l _ and /$re_filespec/ ) {
+        return;
+    }
+
+    my ( $currentClass, $description );
+
+    local @ARGV = $_;
+    while (<>) {
+        my $name;
+
+        ## examine the class name
+        if (/^Class\s*$/) {
+            $_ = <>;
+            ($currentClass) = split;
+        }
+        if (/^Description\s*$/) {
+            $_ = <>;
+            ( $description = $_ ) =~ s{^\s+|\s+$}{}g;
+            
+            # remove trailing punctuation as being noise
+            $description =~ s{\s*[.,:]+$}{};
+            last;
+        }
+    }
+
+    $description ||= '';
+
+    ## we have 'Class' tag
+    if ( defined $currentClass ) {
+        # description doesnt looks like a class name
+        if (
+            $description !~ m{^\w+(::\w+)+$}
+            and 
+            (length $description < $minLength or $description =~ m{^\S+$})
+        ) {            
+            print "$File::Find::name # $description\n";
+        }
+    }
+}
+
+## Traverse desired filesystems
+for my $dir (@ARGV) {
+    no warnings 'File::Find';
+    warn "(**) checking '$dir' ...\n";
+    File::Find::find( { wanted => \&wanted }, $dir );
+}
+

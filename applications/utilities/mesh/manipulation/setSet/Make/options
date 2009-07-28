@@ -1,0 +1,7 @@
+EXE_INC = \
+    -DREADLINE=$(READLINE) \
+    -I$(LIB_SRC)/meshTools/lnInclude
+
+EXE_LIBS = \
+    -lmeshTools \
+    $(READLINELINK)

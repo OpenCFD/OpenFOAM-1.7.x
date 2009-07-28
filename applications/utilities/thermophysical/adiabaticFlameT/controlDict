@@ -1,0 +1,69 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    note        "settings for calculating the adiabatic flame temperature";
+    class       dictionary;
+    object      controlDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+T0      300.0;
+
+H2
+{
+    fuel H2;
+    n    0;
+    m    2;
+}
+
+CH4
+{
+    fuel CH4(ANHARMONIC);
+    n    1;
+    m    4;
+}
+
+ETHYLENE
+{
+    fuel ETHYLENE;
+    n    2;
+    m    4;
+}
+
+PROPANE
+{
+    fuel PROPANE;
+    n    3;
+    m    8;
+}
+
+OCTANE
+{
+    fuel ISO-OCTANE(I-P);
+    n    8;
+    m    18;
+}
+
+C7H16
+{
+    fuel C7H16;
+    n    7;
+    m    16;
+}
+
+
+$H2;
+// $CH4;
+// $PROPANE;
+
+
+// ************************************************************************* //

@@ -1,0 +1,106 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dictionaryReplacement
+{
+    T
+    {
+        internalField   uniform 300;
+
+        boundaryField
+        {
+            minY
+            {
+                type            fixedValue;
+                value           uniform 500;
+            }
+
+            minZ
+            {
+                type            zeroGradient;
+            }
+            maxZ
+            {
+                type            zeroGradient;
+            }
+        }
+    }
+
+    rho
+    {
+        internalField   uniform 8000;
+
+        boundaryField
+        {
+            minY
+            {
+                type            zeroGradient;
+            }
+            minZ
+            {
+                type            zeroGradient;
+            }
+            maxZ
+            {
+                type            zeroGradient;
+            }
+        }
+    }
+
+    K
+    {
+        internalField   uniform 80;
+
+        boundaryField
+        {
+            minY
+            {
+                type            zeroGradient;
+            }
+            minZ
+            {
+                type            zeroGradient;
+            }
+            maxZ
+            {
+                type            zeroGradient;
+            }
+        }
+    }
+
+    cp
+    {
+        internalField   uniform 450;
+
+        boundaryField
+        {
+            minY
+            {
+                type            zeroGradient;
+            }
+            minZ
+            {
+                type            zeroGradient;
+            }
+            maxZ
+            {
+                type            zeroGradient;
+            }
+        }
+    }
+}
+
+// ************************************************************************* //

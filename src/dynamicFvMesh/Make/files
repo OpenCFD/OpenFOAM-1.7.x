@@ -1,0 +1,15 @@
+dynamicFvMesh/dynamicFvMesh.C
+dynamicFvMesh/newDynamicFvMesh.C
+staticFvMesh/staticFvMesh.C
+dynamicMotionSolverFvMesh/dynamicMotionSolverFvMesh.C
+dynamicInkJetFvMesh/dynamicInkJetFvMesh.C
+dynamicRefineFvMesh/dynamicRefineFvMesh.C
+
+solidBodyMotionFvMesh/solidBodyMotionFvMesh.C
+solidBodyMotionFunctions = solidBodyMotionFvMesh/solidBodyMotionFunctions
+$(solidBodyMotionFunctions)/solidBodyMotionFunction/solidBodyMotionFunction.C
+$(solidBodyMotionFunctions)/solidBodyMotionFunction/newSolidBodyMotionFunction.C
+$(solidBodyMotionFunctions)/SDA/SDA.C
+$(solidBodyMotionFunctions)/SKA/SKA.C
+
+LIB = $(FOAM_LIBBIN)/libdynamicFvMesh

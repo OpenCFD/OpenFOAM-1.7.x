@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Source tutorial clean functions
+. $WM_PROJECT_DIR/bin/tools/CleanFunctions
+
+keepCases="cavity cavityGrade cavityClipped elbow"
+loseCases="cavityFine cavityHighRe"
+
+for case in $keepCases
+do
+    (cd $case && foamCleanTutorials)
+
+    if [ "$case" = "elbow" ]
+    then
+        rm -rf $case/fluentInterface
+    fi
+done
+
+for case in $loseCases
+do
+    removeCase $case
+done

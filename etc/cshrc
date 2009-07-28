@@ -1,0 +1,267 @@
+#----------------------------------*-sh-*--------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     etc/cshrc
+#
+# Description
+#     Startup file for OpenFOAM
+#     Sourced from ~/.login or ~/.cshrc
+#
+#------------------------------------------------------------------------------
+
+setenv WM_PROJECT OpenFOAM
+setenv WM_PROJECT_VERSION 1.6
+
+################################################################################
+# USER EDITABLE PART
+#
+#    either setenv FOAM_INST_DIR before sourcing this file or set
+#    foamInstall below to where OpenFOAM is installed
+#
+# Location of FOAM installation
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+set foamInstall = $HOME/$WM_PROJECT
+# set foamInstall = ~$WM_PROJECT
+# set foamInstall = /usr/local/$WM_PROJECT
+# set foamInstall = /opt/$WM_PROJECT
+#
+# END OF (NORMAL) USER EDITABLE PART
+################################################################################
+
+# note the location for later use (eg, in job scripts)
+if ( ! $?FOAM_INST_DIR ) setenv FOAM_INST_DIR $foamInstall
+
+# The old dirs to be cleaned from the various environment variables
+# - remove anything under top-level directory.
+# NB: the WM_PROJECT_INST_DIR might not be identical between versions
+set foamOldDirs="$FOAM_INST_DIR $HOME/$WM_PROJECT/$LOGNAME"
+
+# Location of site/user files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+setenv WM_PROJECT_INST_DIR $FOAM_INST_DIR
+setenv WM_PROJECT_DIR $WM_PROJECT_INST_DIR/$WM_PROJECT-$WM_PROJECT_VERSION
+setenv WM_PROJECT_USER_DIR $HOME/$WM_PROJECT/$LOGNAME-$WM_PROJECT_VERSION
+
+
+# Location of third-party software
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+setenv WM_THIRD_PARTY_DIR $WM_PROJECT_INST_DIR/ThirdParty-$WM_PROJECT_VERSION
+
+
+# Operating System/Platform
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
+# WM_OSTYPE = POSIX | ????
+if ( ! $?WM_OSTYPE ) setenv WM_OSTYPE POSIX
+
+
+# Compiler: set to Gcc, Gcc43 or Icc (for Intel's icc)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if ( ! $?WM_COMPILER ) setenv WM_COMPILER Gcc
+
+setenv WM_COMPILER_ARCH
+setenv WM_COMPILER_LIB_ARCH
+
+
+# Compilation options (architecture, precision, optimised, debug or profiling)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# WM_ARCH_OPTION = 32 | 64
+if ( ! $?WM_ARCH_OPTION ) setenv WM_ARCH_OPTION 64
+
+# WM_PRECISION_OPTION = DP | SP
+if ( ! $?WM_PRECISION_OPTION ) setenv WM_PRECISION_OPTION DP
+
+# WM_COMPILE_OPTION = Opt | Debug | Prof
+if ( ! $?WM_COMPILE_OPTION ) setenv WM_COMPILE_OPTION Opt
+
+# WM_MPLIB = | OPENMPI | MPICH | MPICH-GM | HPMPI | GAMMA | MPI | QSMPI
+if ( ! $?WM_MPLIB ) setenv WM_MPLIB OPENMPI
+
+
+# Run options (floating-point signal handling and memory initialisation)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+setenv FOAM_SIGFPE
+# setenv FOAM_SETNAN
+
+
+# Detect system type and set environment variables
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+setenv WM_ARCH `uname -s`
+
+switch ($WM_ARCH)
+case Linux:
+    setenv WM_ARCH linux
+
+    switch (`uname -m`)
+    case i686:
+        breaksw
+
+    case x86_64:
+        switch ($WM_ARCH_OPTION)
+        case 32:
+            setenv WM_ARCH linux
+            setenv WM_COMPILER_ARCH '-64'
+            setenv WM_CC 'gcc'
+            setenv WM_CXX 'g++'
+            setenv WM_CFLAGS '-m32 -fPIC'
+            setenv WM_CXXFLAGS '-m32 -fPIC'
+            setenv WM_LDFLAGS '-m32'
+            breaksw
+
+        case 64:
+            setenv WM_ARCH linux64
+            setenv WM_COMPILER_LIB_ARCH 64
+            setenv WM_CC 'gcc'
+            setenv WM_CXX 'g++'
+            setenv WM_CFLAGS '-m64 -fPIC'
+            setenv WM_CXXFLAGS '-m64 -fPIC'
+            setenv WM_LDFLAGS '-m64'
+            breaksw
+
+        default:
+            echo Unknown WM_ARCH_OPTION $WM_ARCH_OPTION, should be 32 or 64
+            breaksw
+
+        endsw
+        breaksw
+
+    case ia64:
+        setenv WM_ARCH linuxIA64
+        setenv WM_COMPILER I64
+        breaksw
+
+    case mips64:
+        setenv WM_ARCH SiCortex64
+        setenv WM_COMPILER_LIB_ARCH 64
+        setenv WM_CC 'gcc'
+        setenv WM_CXX 'g++'
+        setenv WM_CFLAGS '-mabi=64 -fPIC'
+        setenv WM_CXXFLAGS '-mabi=64 -fPIC'
+        setenv WM_LDFLAGS '-mabi=64 -G0'
+        setenv WM_MPLIB MPI
+        breaksw
+
+    case ppc64:
+        setenv WM_ARCH linuxPPC64
+        setenv WM_COMPILER_LIB_ARCH 64
+        setenv WM_CC 'gcc'
+        setenv WM_CXX 'g++'
+        setenv WM_CFLAGS '-m64 -fPIC'
+        setenv WM_CXXFLAGS '-m64 -fPIC'
+        setenv WM_LDFLAGS '-m64'
+        breaksw
+
+    default:
+        echo Unknown processor type `uname -m` for Linux
+        breaksw
+
+    endsw
+    breaksw
+
+case SunOS:
+    setenv WM_ARCH SunOS64
+    setenv WM_COMPILER_LIB_ARCH 64
+    setenv WM_CC 'gcc'
+    setenv WM_CXX 'g++'
+    setenv WM_CFLAGS '-mabi=64 -fPIC'
+    setenv WM_CXXFLAGS '-mabi=64 -fPIC'
+    setenv WM_LDFLAGS '-mabi=64 -G0'
+    setenv WM_MPLIB FJMPI
+    breaksw
+
+default:
+    echo
+    echo "Your '$WM_ARCH' operating system is not supported by this release"
+    echo "of OpenFOAM. For further assistance, please contact www.OpenFOAM.org"
+    echo
+    breaksw
+
+endsw
+
+
+# Clean standard environment variables (path/PATH, LD_LIBRARY_PATH, MANPATH)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+set cleanProg=$WM_PROJECT_DIR/bin/foamCleanPath
+
+if (! $?LD_LIBRARY_PATH ) then
+    setenv LD_LIBRARY_PATH ''
+endif
+if (! $?MANPATH) then
+    setenv MANPATH ''
+endif
+
+#- Clean path/PATH
+set colonPath=`echo "$path" | sed -e 's/ /:/g'`
+set cleanEnv=`$cleanProg "$colonPath" "$foamOldDirs"`
+if ( $status == 0 ) then
+    set path=`echo "$cleanEnv" | sed -e 's/:/ /g'`
+endif
+
+#- Clean LD_LIBRARY_PATH
+setenv LD_LIBRARY_PATH `$cleanProg "$LD_LIBRARY_PATH" "$foamOldDirs"`
+
+#- Clean MANPATH
+setenv MANPATH `$cleanProg "$MANPATH" "$foamOldDirs"`
+
+
+# Source project setup files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+alias _foamSource 'if ($?FOAM_VERBOSE && $?prompt) echo "Executing: \!*"; source \!*'
+
+_foamSource $WM_PROJECT_DIR/etc/settings.csh
+_foamSource $WM_PROJECT_DIR/etc/aliases.csh
+
+# Source user setup files for optional packages
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# _foamSource $WM_PROJECT_DIR/etc/apps/paraview/cshrc
+_foamSource $WM_PROJECT_DIR/etc/apps/paraview3/cshrc
+# _foamSource $WM_PROJECT_DIR/etc/apps/ensight/cshrc
+
+
+# Clean environment paths again. Only remove duplicates
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#- Clean path/PATH
+set colonPath=`echo "$path" | sed -e 's/ /:/g'`
+set cleanEnv=`$cleanProg "$colonPath"`
+if ( $status == 0 ) then
+    set path=`echo "$cleanEnv" | sed -e 's/:/ /g'`
+endif
+
+#- Clean LD_LIBRARY_PATH
+setenv LD_LIBRARY_PATH `$cleanProg "$LD_LIBRARY_PATH"`
+
+#- Clean MANPATH
+setenv MANPATH `$cleanProg "$MANPATH"`:
+
+#- Clean LD_PRELOAD
+if ( $?LD_PRELOAD ) then
+    setenv LD_PRELOAD `$cleanProg "$LD_PRELOAD"`
+endif
+
+# cleanup environment:
+# ~~~~~~~~~~~~~~~~~~~~
+unset cleanEnv cleanProg colonPath foamInstall foamOldDirs
+unalias _foamSource
+
+# -----------------------------------------------------------------------------

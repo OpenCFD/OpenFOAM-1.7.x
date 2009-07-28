@@ -1,0 +1,12 @@
+# ParaView State Version 2.2
+
+set kw(vtkTemp2) [$Application GetMainWindow]
+set kw(vtkTemp29) [$kw(vtkTemp2) GetMainView]
+set kw(vtkTemp980) [$kw(vtkTemp2) GetAnimationManager]
+[$kw(vtkTemp2) GetRotateCameraButton] SetState 1
+$kw(vtkTemp2) ChangeInteractorStyle 1
+set kw(vtkTemp840) [$kw(vtkTemp2) InitializeReadCustom "FoamReader" "%CASE%"]
+$kw(vtkTemp2) ReadFileInformation $kw(vtkTemp840) "%CASE%"
+$kw(vtkTemp2) FinalizeRead $kw(vtkTemp840) "%CASE%"
+set kw(vtkTemp868) [$kw(vtkTemp840) GetPVWidget {Filename}]
+$kw(vtkTemp868) SetValue "%CASE%"

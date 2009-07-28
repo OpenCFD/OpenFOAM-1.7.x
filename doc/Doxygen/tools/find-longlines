@@ -1,0 +1,46 @@
+#!/usr/bin/perl -w
+use strict;
+use File::Find ();
+
+# -----------------------------------------------------------------------------
+#
+# Script
+#     find-longlines
+#
+# Description
+#     Search for *.[CH] files that exceed the 80-column width
+#
+#     - print filename lineNumber and offending line (with truncation point)
+#
+# -----------------------------------------------------------------------------
+
+my $maxlen = 80;
+my $re_filespec = qr{^.+\.[CH]$};
+my $count;
+
+sub wanted {
+    unless ( lstat($_) and -f _ and -r _ and not -l _ and /$re_filespec/ ) {
+        return;
+    }
+
+    local @ARGV = $_;
+    while (<>) {
+        chomp;
+        s{\s+$}{};        # trim
+
+        if ( $maxlen < length ) {
+            $count++;
+            substr( $_, $maxlen, 0 ) = "||->>";    # show truncation point
+            print "$File::Find::name  $. $_\n";
+        }
+    }
+    close ARGV;
+}
+
+## Traverse desired filesystems
+for my $dir (@ARGV) {
+    no warnings 'File::Find';
+    warn "(**) checking '$dir' ...\n";
+    File::Find::find( { wanted => \&wanted }, $dir );
+}
+

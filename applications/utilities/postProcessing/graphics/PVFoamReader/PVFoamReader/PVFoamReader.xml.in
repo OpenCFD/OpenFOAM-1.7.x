@@ -1,0 +1,71 @@
+<ModuleInterfaces>
+    <Library name="@PROJECT_NAME@"/>
+    <ServerManagerFile name="@PROJECT_NAME@.pvsm"/>
+
+    <Module name="FoamReader"
+        class="vtkPVAdvancedReaderModule"
+        root_name="Foam"
+        output="vtkDataSet"
+        module_type="Reader"
+        extensions=".foam"
+        file_description="Foam case">
+
+        <Source class="vtkFoamReader"/>
+
+        <LabeledToggle
+            label="Update GUI"
+            trace_name="UpdateGUI"
+            property="UpdateGUI"
+            help="To update GUI without execution toggle this Accept and Reset."/>
+
+        <LabeledToggle
+            label="Cache Mesh"
+            trace_name="CacheMesh"
+            property="CacheMesh"
+            help="Cache the FOAM mesh between GUI selection changes."/>
+
+        <Scale
+            property="TimeStep"
+            trace_name="TimeStep"
+            label="Time step"
+            display_entry="0"
+            display_value="1"
+            entry_and_label_on_top="0"
+            help="Select a time step."
+            keeps_timesteps="1"
+            range_source="TimeStepRange"/>
+
+        <VectorEntry
+            property="TimeStepLimits"
+            type="int"
+            trace_name="TimeStepLimits"
+            length="2"
+            label="Lower and Upper Times"
+            help="Maximum lower and upper number of time steps displayed in the selection list."/>
+
+        <ArraySelection
+            label_text="Time"
+            property="TimeStatus"
+            trace_name="TimeArrays"/>
+
+        <ArraySelection
+            label_text="Region"
+            property="RegionStatus"
+            trace_name="RegionArrays"/>
+
+        <ArraySelection
+            label_text="Vol Field"
+            property="VolFieldStatus"
+            trace_name="CellArrays"/>
+
+        <ArraySelection
+            label_text="Point Field"
+            property="PointFieldStatus"
+            trace_name="PointArrays"/>
+
+        <Documentation>
+            ParaView Foam reader module
+        </Documentation>
+    </Module>
+
+</ModuleInterfaces>

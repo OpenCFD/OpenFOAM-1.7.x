@@ -1,0 +1,875 @@
+
+290
+(
+reversibleArrheniusReaction
+    C7H16 + O2 = C7H15-1 + HO2
+    (2.5e+10 0 24560.8)
+reversibleArrheniusReaction
+    C7H16 + O2 = C7H15-2 + HO2
+    (2.8e+11 0 23740.6)
+reversibleArrheniusReaction
+    C7H16 + H = C7H15-1 + H2
+    (56000 2 3857.97)
+reversibleArrheniusReaction
+    C7H16 + H = C7H15-2 + H2
+    (43800 2 2390.16)
+reversibleArrheniusReaction
+    C7H16 + OH = C7H15-1 + H2O
+    (8.6e+06 1.1 913.292)
+reversibleArrheniusReaction
+    C7H16 + OH = C7H15-2 + H2O
+    (4.8e+06 1.3 347.454)
+reversibleArrheniusReaction
+    C7H16 + HO2 = C7H15-1 + H2O2
+    (8e+09 0 9711.59)
+reversibleArrheniusReaction
+    C7H16 + HO2 = C7H15-2 + H2O2
+    (1e+10 0 8529.09)
+reversibleArrheniusReaction
+    C7H16 + CH3 = C7H15-1 + CH4
+    (1.3e+09 0 5837.02)
+reversibleArrheniusReaction
+    C7H16 + CH3 = C7H15-2 + CH4
+    (8e+08 0 4780.32)
+reversibleArrheniusReaction
+    C7H16 = C7H15-1 + H
+    (3.972e+19 -0.95 51929.3)
+reversibleArrheniusReaction
+    C7H16 = C7H15-2 + H
+    (1.248e+21 -1.34 50671.4)
+reversibleArrheniusReaction
+    C7H16 = C4H9 + C3H7
+    (2e+16 0 40612.6)
+reversibleArrheniusReaction
+    C7H15-1 + O2 = C7H15O2
+    (2e+09 0 0)
+reversibleArrheniusReaction
+    C7H15-2 + O2 = C7H15O2
+    (2e+09 0 0)
+reversibleArrheniusReaction
+    C7H15O2 = C7H14O2H
+    (6e+11 0 10255)
+reversibleArrheniusReaction
+    C7H14O2H + O2 = C7H14O2HO2
+    (2.34e+08 0 0)
+reversibleArrheniusReaction
+    C7H14O2HO2 = C7KET21 + OH
+    (2.965e+13 0 13435.2)
+reversibleArrheniusReaction
+    C7KET21 = C5H11CO + CH2O + OH
+    (1e+16 0 21335.3)
+reversibleArrheniusReaction
+    C5H11CHO + O2 = C5H11CO + HO2
+    (2e+10 0.5 21234.7)
+reversibleArrheniusReaction
+    C5H11CHO + OH = C5H11CO + H2O
+    (1e+10 0 0)
+reversibleArrheniusReaction
+    C5H11CHO + H = C5H11CO + H2
+    (4e+10 0 2113.4)
+reversibleArrheniusReaction
+    C5H11CHO + O = C5H11CO + OH
+    (5e+09 0 900.712)
+reversibleArrheniusReaction
+    C5H11CHO + HO2 = C5H11CO + H2O2
+    (2.8e+09 0 6843.4)
+reversibleArrheniusReaction
+    C5H11CHO + CH3 = C5H11CO + CH4
+    (1.7e+09 0 4246.93)
+reversibleArrheniusReaction
+    C5H11CHO + CH3O2 = C5H11CO + CH4O2
+    (1e+09 0 4780.32)
+reversibleArrheniusReaction
+    C5H11CO = C5H11 + CO
+    (1e+11 0 4830.64)
+reversibleArrheniusReaction
+    C5H11 = C2H5 + C3H6
+    (3.2e+13 0 14240.3)
+reversibleArrheniusReaction
+    C7H15-1 = C2H4 + C5H11
+    (2.5e+13 0 14496.9)
+reversibleArrheniusReaction
+    C7H15-2 = CH3 + C6H12
+    (3e+13 0 14995.1)
+reversibleArrheniusReaction
+    C6H12 = C3H7 + C3H5
+    (1e+16 0 34217)
+reversibleArrheniusReaction
+    C7H15-2 = C4H9 + C3H6
+    (1.2e+13 0 14894.5)
+reversibleArrheniusReaction
+    C7H15-1 = C7H15-2
+    (2e+11 0 9107.76)
+reversibleArrheniusReaction
+    C4H9 = C3H6 + CH3
+    (2.232e+17 -1.4 15513.4)
+reversibleArrheniusReaction
+    C4H9 = C2H5 + C2H4
+    (2.5e+13 0 14496.9)
+reversibleArrheniusReaction
+    C3H7 = C2H4 + CH3
+    (9.6e+13 0 15573.8)
+reversibleArrheniusReaction
+    C3H7 = C3H6 + H
+    (1.25e+14 0 18567.8)
+reversibleArrheniusReaction
+    C3H7 + O2 = C3H6 + HO2
+    (1e+09 0 2505.89)
+reversibleArrheniusReaction
+    C3H6 = C2H3 + CH3
+    (6.15e+15 0 43022.9)
+reversibleArrheniusReaction
+    C3H6 + H = C3H5 + H2
+    (5e+09 0 754.787)
+reversibleArrheniusReaction
+    C3H6 + CH3 = C3H5 + CH4
+    (9e+09 0 4267.06)
+reversibleArrheniusReaction
+    C3H6 + O2 = C3H5 + HO2
+    (4e+09 0 20077.3)
+reversibleArrheniusReaction
+    C3H6 + OH = CH3CHO + CH3
+    (3.5e+08 0 0)
+reversibleArrheniusReaction
+    C3H5 = C3H4 + H
+    (4e+13 0 35102.6)
+reversibleArrheniusReaction
+    C3H5 + H = C3H4 + H2
+    (1e+10 0 0)
+reversibleArrheniusReaction
+    C3H5 + O2 = C3H4 + HO2
+    (6e+08 0 5031.91)
+reversibleArrheniusReaction
+    C3H4 + OH = C2H3 + CH2O
+    (1e+09 0 0)
+reversibleArrheniusReaction
+    C3H4 + OH = C2H4 + HCO
+    (1e+09 0 0)
+reversibleArrheniusReaction
+    C3H4 + O2 = C3H3 + HO2
+    (4e+10 0 19705)
+reversibleArrheniusReaction
+    C2H5 + O = CH3CHO + H
+    (5.3e+10 0 0)
+reversibleArrheniusReaction
+    C2H4 + HO2 = CH3CHO + OH
+    (2.2e+10 0 8654.89)
+reversibleArrheniusReaction
+    C2H4 + CH3O = CH3CHO + CH3
+    (3e+10 0 7296.27)
+reversibleArrheniusReaction
+    C2H4 + CH3O2 = CH3CHO + CH3O
+    (7e+10 0 7296.27)
+reversibleArrheniusReaction
+    CH3CHO = CH3 + HCO
+    (7.08e+15 0 41140.9)
+reversiblethirdBodyArrheniusReaction
+    CH3CO = CH3 + CO
+    ((1.8e+13 0 7245.95) (1))
+reversibleArrheniusReaction
+    CH3CHO + O2 = CH3CO + HO2
+    (2e+10 0.5 21234.7)
+reversibleArrheniusReaction
+    CH3CHO + H = CH3CO + H2
+    (4.1e+10 0 2113.4)
+reversibleArrheniusReaction
+    CH3CHO + OH = CH3CO + H2O
+    (1e+10 0 0)
+reversibleArrheniusReaction
+    CH3CHO + O = CH3CO + OH
+    (5.8e+09 0 900.712)
+reversibleArrheniusReaction
+    CH3CHO + CH3 = CH3CO + CH4
+    (1.7e+09 0 4246.93)
+reversibleArrheniusReaction
+    CH3CHO + CH2 = CH3CO + CH3
+    (1.66e+09 0 1766.2)
+reversibleArrheniusReaction
+    CH3CHO + HO2 = CH3CO + H2O2
+    (1.7e+09 0 5384.15)
+reversibleArrheniusReaction
+    CH3CHO + CH3O2 = CH3CO + CH4O2
+    (1.15e+08 0 5031.91)
+reversibleArrheniusReaction
+    CH3CO + O = CH3 + CO2
+    (1e+10 0 0)
+reversibleArrheniusReaction
+    CH3CO + H = CH3 + HCO
+    (1e+11 0 0)
+reversibleArrheniusReaction
+    CH3CO + OH = CH3 + CO + OH
+    (3e+10 0 0)
+reversibleArrheniusReaction
+    CH3CO + HO2 = CH3 + CO2 + OH
+    (3e+10 0 0)
+reversibleArrheniusReaction
+    CH3CO + CH3 = C2H6 + CO
+    (5e+10 0 0)
+reversibleArrheniusReaction
+    CH3O + CO = CH3 + CO2
+    (1.57e+11 0 5937.66)
+reversibleArrheniusReaction
+    CH3O + H = CH2O + H2
+    (2e+10 0 0)
+reversibleArrheniusReaction
+    CH3O + OH = CH2O + H2O
+    (1e+10 0 0)
+reversibleArrheniusReaction
+    CH3O + O = CH2O + OH
+    (1e+10 0 0)
+reversibleArrheniusReaction
+    CH3O + O2 = CH2O + HO2
+    (1.2e+08 0 1308.3)
+reversibleArrheniusLindemannFallOffReaction
+    CH3O = CH2O + H
+    ((2.344e+22 -2.7 15397.7) (2e+13 0 13797.5)  (1))
+reversibleArrheniusReaction
+    CH3 + HO2 = CH3O + OH
+    (4.3e+10 0 0)
+reversibleArrheniusReaction
+    CH3 + O2 = CH3O + O
+    (3.67e+10 0 15095.7)
+reversibleArrheniusReaction
+    CH3 + O2 = CH2O + OH
+    (4.8e+07 0 4528.72)
+reversibleArrheniusReaction
+    CH3 + O2 = CH3O2
+    (3.02e+56 -15 8656.9)
+reversibleArrheniusReaction
+    CH3O2 + HO2 = CH4O2 + O2
+    (4.63e+08 0 -1299.74)
+reversibleArrheniusReaction
+    CH3O2 + CH4 = CH4O2 + CH3
+    (1.81e+08 0 9298.97)
+reversibleArrheniusReaction
+    CH3O2 + CH3 = CH3O + CH3O
+    (2.41e+10 0 0)
+reversibleArrheniusReaction
+    CH3O2 + O = CH3O + O2
+    (3.61e+10 0 0)
+reversibleArrheniusReaction
+    CH3O2 + H = CH3O + OH
+    (9.64e+10 0 0)
+reversibleArrheniusReaction
+    CH3O2 + CH2O = CH4O2 + HCO
+    (1e+09 0 5869.73)
+reversibleArrheniusReaction
+    CH3O2 + C2H6 = CH4O2 + C2H5
+    (2.95e+08 0 7519.69)
+reversibleArrheniusReaction
+    CH3O2 + CH3O2 = CH3O + CH3O + O2
+    (2.8e+08 0 -392.489)
+reversibleArrheniusReaction
+    CH3O2 + H2O2 = CH4O2 + HO2
+    (2.4e+09 0 5031.91)
+reversibleArrheniusReaction
+    CH4O2 = CH3O + OH
+    (3e+16 0 21597)
+reversibleArrheniusReaction
+    CH3O2 + C2H4 = C2H3 + CH4O2
+    (7.1e+08 0 8609.6)
+reversibleArrheniusReaction
+    CH4O2 + OH = CH3O2 + H2O
+    (1e+10 0 -129.823)
+reversibleArrheniusReaction
+    CH4O2 + O = CH3O2 + OH
+    (2e+10 0 2390.16)
+reversibleArrheniusReaction
+    CH3 + O = CH2O + H
+    (8e+10 0 0)
+reversibleArrheniusReaction
+    CH3 + OH = CH2 + H2O
+    (7500 2 2515.96)
+reversibleArrheniusReaction
+    CH3 + OH = CH2O + H2
+    (4e+09 0 0)
+reversibleArrheniusReaction
+    CH3O + H = CH3 + OH
+    (1e+11 0 0)
+reversiblethirdBodyArrheniusReaction
+    CO + O = CO2
+    ((6.17e+08 0 1509.57) (1))
+reversibleArrheniusReaction
+    CO + OH = CO2 + H
+    (35100 1.3 -381.419)
+reversibleArrheniusReaction
+    CO + O2 = CO2 + O
+    (1.6e+10 0 20630.8)
+reversibleArrheniusReaction
+    HO2 + CO = CO2 + OH
+    (5.8e+10 0 11538.2)
+reversibleArrheniusReaction
+    H2 + O2 = OH + OH
+    (1.7e+10 0 24042.5)
+reversibleArrheniusReaction
+    H2 + OH = H2O + H
+    (1.17e+06 1.3 1824.57)
+reversibleArrheniusReaction
+    O + OH = O2 + H
+    (4e+11 -0.5 0)
+reversibleArrheniusReaction
+    O + H2 = OH + H
+    (50.6 2.67 3165.07)
+reversibleArrheniusReaction
+    H + HO2 = O + H2O
+    (3.1e+07 0 1806.46)
+reversiblethirdBodyArrheniusReaction
+    O + OH = HO2
+    ((1e+10 0 0) (1 N2 0.7 CO 2 CO2 5 H2 3.3 H2O 6))
+reversiblethirdBodyArrheniusReaction
+    H + O2 = HO2
+    ((2.8e+12 -0.86 0) (1 O2 0 N2 0 CO 0.75 CO2 1.5 H2O 0 C2H6 1.5))
+reversibleArrheniusReaction
+    H + O2 + O2 = HO2 + O2
+    (2.08e+13 -1.24 0)
+reversibleArrheniusReaction
+    H + O2 + H2O = HO2 + H2O
+    (1.126e+13 -0.76 0)
+reversibleArrheniusReaction
+    H + O2 + N2 = HO2 + N2
+    (2.6e+13 -1.24 0)
+reversibleArrheniusReaction
+    OH + HO2 = H2O + O2
+    (7.5e+09 0 0)
+reversibleArrheniusReaction
+    H + HO2 = OH + OH
+    (1.7e+11 0 440.292)
+reversibleArrheniusReaction
+    O + HO2 = O2 + OH
+    (1.4e+10 0 539.924)
+reversibleArrheniusReaction
+    OH + OH = O + H2O
+    (600000 1.3 0)
+reversiblethirdBodyArrheniusReaction
+    H + H = H2
+    ((1e+12 -1 0) (1 CO2 0 H2 0 H2O 0))
+reversibleArrheniusReaction
+    H + H + H2 = H2 + H2
+    (9.2e+10 -0.6 0)
+reversibleArrheniusReaction
+    H + H + H2O = H2 + H2O
+    (6e+13 -1.25 0)
+reversibleArrheniusReaction
+    H + H + CO2 = H2 + CO2
+    (5.49e+14 -2 0)
+reversiblethirdBodyArrheniusReaction
+    H + OH = H2O
+    ((1.6e+16 -2 0) (1))
+reversiblethirdBodyArrheniusReaction
+    H + O = OH
+    ((6.2e+10 -0.6 0) (1))
+reversiblethirdBodyArrheniusReaction
+    O + O = O2
+    ((1.89e+07 0 -899.706) (1))
+reversibleArrheniusReaction
+    H + HO2 = H2 + O2
+    (1.25e+10 0 0)
+reversibleArrheniusReaction
+    HO2 + HO2 = H2O2 + O2
+    (2e+09 0 0)
+reversibleArrheniusTroeFallOffReaction
+    OH + OH = H2O2
+    ((4.3e+12 -0.9 -855.425) (7.6e+10 -0.37 0) (0.7346 94 1756 5182) (1 N2 0.7 CO 1.5 CO2 2 H2 2 H2O 6 CH4 2 C2H6 3))
+reversibleArrheniusReaction
+    H2O2 + H = HO2 + H2
+    (1.6e+09 0 1912.13)
+reversibleArrheniusReaction
+    H2O2 + OH = H2O + HO2
+    (1e+10 0 905.744)
+reversibleArrheniusReaction
+    H2O2 + H = H2O + OH
+    (1e+10 0 1806.46)
+reversibleArrheniusReaction
+    H2O2 + O = H2O + O2
+    (8.4e+08 0 2143.59)
+reversibleArrheniusReaction
+    H2O2 + O = OH + HO2
+    (2e+10 0 2968.83)
+reversibleArrheniusReaction
+    H2 + HO2 = H2O + OH
+    (6.5e+08 0 9460)
+reversibleArrheniusReaction
+    CO2 + N = NO + CO
+    (1.9e+08 0 1710.85)
+reversibleArrheniusReaction
+    N2O + O = N2 + O2
+    (1.4e+09 0 5439.5)
+reversibleArrheniusReaction
+    N2O + O = NO + NO
+    (2.9e+10 0 11648.9)
+reversibleArrheniusReaction
+    N2O + H = N2 + OH
+    (4.4e+11 0 9500.25)
+reversibleArrheniusReaction
+    N2O + OH = N2 + HO2
+    (2e+09 0 10597.2)
+reversiblethirdBodyArrheniusReaction
+    N2O = N2 + O
+    ((1.3e+08 0 30000.3) (1))
+reversibleArrheniusReaction
+    N + NO = N2 + O
+    (3.27e+09 0.3 0)
+reversibleArrheniusReaction
+    N + O2 = NO + O
+    (6.4e+06 1 3160.04)
+reversibleArrheniusReaction
+    N + OH = NO + H
+    (7.333e+10 0 563.574)
+reversibleArrheniusReaction
+    CH2O + O2 = HCO + HO2
+    (6.2e+10 0 19624.5)
+reversibleArrheniusReaction
+    CH2O + O = HCO + OH
+    (4.1e+08 0.57 1388.81)
+reversibleArrheniusReaction
+    CH2O + H = HCO + H2
+    (219000 1.8 1509.57)
+reversibleArrheniusReaction
+    CH2O + OH = HCO + H2O
+    (2.43e+07 1.18 -224.926)
+reversibleArrheniusReaction
+    CH2O + HO2 = HCO + H2O2
+    (3e+09 0 4025.53)
+reversiblethirdBodyArrheniusReaction
+    CH2O = CO + H2
+    ((6.25e+12 0 34991.9) (1))
+reversiblethirdBodyArrheniusReaction
+    CH2O = HCO + H
+    ((3.3e+13 0 40758.5) (1))
+reversibleArrheniusReaction
+    HCO + HCO = CH2O + CO
+    (3.01e+10 0 0)
+reversibleArrheniusReaction
+    HCO + OH = H2O + CO
+    (1e+11 0 0)
+reversibleArrheniusReaction
+    HCO + H = H2 + CO
+    (1.19e+10 0.3 0)
+reversibleArrheniusReaction
+    HCO + O = OH + CO
+    (3e+10 0 0)
+reversibleArrheniusReaction
+    HCO + O = H + CO2
+    (3e+10 0 0)
+reversibleArrheniusReaction
+    HCO + O2 = HO2 + CO
+    (3.3e+10 -0.4 0)
+reversiblethirdBodyArrheniusReaction
+    HCO = H + CO
+    ((1.87e+14 -1 8554.25) (1))
+reversibleArrheniusReaction
+    HCO + HO2 = CO2 + OH + H
+    (3e+10 0 0)
+reversibleArrheniusReaction
+    CH4 + O2 = CH3 + HO2
+    (7.9e+10 0 28178.7)
+reversibleArrheniusReaction
+    CH4 + H = CH3 + H2
+    (660000 1.6 5454.59)
+reversibleArrheniusReaction
+    CH4 + OH = CH3 + H2O
+    (1600 2.1 1237.85)
+reversibleArrheniusReaction
+    CH4 + O = CH3 + OH
+    (1.02e+06 1.5 4329.46)
+reversibleArrheniusReaction
+    CH4 + HO2 = CH3 + H2O2
+    (1e+10 0 9409.68)
+reversibleArrheniusReaction
+    CH4 + CH2 = CH3 + CH3
+    (4e+09 0 -286.819)
+reversibleArrheniusReaction
+    CH3 + CH2O = CH4 + HCO
+    (5.5 2.8 3019.15)
+reversibleArrheniusReaction
+    CH3 + HCO = CH4 + CO
+    (1.2e+11 0 0)
+reversibleArrheniusReaction
+    CH3 + H = CH4
+    (1.9e+33 -7 4553.88)
+reversibleArrheniusReaction
+    CH3 + H = CH2 + H2
+    (9e+10 0 7598.19)
+reversibleArrheniusReaction
+    CH3 + CH3O = CH4 + CH2O
+    (3.3e+11 0 0)
+reversibleArrheniusTroeFallOffReaction
+    CH3 + CH3 = C2H6
+    ((1.77e+44 -9.67 3129.85) (2.12e+13 -0.97 311.979) (0.5325 151 1038 4970) (1 N2 0.7 CO 1.5 CO2 2 H2 2 H2O 6 CH4 2 C2H6 3))
+reversibleArrheniusReaction
+    CH3 + CH3 = C2H5 + H
+    (4.99e+09 0.1 5333.83)
+reversibleArrheniusReaction
+    CH2 + OH = CH2O + H
+    (2.5e+10 0 0)
+reversibleArrheniusReaction
+    CH2 + O2 = HCO + OH
+    (4.3e+07 0 -251.596)
+reversibleArrheniusReaction
+    CH2 + O2 = CO2 + H2
+    (6.9e+08 0 251.596)
+reversibleArrheniusReaction
+    CH2 + O2 = CO + H2O
+    (2e+07 0 -503.191)
+reversibleArrheniusReaction
+    CH2 + O2 = CH2O + O
+    (5e+10 0 4528.72)
+reversibleArrheniusReaction
+    CH2 + O2 = CO2 + H + H
+    (1.6e+09 0 503.191)
+reversibleArrheniusReaction
+    CH2 + O2 = CO + OH + H
+    (8.6e+07 0 -251.596)
+reversibleArrheniusReaction
+    CH2 + CH2 = C2H2 + H2
+    (1.2e+10 0 402.553)
+reversibleArrheniusReaction
+    CH2 + CH2 = C2H2 + H + H
+    (1.2e+11 0 402.553)
+reversibleArrheniusReaction
+    CH2 + CO2 = CH2O + CO
+    (1e+08 0 503.191)
+reversibleArrheniusReaction
+    CH3 + HCO = CH2O + CH2
+    (3e+10 0 0)
+reversibleArrheniusReaction
+    CH3 + C2H4 = CH4 + C2H3
+    (0.00662 3.7 4771.26)
+reversibleArrheniusReaction
+    CH3 + CH3 = C2H4 + H2
+    (1e+12 0 15598.9)
+reversibleArrheniusReaction
+    CH3 + CH2 = C2H4 + H
+    (3e+10 0 -286.819)
+reversibleArrheniusReaction
+    C2H4 + H = C2H3 + H2
+    (1.1e+11 0 4277.13)
+reversibleArrheniusReaction
+    C2H4 + O = CH3 + HCO
+    (1.6e+06 1.2 375.381)
+reversibleArrheniusReaction
+    C2H4 + O = CH2O + CH2
+    (30 1.88 90.5744)
+reversibleArrheniusReaction
+    C2H4 + O = C2H3 + OH
+    (15100 1.91 1907.09)
+reversibleArrheniusReaction
+    C2H4 + OH = CH2O + CH3
+    (6e+10 0 483.064)
+reversibleArrheniusReaction
+    C2H4 + HO2 = C2H3 + H2O2
+    (7.1e+08 0 8609.6)
+reversibleArrheniusReaction
+    C2H4 + OH = C2H3 + H2O
+    (6.02e+10 0 2996.5)
+reversiblethirdBodyArrheniusReaction
+    C2H4 = C2H2 + H2
+    ((1.5e+12 0 28078.1) (1))
+reversiblethirdBodyArrheniusReaction
+    C2H4 = C2H3 + H
+    ((2.6e+14 0 48593.2) (1))
+reversibleArrheniusReaction
+    C2H4 + H = C2H5
+    (2.6e+40 -9.25 26457.8)
+reversibleArrheniusReaction
+    C2H6 + O2 = C2H5 + HO2
+    (1e+10 0 24636.2)
+reversibleArrheniusReaction
+    C2H5 + O2 = C2H4 + HO2
+    (2e+07 0 -1107.02)
+reversibleArrheniusReaction
+    C2H4 + O2 = C2H3 + HO2
+    (4.2e+11 0 28978.8)
+reversibleArrheniusReaction
+    C2H4 + C2H4 = C2H5 + C2H3
+    (5e+11 0 32556.5)
+reversibleArrheniusReaction
+    C2H5 + HO2 = C2H4 + H2O2
+    (3e+08 0 0)
+reversibleArrheniusReaction
+    C2H2 + O2 = HCO + HCO
+    (4e+09 0 14089.4)
+reversibleArrheniusReaction
+    C2H2 + O = CH2 + CO
+    (10200 2 956.063)
+reversiblethirdBodyArrheniusReaction
+    C2H2 + H = C2H3
+    ((5.54e+06 0 1212.69) (1))
+reversibleArrheniusReaction
+    C2H3 + H = C2H2 + H2
+    (4e+10 0 0)
+reversibleArrheniusReaction
+    C2H3 + O2 = CH2O + HCO
+    (4e+09 0 -125.798)
+reversibleArrheniusReaction
+    C2H3 + OH = C2H2 + H2O
+    (3e+10 0 0)
+reversibleArrheniusReaction
+    C2H3 + CH2 = C2H2 + CH3
+    (3e+10 0 0)
+reversibleArrheniusReaction
+    C2H3 + HCO = C2H4 + CO
+    (6.034e+10 0 0)
+reversibleArrheniusReaction
+    C2H3 + C2H3 = C2H2 + C2H4
+    (1.45e+10 0 0)
+reversibleArrheniusReaction
+    C2H3 + O = C2H2 + OH
+    (1e+10 0 0)
+reversibleArrheniusReaction
+    C2H2 + OH = CH3 + CO
+    (4.83e-07 4 -1006.38)
+reversibleArrheniusReaction
+    C2H2 + CH2 = C3H3 + H
+    (1.2e+10 0 3331.13)
+reversibleArrheniusReaction
+    C3H3 + OH = C3H2 + H2O
+    (1e+10 0 0)
+reversibleArrheniusReaction
+    C3H3 + O = CH2O + C2H
+    (1e+10 0 0)
+reversibleArrheniusReaction
+    C2H3 = C2H2 + H
+    (4.6e+40 -8.8 23247.4)
+reversibleArrheniusReaction
+    C2H2 = C2H + H
+    (2.373e+32 -5.28 65761.1)
+reversibleArrheniusReaction
+    C2H + O2 = HCO + CO
+    (5e+10 0 754.787)
+reversibleArrheniusReaction
+    C2H + H2 = H + C2H2
+    (490 2.5 281.787)
+reversibleArrheniusReaction
+    C2H2 + O = C2H + OH
+    (4.6e+16 -1.41 14567.4)
+reversibleArrheniusReaction
+    C2H2 + OH = C2H + H2O
+    (33700 2 7044.68)
+reversibleArrheniusReaction
+    C2H2 + C2H = C4H2 + H
+    (9.6e+10 0 0)
+reversibleArrheniusReaction
+    C3H4 + O = C2H3 + HCO
+    (3.2e+09 0 1011.41)
+reversibleArrheniusReaction
+    C3H4 + O = C2H4 + CO
+    (3.2e+09 0 1011.41)
+reversibleArrheniusReaction
+    C3H4 + O = HCCO + CH3
+    (6.3e+09 0 1011.41)
+reversibleArrheniusReaction
+    C4H + H2 = H + C4H2
+    (490 2.5 281.787)
+reversibleArrheniusReaction
+    C4H2 + OH = C4H + H2O
+    (33700 2 7044.68)
+reversibleArrheniusReaction
+    C4H2 + O = C3H2 + CO
+    (2.7e+10 0 865.489)
+reversibleArrheniusReaction
+    C3H2 + O = C2H2 + CO
+    (6.8e+10 0 0)
+reversibleArrheniusReaction
+    C3H2 + OH = HCO + C2H2
+    (6.8e+10 0 0)
+reversibleArrheniusReaction
+    C2H2 + C2H = C4H3
+    (4.5e+34 -7.68 3572.66)
+reversibleArrheniusReaction
+    C3H2 + CH2 = C4H3 + H
+    (5e+10 0 0)
+reversibleArrheniusReaction
+    C4H2 + H = C4H3
+    (1.1e+39 -8.72 7698.83)
+reversibleArrheniusReaction
+    C4H3 + H = C2H2 + C2H2
+    (6.3e+22 -3.34 5038.96)
+reversibleArrheniusReaction
+    C4H3 + H = C4H2 + H2
+    (1.5e+10 0 0)
+reversibleArrheniusReaction
+    C4H3 + OH = C4H2 + H2O
+    (2.5e+09 0 0)
+reversibleArrheniusReaction
+    C2H2 + HCCO = C3H3 + CO
+    (1e+08 0 1509.57)
+reversibleArrheniusReaction
+    C3H2 + O2 = HCCO + CO + H
+    (5e+10 0 0)
+reversibleArrheniusReaction
+    HCCO + O = H + CO + CO
+    (1e+11 0 0)
+reversibleArrheniusReaction
+    HCCO + O2 = OH + 2CO
+    (3.2e+09 0 429.725)
+reversibleArrheniusReaction
+    HCCO + CH2 = C2H3 + CO
+    (3e+10 0 0)
+reversibleArrheniusReaction
+    HCCO + HCCO = C2H2 + CO + CO
+    (1e+10 0 0)
+reversibleArrheniusReaction
+    C2H + OH = H + HCCO
+    (2e+10 0 0)
+reversibleArrheniusTroeFallOffReaction
+    CH2 + CO = CH2CO
+    ((2.69e+27 -5.11 3570.14) (8.1e+08 0.5 2269.39) (0.5907 275 1226 5185) (1 N2 0.7 CO 1.5 CO2 2 H2 2 H2O 6 CH4 2 C2H6 3))
+reversibleArrheniusReaction
+    C2H2 + OH = CH2CO + H
+    (2.18e-07 4.5 -503.191)
+reversibleArrheniusReaction
+    CH2CO + H = HCCO + H2
+    (5e+10 0 4025.53)
+reversibleArrheniusReaction
+    CH2CO + H = CH3 + CO
+    (1.13e+10 0 1724.94)
+reversibleArrheniusReaction
+    CH2CO + O = HCCO + OH
+    (5e+10 0 4025.53)
+reversibleArrheniusReaction
+    CH2CO + O = CH2 + CO2
+    (1.75e+09 0 679.308)
+reversibleArrheniusReaction
+    CH2CO + OH = HCCO + H2O
+    (7.5e+09 0 1006.38)
+reversibleArrheniusReaction
+    C2H3 + O = CH2CO + H
+    (3e+10 0 0)
+reversibleArrheniusReaction
+    C3H3 + O2 = CH2CO + HCO
+    (3e+07 0 1448.18)
+reversibleArrheniusReaction
+    C4H3 + O2 = HCCO + CH2CO
+    (7.86e+13 -1.8 0)
+reversibleArrheniusReaction
+    O + CH2OH = OH + CH2O
+    (1e+10 0 0)
+reversibleArrheniusTroeFallOffReaction
+    H + CH2O = CH2OH
+    ((1.27e+26 -4.82 3285.84) (5.4e+08 0.454 1811.49) (0.7187 103 1291 4160) (1 N2 0.7 CO 1.5 CO2 2 H2 2 H2O 6 CH4 2 C2H6 3))
+reversibleArrheniusReaction
+    H + CH2OH = H2 + CH2O
+    (2e+10 0 0)
+reversibleArrheniusReaction
+    H + CH2OH = OH + CH3
+    (1.65e+08 0.65 -142.906)
+reversibleArrheniusReaction
+    H + CH3O = H + CH2OH
+    (41500 1.63 968.14)
+reversibleArrheniusReaction
+    C2H3 + O2 = O + CH2CHO
+    (3.03e+08 0.29 5.5351)
+reversibleArrheniusReaction
+    C2H3 + O2 = HO2 + C2H2
+    (1337 1.61 -193.225)
+reversibleArrheniusReaction
+    O + CH3CHO = OH + CH2CHO
+    (2.92e+09 0 909.77)
+irreversibleArrheniusReaction
+    O + CH3CHO = OH + CH3 + CO
+    (2.92e+09 0 909.77)
+irreversibleArrheniusReaction
+    O2 + CH3CHO = HO2 + CH3 + CO
+    (3.01e+10 0 19699.9)
+reversibleArrheniusReaction
+    H + CH3CHO = CH2CHO + H2
+    (2.05e+06 1.16 1210.17)
+irreversibleArrheniusReaction
+    H + CH3CHO = CH3 + H2 + CO
+    (2.05e+06 1.16 1210.17)
+irreversibleArrheniusReaction
+    OH + CH3CHO = CH3 + H2O + CO
+    (2.343e+07 0.73 -560.052)
+irreversibleArrheniusReaction
+    HO2 + CH3CHO = CH3 + H2O2 + CO
+    (3.01e+09 0 5999.55)
+irreversibleArrheniusReaction
+    CH3 + CH3CHO = CH3 + CH4 + CO
+    (2720 1.77 2978.89)
+reversibleArrheniusTroeFallOffReaction
+    H + CH2CO = CH2CHO
+    ((1.012e+36 -7.63 1939.3) (4.865e+08 0.422 -883.101) (0.465 201 1773 5333) (1 N2 0.7 CO 1.5 CO2 2 H2 2 H2O 6 CH4 2 C2H6 3))
+irreversibleArrheniusReaction
+    O + CH2CHO = H + CH2 + CO2
+    (1.5e+11 0 0)
+irreversibleArrheniusReaction
+    O2 + CH2CHO = OH + CO + CH2O
+    (1.81e+07 0 0)
+irreversibleArrheniusReaction
+    O2 + CH2CHO = OH + 2HCO
+    (2.35e+07 0 0)
+reversibleArrheniusReaction
+    H + CH2CHO = CH3 + HCO
+    (2.2e+10 0 0)
+reversibleArrheniusReaction
+    H + CH2CHO = CH2CO + H2
+    (1.1e+10 0 0)
+reversibleArrheniusReaction
+    OH + CH2CHO = H2O + CH2CO
+    (1.2e+10 0 0)
+reversibleArrheniusReaction
+    OH + CH2CHO = HCO + CH2OH
+    (3.01e+10 0 0)
+reversibleArrheniusTroeFallOffReaction
+    C3H8 = C2H5 + CH3
+    ((2.237e+24 -2.88 33939.2) (9.9e+22 -1.6 42483.9) (1 1e-15 1500 1e+15) (1 N2 0.7 CO 1.5 CO2 2 H2 2 H2O 6 CH4 2 C2H6 3 C3H8 4))
+reversibleArrheniusReaction
+    O + C3H8 = OH + C3H7
+    (193 2.68 1869.86)
+reversibleArrheniusReaction
+    H + C3H8 = C3H7 + H2
+    (1020 2.34 3399.56)
+reversibleArrheniusReaction
+    OH + C3H8 = C3H7 + H2O
+    (31600 1.8 469.981)
+reversibleArrheniusReaction
+    C3H7 + H2O2 = HO2 + C3H8
+    (0.378 2.72 754.787)
+reversibleArrheniusReaction
+    CH3 + C3H8 = C3H7 + CH4
+    (0.000903 3.65 3599.83)
+reversibleArrheniusReaction
+    C3H8 + C2H5 = C3H7 + C2H6
+    (0.0009 3.65 4599.17)
+reversibleArrheniusReaction
+    C3H8 + C2H3 = C3H7 + C2H4
+    (0.6 3.3 5284.51)
+reversibleArrheniusTroeFallOffReaction
+    CH3 + C2H4 = C3H7
+    ((3e+57 -14.6 9142.98) (2550 1.6 2868.19) (0.1894 277 8748 7891) (1 N2 0.7 CO 1.5 CO2 2 H2 2 H2O 6 CH4 2 C2H6 3 C3H8 4))
+reversibleArrheniusReaction
+    O + C3H7 = C2H5 + CH2O
+    (9.64e+10 0 0)
+reversibleArrheniusTroeFallOffReaction
+    H + C3H7 = C3H8
+    ((4.42e+55 -13.545 5714.74) (3.613e+10 0 0) (0.315 369 3285 6667) (1 N2 0.7 CO 1.5 CO2 2 H2 2 H2O 6 CH4 2 C2H6 3))
+reversibleArrheniusReaction
+    H + C3H7 = CH3 + C2H5
+    (4060 2.19 447.84)
+reversibleArrheniusReaction
+    CH2 + C3H8 = CH3 + C3H7
+    (0.0015 3.46 3758.84)
+reversibleArrheniusReaction
+    OH + C3H7 = C2H5 + CH2OH
+    (2.41e+10 0 0)
+reversibleArrheniusReaction
+    HO2 + C3H7 = O2 + C3H8
+    (2.55e+07 0.255 -474.509)
+irreversibleArrheniusReaction
+    HO2 + C3H7 = OH + C2H5 + CH2O
+    (2.41e+10 0 0)
+reversibleArrheniusReaction
+    CH3 + C3H7 = 2C2H5
+    (1.927e+10 -0.32 0)
+reversibleArrheniusReaction
+    C3H7 + CH3 = CH4 + C3H6
+    (1.1e+10 0 0)
+reversibleArrheniusReaction
+    C3H6 + C2H5 = C3H5 + C2H6
+    (0.00223 3.5 3341.19)
+reversibleArrheniusReaction
+    C3H6 + O = CH3 + CH3CO
+    (68 2.56 -568.606)
+)
+

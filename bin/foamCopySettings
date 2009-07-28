@@ -1,0 +1,93 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#-------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     foamCopySettings
+#
+# Description
+#     Usage: foamCopySettings srcDir dstDir
+#
+#     Copy OpenFOAM settings from one case to another, without copying
+#     the mesh or results
+#     - requires rsync
+#------------------------------------------------------------------------------
+if [ "$1" = "-h" -o "$1" = "-help" -o "$#" -ne 2 ]
+then
+    cat <<USAGE 1>&2
+Usage: ${0##*/} srcDir dstDir
+
+    Copy OpenFOAM settings from one case to another, without copying
+    the mesh or results.
+    - requires rsync
+
+USAGE
+   exit 1
+fi
+
+srcDir=${1%/}
+dstDir=${2%/}
+
+for i in $srcDir $dstDir
+do
+    [ -d "$i" ] || { echo "Error: directory '$i' does not exist"; exit 1; }
+done
+
+# check that the srcDir looks okay
+for i in $srcDir/constant $srcDir/system
+do
+    if [ ! -d "$i" ]
+    then
+        echo "Error: no '${i##*/}' directory in '$srcDir'"
+        echo "       does not appear to be an OpenFOAM case"
+        exit 1
+    fi
+done
+
+# files and directories to copy
+# avoid processor directories
+fileList=$(find -H $srcDir -mindepth 1 -maxdepth 1 -not -name "processor*")
+
+# TODO:
+#  - verify that it works with multiple mesh regions
+#  - special treatment for starting with negative crank angles
+
+for i in $fileList
+do
+    name="${i##*/}"
+    # skip numerical (results) directories (except 0)
+    # and things that look like log files or queuing system output
+    case "$name" in
+    [1-9] | [0-9]?* | log | *.log | foam.[eo][1-9]* )
+        echo "$i  [skipped]"
+        continue
+        ;;
+    *)
+        echo "$i -> $dstDir/$name"
+        rsync --exclude polyMesh --exclude "processor*" -a $i $dstDir
+        ;;
+    esac
+done
+
+# --------------------------------------------------------------- end-of-file

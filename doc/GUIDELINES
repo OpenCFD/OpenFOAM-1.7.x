@@ -1,0 +1,225 @@
+The guidelines document the current style or a recommended style for
+documenting OpenFOAM source code (.C and .H) files.
+
+
+General
+~~~~~~~
+
+- For readability in the comment blocks, certain tags are used that are
+  translated by pre-filtering the file before sending it to doxygen.
+
+- The tags start in column 1, the contents follow on the next lines and
+  indented by 4 spaces. The filter removes the leading 4 spaces from the
+  following lines until the next tag that starts in column 1.
+
+- The 'Class' and 'Description' tags are the most important ones.
+
+- The first paragraph following the 'Description' will be used for the brief
+  description, the remaining paragraphs become the detailed description.
+
+
+eg,
+    |-------------------------
+    |
+    |Class
+    |    Foam::myClass
+    |
+    |Description
+    |    A class for specifying the documentation style.
+    |
+    |    The class is implemented as a set of recommendations that may
+    |    sometimes be useful.
+    |
+    |-------------------------
+
+
+- The class name must be qualified by its namespace, otherwise doxygen
+  will think you are documenting some other class.
+
+- If you don't have anything to say about the class (at the moment),
+  use the namespace-qualified class name for the description.
+  This aids with finding these under-documented classes later.
+
+
+eg,
+    |-------------------------
+    |
+    |Class
+    |    Foam::myUnderDocumentedClass
+    |
+    |Description
+    |    Foam::myUnderDocumentedClass
+    |
+    |-------------------------
+
+
+- Use 'Class' and 'Namespace' tags in the header files.
+  The Description block then applies to documenting the class.
+
+- Use 'InClass' and 'InNamespace' in the source files.
+  The Description block then applies to documenting the file itself.
+
+eg,
+    |-------------------------
+    |
+    |InClass
+    |    Foam::myClass
+    |
+    |Description
+    |    Implements the read and writing of files.
+    |
+    |-------------------------
+
+
+Doxygen Special Commands
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Doxygen has a large number of special commands with a '\' prefix or
+a (alternatively) an '@' prefix.
+
+The '@' prefix form is recommended for most doxygen specials, since it has
+the advantage of standing out. It also happens to be what projects like gcc
+and VTK are using.
+
+The '\' prefix form, however, looks a bit better for the '\n' newline command
+and when escaping single characters - eg, '\@', '\<', '\>', etc.
+
+
+Since the filtering removes the leading 4 spaces within the blocks,
+the doxygen commmands can be inserted within the block without problems.
+
+eg,
+    |-------------------------
+    |
+    |InClass
+    |    Foam::myClass
+    |
+    |Description
+    |    Implements the read and writing of files.
+    |
+    |    An example input file:
+    |    @verbatim
+    |        patchName
+    |        {
+    |            type        myPatchType;
+    |            refValue    100;
+    |            value       uniform 1;
+    |        }
+    |    @endverbatim
+    |
+    |    Within the implementation, a loop over all patches is done:
+    |    @code
+    |        forAll (patches, patchI)
+    |        {
+    |            ...  // some operation
+    |        }
+    |    @endcode
+    |
+    |-------------------------
+
+
+HTML Special Commands
+~~~~~~~~~~~~~~~~~~~~~
+
+Since Doxygen also handles HTML tags to a certain extent, the angle brackets
+need quoting in the documentation blocks. Non-HTML tags cause doxygen to
+complain, but seem to work anyhow.
+
+eg,
+   The template with type <HR> is a bad example.
+
+   The template with type \<HR\> is a better example.
+
+   The template with type <Type> causes doxygen to complain about
+   an unknown html type, but it seems to work okay anyhow.
+
+
+
+Documenting Namespaces
+~~~~~~~~~~~~~~~~~~~~~~
+
+- If namespaces are explictly declared with the Namespace() macro,
+  they should be documented there.
+
+- If the namespaces is used to hold sub-models, the namespace can be
+  documented in the same file as the class with the model selector.
+  eg,
+      documented namespace 'Foam::functionEntries' within the
+      class 'Foam::functionEntry'
+
+- If nothing else helps, find some sensible header.
+  eg,
+      namespace 'Foam' is documented in the foamVersion.H file
+
+
+Documenting Typedefs and classes defined via macros
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+... not yet properly resolved
+
+
+
+Documenting Applications
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Any number of classes might be defined by a particular application, but
+these classes will not, however, be available to other parts of OpenFOAM. At
+the moment, the sole purpuse for running doxygen on the applications is to
+extract program usage information for the '-doc' option.
+
+The documentation for a particular application is normally contained within
+the first comment block in a .C source file. The solution is this to invoke
+a special filter for the "applications/{solver,utilities}" directories that
+only allows the initial comment block for the .C files through.
+
+The layout of the application documentation has not yet been finalized, but
+foamToVTK shows an initial attempt.
+
+
+Ignored files and directories
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Ignore directories of linked files
+  - */lnInclude/*
+
+Ignore test directories
+  - */t/*
+
+Ignore applications that clutter everything
+
+Ignore application-specific classes
+  - */applications/utilities/*.H
+  - */applications/solvers/*.H
+
+
+Orthography (always good for a flame-war)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Given the origins of OpenFOAM, the British spellings (eg, neighbour and not
+neighbor) are generally favoured. For code sections that interact with
+external libraries, it can be useful to adopt American spellings, especially
+for names that constitute a significant part of the external library - eg,
+'color' within graphics sub-systems.
+
+Both '-ize' and the '-ise' variant are found in the code comments.
+If used as a variable or class method name, it is probably better to use '-ize',
+which is considered the main form by the Oxford University Press.
+    Eg,
+    myClass.initialize()
+
+
+The word "its" (possesive) vs. "it's" (colloquial for "it is" or "it has")
+seems to confuse non-native (and some native) English speakers.
+It is better to donate the extra keystrokes and write "it is" or "it has".
+Any remaining "it's" are likely an incorrect spelling of "its".
+
+
+
+Housekeeping
+~~~~~~~~~~~~
+
+The doc/Doxygen/tools directory contains miscellaneous scripts for finding
+and possibly repairing documentation issues.
+
+
+Updated: 2008-03-17

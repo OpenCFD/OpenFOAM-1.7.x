@@ -1,0 +1,47 @@
+RASModel/RASModel.C
+
+laminar/laminar.C
+kEpsilon/kEpsilon.C
+RNGkEpsilon/RNGkEpsilon.C
+realizableKE/realizableKE.C
+kOmega/kOmega.C
+kOmegaSST/kOmegaSST.C
+SpalartAllmaras/SpalartAllmaras.C
+LRR/LRR.C
+LaunderGibsonRSTM/LaunderGibsonRSTM.C
+LaunderSharmaKE/LaunderSharmaKE.C
+qZeta/qZeta.C
+LienCubicKE/LienCubicKE.C
+LienCubicKELowRe/LienCubicKELowRe.C
+NonlinearKEShih/NonlinearKEShih.C
+LienLeschzinerLowRe/LienLeschzinerLowRe.C
+LamBremhorstKE/LamBremhorstKE.C
+
+/* Wall functions */
+wallFunctions = derivedFvPatchFields/wallFunctions
+
+nutWallFunctions = $(wallFunctions)/nutWallFunctions
+$(nutWallFunctions)/nutWallFunction/nutWallFunctionFvPatchScalarField.C
+$(nutWallFunctions)/nutRoughWallFunction/nutRoughWallFunctionFvPatchScalarField.C
+$(nutWallFunctions)/nutSpalartAllmarasWallFunction/nutSpalartAllmarasWallFunctionFvPatchScalarField.C
+$(nutWallFunctions)/nutSpalartAllmarasStandardWallFunction/nutSpalartAllmarasStandardWallFunctionFvPatchScalarField.C
+$(nutWallFunctions)/nutSpalartAllmarasStandardRoughWallFunction/nutSpalartAllmarasStandardRoughWallFunctionFvPatchScalarField.C
+
+epsilonWallFunctions = $(wallFunctions)/epsilonWallFunctions
+$(epsilonWallFunctions)/epsilonWallFunction/epsilonWallFunctionFvPatchScalarField.C
+
+omegaWallFunctions = $(wallFunctions)/omegaWallFunctions
+$(omegaWallFunctions)/omegaWallFunction/omegaWallFunctionFvPatchScalarField.C
+
+kqRWallFunctions = $(wallFunctions)/kqRWallFunctions
+$(kqRWallFunctions)/kqRWallFunction/kqRWallFunctionFvPatchFields.C
+
+
+/* Patch fields */
+derivedFvPatchFields/turbulentHeatFluxTemperature/turbulentHeatFluxTemperatureFvPatchScalarField.C
+derivedFvPatchFields/turbulentMixingLengthDissipationRateInlet/turbulentMixingLengthDissipationRateInletFvPatchScalarField.C
+derivedFvPatchFields/turbulentMixingLengthFrequencyInlet/turbulentMixingLengthFrequencyInletFvPatchScalarField.C
+
+backwardsCompatibility/wallFunctions/backwardsCompatibilityWallFunctions.C
+
+LIB = $(FOAM_LIBBIN)/libincompressibleRASModels

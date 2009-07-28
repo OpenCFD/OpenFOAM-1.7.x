@@ -1,0 +1,9 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+set -x
+
+wmake libso potential
+wmake libso molecularMeasurements
+wmake libso molecule
+
+# ----------------------------------------------------------------- end-of-file

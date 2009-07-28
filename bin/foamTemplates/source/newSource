@@ -1,0 +1,94 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 2009-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#-------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     foamNew
+#
+# Description
+#     Create a new standard OpenFOAM source file
+#
+#------------------------------------------------------------------------------
+Script=${0##*/}
+
+usage() {
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+
+usage: $Script <type> <class name>
+
+* create a new standard OpenFOAM source file
+
+type: (C|H|I|IO|App)
+
+USAGE
+    exit 1
+}
+
+if [ "$#" -ne 2 ]; then
+   usage "wrong number of arguments, expected 2"
+fi
+
+unset suffix fileType
+case "$1" in
+C|H)
+   template=foamTemplate
+   fileType=$1
+   ;;
+I)
+   suffix=$1
+   template=foamTemplateI
+   fileType=H
+   ;;
+IO)
+   suffix=$1
+   template=foamTemplateIO
+   fileType=C
+   ;;
+app|App)
+   template=foamAppTemplate
+   fileType=C
+   if [ ! -d Make ]; then
+       echo "foamNew: Creating Make/files and Make/options"
+       wmakeFilesAndOptions
+   fi
+   ;;
+*)
+   usage "unknown type"
+   ;;
+esac
+
+
+fileName=$2$suffix.$fileType
+
+if [ -e "$fileName" ]; then
+   echo "Cannot make $fileName, file exists"
+   exit 1
+fi
+
+echo $Script: Creating new interface file $fileName
+sed s/className/$2/g \
+    $WM_PROJECT_DIR/bin/foamTemplates/source/$template.$fileType > $fileName
+
+#------------------------------------------------------------------------------

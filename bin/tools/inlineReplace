@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# $0 string1 string2 file1 .. filen
+#
+if [ $# -lt 3 ]; then
+    echo "Usage: `basename $0` [-f] <string1> <string2> <file1> .. <filen>"
+    echo ""
+    echo "Replaces all occurrences of string1 by string2 in files."
+    echo "(replacement of sed -i on those systems that don't support it)"
+    exit 1
+fi
+
+FROMSTRING=$1
+shift
+TOSTRING=$1
+shift
+
+for f in $*
+do
+    if grep "$FROMSTRING" "$f" >/dev/null
+    then
+        cp "$f" "${f}_bak"
+        sed -e "s@$FROMSTRING@$TOSTRING@g" "${f}"_bak > "$f"
+        rm -f "${f}"_bak
+    #else
+    #    echo "String $FROMSTRING not present in $f"
+    #fi
+done

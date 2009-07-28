@@ -1,0 +1,22 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+set -x
+
+wmake libso dummy
+
+case "$WM_MPLIB" in
+*MPI*)
+    set +x
+    echo
+    echo "Note: ignore spurious warnings about missing mpicxx.h headers"
+    set -x
+    (WM_OPTIONS=${WM_OPTIONS}$WM_MPLIB; wmake libso mpi)
+    ;;
+
+#GAMMA)
+#    wmake libso gamma
+#    ;;
+esac
+
+
+# ----------------------------------------------------------------- end-of-file

@@ -1,0 +1,107 @@
+#---------------------------------*- sh -*-------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     CleanFunctions
+#
+# Description
+#
+#------------------------------------------------------------------------------
+
+#cleanTimeDirectories ()
+#{
+#    echo "Cleaning $case case of $application application"
+#    TIME_DIRS=`foamInfoExec . $1 -times | sed '1,/constant/d'`
+#    for T in $TIME_DIRS
+#    do
+#        if [ $T != "0" ] ; then
+#            echo "Deleting directory $T"
+#            rm -rf ${T} > /dev/null 2>&1
+#        fi
+#    done
+#    rm -rf {log,log.*,log-*,logSummary.*,.fxLock,*.xml,ParaView*,paraFoam*,*.OpenFOAM} > /dev/null 2>&1
+#}
+
+cleanTimeDirectories ()
+{
+    echo "Cleaning $PWD case"
+    nZeros=0
+    zeros=""
+    while [ $nZeros -lt 8 ] ; do
+        timeDir="0.${zeros}[1-9]*"
+        rm -rf ${timeDir} > /dev/null 2>&1
+        rm -rf ./-${timeDir} > /dev/null 2>&1
+        zeros=`printf %0${nZeros}d 0`
+        nZeros=$(($nZeros + 1))
+    done
+    rm -rf ./{[1-9]*,-[1-9]*,log,log.*,log-*,logSummary.*,.fxLock,*.xml,ParaView*,paraFoam*,*.OpenFOAM} > /dev/null 2>&1
+}
+
+cleanCase ()
+{
+    cleanTimeDirectories
+    rm -rf processor* > /dev/null 2>&1
+    rm -rf probes* > /dev/null 2>&1
+    rm -rf forces* > /dev/null 2>&1
+
+    rm -rf system/machines \
+           constant/polyMesh/{allOwner*,cell*,face*,meshModifiers*} \
+           constant/polyMesh/{owner*,neighbour*,point*,edge*} \
+           constant/polyMesh/{cellLevel*,pointLevel*,refinementHistory*,surfaceIndex*} \
+           constant/{cellToRegion,cellLevel*,pointLevel*} \
+           constant/polyMesh/sets/ \
+           VTK \
+           > /dev/null 2>&1
+
+    for f in `find . -name "*Dict"`
+    do
+        sed -e /arguments/d $f > temp.$$
+        mv temp.$$ $f
+    done
+}
+
+removeCase ()
+{
+    echo "Removing $case case"
+    rm -rf $1
+}
+
+cleanSamples ()
+{
+    rm -rf {sets,samples,sampleSurfaces} > /dev/null 2>&1
+}
+
+cleanUcomponents ()
+{
+    rm -rf 0/{Ux,Uy,Uz} > /dev/null 2>&1
+}
+
+cleanApplication ()
+{
+    echo "Cleaning $PWD application"
+    wclean
+}
+
+
+#------------------------------------------------------------------------------

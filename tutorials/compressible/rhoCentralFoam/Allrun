@@ -1,0 +1,54 @@
+#!/bin/sh
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Get application name
+application="rhoCentralFoam"
+
+cases=" \
+shockTube \
+wedge15Ma5 \
+obliqueShock \
+forwardStep \
+LadenburgJet60psi \
+biconic25-55Run35 \
+"
+
+moveTimeMeshToConstant ()
+{
+   DT=`foamInfoExec -times | tail -1`
+   if [ "$DT" != 0 ] ; then
+       mv ${DT}/polyMesh/* constant/polyMesh
+       rm -rf ${DT}
+   fi
+}
+
+for case in $cases
+do
+    (cd $case && runApplication blockMesh)
+#
+    if [ "$case" = "shockTube" ] ; then
+        (cd $case && runApplication setFields)
+    fi
+#
+    if [ "$case" = "biconic25-55Run35" ] ; then
+        cd $case
+
+        wmake datToFoam
+        runApplication datToFoam grid256.dat
+
+        CONST="constant"
+        cat $CONST/pointsHeader $CONST/points.tmp > $CONST/polyMesh/points
+        runApplication collapseEdges "2e-07" 5
+        moveTimeMeshToConstant
+
+        echo "Changing patch type to wedge type in boundary file"
+        mv $CONST/polyMesh/boundary $CONST/polyMesh/boundary.bak
+        sed -f $CONST/wedgeScr $CONST/polyMesh/boundary.bak > $CONST/polyMesh/boundary
+        rm $CONST/polyMesh/boundary.bak
+
+        cd ..
+    fi
+#
+    (cd $case && runApplication $application)
+done

@@ -1,0 +1,78 @@
+#---------------------------------*- sh -*-------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     thirdPartyGetFunctions
+#
+# Description
+#     Functions for managing the third-party packages
+#
+#------------------------------------------------------------------------------
+
+#
+# get, unpack and change to third party directory
+# - call from within a sub-shell, since it uses 'cd'
+#
+getUnpack() {
+   [ "$#" -eq 1 ] || {
+      echo "getUnpack called with incorrect arguments $@"
+      return 1
+   }
+
+   d=$(foamThirdParty -dir $1 2>/dev/null) || {
+      echo "nothing know about '$1'"
+      return 1
+   }
+
+   foamThirdParty -get -unpack $1 && [ -d "$d" ] || return 1
+
+   [ -d "$d" ] && chmod -R ugo+rX $d 2>/dev/null
+
+   echo $d
+}
+
+#
+# copy Make/{files,options} from wmakeFiles/PACKAGE
+#
+cpMakeFiles() {
+   [ "$#" -eq 2 ] || {
+      echo "cpMakeFiles called with incorrect arguments $@"
+      return 1
+   }
+
+   pkg=$1
+   dst=$2
+
+   for i in $(cd wmakeFiles/$pkg && find . -type f)
+   do
+      d=$(dirname  $i)
+      b=$(basename $i)
+
+      mkdir -p $dst/$d/Make 2>/dev/null
+      [ -e $dst/$d/Make/$b ] || cp wmakeFiles/$pkg/$i $dst/$d/Make/$b
+   done
+}
+
+
+# ----------------------------------------------------------------- end-of-file

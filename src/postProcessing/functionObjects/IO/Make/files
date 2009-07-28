@@ -1,0 +1,4 @@
+writeRegisteredObject/writeRegisteredObject.C
+writeRegisteredObject/writeRegisteredObjectFunctionObject.C
+
+LIB = $(FOAM_LIBBIN)/libIOFunctionObjects

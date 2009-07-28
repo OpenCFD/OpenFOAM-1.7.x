@@ -1,0 +1,3 @@
+staticHashTableTest.C
+
+EXE = $(FOAM_APPBIN)/staticHashTableTest

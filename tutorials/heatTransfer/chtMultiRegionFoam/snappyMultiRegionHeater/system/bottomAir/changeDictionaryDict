@@ -1,0 +1,301 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dictionaryReplacement
+{
+    boundary
+    {
+        bottomAir_to_leftSolid
+        {
+            offset          ( 0 0 0 );
+            sampleMode      nearestPatchFace;
+            sampleRegion    leftSolid;
+            samplePatch     leftSolid_to_bottomAir;
+        }
+        bottomAir_to_rightSolid
+        {
+            offset          ( 0 0 0 );
+            sampleMode      nearestPatchFace;
+            sampleRegion    rightSolid;
+            samplePatch     rightSolid_to_bottomAir;
+        }
+        bottomAir_to_heater
+        {
+            offset          ( 0 0 0 );
+            sampleMode      nearestPatchFace;
+            sampleRegion    heater;
+            samplePatch     heater_to_bottomAir;
+        }
+    }
+
+    U
+    {
+        internalField   uniform (0 0 0);
+        boundaryField
+        {
+            minX
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+            maxX
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+
+            minY
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+
+            minZ
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+
+            maxZ
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+
+            bottomAir_to_leftSolid
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+
+            }
+            bottomAir_to_heater
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+            bottomAir_to_rightSolid
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+        }
+    }
+
+    T
+    {
+        boundaryField
+        {
+            minX
+            {
+                type            zeroGradient;
+            }
+            maxX
+            {
+                type            zeroGradient;
+            }
+            minY
+            {
+                type            zeroGradient;
+            }
+            minZ
+            {
+                type            zeroGradient;
+            }
+            maxZ
+            {
+                type            zeroGradient;
+            }
+            bottomAir_to_leftSolid
+            {
+                type            solidWallMixedTemperatureCoupled;
+                neighbourFieldName T;
+                K               K;
+                value           uniform 300;
+            }
+            bottomAir_to_heater
+            {
+                type            solidWallMixedTemperatureCoupled;
+                neighbourFieldName T;
+                K               K;
+                value           uniform 300;
+            }
+            bottomAir_to_rightSolid
+            {
+                type            solidWallMixedTemperatureCoupled;
+                neighbourFieldName T;
+                K               K;
+                value           uniform 300;
+            }
+        }
+    }
+
+    epsilon
+    {
+        // Set the value on all bc to non-zero. Not used in simulation
+        // since zeroGradient; only used in initialisation.
+        internalField   uniform 0.01;
+
+        boundaryField
+        {
+            minX
+            {
+                type            zeroGradient;
+                value           uniform 0.01;
+            }
+            maxX
+            {
+                type            zeroGradient;
+                value           uniform 0.01;
+            }
+
+            minY
+            {
+                type            zeroGradient;
+                value           uniform 0.01;
+            }
+
+            minZ
+            {
+                type            zeroGradient;
+                value           uniform 0.01;
+            }
+            maxZ
+            {
+                type            zeroGradient;
+                value           uniform 0.01;
+            }
+
+            bottomAir_to_leftSolid
+            {
+                type            zeroGradient;
+                value           uniform 0.01;
+            }
+            bottomAir_to_heater
+            {
+                type            zeroGradient;
+                value           uniform 0.01;
+            }
+            bottomAir_to_rightSolid
+            {
+                type            zeroGradient;
+                value           uniform 0.01;
+            }
+        }
+    }
+
+    k
+    {
+        internalField   uniform 0.1;
+        boundaryField
+        {
+            minX
+            {
+                type            zeroGradient;
+                value           uniform 0.1;
+            }
+            maxX
+            {
+                type            zeroGradient;
+                value           uniform 0.1;
+            }
+
+            minY
+            {
+                type            zeroGradient;
+                value           uniform 0.1;
+            }
+
+            minZ
+            {
+                type            zeroGradient;
+                value           uniform 0.1;
+            }
+            maxZ
+            {
+                type            zeroGradient;
+                value           uniform 0.1;
+            }
+
+            bottomAir_to_leftSolid
+            {
+                type            zeroGradient;
+                value           uniform 0.1;
+            }
+            bottomAir_to_heater
+            {
+                type            zeroGradient;
+                value           uniform 0.1;
+            }
+            bottomAir_to_rightSolid
+            {
+                type            zeroGradient;
+                value           uniform 0.1;
+            }
+        }
+    }
+
+    p
+    {
+        internalField   uniform 1E5;
+
+        boundaryField
+        {
+            minX
+            {
+                type            buoyantPressure;
+                value           1e5;
+            }
+            maxX
+            {
+                type            buoyantPressure;
+                value           1e5;
+            }
+            minY
+            {
+                type            buoyantPressure;
+                value           1e5;
+            }
+            minZ
+            {
+                type            buoyantPressure;
+                value           1e5;
+            }
+            maxZ
+            {
+                type            buoyantPressure;
+                value           1e5;
+            }
+            bottomAir_to_leftSolid
+            {
+                type            buoyantPressure;
+                value           1e5;
+            }
+            bottomAir_to_heater
+            {
+                type            buoyantPressure;
+                value           1e5;
+            }
+            bottomAir_to_rightSolid
+            {
+                type            buoyantPressure;
+                value           1e5;
+            }
+        }
+    }
+
+}
+
+// ************************************************************************* //

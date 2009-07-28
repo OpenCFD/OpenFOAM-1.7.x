@@ -1,0 +1,112 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      kinematicCloud1Properties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+InjectionModel  ManualInjection;
+
+DragModel       SphereDrag;
+
+DispersionModel StochasticDispersionRAS;
+
+PatchInteractionModel StandardWallInteraction;
+
+PostProcessingModel none;
+
+coupled         true;
+
+cellValueSourceCorrection on;
+
+parcelTypeId    2;
+
+constantProperties
+{
+    rhoMin          rhoMin [ 1 -3 0 0 0 ] 1e-15;
+    minParticleMass minParticleMass [ 1 0 0 0 0 ] 1e-15;
+    rho0            rho0 [ 1 -3 0 0 0 ] 5000;
+}
+
+interpolationSchemes
+{
+    rho             cell;
+    U               cellPoint;
+    mu              cell;
+}
+
+integrationSchemes
+{
+    U               Euler;
+}
+
+particleForces
+{
+    gravity         on;
+    virtualMass     off;
+    pressureGradient off;
+}
+
+ManualInjectionCoeffs
+{
+    massTotal       massTotal [ 1 0 0 0 0 ] 0.0002;
+    parcelBasisType mass;
+    SOI             0;
+    positionsFile   "kinematicCloud1Positions";
+    U0              ( 0 0 0 );
+    parcelPDF
+    {
+        pdfType         RosinRammler;
+        RosinRammlerPDF
+        {
+            minValue        5e-05;
+            maxValue        0.0001;
+            d               ( 7.5e-05 );
+            n               ( 0.5 );
+        }
+    }
+}
+
+ConeInjectionCoeffs
+{
+    SOI             0.001;
+    duration        0.005;
+    position        ( 0.25 0.25 0.05 );
+    direction       ( 0 -1 0 );
+    parcelsPerSecond 10000;
+    volumeFlowRate  Constant 0.01;
+    Umag            Constant 50;
+    thetaInner      Constant 0;
+    thetaOuter      Constant 30;
+
+    parcelPDF
+    {
+        pdfType         RosinRammler;
+        RosinRammlerPDF
+        {
+            minValue        5e-05;
+            maxValue        0.0001;
+            d               ( 7.5e-05 );
+            n               ( 0.5 );
+        }
+    }
+}
+
+StandardWallInteractionCoeffs
+{
+    e               e [ 0 0 0 0 0 ] 1;
+    mu              mu [ 0 0 0 0 0 ] 0;
+}
+
+
+// ************************************************************************* //

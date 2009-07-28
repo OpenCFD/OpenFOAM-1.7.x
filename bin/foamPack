@@ -1,0 +1,112 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#-------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     foamPack [outputDir]
+#
+# Description
+#     Packs and compresses the OpenFOAM directory for release
+#
+#------------------------------------------------------------------------------
+tmpFile=${TMPDIR:-/tmp}/foamPackFiles.$$
+
+timeStamp=$(date +%Y-%m-%d)
+packDir=$WM_PROJECT-$WM_PROJECT_VERSION
+packFile=${packDir}_${timeStamp}.gtgz
+
+if [ ! -d $packDir ]
+then
+    echo "Error: directory $packDir does not exist" 1>&2
+    exit 1
+fi
+
+# add optional output directory
+if [ -d "$1" ]
+then
+    packFile="$1/$packFile"
+fi
+
+if [ -f $packFile ]
+then
+    echo "Error: $packFile already exists" 1>&2
+    exit 1
+fi
+
+# Create time stamp file
+# ~~~~~~~~~~~~~~~~~~~~~~
+
+echo $timeStamp 2>/dev/null > $packDir/.timeStamp
+
+# Clean up on termination and on Ctrl-C
+trap 'rm -f $tmpFile 2>/dev/null; exit 0' EXIT TERM INT
+
+
+# Pack and compress the packFile using GNU tar
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+echo
+echo "Packing foam version $packDir into $packFile"
+echo
+echo "finding and packing"
+
+find -H $packDir               \
+    ! -type d -type f          \
+    ! -name "*~"               \
+ -a ! -name ".*~"              \
+ -a ! -name "*.orig"           \
+ -a ! -name "*.dep"            \
+ -a ! -name "*.o"              \
+ -a ! -name "*.so"             \
+ -a ! -name "*.a"              \
+ -a ! -name "core"             \
+ -a ! -name "core.[1-9]*"      \
+ -a ! -name "pvml.[1-9]*"      \
+ -a ! -name "log[0-9]*"        \
+ -a ! -name "so_locations"     \
+| sed                          \
+ -e "\@$packDir/lib/@d"        \
+ -e '\@/\.git/@d'              \
+ -e '\@applications/bin/@d'    \
+ -e '\@wmake/bin/@d'           \
+ -e '\@/t/@d'                  \
+ -e '\@Make[.A-Za-z]*/[^/]*/@d'   \
+ -e '\@doc/[Dd]oxygen/html@d'     \
+ -e '\@doc/[Dd]oxygen/latex@d'    \
+ -e '\@doc/[Dd]oxygen/man@d'      \
+ -e '\@/lnInclude@d'              \
+ -e '\@/ii_files@d'               \
+ | tee $tmpFile
+
+tar czpf $packFile --files-from $tmpFile
+
+if [ $? -eq 0 ]
+then
+    echo "Finished packing and compressing $packDir into file $packFile"
+else
+    echo "Error: failure packing $packDir into file $packFile" 1>&2
+    rm -f $packFile 2>/dev/null
+fi
+
+#------------------------------------------------------------------------------

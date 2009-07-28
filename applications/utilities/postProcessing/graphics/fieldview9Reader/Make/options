@@ -1,0 +1,102 @@
+/*
+ * Note: compilation options takes from ld_fv script from Fieldview9.
+ * Only Linux tested.
+ *
+ */
+
+#if defined(linux) || defined(linux64)
+
+    FV_LIBS = \
+        $(FV_HOME)/user/obj/linux_x86/fv.o \
+        -lGL -lGLU -lXmu -lXp -lXt $(XLIBS) -ldl
+
+#elif defined(solaris) || defined(solarisGcc)
+
+    FV_LIBS = \
+        $(FV_HOME)/user/obj/solaris/fv.o \
+        -i \
+        -L/usr/dt/lib -R/usr/dt/lib -lMrm -lXm \
+        -L/opt/SUNWits/Graphics-sw/xgl-3.0/lib \
+        -R/opt/SUNWits/Graphics-sw/xgl-3.0/lib -lxgl \
+        -L/usr/openwin/lib -R/usr/openwin/lib \
+        -L$(FV_HOME)/user/obj/solaris \
+        -lGL -lGLU  -lXt $(XLIBS) \
+        -lgen -lnsl -lsocket -lw -lintl -ldl
+
+#elif defined(sgiN32) || defined(sgiN32Gcc)
+
+    FV_LIBS = \
+        $(FV_HOME)/user/obj/iris/fv.o \
+        $(FV_HOME)/user/obj/iris/fv2.o \
+        $(FV_HOME)/user/obj/iris/fv3.o \
+        $(FV_HOME)/user/obj/iris/netserver.o \
+        $(FV_HOME)/user/obj/iris/pV_Server.o \
+        $(FV_HOME)/user/obj/iris/dore.o \
+        $(FV_HOME)/user/obj/iris/libpV3ser.a \
+        $(FV_HOME)/user/obj/iris/libgpvm3.a \
+        $(FV_HOME)/user/obj/iris/libpvm3.a \
+        $(FV_HOME)/user/obj/iris/libBLT.a \
+        $(FV_HOME)/user/obj/iris/libtk8.2.a \
+        $(FV_HOME)/user/obj/iris/libtcl8.2.a \
+        -lGL -lGLU -lgl \
+        -lMrm -lXm -lXt $(XLIBS) -lPW \
+        -lftn -lc
+
+#elif defined(sgi64) || defined(sgi64Gcc)
+
+    FV_LIBS = \
+        $(FV_HOME)/user/obj/iris64/fv.o \
+        $(FV_HOME)/user/obj/iris64/fv2.o \
+        $(FV_HOME)/user/obj/iris64/fv3.o \
+        $(FV_HOME)/user/obj/iris64/netserver.o \
+        $(FV_HOME)/user/obj/iris64/pV_Server.o \
+        $(FV_HOME)/user/obj/iris64/dore.o \
+        $(FV_HOME)/user/obj/iris64/libpV3ser.a \
+        $(FV_HOME)/user/obj/iris64/libgpvm3.a \
+        $(FV_HOME)/user/obj/iris64/libpvm3.a \
+        $(FV_HOME)/user/obj/iris64/libBLT.a \
+        $(FV_HOME)/user/obj/iris64/libtk8.2.a \
+        $(FV_HOME)/user/obj/iris64/libtcl8.2.a \
+        -lGL -lGLU \
+        -lMrm -lXm -lXt $(XLIBS) -lPW \
+        -lftn -lc
+
+#elif defined(ibm) || defined(ibmGcc)
+
+    FV_LIBS = \
+        -bh:4 -T512 -H512 \
+        -bmaxdata:0x60000000 \
+        $(FV_HOME)/user/obj/ibm_rs/fv.o \
+        -L/usr/lib -L$(FV_HOME)/user/obj/ibm_rs \
+        -lMrm -lXm -lXt -lX11 -lxlf90 \
+        -lGL -lGLU -lXext \
+        -lm -lc -lPW -lIM -lgl
+
+#elif defined(hpux)
+
+    FV_LIBS = \
+        $(FV_HOME)/user/obj/hp_700/fv.o \
+        -L/opt/graphics/common/lib \
+        -L/usr/lib/Motif1.2 \
+        -L/opt/graphics/OpenGL/lib \
+        -L$(FV_HOME)/user/obj/hp_700 \
+        -lGL -lGLU  -lXext \
+        -lXwindow  -lhpgfx \
+        -lXhp11 -lMrm -lXm -lXt -lX11 \
+        -lM -lc -lPW -ldld -ldce $endlib \
+        -Wl,+b: -Wl,+s
+
+#endif
+
+
+EXE_INC = \
+    -I$(FV_HOME)/uns \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/browser/lnInclude \
+    -I$(LIB_SRC)/lagrangian/basic/lnInclude
+
+EXE_LIBS = \
+    $(FV_LIBS) \
+    -lfiniteVolume \
+    -lmeshTools

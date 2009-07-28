@@ -1,0 +1,5 @@
+vtkFoam.C
+vtkFoamAddInternalMesh.C
+vtkFoamAddPatch.C
+
+LIB = $(FOAM_LIBBIN)/libvtkFoam

@@ -1,0 +1,59 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField   uniform 100000;
+
+boundaryField
+{
+    inlet      
+    {
+        //type            totalPressure;
+        //p0              uniform 100040;
+
+        type            timeVaryingTotalPressure;
+        p0              100040; // only used for restarts
+        outOfBounds     clamp;
+        fileName        "$FOAM_CASE/constant/p0vsTime";
+
+        U               U;
+        phi             phi;
+        rho             none;
+        psi             none;
+        gamma           1;
+        value           uniform 100040;
+    }
+
+    outlet1     
+    {
+        type            fixedValue;
+        value           uniform 100010;
+    }
+
+    outlet2    
+    {
+        type            fixedValue;
+        value           uniform 100000;
+    }
+
+    defaultFaces
+    {
+        type            zeroGradient;
+    }
+}
+
+// ************************************************************************* //

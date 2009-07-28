@@ -1,0 +1,67 @@
+#----------------------------------*-sh-*--------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     paraview/bashrc
+#
+# Description
+#     Setup file for paraview-2.x
+#     Sourced from OpenFOAM-*/etc/bashrc
+#
+#------------------------------------------------------------------------------
+
+# determine the cmake to be used
+unset CMAKE_HOME
+for cmake in cmake-2.6.4 cmake-2.6.2 cmake-2.4.6
+do
+    cmake=$WM_THIRD_PARTY_DIR/$cmake/platforms/$WM_ARCH
+    if [ -r $cmake ]
+    then
+        export CMAKE_HOME=$cmake
+        export PATH=$CMAKE_HOME/bin:$PATH
+        break
+    fi
+done
+
+paraviewMajor=paraview-2.4
+export ParaView_VERSION=2.4.4
+
+export ParaView_INST_DIR=$WM_THIRD_PARTY_DIR/ParaView$ParaView_VERSION
+export ParaView_DIR=$ParaView_INST_DIR/lib/$paraviewMajor
+
+if [ -r $ParaView_INST_DIR ]
+then
+    export PV_INTERFACE_PATH=$FOAM_UTILITIES/postProcessing/graphics/PVFoamReader/PVFoamReader/Make
+
+    export PATH=$ParaView_INST_DIR/bin:$PATH
+    export LD_LIBRARY_PATH=${ParaView_INST_DIR}/lib:${ParaView_INST_DIR}/lib/vtk:${LD_LIBRARY_PATH}
+fi
+
+if [ -r $ParaView_DIR ]
+then
+    export VTK_DIR=$ParaView_DIR/VTK
+fi
+
+unset cmake paraviewMajor
+# -----------------------------------------------------------------------------

@@ -1,0 +1,3 @@
+Tuple2Test.C
+
+EXE = $(FOAM_USER_APPBIN)/Tuple2Test

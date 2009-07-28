@@ -1,0 +1,10 @@
+cellSet filter new boxToCell (1.5 -10 -10) (2 10 10)
+cellSet leftFluid new boxToCell (-10 -10 -10) (1.5 10 10)
+cellSet rightFluid new boxToCell (2 -1 -1) (10 10 10)
+
+faceSet cycLeft new cellToFace filter all
+faceSet cycLeft subset cellToFace leftFluid all
+
+faceSet cycRight new cellToFace filter all
+faceSet cycRight subset cellToFace rightFluid all
+

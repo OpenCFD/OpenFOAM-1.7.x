@@ -1,0 +1,8 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+set -x
+
+rm -rf PV3FoamReader/Make
+wclean libso vtkPV3Foam
+
+# ----------------------------------------------------------------- end-of-file

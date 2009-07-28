@@ -1,0 +1,4 @@
+faceSet.C
+
+EXE = $(FOAM_APPBIN)/faceSet
+

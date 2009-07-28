@@ -1,0 +1,124 @@
+#!/usr/bin/perl -w
+use strict;
+use File::Find ();
+
+# -----------------------------------------------------------------------------
+#
+# Script
+#     find-suspiciousTags
+#
+# Description
+#     Search for *.[CH] files with 'Class' or 'Namespace' starting in the
+#     first column but without a class being defined anywhere in the file.
+#     These are probably incorrect or should be at least be
+#     changed to 'In Class' / 'In Namespace' for now.
+#     - print filename and 'InClass' or 'InNamespace'
+#
+#     Find the namespaces used in the files and compare these to what is
+#     given on the 'Class' information
+#     - print filename and corrected Class
+#
+#     Check for trailing garbage in the 'Class' information
+#     - print filename and 'ClassWithTrailingInformation'
+#
+# -----------------------------------------------------------------------------
+
+my $re_filespec = qr{^.+\.[CH]$};
+
+# for the convenience of &wanted calls, including -eval statements:
+## use vars qw( *name *dir *prune );
+## *name   = *File::Find::name;
+## *dir    = *File::Find::dir;
+## *prune  = *File::Find::prune;
+
+sub wanted {
+    unless ( lstat($_) and -f _ and -r _ and not -l _ and /$re_filespec/ ) {
+        return;
+    }
+
+    # potential className
+    ( my $fileClass = $_ ) =~ s{\.[A-Za-z]$}{};
+
+    my ( $namespace, $currentClass, %classes, %found ) = ('');
+
+    local @ARGV = $_;
+    while (<>) {
+        my $name;
+
+        ## look for (class|namespace), deal with repeats
+        if ( ($name) = /^\s*class\s+(\w+)\s*/ ) {
+            $classes{$name}++;
+        }
+        elsif ( ($name) = /^\s*namespace\s+(\w+)\s*/ ) {
+            ## reset if 'Foam' namespace appears again
+            $namespace = '' if $name eq "Foam";
+            $namespace .= $name . "::";
+        }
+        elsif (/^(Class|Namespace)\s*/) {
+            $found{$1}++;
+
+            ## examine the class name
+            if (/^Class\s*$/) {
+                $_ = <>;
+                my @trailing;
+                ( $currentClass, @trailing ) = split;
+                if (@trailing) {
+                    $found{-trailing}++;
+                }
+                
+                # the next line should be blank
+                $_ = <>;
+                $_ ||= '';
+                
+                if (not /^\s*$/) {
+                    $found{-spacing}++;
+                }
+            }
+        }
+    }
+
+    # always report if the Class has trailing information
+    if ( delete $found{-trailing} ) {
+        print "$File::Find::name ClassWithTrailingInformation\n";
+    }
+
+    # always report if the Class has spacing problem
+    if ( delete $found{-spacing} ) {
+        print "$File::Find::name ClassWithSpacingIssue\n";
+    }
+
+    if (%classes) {
+        ## we have 'Class' tag
+        if ( defined $currentClass ) {
+            if ($namespace) {
+                my ($currentNamespace) = $currentClass =~ m{^(.+::)};
+                $currentNamespace ||= '';
+
+                if ( $namespace ne $currentNamespace ) {
+                    $currentClass =~ s{^(.+::)}{};
+                    $currentClass ||= $fileClass;
+
+                    print "$File::Find::name $namespace$currentClass\n";
+                }
+            }
+            elsif ( not $currentClass ) {
+                ## supply a class name
+                print "$File::Find::name $fileClass\n";
+            }
+        }
+    }
+    else {
+        ## no classes, all tags are deemed suspicious
+        for ( sort keys %found ) {
+            print "$File::Find::name In$_\n";
+        }
+    }
+}
+
+## Traverse desired filesystems
+for my $dir (@ARGV) {
+    no warnings 'File::Find';
+    warn "(**) checking '$dir' ...\n";
+    File::Find::find( { wanted => \&wanted }, $dir );
+}
+

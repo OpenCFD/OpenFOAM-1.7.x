@@ -1,0 +1,152 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#-------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     wclean
+#
+# Description
+#     Clean up the wmake control directory Make and remove the include
+#     directories generated for libraries.
+#
+#------------------------------------------------------------------------------
+Script=${0##*/}
+
+usage() {
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+usage: $Script [dir]
+       $Script target [dir [MakeDir]]
+
+Clean up the wmake control directory Make and remove the include
+directories generated for libraries.
+
+The targets correspond to a subset of the 'wmake' special targets:
+    all       all subdirectories
+    exe       cleans dir/Make
+    lib       cleans dir/Make and dir/lnInclude
+    libso     cleans dir/Make and dir/lnInclude
+    libo      cleans dir/Make and dir/lnInclude
+
+USAGE
+   exit 1
+}
+
+# provide immediate help
+if [ "$1" = "-h" -o "$1" = "-help" ]
+then
+    usage
+fi
+
+
+#------------------------------------------------------------------------------
+# check arguments and change to the directory in which to run wmake
+#------------------------------------------------------------------------------
+
+unset dir makeOption
+MakeDir=Make
+
+if [ $# -ge 1 ]
+then
+
+    if [ -d "$1" ]
+    then
+        dir=$1
+    else
+        makeOption=$1
+    fi
+
+    if [ $# -ge 2 ]
+    then
+        dir=$2
+    fi
+
+    # alternative name for the Make sub-directory
+    if [ $# -ge 3 ]
+    then
+        MakeDir=$3
+    fi
+
+    if [ "$dir" ]
+    then
+        cd $dir 2>/dev/null || {
+            echo "$Script error: could not change to directory '$dir'" 1>&2
+            exit 1
+        }
+    fi
+
+    # provide some feedback
+    echo "$Script ${dir:-./}"
+fi
+
+#------------------------------------------------------------------------------
+# Recurse the directories tree
+#------------------------------------------------------------------------------
+
+if [ "$makeOption" = all ]
+then
+    if [ -e Allclean ]
+    then
+        ./Allclean
+        exit $?
+    elif [ ! -d $MakeDir ]
+    then
+        for dir in `find . \( -type d -a -name Make \) -printf "%h "`
+        do
+            $0 $dir
+        done
+        exit 0
+    fi
+
+    # This is the end of the recursion down the application directories tree
+    # so remove the "all" option so that the call to make builds the application
+    makeOption=
+fi
+
+#------------------------------------------------------------------------------
+# Check the existance of the Make directory
+#------------------------------------------------------------------------------
+
+if [ ! -d $MakeDir ]
+then
+    echo "$Script error: '$MakeDir' directory does not exist" 1>&2
+    exit 1
+fi
+
+# -----------------------------------------------------------------------------
+
+rm -rf $MakeDir/$WM_OPTIONS $MakeDir/classes 2>/dev/null
+
+find . -name "*.dep" -exec rm {} \;
+
+case "$makeOption" in
+lib | libso | libo )
+    rm -rf lnInclude 2>/dev/null
+    ;;
+esac
+
+rm -rf ii_files Templates.DB 2>/dev/null
+rm -f so_locations
+
+#------------------------------------------------------------------------------

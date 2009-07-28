@@ -1,0 +1,398 @@
+#!/usr/bin/perl -w
+use strict;
+use File::Spec;
+use Getopt::Long;
+
+#############################################################################
+# SETTINGS
+#
+my %config = (
+    thirdParty => "$ENV{WM_PROJECT_INST_DIR}/ThirdParty",
+    project    => ( $ENV{WM_PROJECT} || '' ) . "-"
+      . ( $ENV{WM_PROJECT_VERSION} || '' ),
+);
+
+my %packages = (
+    cmake => {
+        -opt => 1,
+        url  => "http://www.cmake.org/files/v2.6/cmake-2.6.0.tar.gz",
+    },
+
+    lam => {
+        -opt => 1,
+        url  => "http://www.lam-mpi.org/download/files/lam-7.1.4.tar.bz2",
+    },
+
+    libccmio => {
+        -opt => 1,
+        url  =>
+          "https://wci.llnl.gov/codes/visit/3rd_party/libccmio-2.6.1.tar.gz",
+    },
+
+    openmpi => {
+        url =>
+"http://www.open-mpi.org/software/ompi/v1.2/downloads/openmpi-1.2.6.tar.bz2",
+    },
+
+    metis => {
+        url =>
+          "http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/metis-5.0pre2.tar.gz"
+    },
+    mico => {
+        -opt => 1,
+        url  => "http://www.mico.org/mico-2.3.12.tar.gz",
+    },
+
+    mpich => {
+        -opt => 1,
+        url  => "ftp://ftp.mcs.anl.gov/pub/mpi/old/mpich-1.2.4.tar.gz",
+    },
+
+    ParMetis => {
+        url =>
+"http://glaros.dtc.umn.edu/gkhome/fetch/sw/parmetis/ParMetis-3.1.tar.gz",
+    },
+
+    ParMGridGen => {
+        url =>
+"http://www-users.cs.umn.edu/~moulitsa/download/ParMGridGen-1.0.tar.gz",
+    },
+
+    zlib => { url => "http://www.zlib.net/zlib-1.2.3.tar.gz", },
+
+    hoard => {
+        -opt => 1,
+        url  =>
+          "http://www.cs.umass.edu/%7Eemery/hoard/hoard-3.7.1/hoard-371.tar.gz"
+    },
+
+##    # this really doesn't work well, but code needs minor patching anyhow:
+##    fbsdmalloc => {
+##        url =>
+##        "http://www.freebsd.org/cgi/cvsweb.cgi/~checkout~/src/lib/libc/stdlib/malloc.c?rev=1.171",
+##
+##    },
+);
+
+#
+# END OF SETTINGS
+############################################################################
+
+( my $Script = $0 ) =~ s{^.*/}{};
+
+# --------------------------------------------------------------------------
+sub usage {
+    my ( @req, @opt );
+
+    for ( sort keys %packages ) {
+        if ( $packages{$_}{-opt} ) {
+            push @opt, $_;
+        }
+        else {
+            push @req, $_;
+        }
+    }
+
+    $! = 0;    # clean exit
+    warn "@_\n" if @_;
+    die <<"USAGE";
+usage:
+    $Script [OPTION] [package1 .. packageN]
+
+options:
+  -help     usage
+  -status   show status  [default]
+  -list     list versions and resource locations
+  -version  list versions only
+  -dir      list unpack directory
+  -reldir   list unpack directory relative to cwd
+  -get      get packages as required (uses curl)
+  -unpack   unpack packages where required and possible
+
+Simple management of 3rd party software for '$config{project}'
+using the directory
+    $config{thirdParty}
+
+Packages:  @req
+Optional:  @opt
+
+Return codes:
+  -status -get -unpack   number of missing packages or errors
+
+USAGE
+}
+
+# --------------------------------------------------------------------------
+my %opt;
+
+# default action is -status
+@ARGV or $opt{status}++;
+GetOptions(
+    \%opt,    ##
+    "help",   "status", "list", "version", "dir",
+    "reldir", "get",    "unpack",
+  )
+  or usage;
+
+$opt{help} and usage;
+
+-d $config{thirdParty} or usage "ERROR: no '$config{thirdParty}' dir";
+
+#
+# complete the config
+#
+if ( not exists $config{sources} ) {
+    $config{sources} = "$config{thirdParty}/sources";
+    -d $config{sources} or mkdir $config{sources};
+}
+
+#
+# cleanup the packages table
+#
+for my $name ( keys %packages ) {
+    my $href = $packages{$name};
+
+    if ( not $href->{url} ) {
+        warn "$name without url\n";
+        delete $packages{$name};
+        next;
+    }
+
+    if ( not exists $href->{file} ) {
+        ( $href->{file} = $href->{url} ) =~ s{^.*/|\?.*$}{}g;
+    }
+
+    if ( not exists $href->{dir} ) {
+        ( $href->{dir} = $href->{file} ) =~ s{\.(zip|tar(\.(gz|bz2))?)$}{};
+    }
+}
+
+#
+# check for names in the packages
+#
+sub selectNames {
+    my @names;
+    my $req;
+
+    while ( @_ and $_[0] =~ /^-/ ) {
+        my $opt = shift;
+        if ( $opt =~ /^-req/ ) {
+            $req++;
+        }
+    }
+
+    if (@_) {
+        my ( %seen, @reject );
+        for my $name (@_) {
+            next if $seen{$name}++;
+            if ( exists $packages{$name} ) {
+                push @names, $name;
+            }
+            else {
+                push @reject, $name;
+            }
+        }
+
+        usage "unknown package(s): @reject" if @reject;
+    }
+    else {
+        @names =
+          grep { not $req or not $packages{$_}{-opt} } sort keys %packages;
+    }
+
+    @names or usage "no packages";
+
+    return @names;
+}
+
+#
+# list the current status
+#
+if ( $opt{status} ) {
+    my @names = selectNames @ARGV;
+
+    my $nMissing = 0;
+
+    for my $name (@names) {
+        my $href = $packages{$name};
+        my ( $dir, $file, $url ) = @$href{qw( dir file url )};
+
+        my @status;
+        if ( -e "$config{sources}/$file" ) {
+            push @status, "  packed: $config{sources}/$file";
+        }
+
+        if ( -d "$config{thirdParty}/$dir" ) {
+            push @status, "unpacked: $config{thirdParty}/$dir";
+        }
+
+        unless (@status) {
+            $nMissing++;
+            @status = "missing";
+        }
+
+        for (@status) {
+            printf "%-16s %-16s %s", $name, $dir, $_;
+
+            if ( $href->{-opt} ) {
+                print "  [optional]";
+            }
+            print "\n";
+        }
+    }
+
+    exit $nMissing;
+}
+
+#
+# show an overview of the versions and the resource locations
+#
+if ( $opt{list} ) {
+    my @names = selectNames @ARGV;
+
+    for my $name (@names) {
+        my $href = $packages{$name};
+        my ( $dir, $file, $url ) = @$href{qw( dir file url )};
+
+        printf "%-16s %-16s %s", $name, $dir, $url;
+        if ( $href->{-opt} ) {
+            print "  [optional]";
+        }
+        print "\n";
+
+    }
+
+    exit 0;
+}
+
+#
+# show the version (directory name) only
+#
+if ( $opt{version} ) {
+    my @names = selectNames @ARGV;
+
+    for my $name (@names) {
+        my $href = $packages{$name};
+        my ( $dir, $file, $url ) = @$href{qw( dir file url )};
+
+        print $dir, "\n";
+    }
+
+    exit 0;
+}
+
+#
+# show the unpack directory name
+#
+if ( $opt{dir} or $opt{reldir} ) {
+    my @names = selectNames @ARGV;
+    my $base  = $config{thirdParty};
+
+    if ( $opt{reldir} ) {
+        $base = File::Spec->abs2rel($base);
+        length $base or $base = '.';
+    }
+
+    for my $name (@names) {
+        my $href = $packages{$name};
+        my ( $dir, $file, $url ) = @$href{qw( dir file url )};
+
+        print File::Spec->catfile( $base, $dir ), "\n";
+    }
+
+    exit 0;
+}
+
+#
+# get and/or unpack packages as required and possible
+# avoid getting/unpacking optional packages
+#
+if ( $opt{get} or $opt{unpack} ) {
+    my @names = selectNames -required => @ARGV;
+
+    my $nError = 0;
+
+    for my $name (@names) {
+        my $href = $packages{$name};
+        my ( $dir, $file, $url ) = @$href{qw( dir file url )};
+
+        my $flags = "";
+        if ( $href->{-opt} ) {
+            $flags .= "[optional]";
+        }
+
+        warn '-' x 70, "\n", "$name  ($dir)  $flags\n";
+
+        if ( -d "$config{thirdParty}/$dir" ) {
+            warn "unpacked: $config{thirdParty}/$dir\n";
+            next;
+        }
+
+        if ( $opt{get} ) {
+            if ( -e "$config{sources}/$file" ) {
+                warn "  packed: $config{sources}/$file\n";
+            }
+            else {
+                my $fetch = "curl -k -o $file";
+
+                # curl seems to hang on anonymous ftp?
+                if ( $url =~ /^ftp:/ ) {
+                    $fetch = "wget -v";
+                }
+
+                system "set -x; cd $config{sources} && $fetch $url";
+
+                if ( not -e "$config{sources}/$file" ) {
+                    $nError++;
+                    warn "  download failed!?\n";
+                    next;
+                }
+            }
+        }
+
+        if ( $opt{unpack} ) {
+            if ( -e "$config{sources}/$file" ) {
+                my $unpack;
+                if ( $file =~ m{\.zip$} ) {
+                    $unpack = "unzip";
+                }
+                elsif ( $file =~ m{\.tar$} ) {
+                    $unpack = "tar -xf";
+                }
+                elsif ( $file =~ m{\.tar\.bz2$} ) {
+                    $unpack = "tar -xjf";
+                }
+                elsif ( $file =~ m{\.(tgz|tar\.gz)$} ) {
+                    $unpack = "tar -xzf";
+                }
+                else {
+                    $nError++;
+                    warn "  no unpack defined for $file\n";
+                    next;
+                }
+
+                system
+"set -x; cd $config{thirdParty} && $unpack $config{sources}/$file";
+
+                # catch isolated cases where it unpacks without a version number
+                if ( -d "$config{thirdParty}/$name"
+                    and not -d "$config{thirdParty}/$dir" )
+                {
+                    rename "$config{thirdParty}/$name",
+                      "$config{thirdParty}/$dir";
+                }
+
+                unless ( -d "$config{thirdParty}/$dir" ) {
+                    $nError++;
+                    warn "unpack failed!?\n";
+                    next;
+                }
+            }
+        }
+    }
+
+    warn '-' x 70, "\n\n";
+    exit $nError;
+}
+
+# --------------------------------------------------------------------------

@@ -1,0 +1,22 @@
+EXE_INC = \
+    -I$(LIB_SRC)/lagrangian/basic/lnInclude \
+    -I$(LIB_SRC)/lagrangian/intermediate/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/reactionThermo/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/radiation/lnInclude \
+    -I$(LIB_SRC)/turbulenceModels/compressible/turbulenceModel \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+
+EXE_LIBS = \
+    -llagrangian \
+    -llagrangianIntermediate \
+    -lthermophysicalFunctions \
+    -lbasicThermophysicalModels \
+    -lspecie \
+    -lradiation \
+    -lcompressibleRASModels \
+    -lcompressibleLESModels \
+    -lfiniteVolume \
+    -lmeshTools

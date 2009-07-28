@@ -1,0 +1,4 @@
+extrude2DMesh.C
+doExtrude2DMesh.C
+
+EXE = $(FOAM_APPBIN)/extrude2DMesh

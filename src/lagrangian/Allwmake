@@ -1,0 +1,14 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+set -x
+
+wmake libso basic
+wmake libso solidParticle
+wmake libso intermediate
+wmake libso dieselSpray
+wmake libso dsmc
+wmake libso coalCombustion
+
+molecularDynamics/Allwmake
+
+# ----------------------------------------------------------------- end-of-file

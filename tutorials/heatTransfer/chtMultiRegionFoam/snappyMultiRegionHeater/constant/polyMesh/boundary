@@ -1,0 +1,268 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+41
+(
+    maxY
+    {
+        type            wall;
+        nFaces          1200;
+        startFace       41630;
+    }
+    minX
+    {
+        type            patch;
+        nFaces          250;
+        startFace       42830;
+    }
+    maxX
+    {
+        type            patch;
+        nFaces          250;
+        startFace       43080;
+    }
+    minY
+    {
+        type            wall;
+        nFaces          1200;
+        startFace       43330;
+    }
+    minZ
+    {
+        type            wall;
+        nFaces          750;
+        startFace       44530;
+    }
+    maxZ
+    {
+        type            wall;
+        nFaces          750;
+        startFace       45280;
+    }
+    bottomAir_minX
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    bottomAir_maxX
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    bottomAir_minY
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    bottomAir_minZ
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    bottomAir_maxZ
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    bottomAir_bottomAir_to_rightSolid
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    bottomAir_bottomAir_to_leftSolid
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    bottomAir_bottomAir_to_heater
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    topAir_maxY
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    topAir_minX
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    topAir_maxX
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    topAir_minZ
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    topAir_maxZ
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    topAir_topAir_to_rightSolid
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    topAir_topAir_to_heater
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    topAir_topAir_to_leftSolid
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    leftSolid_minX
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    leftSolid_minZ
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    leftSolid_maxZ
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    leftSolid_leftSolid_to_bottomAir
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    leftSolid_leftSolid_to_heater
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    leftSolid_leftSolid_to_topAir
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    rightSolid_maxX
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    rightSolid_minZ
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    rightSolid_maxZ
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    rightSolid_rightSolid_to_bottomAir
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    rightSolid_rightSolid_to_topAir
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    rightSolid_rightSolid_to_heater
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    heater_minY
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    heater_minZ
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    heater_maxZ
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    heater_heater_to_topAir
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    heater_heater_to_rightSolid
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    heater_heater_to_leftSolid
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+    heater_heater_to_bottomAir
+    {
+        type            wall;
+        nFaces          0;
+        startFace       46030;
+    }
+)
+
+// ************************************************************************* //

@@ -1,0 +1,6 @@
+PstreamGlobals.C
+Pstream.C
+OPwrite.C
+IPread.C
+
+LIB = $(FOAM_MPI_LIBBIN)/libPstream

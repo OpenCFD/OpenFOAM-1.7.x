@@ -1,0 +1,48 @@
+#!/usr/bin/perl -w
+use strict;
+use File::Find ();
+
+# -----------------------------------------------------------------------------
+#
+# Script
+#     find-retagged
+#
+# Description
+#     Search for *.[H] files with 'InClass', 'InNamespace' or 'Type'
+#     starting in the first column.
+#     In some places these could removed. In other places they should be
+#     replaced with a 'Typedef'
+#     - print filename and the tag (InClass|InNamespace|Type)
+#
+# -----------------------------------------------------------------------------
+
+my $re_filespec = qr{^.+\.[H]$};
+
+# for the convenience of &wanted calls, including -eval statements:
+## use vars qw( *name *dir *prune );
+## *name   = *File::Find::name;
+## *dir    = *File::Find::dir;
+## *prune  = *File::Find::prune;
+
+sub wanted {
+    unless ( lstat($_) and -f _ and -r _ and not -l _ and /$re_filespec/ ) {
+        return;
+    }
+
+    local @ARGV = $_;
+    while (<>) {
+        if (/^(InClass|InNamespace|Type)\s*$/) {
+            print "$File::Find::name  $1  line=$.\n";
+        }
+    }
+
+    close ARGV;
+}
+
+## Traverse desired filesystems
+for my $dir (@ARGV) {
+    no warnings 'File::Find';
+    warn "(**) checking '$dir' ...\n";
+    File::Find::find( { wanted => \&wanted }, $dir );
+}
+

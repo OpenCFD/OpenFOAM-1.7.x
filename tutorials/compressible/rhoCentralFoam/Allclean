@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Source tutorial clean functions
+. $WM_PROJECT_DIR/bin/tools/CleanFunctions
+
+cases=" \
+shockTube \
+wedge15Ma5 \
+obliqueShock \
+forwardStep \
+LadenburgJet60psi \
+biconic25-55Run35 \
+"
+
+for case in $cases
+do
+    if [ "$case" = "shockTube" ]
+    then
+        rm -rf $case/0
+        cp -r $case/0.org $case/0
+    fi
+
+    (cd $case && foamCleanTutorials && cleanSamples)
+
+    if [ "$case" = "biconic25-55Run35" ]
+    then
+        rm -rf $case/constant/polyMesh/boundary
+        wclean $case/datToFoam
+    fi
+done

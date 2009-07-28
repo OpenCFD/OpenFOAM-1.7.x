@@ -1,0 +1,65 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+defaultFieldValues
+(
+    volScalarFieldValue alphaAir 1
+    volScalarFieldValue alphaWater 0
+    volScalarFieldValue alphaOil 0
+    volScalarFieldValue alphaMercury 0
+    volVectorFieldValue U ( 0 0 0 )
+);
+
+regions
+(
+    boxToCell
+    {
+        box ( 0 0 -1 ) ( 0.1461 0.292 1 );
+        fieldValues
+        (
+            volScalarFieldValue alphaWater 1
+            volScalarFieldValue alphaOil 0
+            volScalarFieldValue alphaMercury 0
+            volScalarFieldValue alphaAir 0
+        );
+    }
+    boxToCell
+    {
+        box ( 0.1461 0 -1 ) ( 0.2922 0.292 1 );
+        fieldValues
+        (
+            volScalarFieldValue alphaWater 0
+            volScalarFieldValue alphaOil 1
+            volScalarFieldValue alphaMercury 0
+            volScalarFieldValue alphaAir 0
+        );
+    }
+    boxToCell
+    {
+        box ( 0 0 -1 ) ( 0.1461 0.1 1 );
+        fieldValues
+        (
+            volScalarFieldValue alphaWater 0
+            volScalarFieldValue alphaOil 0
+            volScalarFieldValue alphaMercury 1
+            volScalarFieldValue alphaAir 0
+        );
+    }
+);
+
+
+// ************************************************************************* //

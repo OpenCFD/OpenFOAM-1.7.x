@@ -1,0 +1,77 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      extrudeProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Where to get surface from: either from surface ('surface') or
+// from (flipped) patch of existing case ('patch')
+constructFrom patch;    //surface;
+
+// If construct from (flipped) patch
+sourceCase "$FOAM_RUN/icoFoam/cavity";
+sourcePatch movingWall;
+
+// Flip surface normals before usage.
+flipNormals false;
+
+// If construct from surface
+surface "movingWall.sMesh";
+
+
+// Do front and back need to be merged? Usually only makes sense for 360
+// degree wedges.
+mergeFaces true;
+
+
+//- Linear extrusion in point-normal direction
+//extrudeModel        linearNormal;
+
+//- Wedge extrusion. If nLayers is 1 assumes symmetry around plane.
+extrudeModel        wedge;
+
+//- Extrudes into sphere around (0 0 0)
+//extrudeModel        linearRadial;
+
+//- Extrudes into sphere with grading according to pressure (atmospherics)
+//extrudeModel        sigmaRadial;
+
+nLayers             20;
+
+wedgeCoeffs
+{
+    axisPt      (0 0.1 0);
+    axis        (-1 0 0);
+    angle       360;  // For nLayers=1 assume symmetry so angle/2 on each side
+}
+
+linearNormalCoeffs
+{
+    thickness       0.05;
+}
+
+linearRadialCoeffs
+{
+     R              0.1;
+}
+
+sigmaRadialCoeffs
+{
+    RTbyg           1;
+    pRef            1;
+    pStrat          1;
+}
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+

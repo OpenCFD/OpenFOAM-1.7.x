@@ -1,0 +1,9 @@
+extrudeModel/extrudeModel.C
+extrudeModel/newExtrudeModel.C
+linearNormal/linearNormal.C
+linearRadial/linearRadial.C
+sigmaRadial/sigmaRadial.C
+wedge/wedge.C
+
+LIB = $(FOAM_LIBBIN)/libextrudeModel
+

@@ -1,0 +1,25 @@
+mixtures/basicMixture/basicMixture.C
+mixtures/basicMixture/basicMixtures.C
+
+basicThermo/basicThermo.C
+
+psiThermo/basicPsiThermo/basicPsiThermo.C
+psiThermo/basicPsiThermo/newBasicPsiThermo.C
+psiThermo/hPsiThermo/hPsiThermos.C
+psiThermo/ePsiThermo/ePsiThermos.C
+
+rhoThermo/basicRhoThermo/basicRhoThermo.C
+rhoThermo/basicRhoThermo/newBasicRhoThermo.C
+rhoThermo/hRhoThermo/hRhoThermos.C
+
+derivedFvPatchFields/fixedEnthalpy/fixedEnthalpyFvPatchScalarField.C
+derivedFvPatchFields/gradientEnthalpy/gradientEnthalpyFvPatchScalarField.C
+derivedFvPatchFields/mixedEnthalpy/mixedEnthalpyFvPatchScalarField.C
+
+derivedFvPatchFields/fixedInternalEnergy/fixedInternalEnergyFvPatchScalarField.C
+derivedFvPatchFields/gradientInternalEnergy/gradientInternalEnergyFvPatchScalarField.C
+derivedFvPatchFields/mixedInternalEnergy/mixedInternalEnergyFvPatchScalarField.C
+
+derivedFvPatchFields/wallHeatTransfer/wallHeatTransferFvPatchScalarField.C
+
+LIB = $(FOAM_LIBBIN)/libbasicThermophysicalModels

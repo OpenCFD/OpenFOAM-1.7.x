@@ -1,0 +1,23 @@
+#!/bin/sh
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Get application name
+application=`getApplication`
+
+runStarToFoam ()
+{
+    if [ -f log.starToFoam ] ; then
+        echo "starToFoam already run on $PWD: remove log file to run"
+    else
+        echo "starToFoam: converting mesh $1"
+        starToFoam $1 > log.starToFoam 2>&1
+    fi
+}
+
+runStarToFoam prostar/nacaAirfoil
+mv constant/polyMesh/boundary temp
+sed -e s/"\([\t ]*type[\t ]*\)symmetryPlane"/"\1empty"/g \
+    temp > constant/polyMesh/boundary
+rm temp
+runApplication $application

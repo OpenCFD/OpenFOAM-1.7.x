@@ -1,0 +1,111 @@
+#!/bin/sh
+# -----------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+# ------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     fix-Class
+#
+# Description
+#     Process the lists given on the command line.
+#     Column 1 = fileName, column 2 = Class or action
+#     See find-suspiciousTags for details.
+#
+#     1. fix ClassWithTrailingInformation by hand
+#     2. InClass and InNamespace fixup
+#     3. change
+#         |Class
+#         |    anything
+#         ->
+#         |Class
+#         |    className
+#
+# -----------------------------------------------------------------------------
+
+# stop if trailing junk has been detected
+for fileList
+do
+   [ -f $fileList -a -r $fileList ] || {
+      echo "cannot read file list: $fileList"
+      exit 1
+   }
+
+   grep ClassWithTrailingInformation $fileList
+   if [ $? = 0 ]
+   then
+      echo "#"
+      echo "# fix ClassWithTrailingInformation by hand"
+      echo "#"
+      exit 99
+   fi
+done
+
+for fileList
+do
+   # repair InClass, InNamespace
+   for tag in Class Namespace
+   do
+      backup=".repair-In$tag"
+      for file in $(sed -n -e "s/In$tag *$//p" $fileList)
+      do
+         echo "repair In$tag: $file"
+         perl -i$backup -pe "s/^$tag/In$tag/" $file
+      done
+   done
+
+   # repair the class names (with namespace)
+   backup=".repair-reclassify"
+   cat $fileList | while read fileName className
+   do
+      # use classes with '::' separator to avoid too
+      # many false positives
+      perl -i$backup -x $0 $fileName $className
+   done
+done
+
+exit 0
+
+# ---------------------------------------------------------------- end-of-file
+# embedded Perl program
+#!/usr/bin/perl -w
+use strict;
+
+# args:  fileName className
+#   - className must contain '::'
+my $className = pop;
+@ARGV == 1 and ($className ||= '') =~ /::/ or exit 1;
+
+warn "repair: @ARGV $className\n";
+
+while (<>)
+{
+    if (/^Class\s*$/) {
+        print;
+        $_ = <>;  # get and discard the next line
+        $_ = "    $className\n";
+    }
+
+    print;
+}
+
+# ---------------------------------------------------------------- end-of-file

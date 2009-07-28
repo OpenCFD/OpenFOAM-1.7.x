@@ -1,0 +1,7 @@
+EXE_INC = \
+    -I$(WM_THIRD_PARTY_DIR)/zlib-1.2.3
+
+LIB_LIBS = \
+    $(FOAM_LIBBIN)/libOSspecific.o \
+    -L$(FOAM_LIBBIN)/dummy -lPstream \
+    -lz

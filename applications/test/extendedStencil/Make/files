@@ -1,0 +1,4 @@
+
+testExtendedStencil.C
+
+EXE = $(FOAM_USER_APPBIN)/testExtendedStencil

@@ -1,0 +1,4 @@
+router.C
+processorRouter.C
+
+EXE = $(FOAM_USER_APPBIN)/processorRouter

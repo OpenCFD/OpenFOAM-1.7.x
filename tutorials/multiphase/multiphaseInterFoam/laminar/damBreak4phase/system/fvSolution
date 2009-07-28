@@ -1,0 +1,112 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    pcorr
+    {
+        solver          PCG;
+        preconditioner
+        {
+            preconditioner  GAMG;
+            tolerance       1e-05;
+            relTol          0;
+            smoother        GaussSeidel;
+            nPreSweeps      0;
+            nPostSweeps     2;
+            nBottomSweeps   2;
+            cacheAgglomeration off;
+            nCellsInCoarsestLevel 10;
+            agglomerator    faceAreaPair;
+            mergeLevels     2;
+        }
+
+        tolerance       1e-05;
+        relTol          0;
+        maxIter         100;
+    }
+
+    p
+    {
+        solver          GAMG;
+        tolerance       1e-07;
+        relTol          0.05;
+        smoother        GaussSeidel;
+        nPreSweeps      0;
+        nPostSweeps     2;
+        nFinestSweeps   2;
+        cacheAgglomeration on;
+        nCellsInCoarsestLevel 10;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+    }
+
+    pFinal
+    {
+        solver          PCG;
+        preconditioner
+        {
+            preconditioner  GAMG;
+            tolerance       1e-07;
+            relTol          0;
+            nVcycles        2;
+            smoother        GaussSeidel;
+            nPreSweeps      0;
+            nPostSweeps     2;
+            nFinestSweeps   2;
+            cacheAgglomeration on;
+            nCellsInCoarsestLevel 10;
+            agglomerator    faceAreaPair;
+            mergeLevels     1;
+        }
+
+        tolerance       1e-07;
+        relTol          0;
+        maxIter         20;
+    }
+
+    U
+    {
+        solver          smoothSolver;
+        smoother        GaussSeidel;
+        tolerance       1e-08;
+        relTol          0;
+        nSweeps         1;
+    }
+
+    alpha
+    {
+        solver          smoothSolver;
+        smoother        GaussSeidel;
+        tolerance       1e-08;
+        relTol          0;
+        nSweeps         1;
+    }
+}
+
+PISO
+{
+    nCorrectors     4;
+    nNonOrthogonalCorrectors 0;
+    nAlphaCorr      4;
+    nAlphaSubCycles 4;
+    cycleAlpha      yes;
+    cAlpha          4;
+}
+
+
+// ************************************************************************* //

@@ -1,0 +1,8 @@
+EXE_INC = \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(ParaView_INST_DIR)/include \
+    -I../PVFoamReader
+
+LIB_LIBS = \
+    -lfiniteVolume \
+    $(GLIBS)

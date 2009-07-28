@@ -1,0 +1,1 @@
+EXE_INC = -I$(LIB_SRC)/thermophysicalModels/thermophysicalFunctions/lnInclude

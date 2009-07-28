@@ -1,0 +1,74 @@
+#----------------------------------*-sh-*--------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     paraview3/bashrc
+#
+# Description
+#     Setup file for paraview-3.x
+#     Sourced from OpenFOAM-*/etc/bashrc
+#
+# Note
+#     The env. variable 'ParaView_DIR' is required for building plugins
+#------------------------------------------------------------------------------
+
+# determine the cmake to be used
+unset CMAKE_HOME
+for cmake in cmake-2.6.4 cmake-2.6.2 cmake-2.4.6
+do
+    cmake=$WM_THIRD_PARTY_DIR/$cmake/platforms/$WM_ARCH
+    if [ -r $cmake ]
+    then
+        export CMAKE_HOME=$cmake
+        export PATH=$CMAKE_HOME/bin:$PATH
+        break
+    fi
+done
+
+paraviewMajor=paraview-3.6
+export ParaView_VERSION=3.6.1
+
+export ParaView_INST_DIR=$WM_THIRD_PARTY_DIR/paraview-$ParaView_VERSION
+export ParaView_DIR=$ParaView_INST_DIR/platforms/$WM_ARCH$WM_COMPILER
+
+# add in python libraries if required
+paraviewPython=$ParaView_DIR/Utilities/VTKPythonWrapping
+if [ -r $paraviewPython ]
+then
+    if [ "$PYTHONPATH" ]
+    then
+        export PYTHONPATH=$PYTHONPATH:$paraviewPython:$ParaView_DIR/lib/$paraviewMajor
+    else
+        export PYTHONPATH=$paraviewPython:$ParaView_DIR/lib/$paraviewMajor
+    fi
+fi
+
+if [ -r $ParaView_DIR ]
+then
+    export PATH=$ParaView_DIR/bin:$PATH
+    export PV_PLUGIN_PATH=$FOAM_LIBBIN
+fi
+
+unset cmake paraviewMajor paraviewPython
+# -----------------------------------------------------------------------------

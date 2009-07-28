@@ -1,0 +1,43 @@
+#!/bin/sh
+
+#
+# FUNCTIONS
+#
+printUsage () {
+cat <<EOF
+Usage: $0 [options]
+Runs a set of samples across the cone face and concatenates output files
+
+Options are:
+-l         -latestTime option for sample
+-h         help
+EOF
+}
+
+LATEST_TIME=""
+
+OPTS=`getopt hl $*`
+if [ $? -ne 0 ] ; then
+    echo "Aborting due to invalid option"
+    printUsage
+    exit 1
+fi
+eval set -- "$OPTS"
+while [ $1 != -- ]; do
+    case $1 in
+        -l) LATEST_TIME="-latestTime";;
+        -h) printUsage; exit 1;;
+    esac
+    shift
+done
+shift
+
+sample ${LATEST_TIME}
+SDIR="sets"
+LSDIR=`ls $SDIR | head -1`
+EXAMPLE_FILE=`ls -1 $SDIR/${LSDIR}/* | head -1`
+FS=`basename $EXAMPLE_FILE | cut -d_ -f2-`
+for d in $SDIR/*
+do
+   cat ${d}/cone25_${FS} ${d}/cone55_${FS} ${d}/base_${FS} > ${d}/biconic_${FS}
+done

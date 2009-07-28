@@ -1,0 +1,77 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      binary;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    default         Euler;
+}
+
+gradSchemes
+{
+    default         Gauss linear;
+    grad(p)         Gauss linear;
+}
+
+divSchemes
+{
+    default         none;
+    div(phi,rho)    Gauss limitedLinear 1;
+    div(phi,U)      Gauss limitedLinearV 1;
+    div(phiU,p)     Gauss linear;
+    div(phi,k)      Gauss limitedLinear 1;
+    div(phi,epsilon) Gauss limitedLinear 1;
+    div(phi,Yi_h)   Gauss upwind;
+    div(phi,fu_ft_h) Gauss multivariateSelection
+    {
+        fu limitedLinear 1;
+        ft limitedLinear 1;
+        h limitedLinear 1;
+    };
+    div((muEff*dev2(grad(U).T()))) Gauss linear;
+}
+
+laplacianSchemes
+{
+    default         Gauss linear corrected;
+    laplacian(muEff,U) Gauss linear corrected;
+    laplacian(muEff,ft) Gauss linear corrected;
+    laplacian(muEff,fu) Gauss linear corrected;
+    laplacian(((alphah*mut)+alpha),h) Gauss linear corrected;
+    laplacian((rho|A(U)),p) Gauss linear corrected;
+    laplacian(rhoD,k) Gauss linear corrected;
+    laplacian(rhoD,epsilon) Gauss linear corrected;
+}
+
+interpolationSchemes
+{
+    default         linear;
+    interpolate(HbyA) linear;
+}
+
+snGradSchemes
+{
+    default         corrected;
+}
+
+fluxRequired
+{
+    default         no;
+    p;
+}
+
+
+// ************************************************************************* //

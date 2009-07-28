@@ -1,0 +1,88 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software; you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation; either version 2 of the License, or (at your
+    option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM; if not, write to the Free Software Foundation,
+    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+
+\*---------------------------------------------------------------------------*/
+
+#include "removeEntry.H"
+#include "dictionary.H"
+#include "IStringStream.H"
+#include "OStringStream.H"
+#include "addToMemberFunctionSelectionTable.H"
+
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+const Foam::word Foam::functionEntries::removeEntry::typeName
+(
+    Foam::functionEntries::removeEntry::typeName_()
+);
+
+// Don't lookup the debug switch here as the debug switch dictionary
+// might include removeEntry
+int Foam::functionEntries::removeEntry::debug(0);
+
+namespace Foam
+{
+namespace functionEntries
+{
+    addToMemberFunctionSelectionTable
+    (
+        functionEntry,
+        removeEntry,
+        execute,
+        dictionaryIstream
+    );
+}
+}
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+bool Foam::functionEntries::removeEntry::execute
+(
+    dictionary& parentDict,
+    Istream& is
+)
+{
+    token currToken(is);
+    is.putBack(currToken);
+
+    if (currToken == token::BEGIN_LIST)
+    {
+        wordList keys(is);
+
+        forAll(keys, keyI)
+        {
+            parentDict.remove(keys[keyI]);
+        }
+    }
+    else
+    {
+        word key(is);
+        parentDict.remove(key);
+    }
+
+    return true;
+}
+
+// ************************************************************************* //

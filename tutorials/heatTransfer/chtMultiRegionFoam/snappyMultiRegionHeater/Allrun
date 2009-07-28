@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+rm -rf constant/polyMesh/sets
+
+runApplication blockMesh
+runApplication snappyHexMesh -overwrite
+runApplication splitMeshRegions -cellZones
+
+# remove fluid fields from solid regions (important for post-processing)
+for i in heater leftSolid rightSolid
+do
+   rm -f 0*/$i/{mut,alphat,epsilon,k,p,p,U}
+done
+
+# remove solid fields from fluid regions (important for post-processing)
+for i in bottomAir topAir
+do
+   rm -f 0*/$i/{cp,K,rho}
+done
+
+for i in bottomAir topAir heater leftSolid rightSolid
+do
+   changeDictionary -region $i >& log.changeDictionary.$i
+done
+
+
+#-- Run on single processor
+runApplication chtMultiRegionFoam
+
+
+## Decompose
+#for i in bottomAir topAir heater leftSolid rightSolid
+#do
+#   decomposePar -region $i >& log.decomposePar.$i
+#done
+#
+## Run
+#runParallel chtMultiRegionFoam 4
+#
+## Reconstruct
+#for i in bottomAir topAir heater leftSolid rightSolid
+#do
+#   reconstructPar -region $i >& log.reconstructPar.$i
+#done
+
+
+echo
+echo "creating files for paraview post-processing"
+echo
+for i in bottomAir topAir heater leftSolid rightSolid
+do
+   paraFoam -touch -region $i
+done
+
+# -----------------------------------------------------------------------------

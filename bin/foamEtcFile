@@ -1,0 +1,143 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#    \\/     M anipulation  |
+#-------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software; you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by the
+#     Free Software Foundation; either version 2 of the License, or (at your
+#     option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM; if not, write to the Free Software Foundation,
+#     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Script
+#     foamEtcFile
+#
+# Description
+#     Locate user/site/shipped file with the semantics used in the
+#     ~OpenFOAM/fileName expansion
+#
+#-------------------------------------------------------------------------------
+unset listOpt quietOpt
+
+usage() {
+    [ "$quietOpt" = true ] && exit 1
+
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+
+usage: ${0##*/} [OPTION] fileName
+       ${0##*/} -list
+
+options:
+  -l | -list    list the directories to be searched
+  -q | -quiet   suppress all normal output
+
+  Locate user/site/shipped file with the semantics used in the
+  ~OpenFOAM/fileName expansion
+
+  Exit status 0 when the file is found and output resolved path to stdout.
+  Exit status 1 for miscellaneous errors.
+  Exit status 2 when the file is not found.
+
+USAGE
+    exit 1
+}
+
+
+# parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    -h | -help)
+        usage
+        ;;
+    -l | -list)
+        listOpt=true
+        shift
+        ;;
+    -q | -quiet)
+        quietOpt=true
+        shift
+        ;;
+    -*)
+        usage "unknown option: '$*'"
+        ;;
+    *)
+        break
+        ;;
+    esac
+done
+
+
+# Save the essential bits of information:
+nArgs=$#
+fileName="$1"
+
+# The various places to be searched:
+set -- \
+    $HOME/.${WM_PROJECT:-OpenFOAM}/$WM_PROJECT_VERSION \
+    $HOME/.${WM_PROJECT:-OpenFOAM} \
+    $WM_PROJECT_INST_DIR/site/$WM_PROJECT_VERSION \
+    $WM_PROJECT_INST_DIR/site \
+    $WM_PROJECT_DIR/etc
+
+
+#
+# The main routine
+#
+
+if [ "$listOpt" = true ]
+then
+
+    # list directories, or potential file locations
+    [ "$nArgs" -le 1 ] || usage
+
+    # a silly combination, but -quiet has precedence
+    [ "$quietOpt" = true ] && exit 0
+
+    for dir
+    do
+        if [ "$nArgs" -eq 1 ]
+        then
+            echo "$dir/$fileName"
+        else
+            echo "$dir"
+        fi
+    done
+    exit 0
+
+else
+
+    [ "$nArgs" -eq 1 ] || usage
+
+    for dir
+    do
+        if [ -f "$dir/$fileName" ]
+        then
+            [ "$quietOpt" = true ] || echo "$dir/$fileName"
+            exit 0
+        fi
+    done
+
+fi
+
+
+# general error, eg file not found
+exit 2
+
+#------------------------------------------------------------------------------
