@@ -1,0 +1,23 @@
+.SUFFIXES: .C .cxx .cc .cpp
+
+c++WARN     = -Wall -Wno-strict-aliasing -Wextra -Wno-unused-parameter
+
+CC          = mingw32-g++
+
+include $(RULES)/c++$(WM_COMPILE_OPTION)
+
+ptFLAGS     = -DNoRepository -ftemplate-depth-40
+
+c++FLAGS    = $(GFLAGS) $(c++WARN) $(c++OPT) $(c++DBUG) $(ptFLAGS) $(LIB_HEADER_DIRS)
+
+Ctoo        = $(WM_SCHEDULER) $(CC) $(c++FLAGS) -c $$SOURCE -o $@
+cxxtoo      = $(Ctoo)
+cctoo       = $(Ctoo)
+cpptoo      = $(Ctoo)
+
+LINK_LIBS   = $(c++DBUG)
+
+# Tried using -Wl,-no-undefined,--enable-runtime-pseudo-reloc
+# but didnt forgive undefined symbols during linking
+LINKLIBSO   = $(CC) $(c++FLAGS) -Wl,--output-def,$(LIB).def,--out-implib,$(LIB).a,--enable-auto-import -shared
+LINKEXE     = $(CC) $(c++FLAGS) -Wl,--enable-auto-import,--force-exe-suffix

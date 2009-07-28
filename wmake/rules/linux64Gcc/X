@@ -1,0 +1,3 @@
+XFLAGS     =
+XINC       = $(XFLAGS) -I/usr/include/X11
+XLIBS      = -L/usr/lib64 -lXext -lX11

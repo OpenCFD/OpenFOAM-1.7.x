@@ -1,0 +1,10 @@
+CPP        = /lib/cpp $(GFLAGS)
+LD         = ld -melf_i386
+
+PROJECT_LIBS = -l$(WM_PROJECT) -liberty -ldl
+
+include $(GENERAL_RULES)/standard
+
+include $(RULES)/X
+include $(RULES)/c
+include $(RULES)/c++

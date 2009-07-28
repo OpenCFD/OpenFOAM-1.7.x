@@ -1,0 +1,24 @@
+CPP        = /lib/cpp $(GFLAGS)
+LD         = mingw32-ld
+
+PROJECT_LIBS = -l$(WM_PROJECT)
+
+include $(RULES)/X
+
+include $(GENERAL_RULES)/sourceToDep
+
+include $(GENERAL_RULES)/flex
+include $(GENERAL_RULES)/flex++
+include $(GENERAL_RULES)/byacc
+include $(GENERAL_RULES)/btyacc++
+include $(GENERAL_RULES)/moc
+
+include $(RULES)/c
+include $(RULES)/c++
+
+SO      = dll
+EXE_EXT = .exe
+
+# Ensure we know what OS we are compiling for
+# during MakefileFiles and MakefileOptions
+GFLAGS  += -DWIN32 -DLITTLE_ENDIAN
