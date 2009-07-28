@@ -32,7 +32,7 @@
 #------------------------------------------------------------------------------
 
 setenv WM_PROJECT OpenFOAM
-setenv WM_PROJECT_VERSION 1.6
+setenv WM_PROJECT_VERSION 1.6.x
 
 ################################################################################
 # USER EDITABLE PART
