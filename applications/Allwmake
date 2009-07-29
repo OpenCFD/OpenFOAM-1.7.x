@@ -1,5 +1,14 @@
 #!/bin/sh
 cd ${0%/*} || exit 1    # run from this directory
+
+if [ "$PWD" != "$WM_PROJECT_DIR/applications" ]
+then
+    echo "Error: Current directory in not \$WM_PROJECT_DIR/applications"
+    echo "    The environment variable are not consistent with the installation."
+    echo "    Check the OpenFOAM entries in your dot-files and source them."
+    exit 1
+fi
+
 set -x
 
 wmake all solvers

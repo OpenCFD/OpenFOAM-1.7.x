@@ -1,13 +1,21 @@
 #!/bin/sh
 cd ${0%/*} || exit 1    # run from this directory
-set -x
+
+if [ "$PWD" != "$WM_PROJECT_DIR" ]
+then
+    echo "Error: Current directory in not \$WM_PROJECT_DIR"
+    echo "    The environment variable are not consistent with the installation."
+    echo "    Check the OpenFOAM entries in your dot-files and source them."
+    exit 1
+fi
 
 # wmake is required for subsequent targets
 ( cd wmake/src && make )
 
 # build ThirdParty sources
-( cd $WM_THIRD_PARTY_DIR && ./Allwmake )
+$WM_THIRD_PARTY_DIR/Allwmake
 
+# build OpenFOAM libraries and applications
 src/Allwmake
 applications/Allwmake
 
