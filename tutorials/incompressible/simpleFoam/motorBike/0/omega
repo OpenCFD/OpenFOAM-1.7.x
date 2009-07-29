@@ -20,6 +20,29 @@ dimensions      [0 0 -1 0 0 0 0];
 
 internalField   uniform $turbulentOmega;
 
-#include        "turbulentBoundaryField"
+boundaryField
+{
+    #include "fixedInlet"
+
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      $internalField;
+        value           $internalField;
+    }
+
+    lowerWall
+    {
+        type            omegaWallFunction;
+    }
+
+    "motorBike_.*"
+    {
+        type            omegaWallFunction;
+    }
+
+    #include "frontBackUpperPatches"
+}
+
 
 // ************************************************************************* //

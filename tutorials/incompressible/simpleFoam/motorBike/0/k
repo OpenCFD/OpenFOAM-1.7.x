@@ -20,6 +20,29 @@ dimensions      [0 2 -2 0 0 0 0];
 
 internalField   uniform $turbulentKE;
 
-#include        "turbulentBoundaryField"
+boundaryField
+{
+    #include "fixedInlet"
+
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      $internalField;
+        value           $internalField;
+    }
+
+    lowerWall
+    {
+        type            kqRWallFunction;
+    }
+
+    "motorBike_.*"
+    {
+        type            kqRWallFunction;
+    }
+
+    #include "frontBackUpperPatches"
+}
+
 
 // ************************************************************************* //
