@@ -133,8 +133,8 @@ void nuSgsWallFunctionFvPatchScalarField::evaluate
 
     const scalarField& nuw =
         patch().lookupPatchField<volScalarField, scalar>(nuName_);
-    scalarField& nuSgsw = *this;
 
+    scalarField& nuSgsw = *this;
 
     scalarField magFaceGradU = mag(U.snGrad());
 
@@ -178,6 +178,8 @@ void nuSgsWallFunctionFvPatchScalarField::evaluate
             nuSgsw[facei] = 0;
         }
     }
+
+    fixedValueFvPatchScalarField::evaluate();
 }
 
 
