@@ -141,8 +141,11 @@ void emptyFvPatchField<Type>::updateCoeffs()
 {
     if
     (
-        this->patch().patch().size()
-      % this->dimensionedInternalField().mesh().nCells()
+        this->dimensionedInternalField().mesh().nCells() > 0
+     && (
+            this->patch().patch().size()
+          % this->dimensionedInternalField().mesh().nCells()
+        )
     )
     {
         FatalErrorIn("emptyFvPatchField<Type>::updateCoeffs()")
