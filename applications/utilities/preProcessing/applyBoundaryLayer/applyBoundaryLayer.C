@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     phi.write();
 
     // Set turbulence constants
-    dimensionedScalar kappa("kappa", dimless, 0.4187);
+    dimensionedScalar kappa("kappa", dimless, 0.41);
     dimensionedScalar Cmu("Cmu", dimless, 0.09);
 
     // Read and modify turbulence fields if present

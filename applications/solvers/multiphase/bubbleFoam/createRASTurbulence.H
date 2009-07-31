@@ -82,7 +82,7 @@
         (
             "kappa",
             wallFunctionDict,
-            0.4187
+            0.41
         )
     );
 
