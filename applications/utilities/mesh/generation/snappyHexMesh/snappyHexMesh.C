@@ -203,8 +203,8 @@ int main(int argc, char *argv[])
         IOobject
         (
             "abc",                      // dummy name
-            //mesh.time().constant(),     // instance
-            mesh.time().findInstance("triSurface", word::null),// instance
+            mesh.time().constant(),     // instance
+            //mesh.time().findInstance("triSurface", word::null),// instance
             "triSurface",               // local
             mesh.time(),                // registry
             IOobject::MUST_READ,
