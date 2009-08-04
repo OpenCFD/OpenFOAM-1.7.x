@@ -114,12 +114,12 @@ directMappedFixedValueFvPatchField<Type>::directMappedFixedValueFvPatchField
             << exit(FatalError);
     }
 
-    // Force calculation of schedule (uses parallel comms)
-    const directMappedPatchBase& mpp = refCast<const directMappedPatchBase>
-    (
-        this->patch().patch()
-    );
-    (void)mpp.map().schedule();
+    //// Force calculation of schedule (uses parallel comms)
+    //const directMappedPatchBase& mpp = refCast<const directMappedPatchBase>
+    //(
+    //    this->patch().patch()
+    //);
+    //(void)mpp.map().schedule();
 }
 
 
@@ -166,6 +166,10 @@ void directMappedFixedValueFvPatchField<Type>::updateCoeffs()
         directMappedFixedValueFvPatchField<Type>::patch().patch()
     );
     const mapDistribute& distMap = mpp.map();
+
+    // Force recalculation of schedule
+    (void)distMap.schedule();
+
     const fvMesh& nbrMesh = refCast<const fvMesh>(mpp.sampleMesh());
     const word& fldName = this->dimensionedInternalField().name();
 
