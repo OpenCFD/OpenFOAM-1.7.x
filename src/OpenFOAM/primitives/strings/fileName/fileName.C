@@ -55,18 +55,115 @@ Foam::fileName::Type Foam::fileName::type() const
 }
 
 
+//
+// * remove repeated slashes
+//       /abc////def        -->   /abc/def
+//
+// * remove '/./'
+//       /abc/def/./ghi/.   -->   /abc/def/./ghi
+//       abc/def/./         -->   abc/def
+//
+// * remove '/../'
+//       /abc/def/../ghi/jkl/nmo/..   -->   /abc/ghi/jkl
+//       abc/../def/ghi/../jkl        -->   abc/../def/jkl
+//
+// * remove trailing '/'
+//
 bool Foam::fileName::clean()
 {
-    bool changed = false;
+    // the top slash - we are never allowed to go above it
+    register string::size_type top = this->find('/');
 
-    changed = this->removeRepeated('/') || changed;
-    changed = this->removeTrailing('/') || changed;
+    // no slashes - nothing to do
+    if (top == string::npos)
+    {
+        return false;
+    }
 
-    return changed;
+    // start with the '/' found:
+    register char prev = '/';
+    register string::size_type nChar  = top+1;
+    register string::size_type maxLen = this->size();
+
+    for
+    (
+        register string::size_type src = nChar;
+        src < maxLen;
+        /*nil*/
+    )
+    {
+        register char c = operator[](src++);
+
+        if (prev == '/')
+        {
+            // repeated '/' - skip it
+            if (c == '/')
+            {
+                continue;
+            }
+
+            // could be '/./' or '/../'
+            if (c == '.')
+            {
+                // found trailing '/.' - skip it
+                if (src >= maxLen)
+                {
+                    continue;
+                }
+
+
+                // peek at the next character
+                register char c1 = operator[](src);
+
+                // found '/./' - skip it
+                if (c1 == '/')
+                {
+                    src++;
+                    continue;
+                }
+
+                // it is '/..' or '/../'
+                if (c1 == '.' && (src+1 >= maxLen || operator[](src+1) == '/'))
+                {
+                    string::size_type parent;
+
+                    // backtrack to find the parent directory
+                    // minimum of 3 characters:  '/x/../'
+                    // strip it, provided it is above the top point
+                    if
+                    (
+                        nChar > 2
+                     && (parent = this->rfind('/', nChar-2)) != string::npos
+                     && parent >= top
+                    )
+                    {
+                        nChar = parent + 1;   // retain '/' from the parent
+                        src += 2;
+                        continue;
+                    }
+
+                    // bad resolution, eg 'abc/../../'
+                    // retain the sequence, but move the top to avoid it being
+                    // considered a valid parent later
+                    top = nChar + 2;
+                }
+            }
+        }
+        operator[](nChar++) = prev = c;
+    }
+
+    // remove trailing slash
+    if (nChar > 1 && operator[](nChar-1) == '/')
+    {
+        nChar--;
+    }
+
+    this->resize(nChar);
+
+    return (nChar != maxLen);
 }
 
 
-// Return string with repeated characters removed
 Foam::fileName Foam::fileName::clean() const
 {
     fileName fName(*this);
