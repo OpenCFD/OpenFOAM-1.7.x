@@ -208,6 +208,9 @@ void Foam::solidWallMixedTemperatureCoupledFvPatchScalarField::updateCoeffs()
         patch().patch()
     );
     const polyMesh& nbrMesh = mpp.sampleMesh();
+    // Force recalculation of mapping and schedule
+    const mapDistribute& distMap = mpp.map();
+    (void)distMap.schedule();
 
     tmp<scalarField> intFld = patchInternalField();
 
@@ -217,7 +220,6 @@ void Foam::solidWallMixedTemperatureCoupledFvPatchScalarField::updateCoeffs()
         // to be updated the first time round the iteration (i.e. when
         // switching regions) but unfortunately we don't have this information.
 
-        const mapDistribute& distMap = mpp.map();
         const fvPatch& nbrPatch = refCast<const fvMesh>
         (
             nbrMesh

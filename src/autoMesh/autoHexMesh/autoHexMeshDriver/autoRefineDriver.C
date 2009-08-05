@@ -78,8 +78,9 @@ Foam::label Foam::autoRefineDriver::readFeatureEdges
                 IOobject
                 (
                     featFileName,                       // name
-                    mesh.time().findInstance("triSurface", featFileName),
-                                                        // instance
+                    //mesh.time().findInstance("triSurface", featFileName),
+                    //                                    // instance
+                    mesh.time().constant(),             // instance
                     "triSurface",                       // local
                     mesh.time(),                        // registry
                     IOobject::MUST_READ,

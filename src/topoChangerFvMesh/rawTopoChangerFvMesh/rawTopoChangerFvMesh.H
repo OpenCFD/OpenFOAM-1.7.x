@@ -22,67 +22,82 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-InNamespace
-    Foam::fvm
+Class
+    Foam::rawTopoChangerFvMesh
 
 Description
-    Calculate the matrix for the adjDivergence of the given field and flux.
+    topoChangerFvMesh without any added functionality.
+
+    Note: run without FOAM_SETNAN. Temporary has unitialised patch
+    data when faces get created out of nothing.
 
 SourceFiles
-    fvmAdjDiv.C
+    rawTopoChangerFvMesh.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef fvmAdjDiv_H
-#define fvmAdjDiv_H
+#ifndef rawTopoChangerFvMesh_H
+#define rawTopoChangerFvMesh_H
 
-#include "volFieldsFwd.H"
-#include "surfaceFieldsFwd.H"
-#include "surfaceInterpolationScheme.H"
-#include "fvMatrix.H"
+#include "topoChangerFvMesh.H"
+#include "PackedList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
+// Forward declaration of classes
+
 /*---------------------------------------------------------------------------*\
-                     Namespace fvm functions Declaration
+                      Class rawTopoChangerFvMesh Declaration
 \*---------------------------------------------------------------------------*/
 
-namespace fvm
+class rawTopoChangerFvMesh
+:
+    public topoChangerFvMesh
 {
-    template<class Type>
-    tmp<fvMatrix<Type> > adjDiv
-    (
-        const surfaceScalarField&,
-        GeometricField<Type, fvPatchField, volMesh>&,
-        const word& name
-    );
+    // Private Member Functions
 
-    template<class Type>
-    tmp<fvMatrix<Type> > adjDiv
-    (
-        const tmp<surfaceScalarField>&,
-        GeometricField<Type, fvPatchField, volMesh>&,
-        const word& name
-    );
+        //- Set unmapped values
+        template<class Type, template<class> class PatchField, class GeoMesh>
+        static void setUnmappedValues
+        (
+            GeometricField<Type, PatchField, GeoMesh>& fld,
+            const PackedList<1>& mappedFace,
+            const GeometricField<Type, PatchField, GeoMesh>& baseFld
+        );
+
+        template<class Type, template<class> class PatchField, class GeoMesh>
+        void zeroUnmappedValues(const PackedList<1>&) const;
+
+        //- Disallow default bitwise copy construct
+        rawTopoChangerFvMesh(const rawTopoChangerFvMesh&);
+
+        //- Disallow default bitwise assignment
+        void operator=(const rawTopoChangerFvMesh&);
+
+public:
+
+    //- Runtime type information
+    TypeName("rawTopoChangerFvMesh");
 
 
-    template<class Type>
-    tmp<fvMatrix<Type> > adjDiv
-    (
-        const surfaceScalarField&,
-        GeometricField<Type, fvPatchField, volMesh>&
-    );
+    // Constructors
 
-    template<class Type>
-    tmp<fvMatrix<Type> > adjDiv
-    (
-        const tmp<surfaceScalarField>&,
-        GeometricField<Type, fvPatchField, volMesh>&
-    );
-}
+        //- Construct from database
+        explicit rawTopoChangerFvMesh(const IOobject& io);
+
+    // Destructor
+
+        virtual ~rawTopoChangerFvMesh();
+
+
+    // Member Functions
+
+        //- Update the mesh for both mesh motion and topology change
+        virtual bool update();
+};
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -92,7 +107,7 @@ namespace fvm
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#   include "fvmAdjDiv.C"
+#   include "rawTopoChangerFvMeshTemplates.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
