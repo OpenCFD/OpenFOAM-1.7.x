@@ -9,6 +9,7 @@ EXE_INC = \
 
 EXE_LIBS = \
     -ldynamicFvMesh \
+    -ltopoChangerFvMesh \
     -ldynamicMesh \
     -lmeshTools \
     -lincompressibleTransportModels \
