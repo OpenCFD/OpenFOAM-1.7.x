@@ -908,10 +908,10 @@ int main(int argc, char *argv[])
             runTime.constant(),
             runTime
         ),
-        foamPoints,
-        foamFaces,
-        foamOwner,
-        foamNeighbour
+        xferMove<pointField>(foamPoints),
+        xferMove<faceList>(foamFaces),
+        xferCopy<labelList>(foamOwner),
+        xferMove<labelList>(foamNeighbour)
     );
 
     // Create patches. Use patch types to determine what Foam types to generate.
