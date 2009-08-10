@@ -38,16 +38,16 @@ void Foam::fieldMinMax::calcMinMaxFields(const word& fieldName)
 
     if (obr_.foundObject<fieldType>(fieldName))
     {
-        if (Pstream::master())
+        const fieldType& field = obr_.lookupObject<fieldType>(fieldName);
+        switch (mode_)
         {
-            const fieldType& field = obr_.lookupObject<fieldType>(fieldName);
-            switch (mode_)
+            case mdMag:
             {
-                case mdMag:
-                {
-                    scalar minValue = min(mag(field)).value();
-                    scalar maxValue = max(mag(field)).value();
+                scalar minValue = min(mag(field)).value();
+                scalar maxValue = max(mag(field)).value();
 
+                if (Pstream::master())
+                {
                     fieldMinMaxFilePtr_() << obr_.time().value() << tab
                         << fieldName << tab << minValue << tab << maxValue
                         << endl;
@@ -61,13 +61,16 @@ void Foam::fieldMinMax::calcMinMaxFields(const word& fieldName)
                             << maxValue << nl
                             << endl;
                     }
-                    break;
                 }
-                case mdCmpt:
-                {
-                    Type minValue = min(field).value();
-                    Type maxValue = max(field).value();
+                break;
+            }
+            case mdCmpt:
+            {
+                Type minValue = min(field).value();
+                Type maxValue = max(field).value();
 
+                if (Pstream::master())
+                {
                     fieldMinMaxFilePtr_() << obr_.time().value() << tab
                         << fieldName << tab << minValue << tab << maxValue
                         << endl;
@@ -81,17 +84,17 @@ void Foam::fieldMinMax::calcMinMaxFields(const word& fieldName)
                             << maxValue << nl
                             << endl;
                     }
-                    break;
                 }
-                default:
-                {
-                    FatalErrorIn
-                    (
-                        "Foam::fieldMinMax::calcMinMaxFields"
-                        "(const word& fieldName)"
-                    )<< "Unknown min/max mode: " << modeTypeNames_[mode_]
-                     << exit(FatalError);
-                }
+                break;
+            }
+            default:
+            {
+                FatalErrorIn
+                (
+                    "Foam::fieldMinMax::calcMinMaxFields"
+                    "(const word& fieldName)"
+                )<< "Unknown min/max mode: " << modeTypeNames_[mode_]
+                 << exit(FatalError);
             }
         }
     }

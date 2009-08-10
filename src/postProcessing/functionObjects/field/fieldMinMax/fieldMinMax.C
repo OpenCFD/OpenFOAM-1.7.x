@@ -197,13 +197,13 @@ void Foam::fieldMinMax::calcMinMaxFields<Foam::scalar>
 {
     if (obr_.foundObject<volScalarField>(fieldName))
     {
+        const volScalarField& field =
+            obr_.lookupObject<volScalarField>(fieldName);
+        scalar minValue = min(field).value();
+        scalar maxValue = max(field).value();
+
         if (Pstream::master())
         {
-            const volScalarField& field =
-                obr_.lookupObject<volScalarField>(fieldName);
-            scalar minValue = min(field).value();
-            scalar maxValue = max(field).value();
-
             fieldMinMaxFilePtr_() << obr_.time().value() << tab
                 << fieldName << tab << minValue << tab << maxValue << endl;
 

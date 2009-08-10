@@ -73,22 +73,24 @@ protected:
 
         const objectRegistry& obr_;
 
-        //- on/off switch
-        bool active_;
-
-        //- Switch to send output to Info as well as to file
-        Switch log_;
-
-        //- Current open files
-        HashPtrTable<OFstream> faceZonesIntegrationFilePtr_;
-
         // Read from dictionary
+
+            //- on/off switch
+            bool active_;
+
+            //- Switch to send output to Info as well as to file
+            Switch log_;
 
             //- faceZones to integrate over
             wordList faceZonesSet_;
 
             //- Names of the surface fields
             wordList fItems_;
+
+
+        //- Current open files
+        HashPtrTable<OFstream> faceZonesIntegrationFilePtr_;
+
 
 
     // Private Member Functions
