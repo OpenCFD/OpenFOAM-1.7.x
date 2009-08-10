@@ -50,8 +50,8 @@ doc/[Dd]oxygen/html
 doc/[Dd]oxygen/latex
 doc/[Dd]oxygen/man
 
-# Other HTML files e.g. ReleaseNotes-?.?.html
-*.html
+# generated files in the main directory (e.g. ReleaseNotes-?.?.html)
+/*.html
 
 # source packages - anywhere
 *.tar.bz2
