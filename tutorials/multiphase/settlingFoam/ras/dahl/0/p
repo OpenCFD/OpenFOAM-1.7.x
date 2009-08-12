@@ -39,13 +39,13 @@ boundaryField
 
     endWall
     {
-        type            buoyantPressure;
-        value           uniform 0;
+        type            zeroGradient;
     }
 
     top
     {
-        type            symmetryPlane;
+        type            buoyantPressure;
+        value           uniform 0;
     }
 
     frontAndBack

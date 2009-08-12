@@ -20,33 +20,33 @@ internalField   uniform 0.00015;
 
 boundaryField
 {
-    inlet           
+    inlet
     {
         type            fixedValue;
         value           uniform 0.00015;
     }
 
-    outlet          
+    outlet
     {
         type            zeroGradient;
     }
 
-    bottomWall      
+    bottomWall
     {
         type            zeroGradient;
     }
 
-    endWall         
+    endWall
     {
         type            zeroGradient;
     }
 
-    top             
+    top
     {
-        type            symmetryPlane;
+        type            zeroGradient;
     }
 
-    frontAndBack    
+    frontAndBack
     {
         type            empty;
     }
