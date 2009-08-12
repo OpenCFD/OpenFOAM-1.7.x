@@ -28,8 +28,13 @@ Class
 Description
     kOmegaSSTSAS LES turbulence model for incompressible flows
 
-    Note: does not have an explicit dependency on spatial discretisation
-          i.e. LESdelta not used.
+    Reference:
+    DESider A European Effort on Hybrid RANS-LES Modelling:
+    Results of the European-Union Funded Project, 2004 - 2007
+    (Notes on Numerical Fluid Mechanics and Multidisciplinary Design).
+    Chapter 8 Formulation of the Scale-Adaptive Simulation (SAS) Model during
+    the DESIDER Project.
+    F. R. Menter and Y. Egorov.
 
 SourceFiles
     kOmegaSSTSAS.C
@@ -92,6 +97,7 @@ protected:
 
             dimensionedScalar a1_;
             dimensionedScalar c1_;
+            dimensionedScalar Cs_;
 
             dimensionedScalar alphaPhi_;
             dimensionedScalar zetaTilda2_;

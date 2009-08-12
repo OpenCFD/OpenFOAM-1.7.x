@@ -98,16 +98,20 @@ tmp<volScalarField> kOmegaSSTSAS::Lvk2
     const volScalarField& S2
 ) const
 {
-    return kappa_*sqrt(S2)
-   /(
-       mag(fvc::laplacian(U()))
-     + dimensionedScalar
-       (
-           "ROOTVSMALL",
-           dimensionSet(0, -1 , -1, 0, 0, 0, 0),
-           ROOTVSMALL
-       )
-   );
+    return max
+    (
+        kappa_*sqrt(S2)
+       /(
+            mag(fvc::laplacian(U()))
+          + dimensionedScalar
+            (
+                "ROOTVSMALL",
+                dimensionSet(0, -1 , -1, 0, 0, 0, 0),
+                ROOTVSMALL
+            )
+        ),
+        Cs_*delta()
+    );
 }
 
 
@@ -220,6 +224,15 @@ kOmegaSSTSAS::kOmegaSSTSAS
             "c1",
             coeffDict_,
             10.0
+        )
+    ),
+    Cs_
+    (
+        dimensioned<scalar>::lookupOrAddToDict
+        (
+            "Cs",
+            coeffDict_,
+            0.262
         )
     ),
     alphaPhi_
@@ -441,6 +454,7 @@ bool kOmegaSSTSAS::read()
         betaStar_.readIfPresent(coeffDict());
         a1_.readIfPresent(coeffDict());
         c1_.readIfPresent(coeffDict());
+        Cs_.readIfPresent(coeffDict());
         alphaPhi_.readIfPresent(coeffDict());
         zetaTilda2_.readIfPresent(coeffDict());
         FSAS_.readIfPresent(coeffDict());
