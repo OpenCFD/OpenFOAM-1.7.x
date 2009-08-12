@@ -17,7 +17,7 @@ FoamFile
 (
     SYMP3
     {
-        type            symmetryPlane;
+        type            patch;
         startFace       53708;
         nFaces          3191;
     }

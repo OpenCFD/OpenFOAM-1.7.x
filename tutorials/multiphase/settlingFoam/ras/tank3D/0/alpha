@@ -20,103 +20,103 @@ internalField   uniform 0;
 
 boundaryField
 {
-    SYMP3           
+    SYMP3
     {
-        type            symmetryPlane;
+        type            zeroGradient;
     }
 
-    INLE1           
+    INLE1
     {
         type            fixedValue;
         value           uniform 0.002;
     }
 
-    OUTL9           
+    OUTL9
     {
         type            zeroGradient;
     }
 
-    OUTL10          
+    OUTL10
     {
         type            zeroGradient;
     }
 
-    OUTL11          
+    OUTL11
     {
         type            zeroGradient;
     }
 
-    OUTL12          
+    OUTL12
     {
         type            zeroGradient;
     }
 
-    WALL6           
+    WALL6
     {
         type            zeroGradient;
     }
 
-    WALL8           
+    WALL8
     {
         type            zeroGradient;
     }
 
-    WALL61          
+    WALL61
     {
         type            zeroGradient;
     }
 
-    WALL62          
+    WALL62
     {
         type            zeroGradient;
     }
 
-    WALL63          
+    WALL63
     {
         type            zeroGradient;
     }
 
-    WALL64          
+    WALL64
     {
         type            zeroGradient;
     }
 
-    WALL65          
+    WALL65
     {
         type            zeroGradient;
     }
 
-    WALL66          
+    WALL66
     {
         type            zeroGradient;
     }
 
-    WALL67          
+    WALL67
     {
         type            zeroGradient;
     }
 
-    WALL68          
+    WALL68
     {
         type            zeroGradient;
     }
 
-    WALL69          
+    WALL69
     {
         type            zeroGradient;
     }
 
-    WALL7           
+    WALL7
     {
         type            zeroGradient;
     }
 
-    WALL70          
+    WALL70
     {
         type            zeroGradient;
     }
 
-    OUTL15          
+    OUTL15
     {
         type            zeroGradient;
     }
