@@ -127,11 +127,10 @@ void Foam::Time::setControls()
         }
         else
         {
-            WarningIn("Time::setControls()")
-                << "    expected startTime, firstTime or latestTime"
-                << " found '" << startFrom
-                << "' in dictionary " << controlDict_.name() << nl
-                << "    Setting time to " << startTime_ << endl;
+            FatalIOErrorIn("Time::setControls()", controlDict_)
+                << "expected startTime, firstTime or latestTime"
+                << " found '" << startFrom << "'"
+                << exit(FatalIOError);
         }
     }
 
@@ -151,10 +150,10 @@ void Foam::Time::setControls()
           > Pstream::nProcs()*deltaT_/10.0
         )
         {
-            FatalErrorIn("Time::setControls()")
+            FatalIOErrorIn("Time::setControls()", controlDict_)
                 << "Start time is not the same for all processors" << nl
                 << "processor " << Pstream::myProcNo() << " has startTime "
-                << startTime_ << exit(FatalError);
+                << startTime_ << exit(FatalIOError);
         }
     }
 
