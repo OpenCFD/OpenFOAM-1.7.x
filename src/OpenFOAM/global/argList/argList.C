@@ -60,8 +60,8 @@ Foam::argList::initValidTables dummyInitValidTables;
 // transform sequences with "(" ... ")" into string lists in the process
 bool Foam::argList::regroupArgv(int& argc, char**& argv)
 {
-    int level = 0;
     int nArgs = 0;
+    int listDepth = 0;
     string tmpString;
 
     // note: we also re-write directly into args_
@@ -70,16 +70,16 @@ bool Foam::argList::regroupArgv(int& argc, char**& argv)
     {
         if (strcmp(argv[argI], "(") == 0)
         {
-            level++;
+            listDepth++;
             tmpString += "(";
         }
         else if (strcmp(argv[argI], ")") == 0)
         {
-            if (level >= 1)
+            if (listDepth)
             {
-                level--;
+                listDepth--;
                 tmpString += ")";
-                if (level == 0)
+                if (listDepth == 0)
                 {
                     args_[nArgs++] = tmpString;
                     tmpString.clear();
@@ -90,7 +90,7 @@ bool Foam::argList::regroupArgv(int& argc, char**& argv)
                 args_[nArgs++] = argv[argI];
             }
         }
-        else if (level)
+        else if (listDepth)
         {
             // quote each string element
             tmpString += "\"";
@@ -117,6 +117,10 @@ bool Foam::argList::regroupArgv(int& argc, char**& argv)
 // get rootPath_ / globalCase_ from one of the following forms
 //   * [-case dir]
 //   * cwd
+//
+// Also export FOAM_CASE and FOAM_CASENAME environment variables
+// so they can be used immediately (eg, in decomposeParDict)
+//
 void Foam::argList::getRootCase()
 {
     fileName casePath;
@@ -151,6 +155,26 @@ void Foam::argList::getRootCase()
     rootPath_   = casePath.path();
     globalCase_ = casePath.name();
     case_       = globalCase_;
+
+
+    // Set the case and case-name as an environment variable
+    if (rootPath_[0] == '/')
+    {
+        // absolute path - use as-is
+        setEnv("FOAM_CASE", rootPath_/globalCase_, true);
+        setEnv("FOAM_CASENAME", globalCase_, true);
+    }
+    else
+    {
+        // qualify relative path
+        fileName casePath = cwd()/rootPath_/globalCase_;
+        casePath.clean();
+
+        setEnv("FOAM_CASE", casePath, true);
+        setEnv("FOAM_CASENAME", casePath.name(), true);
+    }
+
+
 }
 
 
@@ -530,24 +554,6 @@ Foam::argList::argList
         jobInfo.add("slaves", slaveProcs);
     }
     jobInfo.write();
-
-
-    // Set the case and case-name as an environment variable
-    if (rootPath_[0] == '/')
-    {
-        // absolute path - use as-is
-        setEnv("FOAM_CASE", rootPath_/globalCase_, true);
-        setEnv("FOAM_CASENAME", globalCase_, true);
-    }
-    else
-    {
-        // qualify relative path
-        fileName casePath = cwd()/rootPath_/globalCase_;
-        casePath.clean();
-
-        setEnv("FOAM_CASE", casePath, true);
-        setEnv("FOAM_CASENAME", casePath.name(), true);
-    }
 
     // Switch on signal trapping. We have to wait until after Pstream::init
     // since this sets up its own ones.

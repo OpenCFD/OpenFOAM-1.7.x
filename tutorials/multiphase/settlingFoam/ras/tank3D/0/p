@@ -22,7 +22,8 @@ boundaryField
 {
     SYMP3
     {
-        type            symmetryPlane;
+        type            buoyantPressure;
+        value           uniform 0;
     }
 
     INLE1

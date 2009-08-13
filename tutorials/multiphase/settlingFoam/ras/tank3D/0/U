@@ -20,120 +20,120 @@ internalField   uniform (0 0 0);
 
 boundaryField
 {
-    SYMP3           
+    SYMP3
     {
-        type            symmetryPlane;
+        type            slip;
     }
 
-    INLE1           
+    INLE1
     {
         type            fixedValue;
         value           uniform (0.1315 0 0);
     }
 
-    OUTL9           
+    OUTL9
     {
         type            fixedValue;
         value           uniform (0 0.0177 0);
     }
 
-    OUTL10          
+    OUTL10
     {
         type            fixedValue;
         value           uniform (0 0.0177 0);
     }
 
-    OUTL11          
+    OUTL11
     {
         type            fixedValue;
         value           uniform (0 0.0177 0);
     }
 
-    OUTL12          
+    OUTL12
     {
         type            fixedValue;
         value           uniform (0 0.0177 0);
     }
 
-    WALL6           
+    WALL6
     {
         type            fixedValue;
         value           uniform (-0.003 0 0);
     }
 
-    WALL8           
+    WALL8
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    WALL61          
+    WALL61
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    WALL62          
+    WALL62
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    WALL63          
+    WALL63
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    WALL64          
+    WALL64
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    WALL65          
+    WALL65
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    WALL66          
+    WALL66
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    WALL67          
+    WALL67
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    WALL68          
+    WALL68
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    WALL69          
+    WALL69
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    WALL7           
+    WALL7
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    WALL70          
+    WALL70
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    OUTL15          
+    OUTL15
     {
         type            zeroGradient;
     }
