@@ -162,13 +162,14 @@ Foam::List<T>::List(const UList<T>& a, const unallocLabelList& map)
 {
     if (this->size_)
     {
+        // Note:cannot use List_ELEM since third argument has to be index.
+
         this->v_ = new T[this->size_];
 
-        List_ACCESS(T, (*this), vp);
-        List_CONST_ACCESS(T, a, ap);
-        List_FOR_ALL(map, i)
-            List_ELEM((*this), vp, i) = List_ELEM(a, ap, (map[i]));
-        List_END_FOR_ALL
+        forAll(*this, i)
+        {
+            this->v_[i] = a[map[i]];
+        }
     }
 }
 

@@ -128,6 +128,12 @@ public:
             return index_;
         }
 
+        //- Return the index of this patch in the boundaryMesh
+        label& index()
+        {
+            return index_;
+        }
+
         //- Write
         void write(Ostream&) const;
 

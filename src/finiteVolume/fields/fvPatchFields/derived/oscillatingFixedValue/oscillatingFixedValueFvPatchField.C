@@ -70,7 +70,7 @@ oscillatingFixedValueFvPatchField<Type>::oscillatingFixedValueFvPatchField
     const fvPatchFieldMapper& mapper
 )
 :
-    fixedValueFvPatchField<Type>(p, iF),
+    fixedValueFvPatchField<Type>(ptf, p, iF, mapper),
     refValue_(ptf.refValue_, mapper),
     amplitude_(ptf.amplitude_),
     frequency_(ptf.frequency_),
@@ -188,13 +188,12 @@ void oscillatingFixedValueFvPatchField<Type>::updateCoeffs()
 template<class Type>
 void oscillatingFixedValueFvPatchField<Type>::write(Ostream& os) const
 {
-    fvPatchField<Type>::write(os);
+    fixedValueFvPatchField<Type>::write(os);
     refValue_.writeEntry("refValue", os);
     os.writeKeyword("amplitude")
         << amplitude_ << token::END_STATEMENT << nl;
     os.writeKeyword("frequency")
         << frequency_ << token::END_STATEMENT << nl;
-    this->writeEntry("value", os);
 }
 
 
