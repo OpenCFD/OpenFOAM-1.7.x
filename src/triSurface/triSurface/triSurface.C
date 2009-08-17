@@ -544,6 +544,8 @@ Foam::surfacePatchList Foam::triSurface::calcPatches(labelList& faceMap) const
     {
         surfacePatch& newPatch = newPatches[newPatchI];
 
+        newPatch.index() = newPatchI;
+
         label oldPatchI = newPatchI;
 
         // start of patch
@@ -592,6 +594,7 @@ void Foam::triSurface::setDefaultPatches()
 
     forAll(newPatches, patchI)
     {
+        patches_[patchI].index() = patchI;
         patches_[patchI].name() = newPatches[patchI].name();
         patches_[patchI].geometricType() = newPatches[patchI].geometricType();
     }
