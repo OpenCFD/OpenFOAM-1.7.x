@@ -129,6 +129,32 @@ private:
         //- Trigger topological change
         mutable bool trigger_;
 
+        // Tolerances. Initialised to static ones below.
+
+            //- Point merge tolerance
+            scalar pointMergeTol_;
+
+            //- Edge merge tolerance
+            scalar edgeMergeTol_;
+
+            //- Estimated number of faces an edge goes through
+            label nFacesPerSlaveEdge_;
+
+            //- Edge-face interaction escape limit
+            label edgeFaceEscapeLimit_;
+
+            //- Integral match point adjustment tolerance
+            scalar integralAdjTol_;
+
+            //- Edge intersection master catch fraction
+            scalar edgeMasterCatchFraction_;
+
+            //- Edge intersection co-planar tolerance
+            scalar edgeCoPlanarTol_;
+
+            //- Edge end cut-off tolerance
+            scalar edgeEndCutoffTol_;
+
 
         // Private addressing data.
 
@@ -256,28 +282,28 @@ private:
     // Static data members
 
         //- Point merge tolerance
-        static const scalar pointMergeTol_;
+        static const scalar pointMergeTolDefault_;
 
         //- Edge merge tolerance
-        static const scalar edgeMergeTol_;
+        static const scalar edgeMergeTolDefault_;
 
         //- Estimated number of faces an edge goes through
-        static const label nFacesPerSlaveEdge_;
+        static const label nFacesPerSlaveEdgeDefault_;
 
         //- Edge-face interaction escape limit
-        static const label edgeFaceEscapeLimit_;
+        static const label edgeFaceEscapeLimitDefault_;
 
         //- Integral match point adjustment tolerance
-        static const scalar integralAdjTol_;
+        static const scalar integralAdjTolDefault_;
 
         //- Edge intersection master catch fraction
-        static const scalar edgeMasterCatchFraction_;
+        static const scalar edgeMasterCatchFractionDefault_;
 
         //- Edge intersection co-planar tolerance
-        static const scalar edgeCoPlanarTol_;
+        static const scalar edgeCoPlanarTolDefault_;
 
         //- Edge end cut-off tolerance
-        static const scalar edgeEndCutoffTol_;
+        static const scalar edgeEndCutoffTolDefault_;
 
 
 public:
@@ -350,6 +376,8 @@ public:
         //- Return projected points for a slave patch
         const pointField& pointProjection() const;
 
+        //- Set the tolerances from the values in a dictionary
+        void setTolerances(const dictionary&, bool report=false);
 
         //- Write
         virtual void write(Ostream&) const;

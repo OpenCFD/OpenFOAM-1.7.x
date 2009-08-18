@@ -43,7 +43,7 @@ License
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-const Foam::scalar Foam::slidingInterface::edgeCoPlanarTol_ = 0.8;
+const Foam::scalar Foam::slidingInterface::edgeCoPlanarTolDefault_ = 0.8;
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
