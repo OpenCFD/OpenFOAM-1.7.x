@@ -53,18 +53,18 @@ patches
         name sidePatches;
 
         // Type of new patch
-	dictionary
-	{
+        dictionary
+        {
             type cyclic;
 
-	    // Optional: explicitly set transformation tensor.
+            // Optional: explicitly set transformation tensor.
             // Used when matching and synchronising points.
             //transform translational;
             //separationVector (-2289 0 0);
-	    transform rotational;
-	    rotationAxis (1 0 0);
+            transform rotational;
+            rotationAxis (1 0 0);
             rotationCentre (0 0 0);
-	}
+        }
 
         // How to construct: either from 'patches' or 'set'
         constructFrom patches;
@@ -80,10 +80,10 @@ patches
         name bottom;
 
         // Type of new patch
-	dictionary
-	{
+        dictionary
+        {
             type wall;
-	}
+        }
 
         constructFrom set;
 
