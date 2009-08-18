@@ -61,7 +61,7 @@ Foam::tmp<Foam::volSymmTensorField> Foam::forces::devRhoReff() const
         const incompressible::RASModel& ras
             = obr_.lookupObject<incompressible::RASModel>("RASProperties");
 
-        return rhoRef_*ras.devReff();
+        return rho()*ras.devReff();
     }
     else if (obr_.foundObject<compressible::LESModel>("LESProperties"))
     {
@@ -75,7 +75,7 @@ Foam::tmp<Foam::volSymmTensorField> Foam::forces::devRhoReff() const
         const incompressible::LESModel& les
             = obr_.lookupObject<incompressible::LESModel>("LESProperties");
 
-        return rhoRef_*les.devBeff();
+        return rho()*les.devBeff();
     }
     else if (obr_.foundObject<basicThermo>("thermophysicalProperties"))
     {
@@ -97,7 +97,7 @@ Foam::tmp<Foam::volSymmTensorField> Foam::forces::devRhoReff() const
 
         const volVectorField& U = obr_.lookupObject<volVectorField>(UName_);
 
-        return -rhoRef_*laminarT.nu()*dev(twoSymm(fvc::grad(U)));
+        return -rho()*laminarT.nu()*dev(twoSymm(fvc::grad(U)));
     }
     else if (obr_.foundObject<dictionary>("transportProperties"))
     {
@@ -108,7 +108,7 @@ Foam::tmp<Foam::volSymmTensorField> Foam::forces::devRhoReff() const
 
         const volVectorField& U = obr_.lookupObject<volVectorField>(UName_);
 
-        return -rhoRef_*nu*dev(twoSymm(fvc::grad(U)));
+        return -rho()*nu*dev(twoSymm(fvc::grad(U)));
     }
     else
     {
@@ -121,6 +121,34 @@ Foam::tmp<Foam::volSymmTensorField> Foam::forces::devRhoReff() const
 }
 
 
+Foam::tmp<Foam::volScalarField> Foam::forces::rho() const
+{
+    if (rhoName_ == "rhoInf")
+    {
+        const fvMesh& mesh = refCast<const fvMesh>(obr_);
+
+        return tmp<volScalarField>
+        (
+            new volScalarField
+            (
+                IOobject
+                (
+                    "rho",
+                    mesh.time().timeName(),
+                    mesh
+                ),
+                mesh,
+                dimensionedScalar("rho", dimDensity, rhoRef_)
+            )
+        );
+    }
+    else
+    {
+        return(obr_.lookupObject<volScalarField>(rhoName_));
+    }
+}
+
+
 Foam::scalar Foam::forces::rho(const volScalarField& p) const
 {
     if (p.dimensions() == dimPressure)
@@ -129,6 +157,13 @@ Foam::scalar Foam::forces::rho(const volScalarField& p) const
     }
     else
     {
+        if (rhoName_ != "rhoInf")
+        {
+            FatalErrorIn("forces::rho(const volScalarField& p)")
+                << "Dynamic pressure is expected but kinematic is provided."
+                << exit(FatalError);
+        }
+
         return rhoRef_;
     }
 }
@@ -149,11 +184,12 @@ Foam::forces::forces
     active_(true),
     log_(false),
     patchSet_(),
-    pName_(""),
-    UName_(""),
+    pName_(word::null),
+    UName_(word::null),
+    rhoName_(word::null),
     directForceDensity_(false),
     fDName_(""),
-    rhoRef_(0),
+    rhoRef_(VGREAT),
     CofR_(vector::zero),
     forcesFilePtr_(NULL)
 {
@@ -175,6 +211,12 @@ Foam::forces::forces
     }
 
     read(dict);
+
+    if (active_)
+    {
+        // Create the forces file if not already created
+        makeFile();
+    }
 }
 
 
@@ -222,18 +264,31 @@ void Foam::forces::read(const dictionary& dict)
             // Optional entries U and p
             pName_ = dict.lookupOrDefault<word>("pName", "p");
             UName_ = dict.lookupOrDefault<word>("UName", "U");
+            rhoName_ = dict.lookupOrDefault<word>("rhoName", "rho");
 
-            // Check whether UName and pName exists, if not deactivate forces
+            // Check whether UName, pName and rhoName exists,
+            // if not deactivate forces
             if
             (
                 !obr_.foundObject<volVectorField>(UName_)
              || !obr_.foundObject<volScalarField>(pName_)
+             || (
+                    rhoName_ != "rhoInf"
+                 && !obr_.foundObject<volScalarField>(rhoName_)
+                )
             )
             {
                 active_ = false;
+
                 WarningIn("void forces::read(const dictionary& dict)")
-                << "Could not find " << UName_ << " or "
-                    << pName_ << " in database." << nl
+                    << "Could not find " << UName_ << ", " << pName_;
+
+                if (rhoName_ != "rhoInf")
+                {
+                    Info<< " or " << rhoName_;
+                }
+
+                Info<< " in database." << nl
                     << "    De-activating forces."
                     << endl;
             }

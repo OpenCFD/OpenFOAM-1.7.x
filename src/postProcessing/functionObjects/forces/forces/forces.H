@@ -132,6 +132,9 @@ protected:
             //- Name of velocity field
             word UName_;
 
+            //- Name of density field (optional)
+            word rhoName_;
+
             //- Is the force density being supplied directly?
             Switch directForceDensity_;
 
@@ -156,6 +159,9 @@ protected:
 
         //- Return the effective viscous stress (laminar + turbulent).
         tmp<volSymmTensorField> devRhoReff() const;
+
+        //- Return rho if rhoName is specified otherwise rhoRef
+        tmp<volScalarField> rho() const;
 
         //- Return rhoRef if the pressure field is dynamic, i.e. p/rho
         //  otherwise return 1
@@ -190,9 +196,8 @@ public:
         );
 
 
-    // Destructor
-
-        virtual ~forces();
+    //- Destructor
+    virtual ~forces();
 
 
     // Member Functions
