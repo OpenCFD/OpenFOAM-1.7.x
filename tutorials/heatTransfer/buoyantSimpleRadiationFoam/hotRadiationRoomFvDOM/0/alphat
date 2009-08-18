@@ -23,25 +23,25 @@ boundaryField
 {
     box
     {
-        type            compressible::alphatWallFunction;
+        type            alphatWallFunction;
         Prt             0.85;
         value           uniform 0;
     }
     floor
     {
-        type            compressible::alphatWallFunction;
+        type            alphatWallFunction;
         Prt             0.85;
         value           uniform 0;
     }
     ceiling
     {
-        type            compressible::alphatWallFunction;
+        type            alphatWallFunction;
         Prt             0.85;
         value           uniform 0;
     }
     fixedWalls
     {
-        type            compressible::alphatWallFunction;
+        type            alphatWallFunction;
         Prt             0.85;
         value           uniform 0;
     }

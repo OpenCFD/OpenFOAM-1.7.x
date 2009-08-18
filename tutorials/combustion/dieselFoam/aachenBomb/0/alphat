@@ -23,7 +23,7 @@ boundaryField
 {
     walls
     {
-        type            compressible::alphatWallFunction;
+        type            alphatWallFunction;
         value           uniform 0;
     }
 }
