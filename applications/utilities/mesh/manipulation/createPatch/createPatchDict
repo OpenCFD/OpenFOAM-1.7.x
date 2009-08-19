@@ -46,7 +46,7 @@ matchTolerance 1E-3;
 pointSync true;
 
 // Patches to create.
-patches
+patchInfo
 (
     {
         // Name of new patch
