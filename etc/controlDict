@@ -366,7 +366,6 @@ DebugSwitches
     directMappedVelocityFlux 0;
     directionMixed      0;
     directional         0;
-    disallowDefaultFvsPatchField 0;
     disallowGenericFvPatchField 0;
     disallowGenericPointPatchField 0;
     disallowGenericPolyPatch    0;

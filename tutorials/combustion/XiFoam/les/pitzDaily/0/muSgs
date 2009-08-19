@@ -32,13 +32,13 @@ boundaryField
 
     upperWall
     {
-        type            compressible::muSgsWallFunction;
+        type            muSgsWallFunction;
         value           uniform 0;
     }
 
     lowerWall
     {
-        type            compressible::muSgsWallFunction;
+        type            muSgsWallFunction;
         value           uniform 0;
     }
 

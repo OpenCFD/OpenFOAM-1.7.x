@@ -208,8 +208,8 @@ void dumpCyclicMatch(const fileName& prefix, const polyMesh& mesh)
             // Dump halves
             {
                 OFstream str(prefix+cycPatch.name()+"_half0.obj");
-                Pout<< "Dumping cycPatch.name() half0 faces to " << str.name()
-                    << endl;
+                Pout<< "Dumping " << cycPatch.name()
+                    << " half0 faces to " << str.name() << endl;
                 meshTools::writeOBJ
                 (
                     str,
@@ -226,8 +226,8 @@ void dumpCyclicMatch(const fileName& prefix, const polyMesh& mesh)
             }
             {
                 OFstream str(prefix+cycPatch.name()+"_half1.obj");
-                Pout<< "Dumping cycPatch.name() half1 faces to " << str.name()
-                    << endl;
+                Pout<< "Dumping " << cycPatch.name()
+                    << " half1 faces to " << str.name() << endl;
                 meshTools::writeOBJ
                 (
                     str,
@@ -563,7 +563,7 @@ int main(int argc, char *argv[])
     dumpCyclicMatch("initial_", mesh);
 
     // Read patch construct info from dictionary
-    PtrList<dictionary> patchSources(dict.lookup("patches"));
+    PtrList<dictionary> patchSources(dict.lookup("patchInfo"));
 
 
 

@@ -34,11 +34,13 @@ boundaryField
     lowerWall
     {
         type            omegaWallFunction;
+        value           $internalField;
     }
 
     "motorBike_.*"
     {
         type            omegaWallFunction;
+        value           $internalField;
     }
 
     #include "frontBackUpperPatches"

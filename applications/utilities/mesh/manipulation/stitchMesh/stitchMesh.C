@@ -105,6 +105,8 @@ int main(int argc, char *argv[])
 
     Foam::argList::validOptions.insert("overwrite", "");
 
+    Foam::argList::validOptions.insert("toleranceDict", "file with tolerances");
+
 #   include "setRootCase.H"
 #   include "createTime.H"
     runTime.functionObjects().off();
@@ -166,6 +168,22 @@ int main(int argc, char *argv[])
             << "Note: the overall area covered by both patches should be"
             << " identical (\"integral\" interface)." << endl
             << "If this is not the case use the -partial option" << nl << endl;
+    }
+
+    // set up the tolerances for the sliding mesh
+    dictionary slidingTolerances;
+    if (args.options().found("toleranceDict")) 
+    {
+        IOdictionary toleranceFile(
+            IOobject(
+                args.options()["toleranceDict"],
+                runTime.constant(),
+                mesh,
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE                 
+            )
+        );
+        slidingTolerances += toleranceFile;
     }
 
     // Check for non-empty master and slave patches
@@ -319,6 +337,11 @@ int main(int argc, char *argv[])
                 tom,                    // integral or partial
                 true                    // couple/decouple mode
             )
+        );
+        static_cast<slidingInterface&>(stitcher[0]).setTolerances
+        (
+            slidingTolerances,
+            true
         );
     }
 

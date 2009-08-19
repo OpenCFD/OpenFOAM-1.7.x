@@ -26,22 +26,19 @@ License
 
 #include "slidingInterface.H"
 #include "polyMesh.H"
-#include "primitiveMesh.H"
 #include "line.H"
-#include "triPointRef.H"
-#include "plane.H"
 #include "polyTopoChanger.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-const Foam::scalar Foam::slidingInterface::pointMergeTol_ = 0.05;
-const Foam::scalar Foam::slidingInterface::edgeMergeTol_ = 0.01;
-const Foam::label Foam::slidingInterface::nFacesPerSlaveEdge_ = 5;
-const Foam::label Foam::slidingInterface::edgeFaceEscapeLimit_ = 10;
+const Foam::scalar Foam::slidingInterface::pointMergeTolDefault_ = 0.05;
+const Foam::scalar Foam::slidingInterface::edgeMergeTolDefault_ = 0.01;
+const Foam::label Foam::slidingInterface::nFacesPerSlaveEdgeDefault_ = 5;
+const Foam::label Foam::slidingInterface::edgeFaceEscapeLimitDefault_ = 10;
 
-const Foam::scalar Foam::slidingInterface::integralAdjTol_ = 0.05;
-const Foam::scalar Foam::slidingInterface::edgeMasterCatchFraction_ = 0.4;
-const Foam::scalar Foam::slidingInterface::edgeEndCutoffTol_ = 0.0001;
+const Foam::scalar Foam::slidingInterface::integralAdjTolDefault_ = 0.05;
+const Foam::scalar Foam::slidingInterface::edgeMasterCatchFractionDefault_ = 0.4;
+const Foam::scalar Foam::slidingInterface::edgeEndCutoffTolDefault_ = 0.0001;
 
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //

@@ -43,7 +43,7 @@ boundaryField
     }
     prismWall
     {
-        type            compressible::alphatWallFunction;
+        type            alphatWallFunction;
         value           uniform 0;
     }
     defaultFaces

@@ -27,10 +27,8 @@ License
 #include "slidingInterface.H"
 #include "polyTopoChanger.H"
 #include "polyMesh.H"
-#include "primitiveMesh.H"
 #include "polyTopoChange.H"
 #include "addToRunTimeSelectionTable.H"
-#include "triPointRef.H"
 #include "plane.H"
 
 // Index of debug signs:
@@ -173,6 +171,14 @@ Foam::slidingInterface::slidingInterface
     attached_(false),
     projectionAlgo_(algo),
     trigger_(false),
+    pointMergeTol_(pointMergeTolDefault_),
+    edgeMergeTol_(edgeMergeTolDefault_),
+    nFacesPerSlaveEdge_(nFacesPerSlaveEdgeDefault_),
+    edgeFaceEscapeLimit_(edgeFaceEscapeLimitDefault_),
+    integralAdjTol_(integralAdjTolDefault_),
+    edgeMasterCatchFraction_(edgeMasterCatchFractionDefault_),
+    edgeCoPlanarTol_(edgeCoPlanarTolDefault_),
+    edgeEndCutoffTol_(edgeEndCutoffTolDefault_),
     cutFaceMasterPtr_(NULL),
     cutFaceSlavePtr_(NULL),
     masterFaceCellsPtr_(NULL),
@@ -280,6 +286,9 @@ Foam::slidingInterface::slidingInterface
     masterPointEdgeHitsPtr_(NULL),
     projectedSlavePointsPtr_(NULL)
 {
+    // Optionally default tolerances from dictionary
+    setTolerances(dict);
+
     checkDefinition();
 
     // If the interface is attached, the master and slave face zone addressing
@@ -686,6 +695,63 @@ const Foam::pointField& Foam::slidingInterface::pointProjection() const
     return *projectedSlavePointsPtr_;
 }
 
+void Foam::slidingInterface::setTolerances(const dictionary&dict, bool report)
+{
+    pointMergeTol_ = dict.lookupOrDefault<scalar>
+    (
+        "pointMergeTol",
+        pointMergeTol_
+    );
+    edgeMergeTol_ = dict.lookupOrDefault<scalar>
+    (
+        "edgeMergeTol",
+        edgeMergeTol_
+    );
+    nFacesPerSlaveEdge_ = dict.lookupOrDefault<scalar>
+    (
+        "nFacesPerSlaveEdge",
+        nFacesPerSlaveEdge_
+    );
+    edgeFaceEscapeLimit_ = dict.lookupOrDefault<scalar>
+    (
+        "edgeFaceEscapeLimit",
+        edgeFaceEscapeLimit_
+    );
+    integralAdjTol_ = dict.lookupOrDefault<scalar>
+    (
+        "integralAdjTol",
+        integralAdjTol_
+    );
+    edgeMasterCatchFraction_ = dict.lookupOrDefault<scalar>
+    (
+        "edgeMasterCatchFraction",
+        edgeMasterCatchFraction_
+    );
+    edgeCoPlanarTol_ = dict.lookupOrDefault<scalar>
+    (
+        "edgeCoPlanarTol",
+        edgeCoPlanarTol_
+    );
+    edgeEndCutoffTol_ = dict.lookupOrDefault<scalar>
+    (
+        "edgeEndCutoffTol",
+        edgeEndCutoffTol_
+    );
+
+    if (report)
+    {
+        Info<< "Sliding interface parameters:" << nl
+            << "pointMergeTol            : " << pointMergeTol_ << nl
+            << "edgeMergeTol             : " << edgeMergeTol_ << nl
+            << "nFacesPerSlaveEdge       : " << nFacesPerSlaveEdge_ << nl
+            << "edgeFaceEscapeLimit      : " << edgeFaceEscapeLimit_ << nl
+            << "integralAdjTol           : " << integralAdjTol_ << nl
+            << "edgeMasterCatchFraction  : " << edgeMasterCatchFraction_ << nl
+            << "edgeCoPlanarTol          : " << edgeCoPlanarTol_ << nl
+            << "edgeEndCutoffTol         : " << edgeEndCutoffTol_ << endl;
+    }
+}
+
 
 void Foam::slidingInterface::write(Ostream& os) const
 {
@@ -701,6 +767,14 @@ void Foam::slidingInterface::write(Ostream& os) const
         << coupleDecouple_ << nl
         << attached_ << endl;
 }
+
+
+// To write out all those tolerances
+#define WRITE_NON_DEFAULT(name) \
+    if( name ## _ != name ## Default_ )\
+    { \
+        os << "    " #name " " <<  name ## _ << token::END_STATEMENT << nl; \
+    }
 
 
 void Foam::slidingInterface::writeDict(Ostream& os) const
@@ -742,6 +816,15 @@ void Foam::slidingInterface::writeDict(Ostream& os) const
             << "    cutPointEdgePairMap " << cutPointEdgePairMap()
             << token::END_STATEMENT << nl;
     }
+
+    WRITE_NON_DEFAULT(pointMergeTol)
+    WRITE_NON_DEFAULT(edgeMergeTol)
+    WRITE_NON_DEFAULT(nFacesPerSlaveEdge)
+    WRITE_NON_DEFAULT(edgeFaceEscapeLimit)
+    WRITE_NON_DEFAULT(integralAdjTol)
+    WRITE_NON_DEFAULT(edgeMasterCatchFraction)
+    WRITE_NON_DEFAULT(edgeCoPlanarTol)
+    WRITE_NON_DEFAULT(edgeEndCutoffTol)
 
     os  << token::END_BLOCK << endl;
 }

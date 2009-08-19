@@ -1305,7 +1305,7 @@ bool Foam::cyclicPolyPatch::order
     {
         label baffleI = 0;
 
-        forAll(*this, faceI)
+        forAll(pp, faceI)
         {
             const face& f = pp.localFaces()[faceI];
             const labelList& pFaces = pp.pointFaces()[f[0]];
