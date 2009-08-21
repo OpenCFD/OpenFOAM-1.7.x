@@ -48,7 +48,8 @@ int Foam::fileFormats::STLsurfaceFormatCore::detectBINARY
 {
     off_t dataFileSize = Foam::fileSize(filename);
 
-    istream& is = IFstream(filename, IOstream::BINARY)().stdStream();
+    IFstream str(filename, IOstream::BINARY);
+    istream& is = str().stdStream();
 
     // Read the STL header
     char header[headerSize];
