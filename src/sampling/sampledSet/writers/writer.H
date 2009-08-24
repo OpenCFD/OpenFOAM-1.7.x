@@ -162,6 +162,19 @@ public:
             Ostream&
         ) const = 0;
 
+        //- General entry point for writing of multiple coordSets.
+        //  Each coordSet (track) has same data variables.
+        //  The data is per variable, per track, per point of track.
+        //  If writeTracks adds connecting lines (wherever applicable)
+        virtual void write
+        (
+            const bool writeTracks,
+            const PtrList<coordSet>&,
+            const wordList& valueSetNames,
+            const List<List<Field<Type> > >&,
+            Ostream&
+        ) const = 0;
+
         //- Write scalar as ascii
         virtual Ostream& write(const scalar, Ostream&) const;
 

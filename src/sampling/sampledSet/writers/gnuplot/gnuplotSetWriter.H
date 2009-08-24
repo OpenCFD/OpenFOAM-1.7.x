@@ -76,11 +76,20 @@ public:
             const wordList&
         ) const;
 
-        void write
+        virtual void write
         (
             const coordSet&,
             const wordList&,
             const List<const Field<Type>*>&,
+            Ostream&
+        ) const;
+
+        virtual void write
+        (
+            const bool writeTracks,
+            const PtrList<coordSet>&,
+            const wordList& valueSetNames,
+            const List<List<Field<Type> > >&,
             Ostream&
         ) const;
 };

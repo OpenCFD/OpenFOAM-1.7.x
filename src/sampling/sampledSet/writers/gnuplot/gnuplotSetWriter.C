@@ -69,29 +69,73 @@ void Foam::gnuplotSetWriter<Type>::write
     Ostream& os
 ) const
 {
-    os  << "set term postscript color" << endl
-        << "set output \"" << points.name() << ".ps\"" << endl
+    os  << "set term postscript color" << nl
+        << "set output \"" << points.name() << ".ps\"" << nl
         << "plot";
-
-    bool firstField = true;
 
     forAll(valueSets, i)
     {
-        if (!firstField)
+        if (i != 0)
         {
             os << ',';
         }
-        firstField = false;
 
-        os  << "'-' title \"" << valueSetNames[i] << "\" with lines";
+        os  << " \"-\" title \"" << valueSetNames[i] << "\" with lines";
     }
-    os << endl;
+    os  << nl;
 
 
     forAll(valueSets, i)
     {
-        os << endl;
         writeTable(points, *valueSets[i], os);
+        os  << "e" << nl;
+    }
+}
+
+
+template<class Type>
+void Foam::gnuplotSetWriter<Type>::write
+(
+    const bool writeTracks,
+    const PtrList<coordSet>& trackPoints,
+    const wordList& valueSetNames,
+    const List<List<Field<Type> > >& valueSets,
+    Ostream& os
+) const
+{
+    if (valueSets.size() != valueSetNames.size())
+    {
+        FatalErrorIn("gnuplotSetWriter<Type>::write(..)")
+            << "Number of variables:" << valueSetNames.size() << endl
+            << "Number of valueSets:" << valueSets.size()
+            << exit(FatalError);
+    }
+    if (trackPoints.size() > 0)
+    {
+        os  << "set term postscript color" << nl
+            << "set output \"" << trackPoints[0].name() << ".ps\"" << nl;
+
+        forAll(trackPoints, trackI)
+        {
+            os  << "plot";
+
+            forAll(valueSets, i)
+            {
+                if (i != 0)
+                {
+                    os << ',';
+                }
+
+                os  << " \"-\" title \"" << valueSetNames[i] << "\" with lines";
+            }
+            os << nl;
+
+            forAll(valueSets, i)
+            {
+                writeTable(trackPoints[trackI], valueSets[i][trackI], os);
+                os  << "e" << nl;
+            }
+        }
     }
 }
 
