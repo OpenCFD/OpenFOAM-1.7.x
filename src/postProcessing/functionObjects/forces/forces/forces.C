@@ -211,12 +211,6 @@ Foam::forces::forces
     }
 
     read(dict);
-
-    if (active_)
-    {
-        // Create the forces file if not already created
-        makeFile();
-    }
 }
 
 
@@ -317,16 +311,18 @@ void Foam::forces::makeFile()
         if (Pstream::master())
         {
             fileName forcesDir;
+            word startTimeName =
+                obr_.time().timeName(obr_.time().startTime().value());
+
             if (Pstream::parRun())
             {
                 // Put in undecomposed case (Note: gives problems for
                 // distributed data running)
-                forcesDir =
-                obr_.time().path()/".."/name_/obr_.time().timeName();
+                forcesDir = obr_.time().path()/".."/name_/startTimeName;
             }
             else
             {
-                forcesDir = obr_.time().path()/name_/obr_.time().timeName();
+                forcesDir = obr_.time().path()/name_/startTimeName;
             }
 
             // Create directory if does not exist.
