@@ -805,7 +805,6 @@ bool finishReaction = false;
         }
         else
         {
-            //HGWcurrentSpecieName = keyword;
             currentSpecieName = foamName(foamSpecieString(YYText()));
 
             HashTable<label>::iterator specieIndexIter
