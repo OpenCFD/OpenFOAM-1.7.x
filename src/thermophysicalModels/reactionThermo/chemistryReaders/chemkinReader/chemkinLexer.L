@@ -67,8 +67,9 @@ int yyFlexLexer::yywrap()
 Foam::string foamSpecieString(const char* YYText)
 {
     Foam::string specieString(YYText);
-    specieString.replaceAll('(', '<');
-    specieString.replaceAll(')', '>');
+    // Transforming parentheses is no longer necessary
+    //specieString.replaceAll('(', '<');
+    //specieString.replaceAll(')', '>');
     return specieString;
 }
 
@@ -804,7 +805,8 @@ bool finishReaction = false;
         }
         else
         {
-            currentSpecieName = keyword;
+            //HGWcurrentSpecieName = keyword;
+            currentSpecieName = foamName(foamSpecieString(YYText()));
 
             HashTable<label>::iterator specieIndexIter
             (
