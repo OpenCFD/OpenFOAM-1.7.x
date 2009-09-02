@@ -1010,9 +1010,9 @@ int main(int argc, char *argv[])
                 writer.writeIOField<label>(labelNames);
                 writer.writeIOField<scalar>(scalarNames);
                 writer.writeIOField<vector>(vectorNames);
-                writer.writeIOField<vector>(sphereNames);
-                writer.writeIOField<vector>(symmNames);
-                writer.writeIOField<vector>(tensorNames);
+                writer.writeIOField<sphericalTensor>(sphereNames);
+                writer.writeIOField<symmTensor>(symmNames);
+                writer.writeIOField<tensor>(tensorNames);
             }
         }
     }
