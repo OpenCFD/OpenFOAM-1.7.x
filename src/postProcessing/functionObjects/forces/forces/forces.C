@@ -190,6 +190,7 @@ Foam::forces::forces
     directForceDensity_(false),
     fDName_(""),
     rhoRef_(VGREAT),
+    pRef_(0.0),
     CofR_(vector::zero),
     forcesFilePtr_(NULL)
 {
@@ -289,7 +290,10 @@ void Foam::forces::read(const dictionary& dict)
 
             // Reference density needed for incompressible calculations
             rhoRef_ = readScalar(dict.lookup("rhoInf"));
-        }
+
+            // Reference pressure, 0 by default
+            pRef_ = dict.lookupOrDefault<scalar>("pRef", 0.0);
+       }
 
         // Centre of rotation for moment calculations
         CofR_ = dict.lookup("CofR");
@@ -443,13 +447,16 @@ Foam::forces::forcesMoments Foam::forces::calcForcesMoment() const
         const volSymmTensorField::GeometricBoundaryField& devRhoReffb
             = tdevRhoReff().boundaryField();
 
+        // Scale pRef by density for incompressible simulations
+        scalar pRef = pRef_/rho(p);
+
         forAllConstIter(labelHashSet, patchSet_, iter)
         {
             label patchi = iter.key();
 
             vectorField Md = mesh.C().boundaryField()[patchi] - CofR_;
 
-            vectorField pf = Sfb[patchi]*p.boundaryField()[patchi];
+            vectorField pf = Sfb[patchi]*(p.boundaryField()[patchi] - pRef);
 
             fm.first().first() += rho(p)*sum(pf);
             fm.second().first() += rho(p)*sum(Md ^ pf);
