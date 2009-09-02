@@ -1655,6 +1655,9 @@ int main(int argc, char *argv[])
     Info<< endl;
 
 
+    // Remove any demand-driven fields ('S', 'V' etc)
+    mesh.clearOut();
+
 
     if (cellRegion.nRegions() == 1)
     {

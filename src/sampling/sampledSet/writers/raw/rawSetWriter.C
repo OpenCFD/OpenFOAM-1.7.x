@@ -79,4 +79,38 @@ void Foam::rawSetWriter<Type>::write
 }
 
 
+template<class Type>
+void Foam::rawSetWriter<Type>::write
+(
+    const bool writeTracks,
+    const PtrList<coordSet>& points,
+    const wordList& valueSetNames,
+    const List<List<Field<Type> > >& valueSets,
+    Ostream& os
+) const
+{
+    if (valueSets.size() != valueSetNames.size())
+    {
+        FatalErrorIn("rawSetWriter<Type>::write(..)")
+            << "Number of variables:" << valueSetNames.size() << endl
+            << "Number of valueSets:" << valueSets.size()
+            << exit(FatalError);
+    }
+
+    List<const List<Type>*> columns(valueSets.size());
+
+    forAll(points, trackI)
+    {
+        // Collect sets into columns
+        forAll(valueSets, i)
+        {
+            columns[i] = &valueSets[i][trackI];
+        }
+
+        writeTable(points[trackI], columns, os);
+        os  << nl << nl;
+    }
+}
+
+
 // ************************************************************************* //

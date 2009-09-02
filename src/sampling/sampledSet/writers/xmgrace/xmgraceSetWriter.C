@@ -68,19 +68,64 @@ void Foam::xmgraceSetWriter<Type>::write
     Ostream& os
 ) const
 {
-    os  << "@title \"" << points.name() << '"' << endl
-        << "@xaxis label " << '"' << points.axis() << '"' << endl;
+    os  << "@g0 on" << nl
+        << "@with g0" << nl
+        << "@    title \"" << points.name() << '"' << nl
+        << "@    xaxis label " << '"' << points.axis() << '"' << nl;
 
     forAll(valueSets, i)
     {
-        os  << "@s" << i << " legend " << '"'
-            << valueSetNames[i] << '"' << endl
-            << "@target G0.S" << i << endl
-            << "@type xy" << endl;
+        os  << "@    s" << i << " legend " << '"'
+            << valueSetNames[i] << '"' << nl
+            << "@target G0.S" << i << nl;
 
         writeTable(points, *valueSets[i], os);
 
-        os << endl;
+        os  << '&' << nl;
+    }
+}
+
+
+template<class Type>
+void Foam::xmgraceSetWriter<Type>::write
+(
+    const bool writeTracks,
+    const PtrList<coordSet>& trackPoints,
+    const wordList& valueSetNames,
+    const List<List<Field<Type> > >& valueSets,
+    Ostream& os
+) const
+{
+    if (valueSets.size() != valueSetNames.size())
+    {
+        FatalErrorIn("gnuplotSetWriter<Type>::write(..)")
+            << "Number of variables:" << valueSetNames.size() << endl
+            << "Number of valueSets:" << valueSets.size()
+            << exit(FatalError);
+    }
+    if (trackPoints.size() > 0)
+    {
+        os  << "@g0 on" << nl
+            << "@with g0" << nl
+            << "@    title \"" << trackPoints[0].name() << '"' << nl
+            << "@    xaxis label " << '"' << trackPoints[0].axis() << '"' << nl;
+
+        // Data index.
+        label sI = 0;
+
+        forAll(trackPoints, trackI)
+        {
+            forAll(valueSets, i)
+            {
+                os  << "@    s" << sI << " legend " << '"'
+                    << valueSetNames[i] << "_track" << i << '"' << nl
+                    << "@target G0.S" << sI << nl;
+                writeTable(trackPoints[trackI], valueSets[i][trackI], os);
+                os  << '&' << nl;
+
+                sI++;
+            }
+        }
     }
 }
 
