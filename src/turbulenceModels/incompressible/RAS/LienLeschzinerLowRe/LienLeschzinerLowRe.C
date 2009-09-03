@@ -241,6 +241,7 @@ bool LienLeschzinerLowRe::read()
         sigmak_.readIfPresent(coeffDict());
         sigmaEps_.readIfPresent(coeffDict());
         Cmu_.readIfPresent(coeffDict());
+        kappa_.readIfPresent(coeffDict());
         Am_.readIfPresent(coeffDict());
         Aepsilon_.readIfPresent(coeffDict());
         Amu_.readIfPresent(coeffDict());
@@ -284,7 +285,7 @@ void LienLeschzinerLowRe::correct()
 
     volScalarField f2 = scalar(1) - 0.3*exp(-sqr(Rt));
 
-    volScalarField G = Cmu_*fMu*sqr(k_)/epsilon_*S2;
+    volScalarField G("RASModel::G", Cmu_*fMu*sqr(k_)/epsilon_*S2);
 
 
     // Dissipation equation
@@ -296,7 +297,7 @@ void LienLeschzinerLowRe::correct()
       ==
         C1_*G*epsilon_/k_
         // E-term
-        + C2_*f2*Cmu75*pow(k_, scalar(0.5))
+        + C2_*f2*Cmu75*sqrt(k_)
         /(kappa_*y_*(scalar(1) - exp(-Aepsilon_*yStar_)))
        *exp(-Amu_*sqr(yStar_))*epsilon_
       - fvm::Sp(C2_*f2*epsilon_/k_, epsilon_)
@@ -304,8 +305,8 @@ void LienLeschzinerLowRe::correct()
 
     epsEqn().relax();
 
-#   include "LienLeschzinerLowReSetWallDissipation.H"
-#   include "wallDissipationI.H"
+    #include "LienLeschzinerLowReSetWallDissipation.H"
+    #include "wallDissipationI.H"
 
     solve(epsEqn);
     bound(epsilon_, epsilon0_);

@@ -61,7 +61,7 @@ namespace RASModels
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class LaunderSharmaKE Declaration
+                       Class LaunderSharmaKE Declaration
 \*---------------------------------------------------------------------------*/
 
 class LaunderSharmaKE

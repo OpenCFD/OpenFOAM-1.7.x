@@ -145,7 +145,7 @@ LaunderSharmaKE::LaunderSharmaKE
             IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        autoCreateK("k", mesh_)
+        mesh_
     ),
 
     epsilon_
@@ -158,21 +158,10 @@ LaunderSharmaKE::LaunderSharmaKE
             IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        autoCreateEpsilon("epsilon", mesh_)
+        mesh_
     ),
 
-    mut_
-    (
-        IOobject
-        (
-            "mut",
-            runTime_.timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        autoCreateMut("mut", mesh_)
-    ),
+    mut_(rho_*Cmu_*fMu()*sqr(k_)/(epsilon_ + epsilonSmall_)),
 
     alphat_
     (
@@ -187,9 +176,6 @@ LaunderSharmaKE::LaunderSharmaKE
         autoCreateAlphat("alphat", mesh_)
     )
 {
-    mut_ = rho_*Cmu_*fMu()*sqr(k_)/(epsilon_ + epsilonSmall_);
-    mut_.correctBoundaryConditions();
-
     alphat_ = mut_/Prt_;
     alphat_.correctBoundaryConditions();
 
@@ -275,8 +261,7 @@ void LaunderSharmaKE::correct()
     if (!turbulence_)
     {
         // Re-calculate viscosity
-        mut_ = rho_*Cmu_*fMu()*sqr(k_)/(epsilon_ + epsilonSmall_);
-        mut_.correctBoundaryConditions();
+        mut_ == rho_*Cmu_*fMu()*sqr(k_)/(epsilon_ + epsilonSmall_);
 
         // Re-calculate thermal diffusivity
         alphat_ = mut_/Prt_;
@@ -304,8 +289,6 @@ void LaunderSharmaKE::correct()
     volScalarField G("RASModel::G", mut_*(tgradU() && dev(twoSymm(tgradU()))));
     tgradU.clear();
 
-    // Update espsilon and G at the wall
-    epsilon_.boundaryField().updateCoeffs();
 
     // Dissipation equation
 
@@ -322,9 +305,6 @@ void LaunderSharmaKE::correct()
     );
 
     epsEqn().relax();
-
-    epsEqn().boundaryManipulate(epsilon_.boundaryField());
-
     solve(epsEqn);
     bound(epsilon_, epsilon0_);
 
@@ -348,8 +328,8 @@ void LaunderSharmaKE::correct()
 
 
     // Re-calculate viscosity
-    mut_ = Cmu_*fMu()*rho_*sqr(k_)/(epsilon_ + epsilonSmall_);
-    mut_.correctBoundaryConditions();
+    mut_ == Cmu_*fMu()*rho_*sqr(k_)/(epsilon_ + epsilonSmall_);
+
 
     // Re-calculate thermal diffusivity
     alphat_ = mut_/Prt_;
