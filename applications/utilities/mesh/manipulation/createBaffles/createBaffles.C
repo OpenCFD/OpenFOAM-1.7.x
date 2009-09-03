@@ -146,6 +146,14 @@ int main(int argc, char *argv[])
     Info<< "Converting faces on zone " << zoneID.name()
         << " into baffles." << nl << endl;
 
+    if (zoneID.index() == -1)
+    {
+        FatalErrorIn(args.executable()) << "Cannot find faceZone "
+            << zoneID.name() << endl
+            << "Valid zones are " << faceZones.names()
+            << exit(FatalError);
+    }
+
     const faceZone& fZone = faceZones[zoneID.index()];
 
     Info<< "Found " << returnReduce(fZone.size(), sumOp<label>())
