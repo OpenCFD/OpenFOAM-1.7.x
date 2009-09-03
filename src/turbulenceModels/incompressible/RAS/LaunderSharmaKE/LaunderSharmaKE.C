@@ -133,22 +133,8 @@ LaunderSharmaKE::LaunderSharmaKE
         mesh_
     ),
 
-    nut_
-    (
-        IOobject
-        (
-            "nut",
-            runTime_.timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        autoCreateNut("nut", mesh_)
-    )
+    nut_(Cmu_*fMu()*sqr(k_)/(epsilonTilda_ + epsilonSmall_))
 {
-    nut_ = Cmu_*fMu()*sqr(k_)/(epsilonTilda_ + epsilonSmall_);
-    nut_.correctBoundaryConditions();
-
     printCoeffs();
 }
 
@@ -235,7 +221,7 @@ void LaunderSharmaKE::correct()
 
     volScalarField S2 = 2*magSqr(symm(fvc::grad(U_)));
 
-    volScalarField G = nut_*S2;
+    volScalarField G("RASModel::G", nut_*S2);
 
     volScalarField E = 2.0*nu()*nut_*fvc::magSqrGradGrad(U_);
     volScalarField D = 2.0*nu()*magSqr(fvc::grad(sqrt(k_)));
@@ -276,8 +262,7 @@ void LaunderSharmaKE::correct()
 
 
     // Re-calculate viscosity
-    nut_ = Cmu_*fMu()*sqr(k_)/epsilonTilda_;
-    nut_.correctBoundaryConditions();
+    nut_ == Cmu_*fMu()*sqr(k_)/epsilonTilda_;
 }
 
 
