@@ -144,6 +144,9 @@ protected:
             //- Reference density needed for incompressible calculations
             scalar rhoRef_;
 
+            //- Reference pressure
+            scalar pRef_;
+
             //- Centre of rotation
             vector CofR_;
 
