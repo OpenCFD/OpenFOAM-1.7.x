@@ -22,6 +22,12 @@ numberOfSubdomains  4;
 //- Keep owner and neighbour on same processor for faces in zones:
 // preserveFaceZones (heater solid1 solid3);
 
+
+//- Keep owner and neighbour on same processor for faces in patches:
+//  (makes sense only for cyclic patches)
+//preservePatches (cyclic_left_right);
+
+
 method          scotch;
 // method          hierarchical;
 // method          simple;

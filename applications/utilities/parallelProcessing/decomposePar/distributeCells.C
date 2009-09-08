@@ -45,6 +45,35 @@ void domainDecomposition::distributeCells()
 
     labelHashSet sameProcFaces;
 
+    if (decompositionDict_.found("preservePatches"))
+    {
+        wordList pNames(decompositionDict_.lookup("preservePatches"));
+
+        Info<< "Keeping owner of faces in patches " << pNames
+            << " on same processor. This only makes sense for cyclics." << endl;
+
+        const polyBoundaryMesh& patches = boundaryMesh();
+
+        forAll(pNames, i)
+        {
+            label patchI = patches.findPatchID(pNames[i]);
+
+            if (patchI == -1)
+            {
+                FatalErrorIn("domainDecomposition::distributeCells()")
+                    << "Unknown preservePatch " << pNames[i]
+                    << endl << "Valid patches are " << patches.names()
+                    << exit(FatalError);
+            }
+
+            const polyPatch& pp = patches[patchI];
+
+            forAll(pp, i)
+            {
+                sameProcFaces.insert(pp.start() + i);
+            }
+        }
+    }
     if (decompositionDict_.found("preserveFaceZones"))
     {
         wordList zNames(decompositionDict_.lookup("preserveFaceZones"));
