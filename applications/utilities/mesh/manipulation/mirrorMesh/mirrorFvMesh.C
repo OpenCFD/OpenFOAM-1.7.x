@@ -167,6 +167,16 @@ Foam::mirrorFvMesh::mirrorFvMesh(const IOobject& io)
     forAll (oldPatches, patchI)
     {
         const polyPatch& curPatch = oldPatches[patchI];
+
+        if (curPatch.coupled())
+        {
+            WarningIn("mirrorFvMesh::mirrorFvMesh(const IOobject&)")
+                << "Found coupled patch " << curPatch.name() << endl
+                << "    Mirroring faces on coupled patches destroys"
+                << " the ordering. This might be fixed by running a dummy"
+                << " createPatch afterwards." << endl;
+        }
+
         boolList& curInsBouFace = insertedBouFace[patchI];
 
         curInsBouFace.setSize(curPatch.size());
