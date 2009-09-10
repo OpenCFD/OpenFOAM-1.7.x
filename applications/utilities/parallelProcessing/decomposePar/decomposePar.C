@@ -237,23 +237,28 @@ int main(int argc, char *argv[])
 
         if (writeCellDist)
         {
+            const labelList& procIds = mesh.cellToProc();
+
             // Write the decomposition as labelList for use with 'manual'
             // decomposition method.
-
-            // FIXME: may attempt to write to a non-existent "region0/"
-            OFstream os
+            labelIOList cellDecomposition
             (
-                runTime.path()
-              / mesh.facesInstance()
-              / regionName
-              / "cellDecomposition"
+                IOobject
+                (
+                    "cellDecomposition",
+                    mesh.facesInstance(),
+                    mesh,
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE,
+                    false
+                ),
+                procIds
             );
-
-            os << mesh.cellToProc();
+            cellDecomposition.write();
 
             Info<< nl << "Wrote decomposition to "
-                << os.name() << " for use in manual decomposition."
-                << endl;
+                << cellDecomposition.objectPath()
+                << " for use in manual decomposition." << endl;
 
             // Write as volScalarField for postprocessing.
             volScalarField cellDist
@@ -271,7 +276,6 @@ int main(int argc, char *argv[])
                 zeroGradientFvPatchScalarField::typeName
             );
 
-            const labelList& procIds = mesh.cellToProc();
             forAll(procIds, celli)
             {
                cellDist[celli] = procIds[celli];

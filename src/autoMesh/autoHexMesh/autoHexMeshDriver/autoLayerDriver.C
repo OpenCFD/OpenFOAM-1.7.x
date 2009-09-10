@@ -2667,10 +2667,22 @@ void Foam::autoLayerDriver::addLayers
     {
         const polyBoundaryMesh& patches = mesh.boundaryMesh();
 
-        Info<< nl
-            << "patch               faces    layers avg thickness[m]" << nl
-            << "                                    near-wall overall" << nl
-            << "-----               -----    ------ --------- -------" << endl;
+        // Find maximum length of a patch name, for a nicer output
+        label maxPatchNameLen = 0;
+        forAll(meshMover.adaptPatchIDs(), i)
+        {
+            label patchI = meshMover.adaptPatchIDs()[i];
+            word patchName = patches[patchI].name();
+            maxPatchNameLen = max(maxPatchNameLen,label(patchName.size()));
+        }
+
+        Info<< nl 
+            << setf(ios_base::left) << setw(maxPatchNameLen) << "patch"
+            << setw(0) << " faces    layers avg thickness[m]" << nl
+            << setf(ios_base::left) << setw(maxPatchNameLen) << " "
+            << setw(0) << "                 near-wall overall" << nl
+            << setf(ios_base::left) << setw(maxPatchNameLen) << "-----"
+            << setw(0) << " -----    ------ --------- -------" << endl;
 
         forAll(meshMover.adaptPatchIDs(), i)
         {
@@ -2710,18 +2722,24 @@ void Foam::autoLayerDriver::addLayers
 
             label totNPoints = returnReduce(meshPoints.size(), sumOp<label>());
 
-            //reduce(maxThickness, maxOp<scalar>());
-            //reduce(minThickness, minOp<scalar>());
-            scalar avgThickness =
-                returnReduce(sumThickness, sumOp<scalar>())
-              / totNPoints;
-            scalar avgNearWallThickness =
-                returnReduce(sumNearWallThickness, sumOp<scalar>())
-              / totNPoints;
+            // For empty patches, totNPoints is 0.
+            scalar avgThickness = 0;
+            scalar avgNearWallThickness = 0;
 
-            Info<< setf(ios_base::left) << setw(19) << patches[patchI].name();
-            //Sout.unsetf(ios_base::left);
-            Info<< setprecision(3)
+            if (totNPoints > 0)
+            {
+                //reduce(maxThickness, maxOp<scalar>());
+                //reduce(minThickness, minOp<scalar>());
+                avgThickness =
+                    returnReduce(sumThickness, sumOp<scalar>())
+                  / totNPoints;
+                avgNearWallThickness =
+                    returnReduce(sumNearWallThickness, sumOp<scalar>())
+                  / totNPoints;
+            }
+
+            Info<< setf(ios_base::left) << setw(maxPatchNameLen)
+                << patches[patchI].name() << setprecision(3)
                 << " " << setw(8)
                 << returnReduce(patches[patchI].size(), sumOp<scalar>())
                 << " " << setw(6) << layerParams.numLayers()[patchI]

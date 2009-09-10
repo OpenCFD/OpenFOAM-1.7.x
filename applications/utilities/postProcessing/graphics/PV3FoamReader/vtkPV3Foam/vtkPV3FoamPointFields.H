@@ -191,7 +191,7 @@ void Foam::vtkPV3Foam::convertPointField
     pointData->SetNumberOfTuples(nPoints + addPointCellLabels.size());
     pointData->SetNumberOfComponents(nComp);
     pointData->Allocate(nComp*(nPoints + addPointCellLabels.size()));
-    pointData->SetName(tf.name().c_str());
+    pointData->SetName(ptf.name().c_str());
 
     if (debug)
     {

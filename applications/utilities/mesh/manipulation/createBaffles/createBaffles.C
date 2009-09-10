@@ -125,6 +125,7 @@ label findPatchID(const polyMesh& mesh, const word& name)
 
 int main(int argc, char *argv[])
 {
+#   include "addRegionOption.H"
     argList::validArgs.append("faceZone");
     argList::validArgs.append("patch");
     argList::validOptions.insert("additionalPatches", "(patch2 .. patchN)");
@@ -134,7 +135,7 @@ int main(int argc, char *argv[])
 #   include "setRootCase.H"
 #   include "createTime.H"
     runTime.functionObjects().off();
-#   include "createMesh.H"
+#   include "createNamedMesh.H"
     const word oldInstance = mesh.pointsInstance();
 
     const polyBoundaryMesh& patches = mesh.boundaryMesh();

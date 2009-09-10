@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
 {
     argList::validOptions.insert("noFlipMap", "");
 
+#   include "addRegionOption.H"
 #   include "addTimeOptions.H"
 #   include "setRootCase.H"
 #   include "createTime.H"
@@ -77,7 +78,7 @@ int main(int argc, char *argv[])
 
     runTime.setTime(Times[startTime], startTime);
 
-#   include "createPolyMesh.H"
+#   include "createNamedPolyMesh.H"
 
     // Search for list of objects for the time of the mesh
     IOobjectList objects
