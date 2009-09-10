@@ -222,13 +222,14 @@ labelList findBaffles(const polyMesh& mesh, const labelList& boundaryFaces)
 
 int main(int argc, char *argv[])
 {
+#   include "addRegionOption.H"
     argList::validOptions.insert("split", "");
     argList::validOptions.insert("overwrite", "");
     argList::validOptions.insert("detectOnly", "");
 #   include "setRootCase.H"
 #   include "createTime.H"
     runTime.functionObjects().off();
-#   include "createMesh.H"
+#   include "createNamedMesh.H"
     const word oldInstance = mesh.pointsInstance();
 
     bool split      = args.optionFound("split");

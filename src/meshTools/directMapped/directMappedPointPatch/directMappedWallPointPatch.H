@@ -36,7 +36,7 @@ SourceFiles
 #ifndef directMappedWallPointPatch_H
 #define directMappedWallPointPatch_H
 
-#include "facePointPatch.H"
+#include "wallPointPatch.H"
 #include "directMappedWallPolyPatch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -50,7 +50,7 @@ namespace Foam
 
 class directMappedWallPointPatch
 :
-    public facePointPatch
+    public wallPointPatch
 {
 
 public:
@@ -68,7 +68,7 @@ public:
             const pointBoundaryMesh& bm
         )
         :
-            facePointPatch(patch, bm)
+            wallPointPatch(patch, bm)
         {}
 };
 

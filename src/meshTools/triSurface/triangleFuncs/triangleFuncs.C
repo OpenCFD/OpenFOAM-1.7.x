@@ -115,7 +115,7 @@ bool Foam::triangleFuncs::intersectAxesBundle
     //          V10:(-1.285715 8.99165e-16 -1.142858)
     //          V20:(0 0 -1.678573)
     //          i0:0
-    if (Foam::mag(det)/localScale < SMALL)
+    if (localScale < VSMALL || Foam::mag(det)/localScale < SMALL)
     {
         // Triangle parallel to dir
         return false;

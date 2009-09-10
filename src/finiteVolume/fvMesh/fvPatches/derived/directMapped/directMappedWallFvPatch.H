@@ -36,7 +36,7 @@ SourceFiles
 #ifndef directMappedWallFvPatch_H
 #define directMappedWallFvPatch_H
 
-#include "fvPatch.H"
+#include "wallFvPatch.H"
 #include "directMappedWallPolyPatch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -45,12 +45,12 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class directMappedWallFvPatch Declaration
+                   Class directMappedWallFvPatch Declaration
 \*---------------------------------------------------------------------------*/
 
 class directMappedWallFvPatch
 :
-    public fvPatch
+    public wallFvPatch
 {
 
 public:
@@ -68,7 +68,7 @@ public:
             const fvBoundaryMesh& bm
         )
         :
-            fvPatch(patch, bm)
+            wallFvPatch(patch, bm)
         {}
 };
 
