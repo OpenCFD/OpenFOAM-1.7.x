@@ -75,7 +75,7 @@ scotchCoeffs
 
 manualCoeffs
 {
-    dataFile    "decompositionData";
+    dataFile    "cellDecomposition";
 }
 
 
