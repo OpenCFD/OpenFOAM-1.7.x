@@ -312,11 +312,36 @@ void readPhysNames(IFstream& inFile, Map<word>& physicalNames)
         string line;
         inFile.getLine(line);
         IStringStream lineStr(line);
+        label nSpaces = lineStr.str().count(' ');
 
-        lineStr >> regionI >> regionName;
+        if(nSpaces == 1)
+        {
+            lineStr >> regionI >> regionName;
 
-        Info<< "    " << regionI << '\t' << string::validate<word>(regionName)
-            << endl;
+            Info<< "    " << regionI << '\t'
+                << string::validate<word>(regionName) << endl;
+        }
+        else if(nSpaces == 2)
+        {
+            // >= Gmsh2.4 physical types has tag in front.
+            label physType;
+            lineStr >> physType >> regionI >> regionName;
+            if (physType == 1)
+            {
+                Info<< "    " << "Line " << regionI << '\t'
+                    << string::validate<word>(regionName) << endl;
+            }
+            else if (physType == 2)
+            {
+                Info<< "    " << "Surface " << regionI << '\t'
+                    << string::validate<word>(regionName) << endl;
+            }
+            else if (physType == 3)
+            {
+                Info<< "    " << "Volume " << regionI << '\t'
+                    << string::validate<word>(regionName) << endl;
+            }
+        }
 
         physicalNames.insert(regionI, string::validate<word>(regionName));
     }
