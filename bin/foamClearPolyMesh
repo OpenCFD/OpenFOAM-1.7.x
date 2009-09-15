@@ -130,6 +130,22 @@ for i in \
     pointLevel \
     refinementHistory \
     surfaceIndex \
+    points.gz \
+    faces.gz \
+    owner.gz \
+    neighbour.gz \
+    cells.gz \
+    boundary.gz \
+    pointZones.gz \
+    faceZones.gz \
+    cellZones.gz \
+    meshModifiers.gz \
+    parallelData.gz \
+    sets.gz \
+    cellLevel.gz \
+    pointLevel.gz \
+    refinementHistory.gz \
+    surfaceIndex.gz \
 ;
 do
     rm -rf $meshDir/$i
