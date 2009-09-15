@@ -142,7 +142,7 @@ LaunderSharmaKE::LaunderSharmaKE
             "k",
             runTime_.timeName(),
             mesh_,
-            IOobject::NO_READ,
+            IOobject::MUST_READ,
             IOobject::AUTO_WRITE
         ),
         mesh_
@@ -155,7 +155,7 @@ LaunderSharmaKE::LaunderSharmaKE
             "epsilon",
             runTime_.timeName(),
             mesh_,
-            IOobject::NO_READ,
+            IOobject::MUST_READ,
             IOobject::AUTO_WRITE
         ),
         mesh_

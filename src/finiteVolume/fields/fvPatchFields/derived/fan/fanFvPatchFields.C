@@ -61,7 +61,7 @@ void Foam::fanFvPatchField<Foam::scalar>::updateCoeffs()
         (
             scalarField::subField(phip, size()/2)
            /scalarField::subField(patch().magSf(), size()/2),
-            0.0
+            scalar(0)
         );
 
         if (phi.dimensions() == dimDensity*dimVelocity*dimArea)
@@ -79,7 +79,7 @@ void Foam::fanFvPatchField<Foam::scalar>::updateCoeffs()
             jump_ += f_[i]*pow(Un, i);
         }
 
-        jump_ = max(jump_, 0.0);
+        jump_ = max(jump_, scalar(0));
     }
 
     jumpCyclicFvPatchField<scalar>::updateCoeffs();

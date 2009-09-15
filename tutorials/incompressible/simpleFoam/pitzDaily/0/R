@@ -34,11 +34,13 @@ boundaryField
     upperWall
     {
         type            kqRWallFunction;
+        value           uniform ( 0 0 0 0 0 0 );
     }
 
     lowerWall
     {
         type            kqRWallFunction;
+        value           uniform ( 0 0 0 0 0 0 );
     }
 
     frontAndBack
