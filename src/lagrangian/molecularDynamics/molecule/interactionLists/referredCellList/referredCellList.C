@@ -367,7 +367,7 @@ void Foam::referredCellList::buildReferredCellList
             // boundaries.  Separate treatment allows the serial version to run
             // transparently.
 
-            if (mesh.boundaryMesh()[patchI].type() == "cyclic")
+            if (isA<cyclicPolyPatch>(mesh.boundaryMesh()[patchI]))
             {
                 const cyclicPolyPatch& patch = refCast<const cyclicPolyPatch>
                 (

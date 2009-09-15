@@ -12,7 +12,7 @@
     {
         const fvPatch& currPatch = patches[patchi];
 
-        if (isType<wallFvPatch>(currPatch))
+        if (isA<wallFvPatch>(currPatch))
         {
             forAll(currPatch, facei)
             {
@@ -30,7 +30,7 @@
     {
         const fvPatch& currPatch = patches[patchi];
 
-        if (isType<wallFvPatch>(currPatch))
+        if (isA<wallFvPatch>(currPatch))
         {
             const scalarField& nuw = nutb.boundaryField()[patchi];
 
@@ -74,7 +74,7 @@
     {
         const fvPatch& curPatch = patches[patchi];
 
-        if (isType<wallFvPatch>(curPatch))
+        if (isA<wallFvPatch>(curPatch))
         {
             forAll(curPatch, facei)
             {

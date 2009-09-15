@@ -243,7 +243,7 @@ void domainDecomposition::decomposeMesh(const bool filterEmptyPatches)
 
             const label patchStart = patches[patchi].start();
 
-            if (typeid(patches[patchi]) != typeid(cyclicPolyPatch))
+            if (!isA<cyclicPolyPatch>(patches[patchi]))
             {
                 // Normal patch. Add faces to processor where the cell
                 // next to the face lives

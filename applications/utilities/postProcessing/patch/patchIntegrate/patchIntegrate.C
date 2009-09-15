@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
             }
 
             // Give patch area
-            if (isType<cyclicPolyPatch>(mesh.boundaryMesh()[patchi]))
+            if (isA<cyclicPolyPatch>(mesh.boundaryMesh()[patchi]))
             {
                 Info<< "    Cyclic patch vector area: " << nl;
                 label nFaces = mesh.boundaryMesh()[patchi].size();

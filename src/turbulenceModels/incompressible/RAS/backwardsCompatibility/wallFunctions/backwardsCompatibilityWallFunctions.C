@@ -72,7 +72,7 @@ tmp<volScalarField> autoCreateNut
 
         forAll(bm, patchI)
         {
-            if (isType<wallFvPatch>(bm[patchI]))
+            if (isA<wallFvPatch>(bm[patchI]))
             {
                 nutBoundaryTypes[patchI] =
                     RASModels::nutWallFunctionFvPatchScalarField::typeName;

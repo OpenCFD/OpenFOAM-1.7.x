@@ -160,12 +160,8 @@ void reorderPatchFields(fvMesh& mesh, const labelList& oldToNew)
 
 
 // Adds patch if not yet there. Returns patchID.
-label addPatch
-(
-    fvMesh& mesh,
-    const word& patchName,
-    const word& patchType
-)
+template<class PatchType>
+label addPatch(fvMesh& mesh, const word& patchName)
 {
     polyBoundaryMesh& polyPatches =
         const_cast<polyBoundaryMesh&>(mesh.boundaryMesh());
@@ -173,10 +169,17 @@ label addPatch
     label patchI = polyPatches.findPatchID(patchName);
     if (patchI != -1)
     {
-        if (polyPatches[patchI].type() == patchType)
+        if (isA<PatchType>(polyPatches[patchI]))
         {
             // Already there
             return patchI;
+        }
+        else
+        {
+            FatalErrorIn("addPatch<PatchType>(fvMesh&, const word&)")
+                << "Already have patch " << patchName
+                << " but of type " << PatchType::typeName
+                << exit(FatalError);
         }
     }
 
@@ -214,7 +217,7 @@ label addPatch
         sz,
         polyPatch::New
         (
-            patchType,
+            PatchType::typeName,
             patchName,
             0,              // size
             startFaceI,
@@ -1021,17 +1024,15 @@ EdgeMap<label> addRegionPatches
 
         if (interfaceSizes[e] > 0)
         {
-            label patchI = addPatch
+            label patchI = addPatch<directMappedWallPolyPatch>
             (
                 mesh,
-                regionNames[e[0]] + "_to_" + regionNames[e[1]],
-                directMappedWallPolyPatch::typeName
+                regionNames[e[0]] + "_to_" + regionNames[e[1]]
             );
-            addPatch
+            addPatch<directMappedWallPolyPatch>
             (
                 mesh,
-                regionNames[e[1]] + "_to_" + regionNames[e[0]],
-                directMappedWallPolyPatch::typeName
+                regionNames[e[1]] + "_to_" + regionNames[e[0]]
             );
 
             Info<< "For interface between region " << e[0]
@@ -1405,7 +1406,7 @@ int main(int argc, char *argv[])
             IOobject
             (
                 "cellToRegion",
-                mesh.facesInstance(),
+                runTime.timeName(),
                 mesh,
                 IOobject::NO_READ,
                 IOobject::NO_WRITE,

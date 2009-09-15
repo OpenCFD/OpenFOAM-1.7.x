@@ -39,7 +39,7 @@ Description
     {
         const fvPatch& curPatch = patches[patchi];
 
-        if (isType<wallFvPatch>(curPatch))
+        if (isA<wallFvPatch>(curPatch))
         {
             const scalarField& nuw = nu().boundaryField()[patchi];
             scalarField& nutw = nut_.boundaryField()[patchi];

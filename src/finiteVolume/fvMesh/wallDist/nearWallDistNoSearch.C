@@ -41,7 +41,7 @@ void Foam::nearWallDistNoSearch::doAll()
     {
         fvPatchScalarField& ypatch = operator[](patchI);
 
-        if (patches[patchI].type() == wallFvPatch::typeName)
+        if (isA<wallFvPatch>(patches[patchI]))
         {
             const unallocLabelList& faceCells = patches[patchI].faceCells();
 

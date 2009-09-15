@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
         {
             const fvPatch& currPatch = patches[patchi];
 
-            if (typeid(currPatch) == typeid(wallFvPatch))
+            if (isA<wallFvPatch>(currPatch))
             {
                 yPlus.boundaryField()[patchi] =
                     d[patchi]

@@ -30,6 +30,7 @@ Description
 
 SourceFiles
     cellDistFuncs.C
+    cellDistFuncsTemplates.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -101,8 +102,10 @@ public:
         //- Get patchIDs of named patches
         labelHashSet getPatchIDs(const wordList&) const;
 
-        //- Get patchIDs of certain type (e.g. 'processorPolyPatch')
-        labelHashSet getPatchIDs(const word&) const;
+        //- Get patchIDs of/derived off certain type (e.g. 'processorPolyPatch')
+        //  Uses isA, not isType
+        template<class Type>
+        labelHashSet getPatchIDs() const;
 
         //- Calculate smallest true distance (and face index)
         //  from pt to faces wallFaces.
@@ -156,6 +159,12 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+#   include "cellDistFuncsTemplates.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

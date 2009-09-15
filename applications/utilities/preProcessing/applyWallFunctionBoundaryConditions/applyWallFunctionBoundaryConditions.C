@@ -203,7 +203,7 @@ void replaceBoundaryType
     dictionary& boundaryDict = dict.subDict("boundaryField");
     forAll(bMesh, patchI)
     {
-        if (isType<wallPolyPatch>(bMesh[patchI]))
+        if (isA<wallPolyPatch>(bMesh[patchI]))
         {
             word patchName = bMesh[patchI].name();
             dictionary& oldPatch = boundaryDict.subDict(patchName);

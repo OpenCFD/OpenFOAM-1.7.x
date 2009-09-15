@@ -175,7 +175,7 @@ void Foam::linearValveFvMesh::makeSlidersDead()
     // Enable layering
     forAll (topoChanges, modI)
     {
-        if (typeid(topoChanges[modI]) == typeid(slidingInterface))
+        if (isA<slidingInterface>(topoChanges[modI]))
         {
             topoChanges[modI].disable();
         }
@@ -197,7 +197,7 @@ void Foam::linearValveFvMesh::makeSlidersLive()
     // Enable sliding interface
     forAll (topoChanges, modI)
     {
-        if (typeid(topoChanges[modI]) == typeid(slidingInterface))
+        if (isA<slidingInterface>(topoChanges[modI]))
         {
             topoChanges[modI].enable();
         }
@@ -220,7 +220,7 @@ bool Foam::linearValveFvMesh::attached() const
 
     forAll (topoChanges, modI)
     {
-        if (typeid(topoChanges[modI]) == typeid(slidingInterface))
+        if (isA<slidingInterface>(topoChanges[modI]))
         {
             result =
                 result
@@ -231,7 +231,7 @@ bool Foam::linearValveFvMesh::attached() const
     // Check thal all sliders are in sync (debug only)
     forAll (topoChanges, modI)
     {
-        if (typeid(topoChanges[modI]) == typeid(slidingInterface))
+        if (isA<slidingInterface>(topoChanges[modI]))
         {
             if
             (

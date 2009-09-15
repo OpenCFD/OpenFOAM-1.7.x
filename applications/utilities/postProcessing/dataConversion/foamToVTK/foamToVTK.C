@@ -205,8 +205,8 @@ labelList getSelectedPatches
 
         if
         (
-            isType<emptyPolyPatch>(pp)
-            || (Pstream::parRun() && isType<processorPolyPatch>(pp))
+            isA<emptyPolyPatch>(pp)
+            || (Pstream::parRun() && isA<processorPolyPatch>(pp))
         )
         {
             Info<< "    discarding empty/processor patch " << patchI
@@ -805,7 +805,7 @@ int main(int argc, char *argv[])
                         labelList(1, patchI)
                     );
 
-                    if (!isType<emptyPolyPatch>(pp))
+                    if (!isA<emptyPolyPatch>(pp))
                     {
                         // VolFields + patchID
                         writeFuns::writeCellDataHeader

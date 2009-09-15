@@ -366,14 +366,24 @@ void Foam::directMappedPatchBase::calcMapping() const
     if
     (
         offset_ == vector::zero
+     && mode_ == NEARESTPATCHFACE
      && sampleRegion_ == patch_.boundaryMesh().mesh().name()
+     && samplePatch_ == patch_.name()
     )
     {
-        FatalErrorIn("directMappedPatchBase::calcMapping() const")
+        WarningIn("directMappedPatchBase::calcMapping() const")
             << "Invalid offset " << offset_ << endl
             << "Offset is the vector added to the patch face centres to"
-            << " find the cell supplying the data."
-            << exit(FatalError);
+            << " find the patch face supplying the data." << endl
+            << "Setting it to " << offset_
+            << " on the same patch, on the same region"
+            << " will find the faces themselves which does not make sense"
+            << " for anything but testing." << endl
+            << "patch_:" << patch_.name() << endl
+            << "sampleRegion_:" << sampleRegion_ << endl
+            << "mode_:" << sampleModeNames_[mode_] << endl
+            << "samplePatch_:" << samplePatch_ << endl
+            << "offset_:" << offset_ << endl;
     }
 
 

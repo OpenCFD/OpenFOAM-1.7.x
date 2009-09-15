@@ -152,7 +152,7 @@ void Foam::patchWriter::writePatchIDs()
 
         const polyPatch& pp = mesh.boundaryMesh()[patchI];
 
-        if (!isType<emptyPolyPatch>(pp))
+        if (!isA<emptyPolyPatch>(pp))
         {
             writeFuns::insert(scalarField(pp.size(), patchI), fField);
         }

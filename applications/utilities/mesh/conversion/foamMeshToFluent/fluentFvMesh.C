@@ -174,17 +174,11 @@ void Foam::fluentFvMesh::writeFluentMesh() const
         nWrittenFaces += patchFaces.size();
 
         // Write patch type
-        if
-        (
-            typeid(boundary()[patchI]) == typeid(wallFvPatch)
-        )
+        if (isA<wallFvPatch>(boundary()[patchI]))
         {
             fluentMeshFile << 3;
         }
-        else if
-        (
-            typeid(boundary()[patchI]) == typeid(symmetryFvPatch)
-        )
+        else if (isA<symmetryFvPatch>(boundary()[patchI]))
         {
             fluentMeshFile << 7;
         }
@@ -282,17 +276,11 @@ void Foam::fluentFvMesh::writeFluentMesh() const
             << "(39 (" << patchI + 10 << " ";
 
         // Write patch type
-        if
-        (
-            typeid(boundary()[patchI]) == typeid(wallFvPatch)
-        )
+        if (isA<wallFvPatch>(boundary()[patchI]))
         {
             fluentMeshFile << "wall ";
         }
-        else if
-        (
-            typeid(boundary()[patchI]) == typeid(symmetryFvPatch)
-        )
+        else if (isA<symmetryFvPatch>(boundary()[patchI]))
         {
             fluentMeshFile << "symmetry ";
         }

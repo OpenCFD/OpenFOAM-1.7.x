@@ -55,7 +55,7 @@ labelList procNeighbours(const polyMesh& mesh)
 
     forAll (mesh.boundaryMesh(), patchI)
     {
-        if (typeid(mesh.boundaryMesh()[patchI]) == typeid(processorPolyPatch))
+        if (isA<processorPolyPatch>(mesh.boundaryMesh()[patchI]))
         {
             nNeighbours++;
         }
@@ -67,7 +67,7 @@ labelList procNeighbours(const polyMesh& mesh)
 
     forAll (mesh.boundaryMesh(), patchI)
     {
-        if (typeid(mesh.boundaryMesh()[patchI]) == typeid(processorPolyPatch))
+        if (isA<processorPolyPatch>(mesh.boundaryMesh()[patchI]))
         {
             const polyPatch& patch = mesh.boundaryMesh()[patchI];
 

@@ -164,7 +164,7 @@ void mapConsistentSubMesh
 
     forAll(meshTarget.boundary(), patchi)
     {
-        if (typeid(meshTarget.boundary()[patchi]) != typeid(processorFvPatch))
+        if (!isA<processorFvPatch>(meshTarget.boundary()[patchi]))
         {
             patchMap.insert
             (
@@ -201,7 +201,7 @@ wordList addProcessorPatches
 
     forAll (meshTarget.boundary(), patchi)
     {
-        if (typeid(meshTarget.boundary()[patchi]) == typeid(processorFvPatch))
+        if (isA<processorFvPatch>(meshTarget.boundary()[patchi]))
         {
             if
             (

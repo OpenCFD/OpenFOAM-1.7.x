@@ -268,10 +268,7 @@ label twoDNess(const polyMesh& mesh)
     {
         const polyPatch& patch = patches[patchI];
 
-        if
-        (
-            typeid(patch) != typeid(wedgePolyPatch)
-        )
+        if (!isA<wedgePolyPatch>(patch))
         {
             const vectorField& n = patch.faceAreas();
 

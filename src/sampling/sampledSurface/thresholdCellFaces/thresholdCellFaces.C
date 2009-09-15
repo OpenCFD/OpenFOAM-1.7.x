@@ -179,8 +179,8 @@ void Foam::thresholdCellFaces::calculate
 
         if
         (
-            isType<emptyPolyPatch>(p)
-         || (Pstream::parRun() && isType<processorPolyPatch>(p))
+            isA<emptyPolyPatch>(p)
+         || (Pstream::parRun() && isA<processorPolyPatch>(p))
         )
         {
             continue;

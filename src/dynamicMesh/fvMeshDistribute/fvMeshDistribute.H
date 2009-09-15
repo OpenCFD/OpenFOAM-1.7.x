@@ -164,10 +164,9 @@ class fvMeshDistribute
             );
 
             //- Init patch fields of certain type
-            template<class GeoField>
+            template<class GeoField, class PatchFieldType>
             void initPatchFields
             (
-                const word& patchFieldType,
                 const typename GeoField::value_type& initVal
             );
 

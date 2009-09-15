@@ -184,8 +184,8 @@ class FaceCellWave
             //- Debugging: check info on both sides of cyclic
             void checkCyclic(const polyPatch& pPatch) const;
 
-            //- Has patches of certain type?
-            bool hasPatchType(const word& nameOfType);
+            //- Has cyclic patch?
+            bool hasCyclicPatch() const;
 
             //- Merge received patch data into global data
             void mergeFaceInfo

@@ -158,11 +158,7 @@ void Foam::ensightParts::recalculate(const polyMesh& pMesh)
     forAll(pMesh.boundaryMesh(), patchI)
     {
         const polyPatch& pPatch = pMesh.boundaryMesh()[patchI];
-        if
-        (
-            pPatch.size()
-         && typeid(pPatch) != typeid(processorPolyPatch)
-        )
+        if (pPatch.size() && !isA<processorPolyPatch>(pPatch))
         {
             partsList_.set
             (

@@ -80,7 +80,7 @@ void Foam::wallDistData<TransferType>::correct()
     //
 
     // Get patchids of walls
-    labelHashSet wallPatchIDs(getPatchIDs(wallPolyPatch::typeName));
+    labelHashSet wallPatchIDs(getPatchIDs<wallPolyPatch>());
 
     // Collect pointers to data on patches
     UPtrList<Field<Type> > patchData(mesh.boundaryMesh().size());
@@ -109,7 +109,7 @@ void Foam::wallDistData<TransferType>::correct()
     {
         scalarField& waveFld = wave.patchDistance()[patchI];
 
-        if (boundaryField()[patchI].type() != emptyFvPatchScalarField::typeName)
+        if (!isA<emptyFvPatchScalarField>(boundaryField()[patchI]))
         {
             boundaryField()[patchI].transfer(waveFld);
 

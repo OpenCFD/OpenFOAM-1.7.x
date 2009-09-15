@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     {
         const fvPatch& patch = mesh.boundary()[patchI];
 
-        if (typeid(patch) == typeid(wallFvPatch))
+        if (isA<wallFvPatch>(patch))
         {
             nWalls += patch.size();
         }
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     {
         const fvPatch& patch = mesh.boundary()[patchI];
 
-        if (typeid(patch) == typeid(wallFvPatch))
+        if (isA<wallFvPatch>(patch))
         {
             forAll (patch.Cf(), patchFaceI)
             {

@@ -1,4 +1,4 @@
-if (!isType<zeroGradientFvPatchScalarField>(k_.boundaryField()[patchi]))
+if (!isA<zeroGradientFvPatchScalarField>(k_.boundaryField()[patchi]))
 {
     FatalErrorIn("wall-function evaluation")
         << k_.boundaryField()[patchi].type()
@@ -8,7 +8,7 @@ if (!isType<zeroGradientFvPatchScalarField>(k_.boundaryField()[patchi]))
         << exit(FatalError);
 }
 
-if (!isType<zeroGradientFvPatchScalarField>(epsilon_.boundaryField()[patchi]))
+if (!isA<zeroGradientFvPatchScalarField>(epsilon_.boundaryField()[patchi]))
 {
     FatalErrorIn("wall-function evaluation")
         << epsilon_.boundaryField()[patchi].type()

@@ -31,6 +31,7 @@ License
 #include "fvMeshAdder.H"
 #include "faceCoupleInfo.H"
 #include "processorFvPatchField.H"
+#include "processorFvsPatchField.H"
 #include "polyTopoChange.H"
 #include "removeCells.H"
 #include "polyModifyFace.H"
@@ -2124,54 +2125,56 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::fvMeshDistribute::distribute
 
     // Bit of hack: processorFvPatchField does not get reset since created
     // from nothing so explicitly reset.
-    initPatchFields<volScalarField>
+    initPatchFields<volScalarField, processorFvPatchField<scalar> >
     (
-        processorFvPatchField<scalar>::typeName,
         pTraits<scalar>::zero
     );
-    initPatchFields<volVectorField>
+    initPatchFields<volVectorField, processorFvPatchField<vector> >
     (
-        processorFvPatchField<vector>::typeName,
         pTraits<vector>::zero
     );
-    initPatchFields<volSphericalTensorField>
+    initPatchFields
+    <
+        volSphericalTensorField,
+        processorFvPatchField<sphericalTensor>
+    >
     (
-        processorFvPatchField<sphericalTensor>::typeName,
         pTraits<sphericalTensor>::zero
     );
-    initPatchFields<volSymmTensorField>
+    initPatchFields<volSymmTensorField, processorFvPatchField<symmTensor> >
     (
-        processorFvPatchField<symmTensor>::typeName,
         pTraits<symmTensor>::zero
     );
-    initPatchFields<volTensorField>
+    initPatchFields<volTensorField, processorFvPatchField<tensor> >
     (
-        processorFvPatchField<tensor>::typeName,
         pTraits<tensor>::zero
     );
-    initPatchFields<surfaceScalarField>
+    initPatchFields<surfaceScalarField, processorFvsPatchField<scalar> >
     (
-        processorFvPatchField<scalar>::typeName,
         pTraits<scalar>::zero
     );
-    initPatchFields<surfaceVectorField>
+    initPatchFields<surfaceVectorField, processorFvsPatchField<vector> >
     (
-        processorFvPatchField<vector>::typeName,
         pTraits<vector>::zero
     );
-    initPatchFields<surfaceSphericalTensorField>
+    initPatchFields
+    <
+        surfaceSphericalTensorField,
+        processorFvsPatchField<sphericalTensor>
+    >
     (
-        processorFvPatchField<sphericalTensor>::typeName,
         pTraits<sphericalTensor>::zero
     );
-    initPatchFields<surfaceSymmTensorField>
+    initPatchFields
+    <
+        surfaceSymmTensorField,
+        processorFvsPatchField<symmTensor>
+    >
     (
-        processorFvPatchField<symmTensor>::typeName,
         pTraits<symmTensor>::zero
     );
-    initPatchFields<surfaceTensorField>
+    initPatchFields<surfaceTensorField, processorFvsPatchField<tensor> >
     (
-        processorFvPatchField<tensor>::typeName,
         pTraits<tensor>::zero
     );
 

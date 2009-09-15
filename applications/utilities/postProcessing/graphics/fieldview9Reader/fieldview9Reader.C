@@ -609,7 +609,7 @@ void user_query_file_function
 
         strcpy(face_type_names[patchI], patch.name().c_str());
 
-        if (isType<wallPolyPatch>(patch))
+        if (isA<wallPolyPatch>(patch))
         {
             wall_flags[patchI] = 1;
         }

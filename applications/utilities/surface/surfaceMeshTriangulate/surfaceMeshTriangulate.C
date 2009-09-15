@@ -108,11 +108,7 @@ int main(int argc, char *argv[])
         {
             const polyPatch& patch = bMesh[patchI];
 
-            if
-            (
-                includeProcPatches
-             || (patch.type() != processorPolyPatch::typeName)
-            )
+            if (includeProcPatches || !isA<processorPolyPatch>(patch))
             {
                 includePatches.insert(patchI);
             }

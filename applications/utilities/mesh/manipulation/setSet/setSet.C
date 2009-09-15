@@ -121,7 +121,7 @@ void writeVTK
     const fileName& vtkName
 )
 {
-    if (typeid(currentSet) == typeid(faceSet))
+    if (isA<faceSet>(currentSet))
     {
         // Faces of set with OpenFOAM faceID as value
 
@@ -148,7 +148,7 @@ void writeVTK
             mesh.time().path()/vtkName
         );
     }
-    else if (typeid(currentSet) == typeid(cellSet))
+    else if (isA<cellSet>(currentSet))
     {
         // External faces of cellset with OpenFOAM cellID as value
 
@@ -208,7 +208,7 @@ void writeVTK
             mesh.time().path()/vtkName
         );
     }
-    else if (typeid(currentSet) == typeid(pointSet))
+    else if (isA<pointSet>(currentSet))
     {
         writePointSet
         (

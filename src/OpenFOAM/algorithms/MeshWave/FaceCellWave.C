@@ -282,13 +282,13 @@ void Foam::FaceCellWave<Type>::checkCyclic(const polyPatch& patch) const
 }
 
 
-// Check if patches of given type name are present
+// Check if has cyclic patches
 template <class Type>
-bool Foam::FaceCellWave<Type>::hasPatchType(const word& nameOfType)
+bool Foam::FaceCellWave<Type>::hasCyclicPatch() const
 {
     forAll(mesh_.boundaryMesh(), patchI)
     {
-        if (mesh_.boundaryMesh()[patchI].type() == nameOfType)
+        if (isA<cyclicPolyPatch>(mesh_.boundaryMesh()[patchI]))
         {
             return true;
         }
@@ -811,7 +811,7 @@ Foam::FaceCellWave<Type>::FaceCellWave
     changedCell_(mesh_.nCells(), false),
     changedCells_(mesh_.nCells()),
     nChangedCells_(0),
-    hasCyclicPatches_(hasPatchType(cyclicPolyPatch::typeName)),
+    hasCyclicPatches_(hasCyclicPatch()),
     nEvals_(0),
     nUnvisitedCells_(mesh_.nCells()),
     nUnvisitedFaces_(mesh_.nFaces()),
@@ -841,7 +841,7 @@ Foam::FaceCellWave<Type>::FaceCellWave
     changedCell_(mesh_.nCells(), false),
     changedCells_(mesh_.nCells()),
     nChangedCells_(0),
-    hasCyclicPatches_(hasPatchType(cyclicPolyPatch::typeName)),
+    hasCyclicPatches_(hasCyclicPatch()),
     nEvals_(0),
     nUnvisitedCells_(mesh_.nCells()),
     nUnvisitedFaces_(mesh_.nFaces()),

@@ -100,7 +100,7 @@ meshToMesh::meshToMesh
     forAll (toMesh_.boundaryMesh(), patchi)
     {
         // Add the processor patches in the toMesh to the cuttingPatches list
-        if (toMesh_.boundaryMesh()[patchi].type() == processorFvPatch::typeName)
+        if (isA<processorPolyPatch>(toMesh_.boundaryMesh()[patchi]))
         {
             cuttingPatches_.insert
             (

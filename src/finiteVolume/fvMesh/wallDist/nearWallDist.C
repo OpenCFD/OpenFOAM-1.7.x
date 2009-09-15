@@ -37,13 +37,7 @@ void Foam::nearWallDist::doAll()
     cellDistFuncs wallUtils(mesh_);
 
     // Get patch ids of walls
-    labelHashSet wallPatchIDs
-    (
-        wallUtils.getPatchIDs
-        (
-            wallPolyPatch::typeName
-        )
-    );
+    labelHashSet wallPatchIDs(wallUtils.getPatchIDs<wallPolyPatch>());
 
     // Size neighbours array for maximum possible
 
@@ -60,7 +54,7 @@ void Foam::nearWallDist::doAll()
 
         const fvPatch& patch = mesh_.boundary()[patchI];
 
-        if (patch.type() == wallFvPatch::typeName)
+        if (isA<wallFvPatch>(patch))
         {
             const polyPatch& pPatch = patch.patch();
 

@@ -241,11 +241,11 @@ Foam::spray::spray
     // check for the type of boundary condition
     forAll(bMesh, patchi)
     {
-        if (isType<symmetryPolyPatch>(bMesh[patchi]))
+        if (isA<symmetryPolyPatch>(bMesh[patchi]))
         {
             symPlaneExist = true;
         }
-        else if (isType<wedgePolyPatch>(bMesh[patchi]))
+        else if (isA<wedgePolyPatch>(bMesh[patchi]))
         {
             wedgeExist = true;
             patches[n++] = patchi;

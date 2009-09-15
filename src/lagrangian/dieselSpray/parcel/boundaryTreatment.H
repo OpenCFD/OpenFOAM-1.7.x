@@ -1,4 +1,4 @@
-if (isType<wallPolyPatch>(pbMesh[patch(face())]))
+if (isA<wallPolyPatch>(pbMesh[patch(face())]))
 {
     keepParcel = sDB.wall().wallTreatment(*this, face());
 
@@ -12,7 +12,7 @@ if (isType<wallPolyPatch>(pbMesh[patch(face())]))
         U() = (magUs/magV1)*v1*n() + vs*sDB.axisOfSymmetry();
     }
 }
-else if (isType<wedgePolyPatch>(pbMesh[patch(face())]))
+else if (isA<wedgePolyPatch>(pbMesh[patch(face())]))
 {
     // check if parcel is trying to move out of the domain
     label patchi = patch(face());
@@ -27,7 +27,7 @@ else if (isType<wedgePolyPatch>(pbMesh[patch(face())]))
         U() -= 2.0*Un2*n();
     }
 }
-else if (isType<symmetryPolyPatch>(pbMesh[patch(face())]))
+else if (isA<symmetryPolyPatch>(pbMesh[patch(face())]))
 {
     // check if parcel is trying to move out of the domain
     label patchi = patch(face());

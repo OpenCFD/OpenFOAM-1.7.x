@@ -68,7 +68,7 @@ Foam::wallDist::~wallDist()
 void Foam::wallDist::correct()
 {
     // Get patchids of walls
-    labelHashSet wallPatchIDs(getPatchIDs(wallPolyPatch::typeName));
+    labelHashSet wallPatchIDs(getPatchIDs<wallPolyPatch>());
 
     // Calculate distance starting from wallPatch faces.
     patchWave wave(cellDistFuncs::mesh(), wallPatchIDs, correctWalls_);
@@ -79,7 +79,7 @@ void Foam::wallDist::correct()
     // Transfer values on patches into boundaryField of *this
     forAll(boundaryField(), patchI)
     {
-        if (boundaryField()[patchI].type() != emptyFvPatchScalarField::typeName)
+        if (!isA<emptyFvPatchScalarField>(boundaryField()[patchI]))
         {
             scalarField& waveFld = wave.patchDistance()[patchI];
 

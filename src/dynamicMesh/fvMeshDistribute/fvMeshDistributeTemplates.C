@@ -235,10 +235,9 @@ void Foam::fvMeshDistribute::mapBoundaryFields
 
 
 // Init patch fields of certain type
-template<class GeoField>
+template<class GeoField, class PatchFieldType>
 void Foam::fvMeshDistribute::initPatchFields
 (
-    const word& patchFieldType,
     const typename GeoField::value_type& initVal
 )
 {
@@ -264,7 +263,7 @@ void Foam::fvMeshDistribute::initPatchFields
 
         forAll(bfld, patchI)
         {
-            if (bfld[patchI].type() == patchFieldType)
+            if (isA<PatchFieldType>(bfld[patchI]))
             {
                 bfld[patchI] == initVal;
             }

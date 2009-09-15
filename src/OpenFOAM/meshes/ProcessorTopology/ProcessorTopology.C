@@ -47,7 +47,7 @@ Foam::labelList Foam::ProcessorTopology<Patch, ProcPatch>::procNeighbours
     {
         const Patch& patch = patches[patchi];
 
-        if (isType<ProcPatch>(patch))
+        if (isA<ProcPatch>(patch))
         {
             const ProcPatch& procPatch = 
                 refCast<const ProcPatch>(patch);
@@ -69,7 +69,7 @@ Foam::labelList Foam::ProcessorTopology<Patch, ProcPatch>::procNeighbours
     {
         const Patch& patch = patches[patchi];
 
-        if (isType<ProcPatch>(patch))
+        if (isA<ProcPatch>(patch))
         {
             const ProcPatch& procPatch = 
                 refCast<const ProcPatch>(patch);
@@ -116,7 +116,7 @@ Foam::ProcessorTopology<Patch, ProcPatch>::ProcessorTopology
 
         forAll(patches, patchi)
         {
-            if (!isType<ProcPatch>(patches[patchi]))
+            if (!isA<ProcPatch>(patches[patchi]))
             {
                 patchSchedule_[patchEvali].patch = patchi;
                 patchSchedule_[patchEvali++].init = true;
@@ -204,7 +204,7 @@ Foam::ProcessorTopology<Patch, ProcPatch>::ProcessorTopology
 
         forAll(patches, patchi)
         {
-            if (!isType<ProcPatch>(patches[patchi]))
+            if (!isA<ProcPatch>(patches[patchi]))
             {
                 patchSchedule_[patchEvali].patch = patchi;
                 patchSchedule_[patchEvali++].init = true;
@@ -219,7 +219,7 @@ Foam::ProcessorTopology<Patch, ProcPatch>::ProcessorTopology
         // 2a. initEvaluate
         forAll(patches, patchi)
         {
-            if (isType<ProcPatch>(patches[patchi]))
+            if (isA<ProcPatch>(patches[patchi]))
             {
                 patchSchedule_[patchEvali].patch = patchi;
                 patchSchedule_[patchEvali++].init = true;
@@ -229,7 +229,7 @@ Foam::ProcessorTopology<Patch, ProcPatch>::ProcessorTopology
         // 2b. evaluate
         forAll(patches, patchi)
         {
-            if (isType<ProcPatch>(patches[patchi]))
+            if (isA<ProcPatch>(patches[patchi]))
             {
                 patchSchedule_[patchEvali].patch = patchi;
                 patchSchedule_[patchEvali++].init = false;

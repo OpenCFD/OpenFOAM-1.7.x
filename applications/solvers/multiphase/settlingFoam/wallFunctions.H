@@ -12,7 +12,7 @@
     {
         const fvPatch& curPatch = patches[patchi];
 
-        if (isType<wallFvPatch>(curPatch))
+        if (isA<wallFvPatch>(curPatch))
         {
             forAll(curPatch, facei)
             {
@@ -30,7 +30,7 @@
     {
         const fvPatch& curPatch = patches[patchi];
 
-        if (isType<wallFvPatch>(curPatch))
+        if (isA<wallFvPatch>(curPatch))
         {
             const scalarField& rhow = rho.boundaryField()[patchi];
 
@@ -76,7 +76,7 @@
     {
         const fvPatch& curPatch = patches[patchi];
 
-        if (isType<wallFvPatch>(curPatch))
+        if (isA<wallFvPatch>(curPatch))
         {
             forAll(curPatch, facei)
             {

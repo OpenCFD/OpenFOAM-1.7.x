@@ -53,9 +53,8 @@ forAll(Tpatches, patchI)
 {
     if
     (
-        (typeid(Tpatches[patchI]) == typeid(fixedValueFvPatchScalarField))
-        &&
-        (mesh.boundaryMesh()[patchI].name() == "floor") 
+        isA<fixedValueFvPatchScalarField>(Tpatches[patchI])
+     && mesh.boundaryMesh()[patchI].name() == "floor"
     )
     {
         fixedValueFvPatchScalarField& Tpatch =

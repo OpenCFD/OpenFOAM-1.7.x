@@ -43,7 +43,7 @@ Description
     {
         const fvPatch& curPatch = patches[patchi];
 
-        if (isType<wallFvPatch>(curPatch))
+        if (isA<wallFvPatch>(curPatch))
         {
             forAll(curPatch, facei)
             {
@@ -61,7 +61,7 @@ Description
     {
         const fvPatch& curPatch = patches[patchi];
 
-        if (isType<wallFvPatch>(curPatch))
+        if (isA<wallFvPatch>(curPatch))
         {
             #include "checkPatchFieldTypes.H"
 
@@ -112,7 +112,7 @@ Description
     {
         const fvPatch& curPatch = patches[patchi];
 
-        if (isType<wallFvPatch>(curPatch))
+        if (isA<wallFvPatch>(curPatch))
         {
             forAll(curPatch, facei)
             {

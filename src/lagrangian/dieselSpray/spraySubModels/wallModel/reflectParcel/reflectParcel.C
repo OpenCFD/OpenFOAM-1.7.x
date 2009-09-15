@@ -82,7 +82,7 @@ bool reflectParcel::wallTreatment
 
     const polyMesh& mesh = spray_.mesh();
 
-    if (isType<wallPolyPatch>(mesh_.boundaryMesh()[patchi]))
+    if (isA<wallPolyPatch>(mesh_.boundaryMesh()[patchi]))
     {
         // wallNormal defined to point outwards of domain
         vector Sf = mesh_.Sf().boundaryField()[patchi][facei];

@@ -24,49 +24,28 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "reflectionVectors.H"
-#include "wallFvPatch.H"
-#include "surfaceFields.H"
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-// Construct from components
-Foam::reflectionVectors::reflectionVectors(const Foam::fvMesh& mesh)
-:
-    n_
-    (
-        IOobject
-        (
-            "reflectionVectors",
-            mesh.time().timeName(),
-            mesh
-        ),
-        mesh,
-        dimensionedVector("n", dimless, vector::zero)
-    )
-{
-    correct();
-}
+#include "cellDistFuncs.H"
+#include "polyMesh.H"
+#include "polyBoundaryMesh.H"
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-
-void Foam::reflectionVectors::correct()
+template<class Type>
+Foam::labelHashSet Foam::cellDistFuncs::getPatchIDs() const
 {
-    const fvMesh& mesh = n_.mesh();
-    const fvPatchList& patches = mesh.boundary();
+    const polyBoundaryMesh& bMesh = mesh().boundaryMesh();
 
-    forAll(patches, patchi)
+    labelHashSet patchIDs(bMesh.size());
+
+    forAll(bMesh, patchI)
     {
-        // find the nearest face for every cell
-        if (isA<wallFvPatch>(patches[patchi]))
+        if (isA<Type>(bMesh[patchI]))
         {
-            n_.boundaryField()[patchi] =
-                mesh.Sf().boundaryField()[patchi]
-               /mesh.magSf().boundaryField()[patchi];
+            patchIDs.insert(patchI);
         }
     }
+    return patchIDs;
 }
 
 

@@ -127,8 +127,8 @@ Foam::fieldviewTopology::fieldviewTopology
             const polyPatch& currPatch = mesh.boundaryMesh()[patchI];
             if 
             (
-                isType<wallPolyPatch>(currPatch)
-             || isType<symmetryPolyPatch>(currPatch)
+                isA<wallPolyPatch>(currPatch)
+             || isA<symmetryPolyPatch>(currPatch)
             )
             {
                 forAll(currPatch, patchFaceI)

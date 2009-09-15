@@ -28,7 +28,7 @@ License
 #include "Time.H"
 #include "OSspecific.H"
 
-#include "wallPolyPatch.H"
+#include "wallFvPatch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -111,7 +111,7 @@ autoCreateWallFunctionField
 
         forAll(newPatchFields, patchI)
         {
-            if (isType<wallPolyPatch>(mesh.boundaryMesh()[patchI]))
+            if (isA<wallFvPatch>(mesh.boundary()[patchI]))
             {
                 newPatchFields.set
                 (

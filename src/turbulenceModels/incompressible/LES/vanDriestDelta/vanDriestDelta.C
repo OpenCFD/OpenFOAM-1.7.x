@@ -70,7 +70,7 @@ void vanDriestDelta::calcDelta()
     const fvPatchList& patches = mesh_.boundary();
     forAll(patches, patchi)
     {
-        if (isType<wallFvPatch>(patches[patchi]))
+        if (isA<wallFvPatch>(patches[patchi]))
         {
             const fvPatchVectorField& Uw = U.boundaryField()[patchi];
             const scalarField& nuw = nu.boundaryField()[patchi];

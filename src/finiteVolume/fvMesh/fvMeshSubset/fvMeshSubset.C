@@ -111,7 +111,7 @@ void Foam::fvMeshSubset::doCoupledPatches
         {
             const polyPatch& pp = oldPatches[oldPatchI];
 
-            if (typeid(pp) == typeid(processorPolyPatch))
+            if (isA<processorPolyPatch>(pp))
             {
                 const processorPolyPatch& procPatch =
                     refCast<const processorPolyPatch>(pp);
@@ -133,7 +133,7 @@ void Foam::fvMeshSubset::doCoupledPatches
         {
             const polyPatch& pp = oldPatches[oldPatchI];
 
-            if (typeid(pp) == typeid(processorPolyPatch))
+            if (isA<processorPolyPatch>(pp))
             {
                 const processorPolyPatch& procPatch =
                     refCast<const processorPolyPatch>(pp);
@@ -171,7 +171,7 @@ void Foam::fvMeshSubset::doCoupledPatches
     {
         const polyPatch& pp = oldPatches[oldPatchI];
 
-        if (typeid(pp) == typeid(cyclicPolyPatch))
+        if (isA<cyclicPolyPatch>(pp))
         {
             const cyclicPolyPatch& cycPatch =
                 refCast<const cyclicPolyPatch>(pp);

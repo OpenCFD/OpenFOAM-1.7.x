@@ -26,7 +26,6 @@ License
 
 #include "SpalartAllmaras.H"
 #include "addToRunTimeSelectionTable.H"
-#include "wallDist.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

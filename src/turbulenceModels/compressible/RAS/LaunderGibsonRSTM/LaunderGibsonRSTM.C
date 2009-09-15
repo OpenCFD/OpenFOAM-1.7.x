@@ -408,7 +408,7 @@ void LaunderGibsonRSTM::correct()
     {
         const fvPatch& curPatch = patches[patchi];
 
-        if (typeid(curPatch) == typeid(wallFvPatch))
+        if (isA<wallFvPatch>(curPatch))
         {
             forAll(curPatch, facei)
             {
@@ -478,7 +478,7 @@ void LaunderGibsonRSTM::correct()
     {
         const fvPatch& curPatch = patches[patchi];
 
-        if (typeid(curPatch) == typeid(wallFvPatch))
+        if (isA<wallFvPatch>(curPatch))
         {
             symmTensorField& Rw = R_.boundaryField()[patchi];
 

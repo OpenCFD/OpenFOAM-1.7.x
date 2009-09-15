@@ -191,7 +191,7 @@ Foam::fvFieldReconstructor::reconstructFvVolumeField
         // add empty patches
         if
         (
-            typeid(mesh_.boundary()[patchI]) == typeid(emptyFvPatch)
+            isType<emptyFvPatch>(mesh_.boundary()[patchI])
          && !patchFields(patchI)
         )
         {
@@ -411,7 +411,7 @@ Foam::fvFieldReconstructor::reconstructFvSurfaceField
         // add empty patches
         if
         (
-            typeid(mesh_.boundary()[patchI]) == typeid(emptyFvPatch)
+            isType<emptyFvPatch>(mesh_.boundary()[patchI])
          && !patchFields(patchI)
         )
         {

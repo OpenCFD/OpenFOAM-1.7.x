@@ -351,7 +351,7 @@ void Foam::multiphaseMixture::correctContactAngle
 
     forAll(boundary, patchi)
     {
-        if (typeid(gbf[patchi]) == typeid(alphaContactAngleFvPatchScalarField))
+        if (isA<alphaContactAngleFvPatchScalarField>(gbf[patchi]))
         {
             const alphaContactAngleFvPatchScalarField& acap =
                 refCast<const alphaContactAngleFvPatchScalarField>(gbf[patchi]);

@@ -314,7 +314,7 @@ bool Foam::parcel::move(spray& sDB)
         {
             if (face() > -1)
             {
-                if (isType<processorPolyPatch>(pbMesh[patch(face())]))
+                if (isA<processorPolyPatch>(pbMesh[patch(face())]))
                 {
                     switchProcessor = true;
                 }
