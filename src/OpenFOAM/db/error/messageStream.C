@@ -35,7 +35,6 @@ int Foam::messageStream::level(Foam::debug::debugSwitch("level", 2));
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// Construct from components
 Foam::messageStream::messageStream
 (
     const string& title,
@@ -50,7 +49,6 @@ Foam::messageStream::messageStream
 {}
 
 
-//- Construct from dictionary
 Foam::messageStream::messageStream(const dictionary& dict)
 :
     title_(dict.lookup("title")),

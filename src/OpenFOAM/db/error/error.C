@@ -105,7 +105,6 @@ Foam::OSstream& Foam::error::operator()
     const int sourceFileLineNumber
 )
 {
-    messageStreamPtr_->rewind();
     functionName_ = functionName;
     sourceFileName_ = sourceFileName;
     sourceFileLineNumber_ = sourceFileLineNumber;
@@ -137,7 +136,6 @@ Foam::error::operator OSstream&()
         Perr<< endl
             << "error::operator OSstream&() : error stream has failed"
             << endl;
-        printStack(Perr);
         abort();
     }
 
@@ -178,9 +176,6 @@ void Foam::error::exit(const int errNo)
 
     if (abort_)
     {
-        printStack(*this);
-        Perr<< endl << *this << endl
-            << "\nFOAM aborting (FOAM_ABORT set)\n" << endl;
         abort();
     }
 
@@ -194,7 +189,13 @@ void Foam::error::exit(const int errNo)
     {
         if (throwExceptions_)
         {
-            throw *this;
+            // Make a copy of the error to throw
+            error errorException(*this);
+
+            // Rewind the message buffer for the next error message
+            messageStreamPtr_->rewind();
+
+            throw errorException;
         }
         else
         {
@@ -216,30 +217,36 @@ void Foam::error::abort()
 
     if (abort_)
     {
-        printStack(*this);
         Perr<< endl << *this << endl
             << "\nFOAM aborting (FOAM_ABORT set)\n" << endl;
+        printStack(Perr);
         ::abort();
     }
 
     if (Pstream::parRun())
     {
-        printStack(*this);
         Perr<< endl << *this << endl
             << "\nFOAM parallel run aborting\n" << endl;
+        printStack(Perr);
         Pstream::abort();
     }
     else
     {
         if (throwExceptions_)
         {
-            throw *this;
+            // Make a copy of the error to throw
+            error errorException(*this);
+
+            // Rewind the message buffer for the next error message
+            messageStreamPtr_->rewind();
+
+            throw errorException;
         }
         else
         {
-            printStack(*this);
             Perr<< endl << *this << endl
                 << "\nFOAM aborting\n" << endl;
+            printStack(Perr);
             ::abort();
         }
     }
@@ -248,7 +255,9 @@ void Foam::error::abort()
 
 Foam::Ostream& Foam::operator<<(Ostream& os, const error& fErr)
 {
-    os  << endl << fErr.message().c_str();
+    os  << endl
+        << fErr.title().c_str() << endl
+        << fErr.message().c_str();
 
     if (error::level >= 2 && fErr.sourceFileLineNumber())
     {
@@ -265,6 +274,6 @@ Foam::Ostream& Foam::operator<<(Ostream& os, const error& fErr)
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 // Global error definitions
 
-Foam::error Foam::FatalError("--> FOAM FATAL ERROR : ");
+Foam::error Foam::FatalError("--> FOAM FATAL ERROR: ");
 
 // ************************************************************************* //
