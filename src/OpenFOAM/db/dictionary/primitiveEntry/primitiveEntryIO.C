@@ -81,7 +81,12 @@ bool Foam::primitiveEntry::expandVariable
     word varName = w(1, w.size()-1);
 
     // lookup the variable name in the given dictionary....
-    const entry* ePtr = dict.lookupEntryPtr(varName, true, true);
+    // Note: allow wildcards to match? For now disabled since following
+    // would expand internalField to wildcard match and not expected
+    // internalField:
+    //      internalField XXX;
+    //      boundaryField { ".*" {YYY;} movingWall {value $internalField;}
+    const entry* ePtr = dict.lookupEntryPtr(varName, true, false);
 
     // ...if defined insert its tokens into this
     if (ePtr != NULL)
