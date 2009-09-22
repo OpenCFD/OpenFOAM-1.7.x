@@ -46,6 +46,11 @@ bool triSurface::stitchTriangles
     pointField newPoints;
     bool hasMerged = mergePoints(rawPoints, tol, verbose, pointMap, newPoints);
 
+    pointField& ps = storedPoints();
+
+    // Set the coordinates to the merged ones
+    ps = newPoints;
+
     if (hasMerged)
     {
         if (verbose)
@@ -53,11 +58,6 @@ bool triSurface::stitchTriangles
             Pout<< "stitchTriangles : Merged from " << rawPoints.size()
                 << " points down to " << newPoints.size() << endl;
         }
-
-        pointField& ps = storedPoints();
-
-        // Set the coordinates to the merged ones
-        ps = newPoints;
 
         // Reset the triangle point labels to the unique points array
         label newTriangleI = 0;
