@@ -432,7 +432,7 @@ void Foam::directMappedPatchBase::calcMapping() const
           + "_directMapped.obj"
         );
         Pout<< "Dumping mapping as lines from patch faceCentres to"
-            << " sampled cellCentres to file " << str.name() << endl;
+            << " sampled cell/faceCentres to file " << str.name() << endl;
 
         label vertI = 0;
 
