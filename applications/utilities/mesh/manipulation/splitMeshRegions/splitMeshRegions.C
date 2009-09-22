@@ -43,6 +43,9 @@ Description
     the largest matching region (-sloppyCellZones). This will accept any
     region that covers more than 50% of the zone. It has to be a subset
     so cannot have any cells in any other zone.
+    - useCellZonesOnly does not do a walk and uses the cellZones only. Use
+    this if you don't mind having disconnected domains in a single region.
+    This option requires all cells to be in one (and one only) region.
 
 \*---------------------------------------------------------------------------*/
 
@@ -586,12 +589,12 @@ void getInterfaceSizes
         {
             // Send to master
             {
-                OPstream toMaster(Pstream::blocking, Pstream::master());
+                OPstream toMaster(Pstream::blocking, Pstream::masterNo());
                 toMaster << interfaceSizes;
             }
             // Receive from master
             {
-                IPstream fromMaster(Pstream::blocking, Pstream::master());
+                IPstream fromMaster(Pstream::blocking, Pstream::masterNo());
                 fromMaster >> interfaceSizes;
             }
         }
@@ -609,7 +612,7 @@ void getInterfaceSizes
 // Create mesh for region.
 autoPtr<mapPolyMesh> createRegionMesh
 (
-    const regionSplit& cellRegion,
+    const labelList& cellRegion,
     const EdgeMap<label>& interfaceToPatch,
     const fvMesh& mesh,
     const label regionI,
@@ -766,7 +769,7 @@ autoPtr<mapPolyMesh> createRegionMesh
 void createAndWriteRegion
 (
     const fvMesh& mesh,
-    const regionSplit& cellRegion,
+    const labelList& cellRegion,
     const wordList& regionNames,
     const EdgeMap<label>& interfaceToPatch,
     const label regionI,
@@ -1005,7 +1008,8 @@ void createAndWriteRegion
 EdgeMap<label> addRegionPatches
 (
     fvMesh& mesh,
-    const regionSplit& cellRegion,
+    const labelList& cellRegion,
+    const label nCellRegions,
     const edgeList& interfaces,
     const EdgeMap<label>& interfaceSizes,
     const wordList& regionNames
@@ -1016,7 +1020,7 @@ EdgeMap<label> addRegionPatches
 
     Info<< nl << "Adding patches" << nl << endl;
 
-    EdgeMap<label> interfaceToPatch(cellRegion.nRegions());
+    EdgeMap<label> interfaceToPatch(nCellRegions);
 
     forAll(interfaces, interI)
     {
@@ -1108,13 +1112,14 @@ EdgeMap<label> addRegionPatches
 label findCorrespondingRegion
 (
     const labelList& existingZoneID,    // per cell the (unique) zoneID
-    const regionSplit& cellRegion,
+    const labelList& cellRegion,
+    const label nCellRegions,
     const label zoneI,
     const label minOverlapSize
 )
 {
     // Per region the number of cells in zoneI
-    labelList cellsInZone(cellRegion.nRegions(), 0);
+    labelList cellsInZone(nCellRegions, 0);
 
     forAll(cellRegion, cellI)
     {
@@ -1162,7 +1167,8 @@ label findCorrespondingRegion
 //(
 //    const cellZoneMesh& cellZones,
 //    const labelList& existingZoneID,    // per cell the (unique) zoneID
-//    const regionSplit& cellRegion,
+//    const labelList& cellRegion,
+//    const label nCellRegions,
 //    const label zoneI
 //)
 //{
@@ -1227,6 +1233,7 @@ label findCorrespondingRegion
 int main(int argc, char *argv[])
 {
     argList::validOptions.insert("cellZones", "");
+    argList::validOptions.insert("cellZonesOnly", "");
     argList::validOptions.insert("blockedFaces", "faceSet");
     argList::validOptions.insert("makeCellZones", "");
     argList::validOptions.insert("largestOnly", "");
@@ -1249,13 +1256,14 @@ int main(int argc, char *argv[])
             << blockedFacesName << nl << endl;
     }
 
-    bool makeCellZones   = args.optionFound("makeCellZones");
-    bool largestOnly     = args.optionFound("largestOnly");
-    bool insidePoint     = args.optionFound("insidePoint");
-    bool useCellZones    = args.optionFound("cellZones");
-    bool overwrite       = args.optionFound("overwrite");
-    bool detectOnly      = args.optionFound("detectOnly");
-    bool sloppyCellZones = args.optionFound("sloppyCellZones");
+    bool makeCellZones    = args.optionFound("makeCellZones");
+    bool largestOnly      = args.optionFound("largestOnly");
+    bool insidePoint      = args.optionFound("insidePoint");
+    bool useCellZones     = args.optionFound("cellZones");
+    bool useCellZonesOnly = args.optionFound("cellZonesOnly");
+    bool overwrite        = args.optionFound("overwrite");
+    bool detectOnly       = args.optionFound("detectOnly");
+    bool sloppyCellZones  = args.optionFound("sloppyCellZones");
 
     if (insidePoint && largestOnly)
     {
@@ -1370,13 +1378,37 @@ int main(int argc, char *argv[])
     }
 
 
-    // Do the topological walk to determine regions
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Determine per cell the region it belongs to
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    // regionSplit is the labelList with the region per cell.
-    regionSplit cellRegion(mesh, blockedFace);
+    // cellRegion is the labelList with the region per cell.
+    labelList cellRegion;
+    label nCellRegions = 0;
+    if (useCellZonesOnly)
+    {
+        label unzonedCellI = findIndex(zoneID, -1);
+        if (unzonedCellI != -1)
+        {
+            FatalErrorIn(args.executable())
+                << "For the cellZonesOnly option all cells "
+                << "have to be in a cellZone." << endl
+                << "Cell " << unzonedCellI
+                << " at" << mesh.cellCentres()[unzonedCellI]
+                << " is not in a cellZone. There might be more unzoned cells."
+                << exit(FatalError);
+        }
+        cellRegion = zoneID;
+        nCellRegions = gMax(cellRegion)+1;
+    }
+    else
+    {
+        // Do a topological walk to determine regions
+        regionSplit regions(mesh, blockedFace);
+        nCellRegions = regions.nRegions();
+        cellRegion.transfer(regions);
+    }
 
-    Info<< endl << "Number of regions:" << cellRegion.nRegions() << nl << endl;
+    Info<< endl << "Number of regions:" << nCellRegions << nl << endl;
 
 
     // Write to manual decomposition option
@@ -1429,7 +1461,7 @@ int main(int argc, char *argv[])
     // Sizes per region
     // ~~~~~~~~~~~~~~~~
 
-    labelList regionSizes(cellRegion.nRegions(), 0);
+    labelList regionSizes(nCellRegions, 0);
 
     forAll(cellRegion, cellI)
     {
@@ -1489,9 +1521,9 @@ int main(int argc, char *argv[])
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     // Region per zone
-    labelList regionToZone(cellRegion.nRegions(), -1);
+    labelList regionToZone(nCellRegions, -1);
     // Name of region
-    wordList regionNames(cellRegion.nRegions());
+    wordList regionNames(nCellRegions);
     // Zone to region
     labelList zoneToRegion(cellZones.size(), -1);
 
@@ -1506,6 +1538,7 @@ int main(int argc, char *argv[])
             (
                 zoneID,
                 cellRegion,
+                nCellRegions,
                 zoneI,
                 label(0.5*zoneSizes[zoneI]) // minimum overlap
             );
@@ -1532,6 +1565,7 @@ int main(int argc, char *argv[])
             (
                 zoneID,
                 cellRegion,
+                nCellRegions,
                 zoneI,
                 1               // minimum overlap
             );
@@ -1660,7 +1694,7 @@ int main(int argc, char *argv[])
     mesh.clearOut();
 
 
-    if (cellRegion.nRegions() == 1)
+    if (nCellRegions == 1)
     {
         Info<< "Only one region. Doing nothing." << endl;
     }
@@ -1671,7 +1705,7 @@ int main(int argc, char *argv[])
 
         // Check if region overlaps with existing zone. If so keep.
 
-        for (label regionI = 0; regionI < cellRegion.nRegions(); regionI++)
+        for (label regionI = 0; regionI < nCellRegions; regionI++)
         {
             label zoneI = regionToZone[regionI];
 
@@ -1759,6 +1793,7 @@ int main(int argc, char *argv[])
             (
                 mesh,
                 cellRegion,
+                nCellRegions,
                 interfaces,
                 interfaceSizes,
                 regionNames
@@ -1837,7 +1872,7 @@ int main(int argc, char *argv[])
         else
         {
             // Split all
-            for (label regionI = 0; regionI < cellRegion.nRegions(); regionI++)
+            for (label regionI = 0; regionI < nCellRegions; regionI++)
             {
                 Info<< nl
                     << "Region " << regionI << nl
