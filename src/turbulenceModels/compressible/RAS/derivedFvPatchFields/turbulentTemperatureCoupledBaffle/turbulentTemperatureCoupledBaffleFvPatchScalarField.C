@@ -96,6 +96,7 @@ bool Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::interfaceOwner
             }
             nbrIndex = props.fluidRegionNames().size() + i;
         }
+
         return myIndex < nbrIndex;
     }
 }
@@ -225,6 +226,27 @@ Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::K() const
     }
     else
     {
+        //if (debug)
+        //{
+        //    const directMappedPatchBase& mpp =
+        //        refCast<const directMappedPatchBase>
+        //        (
+        //            patch().patch()
+        //        );
+        //    Pout<< patch().boundaryMesh().mesh().name() << ':'
+        //        << patch().name() << ':'
+        //        << this->dimensionedInternalField().name() << " -> "
+        //        << mpp.sampleRegion() << ':'
+        //        << mpp.samplePatch() << ':'
+        //        << this->dimensionedInternalField().name() << " :"
+        //        << " K: min:"
+        //        << gMin(patch().lookupPatchField<volScalarField, scalar>
+        //           (KName_))
+        //        << " max:"
+        //        << gMax(patch().lookupPatchField<volScalarField, scalar>
+        //           (KName_))
+        //        << endl;
+        //}
         return patch().lookupPatchField<volScalarField, scalar>(KName_);
     }
 }
@@ -336,9 +358,12 @@ void Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::updateCoeffs()
     {
         scalar Q = gSum(K()*patch().magSf()*normalGradient());
 
-        Info<< "turbulentTemperatureCoupledBaffleFvPatchScalarField::"
-            << "updateCoeffs() :"
-            << " patch:" << patch().name()
+        Info<< patch().boundaryMesh().mesh().name() << ':'
+            << patch().name() << ':'
+            << this->dimensionedInternalField().name() << " -> "
+            << nbrMesh.name() << ':'
+            << nbrPatch.name() << ':'
+            << this->dimensionedInternalField().name() << " :"
             << " heatFlux:" << Q
             << " walltemperature "
             << " min:" << gMin(*this)
@@ -373,9 +398,12 @@ void Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::updateCoeffs()
     {
         label nTotSize = returnReduce(this->size(), sumOp<label>());
 
-        Info<< "turbulentTemperatureCoupledBaffleFvPatchScalarField::"
-            << "updateCoeffs() :"
-            << " patch:" << patch().name()
+        Info<< patch().boundaryMesh().mesh().name() << ':'
+            << patch().name() << ':'
+            << this->dimensionedInternalField().name() << " -> "
+            << nbrMesh.name() << ':'
+            << nbrPatch.name() << ':'
+            << this->dimensionedInternalField().name() << " :"
             << " out of:" << nTotSize
             << " fixedBC:" << nFixed
             << " gradient:" << nTotSize-nFixed << endl;
