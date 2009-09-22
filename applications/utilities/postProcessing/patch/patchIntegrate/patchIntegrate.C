@@ -38,13 +38,14 @@ Description
 
 int main(int argc, char *argv[])
 {
+#   include "addRegionOption.H"
     timeSelector::addOptions();
     argList::validArgs.append("fieldName");
     argList::validArgs.append("patchName");
 #   include "setRootCase.H"
 #   include "createTime.H"
     instantList timeDirs = timeSelector::select0(runTime, args);
-#   include "createMesh.H"
+#   include "createNamedMesh.H"
 
     word fieldName(args.additionalArgs()[0]);
     word patchName(args.additionalArgs()[1]);
