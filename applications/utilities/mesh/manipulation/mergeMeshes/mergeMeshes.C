@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     (
         IOobject
         (
-            mergePolyMesh::defaultRegion,
+            masterRegion,
             runTimeMaster.timeName(),
             runTimeMaster
         )
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     (
         IOobject
         (
-            mergePolyMesh::defaultRegion,
+            addRegion,
             runTimeToAdd.timeName(),
             runTimeToAdd
         )
