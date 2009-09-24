@@ -326,7 +326,7 @@ surfaceSlipDisplacementPointPatchVectorField
     surfacesDict_(dict.subDict("geometry")),
     projectMode_(projectModeNames_.read(dict.lookup("projectMode"))),
     projectDir_(dict.lookup("projectDirection")),
-    wedgePlane_(readLabel(dict.lookup("wedgePlane"))),
+    wedgePlane_(dict.lookupOrDefault("wedgePlane", -1)),
     frozenPointsZone_(dict.lookupOrDefault("frozenPointsZone", word::null))
 {}
 
