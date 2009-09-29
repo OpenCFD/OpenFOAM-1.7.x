@@ -87,11 +87,17 @@ private:
         //- What to sample
         const sampleMode mode_;
 
-        //- Patch (only if NEARESTBOUNDARY)
+        //- Patch (only if NEARESTPATCHFACE)
         const word samplePatch_;
 
-        //- Offset vector
+        //- For backwards compatibility : reading/writing of uniform offset.
+        const bool uniformOffset_;
+
+        //- Offset vector (uniform)
         const vector offset_;
+
+        //- Offset vector
+        const vectorField offsets_;
 
         //- Same region
         const bool sameRegion_;
@@ -130,36 +136,6 @@ private:
         void calcMapping() const;
 
 
-    // Private class
-
-        //- Private class for finding nearest
-        //  - point+local index
-        //  - sqr(distance)
-        //  - processor
-        typedef Tuple2<pointIndexHit, Tuple2<scalar, label> > nearInfo;
-
-        class nearestEqOp
-        {
-
-        public:
-
-            void operator()(nearInfo& x, const nearInfo& y) const
-            {
-                if (y.first().hit())
-                {
-                    if (!x.first().hit())
-                    {
-                        x = y;
-                    }
-                    else if (y.second().first() < x.second().first())
-                    {
-                        x = y;
-                    }
-                }
-            }
-        };
-
-
 public:
 
     //- Runtime type information
@@ -168,8 +144,18 @@ public:
 
     // Constructors
 
-        //- Construct from components
+        //- Construct from patch
         directMappedPatchBase(const polyPatch&);
+
+        //- Construct from components
+        directMappedPatchBase
+        (
+            const polyPatch& pp,
+            const word& sampleRegion,
+            const sampleMode sampleMode,
+            const word& samplePatch,
+            const vectorField& offset
+        );
 
         //- Construct from dictionary
         directMappedPatchBase(const polyPatch&, const dictionary&);
@@ -205,9 +191,9 @@ public:
         }
 
         //- Offset vector (from patch faces to destination mesh objects)
-        const vector& offset() const
+        const vectorField& offsets() const
         {
-            return offset_;
+            return offsets_;
         }
 
         //- Return reference to the parallel distribution map

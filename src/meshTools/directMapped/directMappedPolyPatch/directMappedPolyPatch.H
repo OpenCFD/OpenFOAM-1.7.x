@@ -101,6 +101,20 @@ public:
             const polyBoundaryMesh& bm
         );
 
+        //- Construct from components
+        directMappedPolyPatch
+        (
+            const word& name,
+            const label size,
+            const label start,
+            const label index,
+            const word& sampleRegion,
+            const directMappedPatchBase::sampleMode mode,
+            const word& samplePatch,
+            const vectorField& offset,
+            const polyBoundaryMesh& bm
+        );
+
         //- Construct from dictionary
         directMappedPolyPatch
         (
