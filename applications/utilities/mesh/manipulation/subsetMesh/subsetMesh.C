@@ -334,7 +334,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        mesh.setInstance(oldInstance);
+        subsetter.subMesh().setInstance(oldInstance);
     }
 
     Info<< "Writing subsetted mesh and fields to time " << runTime.timeName()
