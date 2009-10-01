@@ -188,7 +188,7 @@ void Foam::totalTemperatureFvPatchScalarField::write(Ostream& os) const
     {
         os.writeKeyword("phi") << phiName_ << token::END_STATEMENT << nl;
     }
-    if (phiName_ != "psi")
+    if (psiName_ != "psi")
     {
         os.writeKeyword("psi") << psiName_ << token::END_STATEMENT << nl;
     }
