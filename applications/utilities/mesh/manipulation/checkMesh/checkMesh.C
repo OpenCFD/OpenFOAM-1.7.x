@@ -47,7 +47,7 @@ using namespace Foam;
 
 int main(int argc, char *argv[])
 {
-    timeSelector::addOptions(false);   // no constant
+    timeSelector::addOptions();
 #   include "addRegionOption.H"
     argList::validOptions.insert("noTopology", "");
     argList::validOptions.insert("allGeometry", "");
