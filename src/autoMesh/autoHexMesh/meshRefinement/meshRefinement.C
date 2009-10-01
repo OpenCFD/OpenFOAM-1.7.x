@@ -1118,6 +1118,18 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::meshRefinement::balance
                         }
                     }
                 }
+
+
+                // If the faceZones are not synchronised the blockedFace
+                // might not be synchronised. If you are sure the faceZones
+                // are synchronised remove below check.
+                syncTools::syncFaceList
+                (
+                    mesh_,
+                    blockedFace,
+                    andEqOp<bool>(),    // combine operator
+                    false               // separation
+                );
             }
             reduce(nUnblocked, sumOp<label>());
 
