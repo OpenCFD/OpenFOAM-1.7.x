@@ -78,7 +78,7 @@ tmp<scalarField> mutRoughWallFunctionFvPatchScalarField::calcMut() const
 
     const scalar Cmu25 = pow(Cmu_, 0.25);
 
-    tmp<scalarField> tmutw(new scalarField(patch().size(), 0.0));
+    tmp<scalarField> tmutw(new scalarField(*this));
     scalarField& mutw = tmutw();
 
     forAll(mutw, faceI)
