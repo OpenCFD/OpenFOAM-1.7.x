@@ -43,19 +43,19 @@ autoPtr<radiationModel> radiationModel::New
 {
     word radiationModelTypeName;
 
-    // Enclose the creation of the radiationPropertiesDict to ensure it is
-    // deleted before the radiationModel is created otherwise the dictionary
-    // is entered in the database twice
+    // Note: no need to register/keep radiationProperties since models read
+    // it themselves.
     {
         IOdictionary radiationPropertiesDict
         (
             IOobject
             (
                 "radiationProperties",
-                T.mesh().time().constant(),
-                T.mesh().objectRegistry::db(),
+                T.time().constant(),
+                T.mesh(),
                 IOobject::MUST_READ,
-                IOobject::NO_WRITE
+                IOobject::NO_WRITE,
+                false
             )
         );
 
