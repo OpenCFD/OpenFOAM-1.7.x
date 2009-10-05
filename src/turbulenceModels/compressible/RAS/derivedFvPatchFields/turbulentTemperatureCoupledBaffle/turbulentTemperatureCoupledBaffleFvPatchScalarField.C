@@ -209,6 +209,8 @@ turbulentTemperatureCoupledBaffleFvPatchScalarField
 Foam::tmp<Foam::scalarField>
 Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::K() const
 {
+    const fvMesh& mesh = patch().boundaryMesh().mesh();
+
     if (KName_ == "none")
     {
         const compressible::RASModel& model =
@@ -221,33 +223,33 @@ Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::K() const
 
         return
             talpha().boundaryField()[patch().index()]
-           *thermo.rho()().boundaryField()[patch().index()]
            *thermo.Cp()().boundaryField()[patch().index()];
+    }
+    else if (mesh.objectRegistry::foundObject<volScalarField>(KName_))
+    {
+        return patch().lookupPatchField<volScalarField, scalar>(KName_);
+    }
+    else if (mesh.objectRegistry::foundObject<volSymmTensorField>(KName_))
+    {
+        const symmTensorField& KWall =
+            patch().lookupPatchField<volSymmTensorField, scalar>(KName_);
+
+        vectorField n = patch().nf();
+
+        return n & KWall & n;
     }
     else
     {
-        //if (debug)
-        //{
-        //    const directMappedPatchBase& mpp =
-        //        refCast<const directMappedPatchBase>
-        //        (
-        //            patch().patch()
-        //        );
-        //    Pout<< patch().boundaryMesh().mesh().name() << ':'
-        //        << patch().name() << ':'
-        //        << this->dimensionedInternalField().name() << " -> "
-        //        << mpp.sampleRegion() << ':'
-        //        << mpp.samplePatch() << ':'
-        //        << this->dimensionedInternalField().name() << " :"
-        //        << " K: min:"
-        //        << gMin(patch().lookupPatchField<volScalarField, scalar>
-        //           (KName_))
-        //        << " max:"
-        //        << gMax(patch().lookupPatchField<volScalarField, scalar>
-        //           (KName_))
-        //        << endl;
-        //}
-        return patch().lookupPatchField<volScalarField, scalar>(KName_);
+        FatalErrorIn
+        (
+            "turbulentTemperatureCoupledBaffleFvPatchScalarField::K() const"
+        )   << "Did not find field " << KName_
+            << " on mesh " << mesh.name() << " patch " << patch().name()
+            << endl
+            << "Please set 'K' to 'none', a valid volScalarField"
+            << " or a valid volSymmTensorField." << exit(FatalError);
+
+        return scalarField(0);
     }
 }
 
@@ -404,6 +406,7 @@ void Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::updateCoeffs()
             << nbrMesh.name() << ':'
             << nbrPatch.name() << ':'
             << this->dimensionedInternalField().name() << " :"
+            << " patch:" << patch().name()
             << " out of:" << nTotSize
             << " fixedBC:" << nFixed
             << " gradient:" << nTotSize-nFixed << endl;
