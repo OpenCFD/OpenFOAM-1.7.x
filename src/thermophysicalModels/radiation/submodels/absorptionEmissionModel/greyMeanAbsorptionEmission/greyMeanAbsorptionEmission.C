@@ -259,10 +259,11 @@ Foam::radiation::greyMeanAbsorptionEmission::ECont(const label bandI) const
         )
     );
 
-    if (mesh_.foundObject<volScalarField>("hrr"))
+    if (mesh_.foundObject<volScalarField>("dQ"))
     {
-        const volScalarField& hrr = mesh_.lookupObject<volScalarField>("hrr");
-        E().internalField() = EhrrCoeff_*hrr.internalField();
+        const volScalarField& dQ =
+            mesh_.lookupObject<volScalarField>("dQ");
+        E().internalField() = EhrrCoeff_*dQ;
     }
 
     return E;

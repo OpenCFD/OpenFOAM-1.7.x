@@ -28,13 +28,6 @@ License
 #include "fvm.H"
 #include "fvDOM.H"
 
-#include "absorptionEmissionModel.H"
-#include "scatterModel.H"
-#include "mathematicalConstants.H"
-#include "radiationConstants.H"
-#include "radiationModel.H"
-#include "Vector2D.H"
-
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 Foam::label Foam::radiation::radiativeIntensityRay::rayId(0);
@@ -203,9 +196,9 @@ Foam::scalar Foam::radiation::radiativeIntensityRay::correct()
             fvm::div(Ji, ILambda_[lambdaI], "div(Ji,Ii_h)")
           + fvm::Sp(k*omega_, ILambda_[lambdaI])
          ==
-            1.0/Foam::mathematicalConstant::pi
+            1.0/Foam::mathematicalConstant::pi*omega_
            *(
-                k*omega_*blackBody_.bLambda(lambdaI)
+                k*blackBody_.bLambda(lambdaI)
               + absorptionEmission_.ECont(lambdaI)
             )
         );

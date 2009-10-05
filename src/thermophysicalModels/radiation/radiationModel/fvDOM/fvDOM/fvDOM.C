@@ -26,10 +26,7 @@ License
 
 #include "fvDOM.H"
 #include "addToRunTimeSelectionTable.H"
-#include "fvm.H"
 
-#include "absorptionEmissionModel.H"
-#include "scatterModel.H"
 #include "mathematicalConstants.H"
 #include "radiationConstants.H"
 
@@ -64,7 +61,7 @@ Foam::radiation::fvDOM::fvDOM(const volScalarField& T)
             mesh_.time().timeName(),
             mesh_,
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
         mesh_,
         dimensionedScalar("G", dimMass/pow3(dimTime), 0.0)
@@ -168,7 +165,7 @@ Foam::radiation::fvDOM::fvDOM(const volScalarField& T)
     {
         if (mesh_.nSolutionD() == 2)    //2D (X & Y)
         {
-            scalar thetai = mathematicalConstant::pi/2.0;
+            scalar thetai = mathematicalConstant::piByTwo;
             scalar deltaTheta = mathematicalConstant::pi;
             nRay_ = 4*nPhi_;
             IRay_.setSize(nRay_);
@@ -198,7 +195,7 @@ Foam::radiation::fvDOM::fvDOM(const volScalarField& T)
         }
         else    //1D (X)
         {
-            scalar thetai = mathematicalConstant::pi/2.0;
+            scalar thetai = mathematicalConstant::piByTwo;
             scalar deltaTheta = mathematicalConstant::pi;
             nRay_ = 2;
             IRay_.setSize(nRay_);
@@ -346,7 +343,7 @@ Foam::radiation::fvDOM::Ru() const
     const DimensionedField<scalar, volMesh> a =
         a_.dimensionedInternalField(); //absorptionEmission_->aCont()()
 
-    return  a*G - 4.0*E;
+    return  a*G - E;
 }
 
 
