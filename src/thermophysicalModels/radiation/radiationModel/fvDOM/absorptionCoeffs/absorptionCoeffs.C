@@ -99,7 +99,7 @@ void Foam::radiation::absorptionCoeffs::initialise(const dictionary& dict)
 {
     dict.lookup("Tcommon") >> Tcommon_;
     dict.lookup("Tlow") >> Tlow_;
-    dict.lookup("Tlow") >> Thigh_;
+    dict.lookup("Thigh") >> Thigh_;
     dict.lookup("invTemp") >> invTemp_;
 
     dict.lookup("loTcoeffs") >> lowACoeffs_;
