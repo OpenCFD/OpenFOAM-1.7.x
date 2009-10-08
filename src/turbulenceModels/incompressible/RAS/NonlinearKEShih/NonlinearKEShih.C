@@ -195,7 +195,7 @@ NonlinearKEShih::NonlinearKEShih
     Cmu_(2.0/(3.0*(A1_ + eta_ + alphaKsi_*ksi_))),
     fEta_(A2_ + pow(eta_, 3.0)),
 
-    nut_(Cmu_*sqr(k_)/(epsilon_ + epsilonSmall_)),
+    nut_("nut", Cmu_*sqr(k_)/(epsilon_ + epsilonSmall_)),
 
     nonlinearStress_
     (
@@ -318,9 +318,12 @@ void NonlinearKEShih::correct()
     // generation term
     volScalarField S2 = symm(gradU_) && gradU_;
 
-    volScalarField G =
+    volScalarField G
+    (
+        "RASModel::G",
         Cmu_*sqr(k_)/epsilon_*S2
-      - (nonlinearStress_ && gradU_);
+      - (nonlinearStress_ && gradU_)
+    );
 
     #include "nonLinearWallFunctionsI.H"
 
