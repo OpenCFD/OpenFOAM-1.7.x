@@ -1336,7 +1336,20 @@ Foam::distributedTriSurfaceMesh::distributedTriSurfaceMesh
 )
 :
     triSurfaceMesh(io, s),
-    dict_(io, dict)
+    dict_
+    (
+        IOobject
+        (
+            searchableSurface::name() + "Dict",
+            searchableSurface::instance(),
+            searchableSurface::local(),
+            searchableSurface::db(),
+            searchableSurface::NO_READ,
+            searchableSurface::writeOpt(),
+            searchableSurface::registerObject()
+        ),
+        dict
+    )
 {
     read();
 
