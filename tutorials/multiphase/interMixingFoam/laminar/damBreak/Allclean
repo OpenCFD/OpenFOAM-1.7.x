@@ -1,0 +1,4 @@
+#!/bin/sh
+
+foamCleanTutorials cases
+rm -rf 0/alpha[1-3].gz
