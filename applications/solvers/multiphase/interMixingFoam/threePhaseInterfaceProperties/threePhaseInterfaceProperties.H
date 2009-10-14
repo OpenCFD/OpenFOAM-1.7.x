@@ -126,8 +126,8 @@ public:
 
         tmp<volScalarField> sigma() const
         {
-            volScalarField limitedAlpha2 = max(mixture_.alpha2(), 0.0);
-            volScalarField limitedAlpha3 = max(mixture_.alpha3(), 0.0);
+            volScalarField limitedAlpha2 = max(mixture_.alpha2(), scalar(0));
+            volScalarField limitedAlpha3 = max(mixture_.alpha3(), scalar(0));
 
             return
                 (limitedAlpha2*sigma12_ + limitedAlpha3*sigma13_)

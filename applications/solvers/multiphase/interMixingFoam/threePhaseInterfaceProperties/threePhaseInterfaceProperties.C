@@ -82,8 +82,8 @@ void Foam::threePhaseInterfaceProperties::correctContactAngle
                 refCast<const alphaContactAngleFvPatchScalarField>
                 (alpha3[patchi]);
 
-            scalarField twoPhaseAlpha2 = max(a2cap, 0.0);
-            scalarField twoPhaseAlpha3 = max(a3cap, 0.0);
+            scalarField twoPhaseAlpha2 = max(a2cap, scalar(0));
+            scalarField twoPhaseAlpha3 = max(a3cap, scalar(0));
 
             scalarField sumTwoPhaseAlpha =
                 twoPhaseAlpha2 + twoPhaseAlpha3 + SMALL;

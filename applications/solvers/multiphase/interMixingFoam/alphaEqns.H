@@ -126,8 +126,8 @@
         solve(fvm::ddt(alpha1) + fvc::div(phiAlpha1));
 
         // Create the diffusion coefficients for alpha2<->alpha3
-        volScalarField Dc23 = D23*max(alpha3, 0.0)*pos(alpha2);
-        volScalarField Dc32 = D23*max(alpha2, 0.0)*pos(alpha3);
+        volScalarField Dc23 = D23*max(alpha3, scalar(0))*pos(alpha2);
+        volScalarField Dc32 = D23*max(alpha2, scalar(0))*pos(alpha3);
 
         // Add the diffusive flux for alpha3->alpha2
         phiAlpha2 -= fvc::interpolate(Dc32)*mesh.magSf()*fvc::snGrad(alpha1);
