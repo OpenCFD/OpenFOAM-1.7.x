@@ -38,8 +38,6 @@ wmake libso sampling
 wmake libso dynamicMesh
 wmake libso dynamicFvMesh
 wmake libso topoChangerFvMesh
-wmake libso fvMotionSolver
-wmake libso engine
 
 wmake libso ODE
 wmake libso randomProcesses
@@ -55,5 +53,8 @@ wmake libso autoMesh
 wmake libso errorEstimation
 
 fvAgglomerationMethods/Allwmake
+
+wmake libso fvMotionSolver
+wmake libso engine
 
 # ----------------------------------------------------------------- end-of-file
