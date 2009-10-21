@@ -72,10 +72,8 @@ public:
         TimeState();
 
 
-    // Destructor
-
-        //- Virtual destructor
-        virtual ~TimeState();
+    //- Destructor
+    virtual ~TimeState();
 
 
     // Member functions
@@ -89,22 +87,34 @@ public:
             virtual scalar timeToUserTime(const scalar t) const;
 
             //- Return current time value
-            virtual scalar timeOutputValue() const;
+            scalar timeOutputValue() const;
 
             //- Return current time index
-            virtual label timeIndex() const;
+            label timeIndex() const;
+
+            //- Return time step value
+            inline scalar deltaTValue() const
+            {
+                return deltaT_;
+            }
+
+            //- Return old time step value
+            inline scalar deltaT0Value() const
+            {
+                return deltaT0_;
+            }
 
             //- Return time step
-            virtual dimensionedScalar deltaT() const;
+            dimensionedScalar deltaT() const;
 
             //- Return old time step
-            virtual dimensionedScalar deltaT0() const;
+            dimensionedScalar deltaT0() const;
 
 
         // Check
 
             //- Return true if this is an output time
-            virtual bool outputTime() const;
+            bool outputTime() const;
 };
 
 
