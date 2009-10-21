@@ -208,12 +208,13 @@ void readPoints
         {
             hasWarned = true;
 
-            WarningIn
+            IOWarningIn
             (
                 "readPoints(IFstream&, label&, DynamicList<point>"
-                ", DynamicList<label>&)"
+                ", DynamicList<label>&)",
+                is
             )   << "Points not in order starting at point " << pointI
-                << " at line " << is.lineNumber()
+                //<< " at line " << is.lineNumber()
                 //<< abort(FatalError);
                 << endl;
         }
@@ -429,46 +430,52 @@ void readPatches
             >> dofSet >> tempSet >> contactSet >> nFaces;
 
         is.getLine(line);
-        patchNames.append(string::validate<word>(line));
+        word groupName = string::validate<word>(line);
 
-        Info<< "For facegroup " << group
-            << " named " << patchNames[patchNames.size()-1]
+        Info<< "For group " << group
+            << " named " << groupName
             << " trying to read " << nFaces << " patch face indices."
             << endl;
 
-        patchFaceIndices.append(labelList(0));
-        labelList& faceIndices = patchFaceIndices[patchFaceIndices.size()-1];
-        faceIndices.setSize(nFaces);
-        label faceI = 0;
+        labelList groupIndices(nFaces);
+        label groupType = -1;
+        nFaces = 0;
 
-        while (faceI < faceIndices.size())
+        while (nFaces < groupIndices.size())
         {
             is.getLine(line);
             IStringStream lineStr(line);
 
             // Read one (for last face) or two entries from line.
             label nRead = 2;
-            if (faceI == faceIndices.size()-1)
+            if (nFaces == groupIndices.size()-1)
             {
                 nRead = 1;
             }
 
             for (label i = 0; i < nRead; i++)
             {
-                label typeCode, tag, nodeLeaf, component;
+                label tag, nodeLeaf, component;
 
-                lineStr >> typeCode >> tag >> nodeLeaf >> component;
+                lineStr >> groupType >> tag >> nodeLeaf >> component;
 
-                if (typeCode != 8)
-                {
-                    FatalErrorIn("readPatches")
-                        << "When reading patches expect Entity Type Code 8"
-                        << nl << "At line " << is.lineNumber()
-                        << exit(FatalError);
-                }
-
-                faceIndices[faceI++] = tag;
+                groupIndices[nFaces++] = tag;
             }
+        }
+
+
+        // Store
+        if (groupType == 8)
+        {
+            patchNames.append(groupName);
+            patchFaceIndices.append(groupIndices);
+        }
+        else
+        {
+            IOWarningIn("readPatches(..)", is)
+                << "When reading patches expect entity type code 8"
+                << nl << "    Skipping group code " << groupType
+                << endl;
         }
     }
 
