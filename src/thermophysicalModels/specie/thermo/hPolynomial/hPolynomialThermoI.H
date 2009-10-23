@@ -63,7 +63,10 @@ inline Foam::hPolynomialThermo<EquationOfState, PolySize>::hPolynomialThermo
     cpPolynomial_(pt.cpPolynomial_),
     dhPolynomial_(pt.dhPolynomial_),
     sPolynomial_(pt.sPolynomial_)
-{}
+{
+    // Offset dh poly so that it is relative to the enthalpy at Tstd
+    dhPolynomial_[0] -= dhPolynomial_.evaluate(specie::Tstd);
+}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -153,7 +156,7 @@ inline void Foam::hPolynomialThermo<EquationOfState, PolySize>::operator-=
     scalar molr2 = pt.nMoles()/this->nMoles();
 
     Hf_ = molr1*Hf_ - molr2*pt.Hf_;
-    Sf_ = molr1*Hf_ - molr2*pt.Sf_;
+    Sf_ = molr1*Sf_ - molr2*pt.Sf_;
     cpPolynomial_ = molr1*cpPolynomial_ - molr2*pt.cpPolynomial_;
     dhPolynomial_ = molr1*dhPolynomial_ - molr2*pt.dhPolynomial_;
     sPolynomial_ = molr1*sPolynomial_ - molr2*pt.sPolynomial_;
