@@ -41,7 +41,10 @@ Foam::hPolynomialThermo<EquationOfState, PolySize>::hPolynomialThermo
     cpPolynomial_("cpPolynomial", is),
     dhPolynomial_(cpPolynomial_.integrate()),
     sPolynomial_(cpPolynomial_.integrateMinus1())
-{}
+{
+    // Offset dh poly so that it is relative to the enthalpy at Tstd
+    dhPolynomial_[0] -= dhPolynomial_.evaluate(specie::Tstd);
+}
 
 
 // * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
