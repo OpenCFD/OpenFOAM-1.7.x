@@ -54,7 +54,7 @@ pointField BSpline::findKnots
     register scalar oneSixth = 1.0/6.0;
     register scalar twoThird = 2.0/3.0;
 
-    simpleMatrix<vector> M(newnKnots);
+    simpleMatrix<vector> M(newnKnots, 0.0, vector::zero);
 
     // set up the matrix
 

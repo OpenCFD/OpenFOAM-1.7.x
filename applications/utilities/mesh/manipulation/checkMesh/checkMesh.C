@@ -94,7 +94,8 @@ int main(int argc, char *argv[])
 
             noFailedChecks += checkGeometry(mesh, allGeometry);
 
-            reduce(noFailedChecks, sumOp<label>());
+            // Note: no reduction in noFailedChecks necessary since is
+            //       counter of checks, not counter of failed cells,faces etc.
 
             if (noFailedChecks == 0)
             {
@@ -111,8 +112,6 @@ int main(int argc, char *argv[])
             Info<< "Time = " << runTime.timeName() << nl << endl;
 
             label nFailedChecks = checkGeometry(mesh, allGeometry);
-
-            reduce(nFailedChecks, sumOp<label>());
 
             if (nFailedChecks)
             {
