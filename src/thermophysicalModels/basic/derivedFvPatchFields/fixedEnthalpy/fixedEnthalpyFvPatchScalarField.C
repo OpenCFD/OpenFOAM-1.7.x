@@ -30,14 +30,9 @@ License
 #include "volFields.H"
 #include "basicThermo.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
+Foam::fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF
@@ -47,7 +42,7 @@ fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
 {}
 
 
-fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
+Foam::fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
 (
     const fixedEnthalpyFvPatchScalarField& ptf,
     const fvPatch& p,
@@ -59,7 +54,7 @@ fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
 {}
 
 
-fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
+Foam::fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF,
@@ -70,7 +65,7 @@ fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
 {}
 
 
-fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
+Foam::fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
 (
     const fixedEnthalpyFvPatchScalarField& tppsf
 )
@@ -79,7 +74,7 @@ fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
 {}
 
 
-fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
+Foam::fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
 (
     const fixedEnthalpyFvPatchScalarField& tppsf,
     const DimensionedField<scalar, volMesh>& iF
@@ -91,7 +86,7 @@ fixedEnthalpyFvPatchScalarField::fixedEnthalpyFvPatchScalarField
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void fixedEnthalpyFvPatchScalarField::updateCoeffs()
+void Foam::fixedEnthalpyFvPatchScalarField::updateCoeffs()
 {
     if (updated())
     {
@@ -109,7 +104,14 @@ void fixedEnthalpyFvPatchScalarField::updateCoeffs()
         const_cast<fvPatchScalarField&>(thermo.T().boundaryField()[patchi]);
     Tw.evaluate();
 
-    operator==(thermo.h(Tw, patchi));
+    if (dimensionedInternalField().name() == "h")
+    {
+        operator==(thermo.h(Tw, patchi));
+    }
+    else
+    {
+        operator==(thermo.hs(Tw, patchi));
+    }
 
     fixedValueFvPatchScalarField::updateCoeffs();
 }
@@ -117,10 +119,14 @@ void fixedEnthalpyFvPatchScalarField::updateCoeffs()
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-makePatchTypeField(fvPatchScalarField, fixedEnthalpyFvPatchScalarField);
+namespace Foam
+{
+    makePatchTypeField
+    (
+        fvPatchScalarField,
+        fixedEnthalpyFvPatchScalarField
+    );
+}
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //

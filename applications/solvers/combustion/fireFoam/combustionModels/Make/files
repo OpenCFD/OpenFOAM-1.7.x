@@ -1,0 +1,9 @@
+combustionModel/combustionModel.C
+combustionModel/newCombustionModel.C
+
+infinitelyFastChemistry/infinitelyFastChemistry.C
+
+noCombustion/noCombustion.C
+
+LIB = $(FOAM_LIBBIN)/libcombustionModels
+

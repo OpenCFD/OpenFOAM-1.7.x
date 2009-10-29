@@ -176,6 +176,9 @@ public:
 
             //- Enthalpy source term
             virtual tmp<fvScalarMatrix> Sh(basicThermo& thermo) const;
+
+            //- Sensible enthalpy source term
+            virtual tmp<fvScalarMatrix> Shs(basicThermo& thermo) const;
 };
 
 
@@ -189,4 +192,3 @@ public:
 #endif
 
 // ************************************************************************* //
-

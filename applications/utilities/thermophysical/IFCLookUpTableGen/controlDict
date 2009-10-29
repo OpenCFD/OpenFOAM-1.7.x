@@ -1,0 +1,48 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6.x                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    note        "Calculating the IFC flamelets";
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+fileName "SpeciesTable";
+
+fuel CH4(ANHARMONIC);
+n    1;
+m    4;
+
+
+fields
+(
+    {
+        name   ft;
+        min    0.;
+        max    1.;
+        N      100;
+    }
+);
+
+output
+(
+    {
+        name    CH4;
+    }
+    {
+        name    CO2;
+    }
+    {
+        name    H2O;
+    }
+);
+
+// ************************************************************************* //

@@ -152,5 +152,21 @@ Foam::tmp<Foam::fvScalarMatrix> Foam::radiation::radiationModel::Sh
     );
 }
 
+Foam::tmp<Foam::fvScalarMatrix> Foam::radiation::radiationModel::Shs
+(
+    basicThermo& thermo
+) const
+{
+    volScalarField& hs = thermo.hs();
+    const volScalarField cp = thermo.Cp();
+    const volScalarField T3 = pow3(T_);
+
+    return
+    (
+        Ru()
+      - fvm::Sp(4.0*Rp()*T3/cp, hs)
+      - Rp()*T3*(T_ - 4.0*hs/cp)
+    );
+}
 
 // ************************************************************************* //

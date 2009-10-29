@@ -1,0 +1,3 @@
+IFCLookUpTableGen.C
+
+EXE = $(FOAM_APPBIN)/IFCLookUpTableGen
