@@ -176,54 +176,6 @@ void Foam::hhuMixtureThermo<MixtureType>::correct()
 
 template<class MixtureType>
 Foam::tmp<Foam::volScalarField>
-Foam::hhuMixtureThermo<MixtureType>::hs() const
-{
-    const fvMesh& mesh = T_.mesh();
-
-    tmp<volScalarField> ths
-    (
-        new volScalarField
-        (
-            IOobject
-            (
-                "hs",
-                mesh.time().timeName(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE
-            ),
-            mesh,
-            h_.dimensions()
-        )
-    );
-
-    volScalarField& hsf = ths();
-
-    scalarField& hsCells = hsf.internalField();
-    const scalarField& TCells = T_.internalField();
-
-    forAll(TCells, celli)
-    {
-        hsCells[celli] = this->cellMixture(celli).Hs(TCells[celli]);
-    }
-
-    forAll(T_.boundaryField(), patchi)
-    {
-        scalarField& hsp = hsf.boundaryField()[patchi];
-        const scalarField& Tp = T_.boundaryField()[patchi];
-
-        forAll(Tp, facei)
-        {
-            hsp[facei] = this->patchFaceMixture(patchi, facei).Hs(Tp[facei]);
-        }
-    }
-
-    return ths;
-}
-
-
-template<class MixtureType>
-Foam::tmp<Foam::volScalarField>
 Foam::hhuMixtureThermo<MixtureType>::hc() const
 {
     const fvMesh& mesh = T_.mesh();

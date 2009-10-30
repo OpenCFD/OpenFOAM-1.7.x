@@ -23,7 +23,7 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Application
-    compressibleLesInterFoam
+    compressibleInterFoam
 
 Description
     Solver for 2 compressible, isothermal immiscible fluids using a VOF

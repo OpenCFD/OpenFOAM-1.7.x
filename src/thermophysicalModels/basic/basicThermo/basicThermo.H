@@ -141,7 +141,7 @@ public:
             //- Compressibility [s^2/m^2]
             virtual const volScalarField& psi() const;
 
-            //- Enthalpy [J/kg]
+            //- Total enthalpy [J/kg]
             //  Non-const access allowed for transport equations
             virtual volScalarField& h();
 
@@ -157,6 +157,27 @@ public:
 
             //- Enthalpy for patch [J/kg]
             virtual tmp<scalarField> h
+            (
+                const scalarField& T,
+                const label patchi
+            ) const;
+
+            //- Sensible enthalpy [J/kg]
+            //  Non-const access allowed for transport equations
+            virtual volScalarField& hs();
+
+            //- Enthalpy [J/kg]
+            virtual const volScalarField& hs() const;
+
+            //- Enthalpy for cell-set [J/kg]
+            virtual tmp<scalarField> hs
+            (
+                const scalarField& T,
+                const labelList& cells
+            ) const;
+
+            //- Enthalpy for patch [J/kg]
+            virtual tmp<scalarField> hs
             (
                 const scalarField& T,
                 const label patchi

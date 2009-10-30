@@ -1,0 +1,4 @@
+psiThermo/basicSensiblePsiThermo/basicSensiblePsiThermo.C
+psiThermo/basicSensiblePsiThermo/newBasicSensiblePsiThermo.C
+
+LIB = $(FOAM_LIBBIN)/libbasicSensibleEnthalpyThermophysicalModels

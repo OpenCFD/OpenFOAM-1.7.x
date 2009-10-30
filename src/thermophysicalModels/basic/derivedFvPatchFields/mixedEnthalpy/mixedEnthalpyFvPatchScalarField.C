@@ -30,14 +30,9 @@ License
 #include "volFields.H"
 #include "basicThermo.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
+Foam::mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF
@@ -51,7 +46,7 @@ mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
 }
 
 
-mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
+Foam::mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
 (
     const mixedEnthalpyFvPatchScalarField& ptf,
     const fvPatch& p,
@@ -63,7 +58,7 @@ mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
 {}
 
 
-mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
+Foam::mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF,
@@ -74,7 +69,7 @@ mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
 {}
 
 
-mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
+Foam::mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
 (
     const mixedEnthalpyFvPatchScalarField& tppsf
 )
@@ -83,7 +78,7 @@ mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
 {}
 
 
-mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
+Foam::mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
 (
     const mixedEnthalpyFvPatchScalarField& tppsf,
     const DimensionedField<scalar, volMesh>& iF
@@ -95,7 +90,7 @@ mixedEnthalpyFvPatchScalarField::mixedEnthalpyFvPatchScalarField
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void mixedEnthalpyFvPatchScalarField::updateCoeffs()
+void Foam::mixedEnthalpyFvPatchScalarField::updateCoeffs()
 {
     if (updated())
     {
@@ -106,7 +101,7 @@ void mixedEnthalpyFvPatchScalarField::updateCoeffs()
     (
         "thermophysicalProperties"
     );
-    
+
     const label patchi = patch().index();
 
     mixedFvPatchScalarField& Tw = refCast<mixedFvPatchScalarField>
@@ -117,13 +112,27 @@ void mixedEnthalpyFvPatchScalarField::updateCoeffs()
     Tw.evaluate();
 
     valueFraction() = Tw.valueFraction();
-    refValue() = thermo.h(Tw.refValue(), patchi);
-    refGrad() = thermo.Cp(Tw, patchi)*Tw.refGrad()
-      + patch().deltaCoeffs()*
-        (
+
+    if (dimensionedInternalField().name() == "h")
+    {
+        refValue() = thermo.h(Tw.refValue(), patchi);
+        refGrad() = thermo.Cp(Tw, patchi)*Tw.refGrad()
+        + patch().deltaCoeffs()*
+         (
             thermo.h(Tw, patchi)
           - thermo.h(Tw, patch().faceCells())
-        );
+         );
+    }
+    else
+    {
+        refValue() = thermo.hs(Tw.refValue(), patchi);
+        refGrad() = thermo.Cp(Tw, patchi)*Tw.refGrad()
+        + patch().deltaCoeffs()*
+         (
+            thermo.hs(Tw, patchi)
+          - thermo.hs(Tw, patch().faceCells())
+         );
+    }
 
     mixedFvPatchScalarField::updateCoeffs();
 }
@@ -131,10 +140,14 @@ void mixedEnthalpyFvPatchScalarField::updateCoeffs()
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-makePatchTypeField(fvPatchScalarField, mixedEnthalpyFvPatchScalarField);
+namespace Foam
+{
+    makePatchTypeField
+    (
+        fvPatchScalarField,
+        mixedEnthalpyFvPatchScalarField
+    );
+}
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //

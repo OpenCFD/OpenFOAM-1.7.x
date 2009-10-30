@@ -36,8 +36,6 @@ SourceFiles
 #ifndef hhuMixtureThermo_H
 #define hhuMixtureThermo_H
 
-//#include "hPsiMixtureThermo.H"
-
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
@@ -93,9 +91,6 @@ public:
 
         //- Update properties
         virtual void correct();
-
-        //- Sensible enthalpy [J/kg]
-        virtual tmp<volScalarField> hs() const;
 
         //- Chemical enthalpy [J/kg]
         virtual tmp<volScalarField> hc() const;

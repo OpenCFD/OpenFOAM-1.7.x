@@ -242,6 +242,9 @@ public:
             //- Temperature from Enthalpy given an initial temperature T0
             inline scalar TH(const scalar H, const scalar T0) const;
 
+            //- Temperature from sensible Enthalpy given an initial T0
+            inline scalar THs(const scalar Hs, const scalar T0) const;
+
             //- Temperature from internal energy given an initial temperature T0
             inline scalar TE(const scalar E, const scalar T0) const;
 

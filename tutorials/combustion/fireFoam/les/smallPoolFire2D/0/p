@@ -1,0 +1,62 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      p;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [1 -1 -2 0 0 0 0];
+
+internalField   uniform 101325;
+
+boundaryField
+{
+    outlet
+    {
+        type           uniformDensityHydrostaticPressure;
+        rho            1.2;
+        pRefValue      101325;
+        pRefPoint      (0 0 0);
+        value          uniform 101325;
+    }
+
+    sides
+    {
+        type           uniformDensityHydrostaticPressure;
+        rho            1.2;
+        pRefValue      101325;
+        pRefPoint      (0 0 0);
+        value          uniform 101325;
+    }
+    base
+    {
+        type            buoyantPressure;//fixedFluxPressure;
+        value           uniform 101325;
+        U               "U";
+        rho             "rho";
+        phi             "phi";
+        adjoint         false;
+    }
+    inlet
+    {
+        type            zeroGradient;
+        value           uniform 101325;
+    }
+    frontBack
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //

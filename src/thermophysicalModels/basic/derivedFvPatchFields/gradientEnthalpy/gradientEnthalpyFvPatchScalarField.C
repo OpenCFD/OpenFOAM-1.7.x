@@ -30,14 +30,9 @@ License
 #include "volFields.H"
 #include "basicThermo.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
+Foam::gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF
@@ -47,7 +42,7 @@ gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
 {}
 
 
-gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
+Foam::gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
 (
     const gradientEnthalpyFvPatchScalarField& ptf,
     const fvPatch& p,
@@ -59,7 +54,7 @@ gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
 {}
 
 
-gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
+Foam::gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF,
@@ -70,7 +65,7 @@ gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
 {}
 
 
-gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
+Foam::gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
 (
     const gradientEnthalpyFvPatchScalarField& tppsf
 )
@@ -79,7 +74,7 @@ gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
 {}
 
 
-gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
+Foam::gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
 (
     const gradientEnthalpyFvPatchScalarField& tppsf,
     const DimensionedField<scalar, volMesh>& iF
@@ -91,7 +86,7 @@ gradientEnthalpyFvPatchScalarField::gradientEnthalpyFvPatchScalarField
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void gradientEnthalpyFvPatchScalarField::updateCoeffs()
+void Foam::gradientEnthalpyFvPatchScalarField::updateCoeffs()
 {
     if (updated())
     {
@@ -102,20 +97,32 @@ void gradientEnthalpyFvPatchScalarField::updateCoeffs()
     (
         "thermophysicalProperties"
     );
-    
+
     const label patchi = patch().index();
 
-    fvPatchScalarField& Tw = 
+    fvPatchScalarField& Tw =
         const_cast<fvPatchScalarField&>(thermo.T().boundaryField()[patchi]);
 
     Tw.evaluate();
 
-    gradient() = thermo.Cp(Tw, patchi)*Tw.snGrad()
-      + patch().deltaCoeffs()*
+    if (dimensionedInternalField().name() == "h")
+    {
+        gradient() = thermo.Cp(Tw, patchi)*Tw.snGrad()
+        + patch().deltaCoeffs()*
         (
             thermo.h(Tw, patchi)
           - thermo.h(Tw, patch().faceCells())
         );
+    }
+    else
+    {
+        gradient() = thermo.Cp(Tw, patchi)*Tw.snGrad()
+        + patch().deltaCoeffs()*
+        (
+            thermo.hs(Tw, patchi)
+          - thermo.hs(Tw, patch().faceCells())
+        );
+    }
 
     fixedGradientFvPatchScalarField::updateCoeffs();
 }
@@ -123,10 +130,14 @@ void gradientEnthalpyFvPatchScalarField::updateCoeffs()
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-makePatchTypeField(fvPatchScalarField, gradientEnthalpyFvPatchScalarField);
+namespace Foam
+{
+    makePatchTypeField
+    (
+        fvPatchScalarField,
+        gradientEnthalpyFvPatchScalarField
+    );
+}
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //
