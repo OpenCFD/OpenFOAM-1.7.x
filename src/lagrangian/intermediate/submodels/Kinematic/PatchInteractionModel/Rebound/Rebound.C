@@ -68,14 +68,11 @@ bool Foam::Rebound<CloudType>::correct
     nw /= mag(nw);
 
     scalar Un = U & nw;
-    vector Ut = U - Un*nw;
 
     if (Un > 0.0)
     {
         U -= UFactor_*2.0*Un*nw;
     }
-
-    U -= Ut;
 
     return true;
 }
