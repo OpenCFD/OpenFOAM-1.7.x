@@ -26,7 +26,7 @@ Class
     Foam::combustionModel
 
 Description
-    Base class for all combustion models.
+    Base class for all non-premixed combustion models.
 
 SourceFiles
     combustionModel.C
@@ -58,6 +58,7 @@ protected:
 
     // Protected data
 
+        //- Dictionary of coefficients for the particular model
         dictionary combustionModelCoeffs_;
 
         //- Reference to the thermodynamic
@@ -75,10 +76,10 @@ protected:
         //- Reference to the density field
         const volScalarField& rho_;
 
-        //- Air-fuel stoichiometric ratio
+        //- Stoichiometric air-fuel mass ratio
         dimensionedScalar stoicRatio_;
 
-        //- Oxygen-fuel stoichiometric ratio
+        //- Stoichiometric oxygen-fuel mass ratio
         dimensionedScalar s_;
 
         //- Heat of combustion (J/Kg)
@@ -160,18 +161,6 @@ public:
 
     // Member Functions
 
-        //- Correct combustion rate
-        virtual void correct() = 0;
-
-        //- Return normalised consumption rate of (fu - fres)
-        virtual tmp<volScalarField> wFuelNorm() const = 0;
-
-        //- Sensible enthalpy source term from the rate of fuel consumption
-        virtual tmp<volScalarField> Sh(const volScalarField& Rfu) const;
-
-        //- Update properties from given dictionary
-        virtual bool read(const dictionary& combustionProperties) = 0;
-
         // Access functions
 
             //- Access composition
@@ -191,6 +180,22 @@ public:
             {
                 return qFuel_;
             }
+
+        //- Return normalised consumption rate of (fu - fres)
+        virtual tmp<volScalarField> wFuelNorm() const = 0;
+
+        //- Fuel consumption rate matrix i.e. source-term for the fuel equation
+        virtual tmp<fvScalarMatrix> R(volScalarField& fu) const;
+
+        //- Heat-release rate calculated from the given
+        //  fuel consumption rate matrix
+        virtual tmp<volScalarField> dQ(const fvScalarMatrix& Rfu) const;
+
+        //- Correct combustion rate
+        virtual void correct() = 0;
+
+        //- Update properties from given dictionary
+        virtual bool read(const dictionary& combustionProperties) = 0;
 };
 
 

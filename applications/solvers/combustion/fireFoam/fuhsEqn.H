@@ -1,8 +1,7 @@
 {
     // Solve fuel equation
     // ~~~~~~~~~~~~~~~~~~~
-    volScalarField fres = composition.fres(ft, stoicRatio.value());
-    volScalarField wFuelNorm = combustion->wFuelNorm();
+    fvScalarMatrix R = combustion->R(fu);
 
     {
         fvScalarMatrix fuEqn
@@ -11,15 +10,12 @@
           + mvConvection->fvmDiv(phi, fu)
           - fvm::laplacian(turbulence->alphaEff(), fu)
          ==
-          - fvm::Sp(wFuelNorm, fu)
-          + wFuelNorm*fres
+            R
         );
 
         fuEqn.relax();
         fuEqn.solve();
     }
-
-    volScalarField Rfu = wFuelNorm*(fu - fres);
 
     Info<< "max(fu) = " << max(fu).value() << endl;
     Info<< "min(fu) = " << min(fu).value() << endl;
@@ -28,7 +24,7 @@
     // Solve sensible enthalpy equation
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     radiation->correct();
-    dQ = combustion->Sh(Rfu);
+    dQ = combustion->dQ(R);
 
     {
         fvScalarMatrix hsEqn

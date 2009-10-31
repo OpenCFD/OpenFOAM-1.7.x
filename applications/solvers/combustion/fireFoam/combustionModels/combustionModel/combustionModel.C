@@ -25,6 +25,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "combustionModel.H"
+#include "fvm.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -65,16 +66,6 @@ Foam::combustionModel::combustionModel
 {}
 
 
-
-Foam::tmp<Foam::volScalarField> Foam::combustionModel::combustionModel::Sh
-(
-    const volScalarField& Rfu
-) const
-{
-    return Rfu*qFuel_;
-}
-
-
 // * * * * * * * * * * * * * * * * Destructors * * * * * * * * * * * * * * * //
 
 Foam::combustionModel::~combustionModel()
@@ -82,6 +73,30 @@ Foam::combustionModel::~combustionModel()
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+Foam::tmp<Foam::fvScalarMatrix>
+Foam::combustionModel::combustionModel::R(volScalarField& fu) const
+{
+    const basicMultiComponentMixture& composition = thermo_.composition();
+    const volScalarField& ft = composition.Y("ft");
+    volScalarField fres = composition.fres(ft, stoicRatio_.value());
+    volScalarField wFuelNorm = this->wFuelNorm()*pos(fu - fres);
+
+    return wFuelNorm*fres - fvm::Sp(wFuelNorm, fu);
+}
+
+
+Foam::tmp<Foam::volScalarField> Foam::combustionModel::combustionModel::dQ
+(
+    const fvScalarMatrix& Rfu
+) const
+{
+    const basicMultiComponentMixture& composition = thermo_.composition();
+    const volScalarField& fu = composition.Y("fu");
+
+    return (-qFuel_)*(Rfu & fu);
+}
+
 
 bool Foam::combustionModel::read(const dictionary& combustionProperties)
 {

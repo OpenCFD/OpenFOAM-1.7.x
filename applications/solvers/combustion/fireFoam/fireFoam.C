@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     #include "compressibleCourantNo.H"
     #include "setInitialDeltaT.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
     Info<< "\nStarting time loop\n" << endl;
 
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
         #include "rhoEqn.H"
 
-        // Pressure-velocity PIMPLE corrector loop
+        // --- Pressure-velocity PIMPLE corrector loop
         for (int oCorr=0; oCorr<nOuterCorr; oCorr++)
         {
             #include "UEqn.H"
