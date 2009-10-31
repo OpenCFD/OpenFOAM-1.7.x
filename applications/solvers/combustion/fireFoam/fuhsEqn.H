@@ -37,9 +37,7 @@
           + mvConvection->fvmDiv(phi,hs)
           - fvm::laplacian(turbulence->alphaEff(), hs)
          ==
-            dpdt
-          + fvc::div(phi/fvc::interpolate(rho)*fvc::interpolate(p))
-          - p*fvc::div(phi/fvc::interpolate(rho))
+            DpDt
           + dQ
           + radiation->Shs(thermo)
         );

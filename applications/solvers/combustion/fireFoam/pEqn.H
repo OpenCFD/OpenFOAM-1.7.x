@@ -45,7 +45,7 @@ for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
         }
 }
 
-dpdt = fvc::ddt(p);
+DpDt = fvc::DDt(surfaceScalarField("phiU", phi/fvc::interpolate(rho)), p);
 
 #include "rhoEqn.H"
 #include "compressibleContinuityErrs.H"

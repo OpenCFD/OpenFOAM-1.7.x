@@ -97,8 +97,10 @@ volScalarField dQ
     dimensionedScalar("dQ", dimMass/pow3(dimTime)/dimLength, 0.0)
 );
 
-Info<< "Creating field dpdt\n" << endl;
-volScalarField dpdt = fvc::ddt(p);
+
+Info<< "Creating field DpDt\n" << endl;
+volScalarField DpDt =
+    fvc::DDt(surfaceScalarField("phiU", phi/fvc::interpolate(rho)), p);
 
 
 Info<< "Calculating field g.h\n" << endl;
