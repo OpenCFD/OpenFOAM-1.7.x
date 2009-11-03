@@ -118,7 +118,7 @@ protected:
             scalar volumeTotal_;
 
             //- Total mass to inject [kg]
-            const scalar massTotal_;
+            scalar massTotal_;
 
             //- Total mass injected to date [kg]
             scalar massInjected_;

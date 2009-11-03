@@ -124,11 +124,12 @@ Foam::PatchInjection<CloudType>::PatchInjection
 
     label patchSize = cellOwners_.size();
     label totalPatchSize = patchSize;
-    reduce(totalPatchSize, sumOp<scalar>());
-    fraction_ = patchSize/totalPatchSize;
+    reduce(totalPatchSize, sumOp<label>());
+    fraction_ = scalar(patchSize)/totalPatchSize;
 
-    // Set total volume to inject
+    // Set total volume/mass to inject
     this->volumeTotal_ = fraction_*volumeFlowRate_().integrate(0.0, duration_);
+    this->massTotal_ *= fraction_;
 }
 
 
@@ -165,10 +166,19 @@ void Foam::PatchInjection<CloudType>::setPositionAndCell
     label& cellOwner
 )
 {
-    label cellI = this->owner().rndGen().integer(0, cellOwners_.size() - 1);
+    if (cellOwners_.size() > 0)
+    {
+        label cellI = this->owner().rndGen().integer(0, cellOwners_.size() - 1);
 
-    cellOwner = cellOwners_[cellI];
-    position = this->owner().mesh().C()[cellOwner];
+        cellOwner = cellOwners_[cellI];
+        position = this->owner().mesh().C()[cellOwner];
+    }
+    else
+    {
+        cellOwner = -1;
+        // dummy position
+        position = pTraits<vector>::max;
+    }
 }
 
 
