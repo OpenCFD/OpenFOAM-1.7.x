@@ -41,52 +41,20 @@ int main(int argc, char *argv[])
     #include "setRootCase.H"
     #include "createTime.H"
     #include "createMesh.H"
-    #include "createFields.H"
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+    Info<< nl << "Constructing dsmcCloud " << endl;
+
+    dsmcCloud dsmc("dsmc", mesh);
+
     Info<< "\nStarting time loop\n" << endl;
 
-    while (runTime.run())
+    while (runTime.loop())
     {
-        runTime++;
-
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
-        // Carry out dsmcCloud timestep
-
         dsmc.evolve();
-
-        // Retrieve flow field data from dsmcCloud
-
-        rhoN = dsmc.rhoN();
-        rhoN.correctBoundaryConditions();
-
-        rhoM = dsmc.rhoM();
-        rhoM.correctBoundaryConditions();
-
-        dsmcRhoN = dsmc.dsmcRhoN();
-        dsmcRhoN.correctBoundaryConditions();
-
-        momentum = dsmc.momentum();
-        momentum.correctBoundaryConditions();
-
-        linearKE = dsmc.linearKE();
-        linearKE.correctBoundaryConditions();
-
-        internalE = dsmc.internalE();
-        internalE.correctBoundaryConditions();
-
-        iDof = dsmc.iDof();
-        iDof.correctBoundaryConditions();
-
-        // Retrieve surface field data from dsmcCloud
-
-        q = dsmc.q();
-
-        fD = dsmc.fD();
-
-        // Print status of dsmcCloud
 
         dsmc.info();
 

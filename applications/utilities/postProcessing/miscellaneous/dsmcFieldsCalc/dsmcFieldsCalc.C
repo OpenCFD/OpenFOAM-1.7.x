@@ -113,7 +113,16 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
         return;
     }
 
-    wordList extensiveVVFNames(IStringStream ("(momentumMean)")());
+    wordList extensiveVVFNames
+    (
+        IStringStream
+        (
+            "( \
+                momentumMean \
+                fDMean \
+            )"
+        )()
+    );
 
     PtrList<volVectorField> extensiveVVFs(extensiveVVFNames.size());
 

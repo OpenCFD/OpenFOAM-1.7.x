@@ -23,82 +23,81 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::dsmcCloud
+    Foam::MixedDiffuseSpecular
 
 Description
-    Cloud class to simulate dsmc parcels
-
-SourceFiles
-    dsmcCloud.C
+    Wall interaction setting microscopic velocity to a random one drawn from a
+    Maxwellian distribution corresponding to a specified temperature
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef dsmcCloud_H
-#define dsmcCloud_H
+#ifndef MixedDiffuseSpecular_H
+#define MixedDiffuseSpecular_H
 
-#include "DsmcCloud.H"
-#include "dsmcParcel.H"
+#include "WallInteractionModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
 /*---------------------------------------------------------------------------*\
-                          Class dsmcCloud Declaration
+                    Class MixedDiffuseSpecular Declaration
 \*---------------------------------------------------------------------------*/
 
-class dsmcCloud
+template<class CloudType>
+class MixedDiffuseSpecular
 :
-    public DsmcCloud<dsmcParcel>
+    public WallInteractionModel<CloudType>
 {
-    // Private member functions
+    // Private data
 
-        //- Disallow default bitwise copy construct
-        dsmcCloud(const dsmcCloud&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const dsmcCloud&);
+        //- Fraction of wall interactions that are diffuse
+        scalar diffuseFraction_;
 
 
 public:
 
     //- Runtime type information
-    TypeName("dsmcCloud");
+    TypeName("MixedDiffuseSpecular");
 
 
     // Constructors
 
-        //- Construct given name and mesh, will read Parcels and fields from
-        //  file
-        dsmcCloud
+        //- Construct from dictionary
+        MixedDiffuseSpecular
         (
-            const word& cloudName,
-            const fvMesh& mesh,
-            bool readFields = true
+            const dictionary& dict,
+            CloudType& cloud
         );
 
-        //- Construct given name, mesh and initialisation dictionary.
-        dsmcCloud
+
+    // Destructor
+    virtual ~MixedDiffuseSpecular();
+
+
+    // Member Functions
+
+        //- Apply wall correction
+        virtual void correct
         (
-            const word& cloudName,
-            const fvMesh& mesh,
-            const IOdictionary& dsmcInitialiseDict
+            const wallPolyPatch& wpp,
+            const label faceId,
+            vector& U,
+            scalar& Ei,
+            label typeId
         );
-
-    //- Destructor
-    ~dsmcCloud();
-
-
-    // Member functions
-
-        //- Write fields
-        virtual void writeFields() const;
 };
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+#   include "MixedDiffuseSpecular.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

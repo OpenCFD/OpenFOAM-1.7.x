@@ -299,7 +299,7 @@ void Foam::DsmcCloud<ParcelType>::collisions()
     // Temporary storage for subCells
     List<DynamicList<label> > subCells(8);
 
-    scalar deltaT = cachedDeltaT();
+    scalar deltaT = mesh().time().deltaTValue();
 
     label collisionCandidates = 0;
 
@@ -475,21 +475,92 @@ void Foam::DsmcCloud<ParcelType>::collisions()
 
 
 template<class ParcelType>
-void Foam::DsmcCloud<ParcelType>::resetSurfaceDataFields()
+void Foam::DsmcCloud<ParcelType>::resetFields()
 {
-    volScalarField::GeometricBoundaryField& qBF(q_.boundaryField());
+    q_ = dimensionedScalar("zero",  dimensionSet(1, 0, -3, 0, 0), 0.0);
 
-    forAll(qBF, p)
+    fD_ = dimensionedVector
+    (
+        "zero",
+        dimensionSet(1, -1, -2, 0, 0),
+        vector::zero
+    );
+
+    rhoN_ = dimensionedScalar("zero",  dimensionSet(0, -3, 0, 0, 0), VSMALL);
+
+    rhoM_ =  dimensionedScalar("zero",  dimensionSet(1, -3, 0, 0, 0), VSMALL);
+
+    dsmcRhoN_ = dimensionedScalar("zero",  dimensionSet(0, -3, 0, 0, 0), 0.0);
+
+    linearKE_ = dimensionedScalar("zero",  dimensionSet(1, -1, -2, 0, 0), 0.0);
+
+    internalE_ = dimensionedScalar("zero",  dimensionSet(1, -1, -2, 0, 0), 0.0);
+
+    iDof_ = dimensionedScalar("zero",  dimensionSet(0, -3, 0, 0, 0), VSMALL);
+
+    momentum_ = dimensionedVector
+    (
+        "zero",
+        dimensionSet(1, -2, -1, 0, 0),
+        vector::zero
+    );
+}
+
+
+template<class ParcelType>
+void Foam::DsmcCloud<ParcelType>::calculateFields()
+{
+    scalarField& rhoN = rhoN_.internalField();
+
+    scalarField& rhoM = rhoM_.internalField();
+
+    scalarField& dsmcRhoN = dsmcRhoN_.internalField();
+
+    scalarField& linearKE = linearKE_.internalField();
+
+    scalarField& internalE = internalE_.internalField();
+
+    scalarField& iDof = iDof_.internalField();
+
+    vectorField& momentum = momentum_.internalField();
+
+    forAllConstIter(typename DsmcCloud<ParcelType>, *this, iter)
     {
-        qBF[p] = 0.0;
+        const ParcelType& p = iter();
+        const label cellI = p.cell();
+
+        rhoN[cellI]++;
+
+        rhoM[cellI] += constProps(p.typeId()).mass();
+
+        dsmcRhoN[cellI]++;
+
+        linearKE[cellI] += 0.5*constProps(p.typeId()).mass()*(p.U() & p.U());
+
+        internalE[cellI] += p.Ei();
+
+        iDof[cellI] += constProps(p.typeId()).internalDegreesOfFreedom();
+
+        momentum[cellI] += constProps(p.typeId()).mass()*p.U();
     }
 
-    volVectorField::GeometricBoundaryField& fDBF(fD_.boundaryField());
+    rhoN *= nParticle_/mesh().cellVolumes();
+    rhoN_.correctBoundaryConditions();
 
-    forAll(fDBF, p)
-    {
-        fDBF[p] = vector::zero;
-    }
+    rhoM *= nParticle_/mesh().cellVolumes();
+    rhoM_.correctBoundaryConditions();
+
+    linearKE *= nParticle_/mesh().cellVolumes();
+    linearKE_.correctBoundaryConditions();
+
+    internalE *= nParticle_/mesh().cellVolumes();
+    internalE_.correctBoundaryConditions();
+
+    iDof *= nParticle_/mesh().cellVolumes();
+    iDof_.correctBoundaryConditions();
+
+    momentum *= nParticle_/mesh().cellVolumes();
+    momentum_.correctBoundaryConditions();
 }
 
 
@@ -525,14 +596,14 @@ template<class ParcelType>
 Foam::DsmcCloud<ParcelType>::DsmcCloud
 (
     const word& cloudName,
-    const volScalarField& T,
-    const volVectorField& U
+    const fvMesh& mesh,
+    bool readFields
 )
 :
-    Cloud<ParcelType>(T.mesh(), cloudName, false),
+    Cloud<ParcelType>(mesh, cloudName, false),
     DsmcBaseCloud(),
     cloudName_(cloudName),
-    mesh_(T.mesh()),
+    mesh_(mesh),
     particleProperties_
     (
         IOobject
@@ -564,37 +635,142 @@ Foam::DsmcCloud<ParcelType>::DsmcCloud
     (
         IOobject
         (
-            this->name() + "q_",
+            "q",
             mesh_.time().timeName(),
             mesh_,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
         ),
-        mesh_,
-        dimensionedScalar("zero",  dimensionSet(1, 0, -3, 0, 0), 0.0)
+        mesh_
     ),
     fD_
     (
         IOobject
         (
-            this->name() + "fD_",
+            "fD",
             mesh_.time().timeName(),
             mesh_,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
         ),
-        mesh_,
-        dimensionedVector
+        mesh_
+    ),
+    rhoN_
+    (
+        IOobject
         (
-            "zero",
-            dimensionSet(1, -1, -2, 0, 0),
-            vector::zero
-        )
+            "rhoN",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_
+    ),
+    rhoM_
+    (
+        IOobject
+        (
+            "rhoM",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_
+    ),
+    dsmcRhoN_
+    (
+        IOobject
+        (
+            "dsmcRhoN",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_
+    ),
+    linearKE_
+    (
+        IOobject
+        (
+            "linearKE",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_
+    ),
+    internalE_
+    (
+        IOobject
+        (
+            "internalE",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_
+    ),
+    iDof_
+    (
+        IOobject
+        (
+            "iDof",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_
+    ),
+    momentum_
+    (
+        IOobject
+        (
+            "momentum",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_
     ),
     constProps_(),
     rndGen_(label(149382906) + 7183*Pstream::myProcNo()),
-    T_(T),
-    U_(U),
+    boundaryT_
+    (
+        volScalarField
+        (
+            IOobject
+            (
+                "boundaryT",
+                mesh_.time().timeName(),
+                mesh_,
+                IOobject::MUST_READ,
+                IOobject::AUTO_WRITE
+            ),
+            mesh_
+        )
+    ),
+    boundaryU_
+    (
+        volVectorField
+        (
+            IOobject
+            (
+                "boundaryU",
+                mesh_.time().timeName(),
+                mesh_,
+                IOobject::MUST_READ,
+                IOobject::AUTO_WRITE
+            ),
+            mesh_
+        )
+    ),
     binaryCollisionModel_
     (
         BinaryCollisionModel<DsmcCloud<ParcelType> >::New
@@ -637,7 +813,8 @@ template<class ParcelType>
 Foam::DsmcCloud<ParcelType>::DsmcCloud
 (
     const word& cloudName,
-    const fvMesh& mesh
+    const fvMesh& mesh,
+    const IOdictionary& dsmcInitialiseDict
 )
     :
     Cloud<ParcelType>(mesh, cloudName, false),
@@ -703,15 +880,111 @@ Foam::DsmcCloud<ParcelType>::DsmcCloud
             vector::zero
         )
     ),
+    rhoN_
+    (
+        IOobject
+        (
+            this->name() + "rhoN_",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar("zero",  dimensionSet(0, -3, 0, 0, 0), VSMALL)
+    ),
+    rhoM_
+    (
+        IOobject
+        (
+            this->name() + "rhoM_",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar("zero",  dimensionSet(1, -3, 0, 0, 0), VSMALL)
+    ),
+    dsmcRhoN_
+    (
+        IOobject
+        (
+            this->name() + "dsmcRhoN_",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar("zero",  dimensionSet(0, -3, 0, 0, 0), 0.0)
+    ),
+    linearKE_
+    (
+        IOobject
+        (
+            this->name() + "linearKE_",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar("zero",  dimensionSet(1, -1, -2, 0, 0), 0.0)
+    ),
+    internalE_
+    (
+        IOobject
+        (
+            this->name() + "internalE_",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar("zero",  dimensionSet(1, -1, -2, 0, 0), 0.0)
+    ),
+    iDof_
+    (
+        IOobject
+        (
+            this->name() + "iDof_",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar("zero",  dimensionSet(0, -3, 0, 0, 0), VSMALL)
+    ),
+    momentum_
+    (
+        IOobject
+        (
+            this->name() + "momentum_",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedVector
+        (
+            "zero",
+            dimensionSet(1, -2, -1, 0, 0),
+            vector::zero
+        )
+    ),
     constProps_(),
     rndGen_(label(971501) + 1526*Pstream::myProcNo()),
-    T_
+    boundaryT_
     (
         volScalarField
         (
             IOobject
             (
-                "T",
+                "boundaryT",
                 mesh_.time().timeName(),
                 mesh_,
                 IOobject::NO_READ,
@@ -721,13 +994,13 @@ Foam::DsmcCloud<ParcelType>::DsmcCloud
             dimensionedScalar("zero",  dimensionSet(0, 0, 0, 1, 0), 0.0)
         )
     ),
-    U_
+    boundaryU_
     (
         volVectorField
         (
             IOobject
             (
-                "U",
+                "boundaryU",
                 mesh_.time().timeName(),
                 mesh_,
                 IOobject::NO_READ,
@@ -750,18 +1023,6 @@ Foam::DsmcCloud<ParcelType>::DsmcCloud
 
     buildConstProps();
 
-    IOdictionary dsmcInitialiseDict
-    (
-        IOobject
-        (
-            "dsmcInitialiseDict",
-            mesh_.time().system(),
-            mesh_,
-            IOobject::MUST_READ,
-            IOobject::NO_WRITE
-        )
-    );
-
     initialise(dsmcInitialiseDict);
 }
 
@@ -778,13 +1039,10 @@ Foam::DsmcCloud<ParcelType>::~DsmcCloud()
 template<class ParcelType>
 void Foam::DsmcCloud<ParcelType>::evolve()
 {
-    // cache the value of deltaT for this timestep
-    storeDeltaT();
-
     typename ParcelType::trackData td(*this);
 
-    // Reset the surface data collection fields
-    resetSurfaceDataFields();
+    // Reset the data collection fields
+    resetFields();
 
     if (debug)
     {
@@ -799,6 +1057,9 @@ void Foam::DsmcCloud<ParcelType>::evolve()
 
     // Calculate new velocities via stochastic collisions
     collisions();
+
+    // Calculate the volume field data
+    calculateFields();
 }
 
 

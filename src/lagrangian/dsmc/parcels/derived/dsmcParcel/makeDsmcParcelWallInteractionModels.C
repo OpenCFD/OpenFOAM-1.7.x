@@ -28,6 +28,7 @@ License
 #include "DsmcCloud.H"
 #include "MaxwellianThermal.H"
 #include "SpecularReflection.H"
+#include "MixedDiffuseSpecular.H"
 
 namespace Foam
 {
@@ -43,6 +44,12 @@ namespace Foam
     makeWallInteractionModelType
     (
         SpecularReflection,
+        DsmcCloud,
+        dsmcParcel
+    );
+    makeWallInteractionModelType
+    (
+        MixedDiffuseSpecular,
         DsmcCloud,
         dsmcParcel
     );

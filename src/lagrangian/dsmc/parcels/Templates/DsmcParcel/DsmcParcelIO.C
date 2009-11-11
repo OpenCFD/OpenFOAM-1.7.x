@@ -74,10 +74,7 @@ Foam::DsmcParcel<ParcelType>::DsmcParcel
 
 
 template<class ParcelType>
-void Foam::DsmcParcel<ParcelType>::readFields
-(
-    DsmcCloud<ParcelType>& c
-)
+void Foam::DsmcParcel<ParcelType>::readFields(DsmcCloud<ParcelType>& c)
 {
     if (!c.size())
     {
@@ -107,10 +104,7 @@ void Foam::DsmcParcel<ParcelType>::readFields
 
 
 template<class ParcelType>
-void Foam::DsmcParcel<ParcelType>::writeFields
-(
-    const DsmcCloud<ParcelType>& c
-)
+void Foam::DsmcParcel<ParcelType>::writeFields(const DsmcCloud<ParcelType>& c)
 {
     Particle<ParcelType>::writeFields(c);
 
