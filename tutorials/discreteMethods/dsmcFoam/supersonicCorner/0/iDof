@@ -32,7 +32,8 @@ boundaryField
 
     walls
     {
-        type            zeroGradient;
+        type            calculated;
+        value           uniform 0;
     }
 
 }

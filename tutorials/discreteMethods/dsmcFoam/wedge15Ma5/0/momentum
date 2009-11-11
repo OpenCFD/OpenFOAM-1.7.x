@@ -27,7 +27,8 @@ boundaryField
 
     obstacle
     {
-        type            zeroGradient;
+        type            calculated;
+        value           uniform (0 0 0);
     }
 
     periodic
