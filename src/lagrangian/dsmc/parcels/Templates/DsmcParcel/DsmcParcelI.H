@@ -24,6 +24,8 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+#include "mathematicalConstants.H"
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template <class ParcelType>

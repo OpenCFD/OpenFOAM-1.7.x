@@ -44,9 +44,21 @@ int main(int argc, char *argv[])
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+    IOdictionary dsmcInitialiseDict
+    (
+        IOobject
+        (
+            "dsmcInitialiseDict",
+            mesh.time().system(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        )
+    );
+
     Info<< "Initialising dsmc for Time = " << runTime.timeName() << nl << endl;
 
-    dsmcCloud dsmc("dsmc", mesh);
+    dsmcCloud dsmc("dsmc", mesh, dsmcInitialiseDict);
 
     label totalMolecules = dsmc.size();
 

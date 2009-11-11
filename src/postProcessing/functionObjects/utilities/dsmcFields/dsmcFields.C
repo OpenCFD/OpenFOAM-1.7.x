@@ -106,6 +106,7 @@ void Foam::dsmcFields::write()
         word linearKEMeanName = "linearKEMean";
         word internalEMeanName = "internalEMean";
         word iDofMeanName = "iDofMean";
+        word fDMeanName = "fDMean";
 
         const volScalarField& rhoNMean = obr_.lookupObject<volScalarField>
         (
@@ -135,6 +136,11 @@ void Foam::dsmcFields::write()
         const volScalarField& iDofMean = obr_.lookupObject<volScalarField>
         (
             iDofMeanName
+        );
+
+        volVectorField fDMean =  obr_.lookupObject<volVectorField>
+        (
+            fDMeanName
         );
 
         if (min(mag(rhoNMean)).value() > VSMALL)
@@ -178,7 +184,7 @@ void Foam::dsmcFields::write()
                     obr_,
                     IOobject::NO_READ
                 ),
-                2.0/(dsmcCloud::kb*iDofMean)*internalEMean
+                (2.0/dsmcCloud::kb)*(internalEMean/iDofMean)
             );
 
             Info<< "    Calculating overallT field." << endl;
@@ -192,8 +198,35 @@ void Foam::dsmcFields::write()
                     IOobject::NO_READ
                 ),
                 2.0/(dsmcCloud::kb*(3.0*rhoNMean + iDofMean))
-                *(linearKEMean - 0.5*rhoMMean*(UMean & UMean) + internalEMean)
+               *(linearKEMean - 0.5*rhoMMean*(UMean & UMean) + internalEMean)
             );
+
+            Info<< "    Calculating pressure field." << endl;
+            volScalarField p
+            (
+                IOobject
+                (
+                    "p",
+                    obr_.time().timeName(),
+                    obr_,
+                    IOobject::NO_READ
+                ),
+                dsmcCloud::kb*rhoNMean*translationalT
+            );
+
+            const fvMesh& mesh = fDMean.mesh();
+
+            forAll(mesh.boundaryMesh(), i)
+            {
+                const polyPatch& patch = mesh.boundaryMesh()[i];
+
+                if (isA<wallPolyPatch>(patch))
+                {
+                    p.boundaryField()[i] =
+                        fDMean.boundaryField()[i]
+                      & (patch.faceAreas()/mag(patch.faceAreas()));
+                }
+            }
 
             Info<< "    mag(UMean) max/min : "
                 << max(mag(UMean)).value() << " "
@@ -211,6 +244,10 @@ void Foam::dsmcFields::write()
                 << max(overallT).value() << " "
                 << min(overallT).value() << endl;
 
+            Info<< "    p max/min : "
+                << max(p).value() << " "
+                << min(p).value() << endl;
+
             UMean.write();
 
             translationalT.write();
@@ -218,6 +255,8 @@ void Foam::dsmcFields::write()
             internalT.write();
 
             overallT.write();
+
+            p.write();
 
             Info<< "dsmcFields written." << nl << endl;
         }

@@ -17,14 +17,13 @@ FoamFile
 
 application     dsmcFoam;
 
-startFrom       latestTime;
+startFrom       startTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         0.00125;
-// endTime         0.01;
+endTime         0.01;
 
 deltaT          2e-6;
 
@@ -63,7 +62,7 @@ functions
         type fieldAverage;
         functionObjectLibs ( "libfieldFunctionObjects.so" );
         outputControl     outputTime;
-        resetOnOutput     off;
+        resetOnOutput     on;
         fields
         (
             rhoN

@@ -39,23 +39,27 @@ namespace Foam
 Foam::dsmcCloud::dsmcCloud
 (
     const word& cloudName,
-    const volScalarField& T,
-    const volVectorField& U
+    const fvMesh& mesh,
+    bool readFields
 )
 :
-    DsmcCloud<dsmcParcel>(cloudName, T, U)
+    DsmcCloud<dsmcParcel>(cloudName, mesh, readFields)
 {
-    dsmcParcel::readFields(*this);
+    if (readFields)
+    {
+        dsmcParcel::readFields(*this);
+    }
 }
 
 
 Foam::dsmcCloud::dsmcCloud
 (
     const word& cloudName,
-    const fvMesh& mesh
+    const fvMesh& mesh,
+    const IOdictionary& dsmcInitialiseDict
 )
 :
-    DsmcCloud<dsmcParcel>(cloudName, mesh)
+    DsmcCloud<dsmcParcel>(cloudName, mesh, dsmcInitialiseDict)
 {}
 
 
