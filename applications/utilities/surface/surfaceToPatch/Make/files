@@ -1,3 +1,5 @@
+boundaryMesh.C
 surfaceToPatch.C
+treeDataPrimitivePatchName.C
 
 EXE = $(FOAM_APPBIN)/surfaceToPatch
