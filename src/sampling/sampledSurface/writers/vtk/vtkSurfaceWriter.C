@@ -300,7 +300,7 @@ void Foam::vtkSurfaceWriter<Type>::write
 
     os  << values.size() << nl
         << "FIELD attributes 1" << nl
-        << fieldName << " ";
+        << fieldName.c_str() << " ";
 
     // Write data
     writeData(os, values);

@@ -329,7 +329,7 @@ surfaceDisplacementPointPatchVectorField
     surfacesDict_(dict.subDict("geometry")),
     projectMode_(projectModeNames_.read(dict.lookup("projectMode"))),
     projectDir_(dict.lookup("projectDirection")),
-    wedgePlane_(dict.lookupOrDefault(dict.lookup("wedgePlane"), -1)),
+    wedgePlane_(dict.lookupOrDefault("wedgePlane", -1)),
     frozenPointsZone_(dict.lookupOrDefault("frozenPointsZone", word::null))
 {
     if (velocity_.x() < 0 || velocity_.y() < 0 || velocity_.z() < 0)

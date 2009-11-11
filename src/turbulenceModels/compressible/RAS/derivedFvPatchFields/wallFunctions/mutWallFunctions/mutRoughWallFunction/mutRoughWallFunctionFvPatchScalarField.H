@@ -23,7 +23,7 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::compressible::RASModels::nutRoughWallFunctionFvPatchScalarField
+    Foam::compressible::RASModels::mutRoughWallFunctionFvPatchScalarField
 
 Description
     Boundary condition for turbulent (kinematic) viscosity when using wall
