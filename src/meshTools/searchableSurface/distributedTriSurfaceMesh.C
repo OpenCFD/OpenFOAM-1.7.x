@@ -960,7 +960,7 @@ bool Foam::distributedTriSurfaceMesh::overlaps
     {
         const treeBoundBox& bb = bbs[bbI];
 
-        boundBox triBb(p0, p0);
+        treeBoundBox triBb(p0, p0);
         triBb.min() = min(triBb.min(), p1);
         triBb.min() = min(triBb.min(), p2);
 

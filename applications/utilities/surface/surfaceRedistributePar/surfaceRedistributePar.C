@@ -62,7 +62,7 @@ void writeProcStats
     // Determine surface bounding boxes, faces, points
     List<treeBoundBox> surfBb(Pstream::nProcs());
     {
-        surfBb[Pstream::myProcNo()] = boundBox(s.points(), false);
+        surfBb[Pstream::myProcNo()] = treeBoundBox(s.points());
         Pstream::gatherList(surfBb);
         Pstream::scatterList(surfBb);
     }

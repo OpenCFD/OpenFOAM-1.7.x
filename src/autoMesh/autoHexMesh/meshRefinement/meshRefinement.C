@@ -1833,7 +1833,7 @@ void Foam::meshRefinement::distribute(const mapDistributePolyMesh& map)
         // Get local mesh bounding box. Single box for now.
         List<treeBoundBox> meshBb(1);
         treeBoundBox& bb = meshBb[0];
-        bb = boundBox(mesh_.points(), false);
+        bb = treeBoundBox(mesh_.points());
         bb = bb.extend(rndGen, 1E-4);
 
         // Distribute all geometry (so refinementSurfaces and shellSurfaces)

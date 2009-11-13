@@ -276,7 +276,7 @@ bool Foam::treeDataTriSurface::overlaps
     const point& p1 = points[f[1]];
     const point& p2 = points[f[2]];
 
-    boundBox triBb(p0, p0);
+    treeBoundBox triBb(p0, p0);
     triBb.min() = min(triBb.min(), p1);
     triBb.min() = min(triBb.min(), p2);
 
