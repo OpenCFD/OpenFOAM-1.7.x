@@ -32,6 +32,8 @@ License
 
 #include "error.H"
 #include "IStringStream.H"
+// For EOF only
+#include <cstdio>
 
 // flex input buffer size
 int Foam::chemkinReader::yyBufSize = YY_BUF_SIZE;

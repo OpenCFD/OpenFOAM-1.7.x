@@ -41,6 +41,9 @@ Description
 #include "scalarList.H"
 #include "IStringStream.H"
 
+// For EOF only
+#include <cstdio>
+
 using namespace Foam;
 
 #include "argList.H"

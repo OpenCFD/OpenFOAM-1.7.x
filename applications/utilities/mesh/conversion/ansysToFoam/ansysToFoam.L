@@ -39,6 +39,8 @@ Description
  \* ------------------------------------------------------------------------- */
 
 #include <sstream>
+// For EOF only
+#include <cstdio>
 
 #include "scalar.H"
 #include "IStringStream.H"
