@@ -171,11 +171,11 @@ public:
         inline treeBoundBox(const point& min, const point& max);
 
         //- Construct from components
-        inline treeBoundBox(const boundBox& bb);
+        explicit inline treeBoundBox(const boundBox& bb);
 
         //- Construct as the bounding box of the given pointField.
         //  Local processor domain only (no reduce as in boundBox)
-        treeBoundBox(const UList<point>&);
+        explicit treeBoundBox(const UList<point>&);
 
         //- Construct as subset of points
         //  Local processor domain only (no reduce as in boundBox)
