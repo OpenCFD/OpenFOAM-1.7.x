@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     //Info<< ck.specieThermo() << endl;
     //Info<< ck.reactions() << endl;
 
-    PtrList<chemkinReader::reaction> reactions = ck.reactions();
+    const SLPtrList<gasReaction>& reactions = ck.reactions();
 
     {
         OFstream reactionStream("reactions");
@@ -70,17 +70,17 @@ int main(int argc, char *argv[])
         label nReactions(readLabel(reactionStream));
         reactionStream.readBeginList(args.executable().c_str());
 
-        PtrList<chemkinReader::reaction> testReactions(nReactions);
+        PtrList<gasReaction> testReactions(nReactions);
 
         forAll (testReactions, i)
         {
             testReactions.set
             (
                 i,
-                chemkinReader::reaction::New
+                gasReaction::New
                 (
                     ck.species(),
-                    ck.specieThermo(),
+                    ck.speciesThermo(),
                     reactionStream
                 )
             );
