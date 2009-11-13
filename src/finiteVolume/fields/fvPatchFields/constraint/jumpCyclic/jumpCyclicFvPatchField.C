@@ -154,7 +154,7 @@ void jumpCyclicFvPatchField<Type>::updateInterfaceMatrix
     label sizeby2 = this->size()/2;
     const unallocLabelList& faceCells = this->cyclicPatch().faceCells();
 
-    if (long(&psiInternal) == long(&this->internalField()))
+    if (&psiInternal == &this->internalField())
     {
         tmp<Field<scalar> > tjf = jump();
         const Field<scalar>& jf = tjf();
