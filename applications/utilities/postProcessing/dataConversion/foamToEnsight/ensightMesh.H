@@ -134,12 +134,33 @@ class ensightMesh
             OFstream& ensightGeometryFile
         ) const;
 
-        void writePolys
+        void writePolysNFaces
+        (
+            const labelList& polys,
+            const cellList& cellFaces,
+            OFstream& ensightGeometryFile
+        ) const;
+
+        void writePolysNPointsPerFace
+        (
+            const labelList& polys,
+            const cellList& cellFaces,
+            const faceList& faces,
+            OFstream& ensightGeometryFile
+        ) const;
+
+        void writePolysPoints
         (
             const labelList& polys,
             const cellList& cellFaces,
             const faceList& faces,
             const label pointOffset,
+            OFstream& ensightGeometryFile
+        ) const;
+
+        void writeAllPolys
+        (
+            const labelList& pointOffsets,
             OFstream& ensightGeometryFile
         ) const;
 
@@ -154,7 +175,6 @@ class ensightMesh
 
         void writeFacePrims
         (
-            const char* key,
             const faceList& patchFaces,
             const label pointOffset,
             OFstream& ensightGeometryFile
@@ -169,6 +189,29 @@ class ensightMesh
         void writeAllFacePrims
         (
             const char* key,
+            const labelList& prims,
+            const label nPrims,
+            const faceList& patchFaces,
+            const labelList& pointOffsets,
+            const labelList& patchProcessors,
+            OFstream& ensightGeometryFile
+        ) const;
+
+        void writeNSidedNPointsPerFace
+        (
+            const faceList& patchFaces,
+            OFstream& ensightGeometryFile
+        ) const;
+
+        void writeNSidedPoints
+        (
+            const faceList& patchFaces,
+            const label pointOffset,
+            OFstream& ensightGeometryFile
+        ) const;
+
+        void writeAllNSided
+        (
             const labelList& prims,
             const label nPrims,
             const faceList& patchFaces,
@@ -209,12 +252,33 @@ class ensightMesh
             std::ofstream& ensightGeometryFile
         ) const;
 
-        void writePolysBinary
+        void writePolysNFacesBinary
+        (
+            const labelList& polys,
+            const cellList& cellFaces,
+            std::ofstream& ensightGeometryFile
+        ) const;
+
+        void writePolysNPointsPerFaceBinary
+        (
+            const labelList& polys,
+            const cellList& cellFaces,
+            const faceList& faces,
+            std::ofstream& ensightGeometryFile
+        ) const;
+
+        void writePolysPointsBinary
         (
             const labelList& polys,
             const cellList& cellFaces,
             const faceList& faces,
             const label pointOffset,
+            std::ofstream& ensightGeometryFile
+        ) const;
+
+        void writeAllPolysBinary
+        (
+            const labelList& pointOffsets,
             std::ofstream& ensightGeometryFile
         ) const;
 
@@ -231,12 +295,33 @@ class ensightMesh
 
         void writeFacePrimsBinary
         (
-            const char* key,
             const faceList& patchFaces,
             const label pointOffset,
             std::ofstream& ensightGeometryFile
         ) const;
 
+        void writeNSidedPointsBinary
+        (
+            const faceList& patchFaces,
+            const label pointOffset,
+            std::ofstream& ensightGeometryFile
+        ) const;
+
+        void writeNSidedNPointsPerFaceBinary
+        (
+            const faceList& patchFaces,
+            std::ofstream& ensightGeometryFile
+        ) const;
+
+        void writeAllNSidedBinary
+        (
+            const labelList& prims,
+            const label nPrims,
+            const faceList& patchFaces,
+            const labelList& pointOffsets,
+            const labelList& patchProcessors,
+            std::ofstream& ensightGeometryFile
+        ) const;
 
 public:
 
