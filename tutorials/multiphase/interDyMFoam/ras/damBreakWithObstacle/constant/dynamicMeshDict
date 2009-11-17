@@ -19,14 +19,23 @@ dynamicFvMesh   dynamicRefineFvMesh;
 
 dynamicRefineFvMeshCoeffs
 {
+    // How often to refine
     refineInterval  1;
+    // Field to be refinement on
     field           alpha1;
+    // Refine field inbetween lower..upper
     lowerRefineLevel 0.001;
     upperRefineLevel 0.999;
+    // If value < unrefineLevel unrefine
     unrefineLevel   10;
+    // Have slower than 2:1 refinement
     nBufferLayers   1;
+    // Refine cells only up to maxRefinement levels
     maxRefinement   2;
+    // Stop refinement if maxCells reached
     maxCells        200000;
+    // Flux field and corresponding velocity field. Fluxes on changed
+    // faces get recalculated by interpolating the velocity.
     correctFluxes
     (
         (
@@ -34,6 +43,7 @@ dynamicRefineFvMeshCoeffs
             U
         )
     );
+    // Write the refinement level as a volScalarField
     dumpLevel       true;
 }
 
