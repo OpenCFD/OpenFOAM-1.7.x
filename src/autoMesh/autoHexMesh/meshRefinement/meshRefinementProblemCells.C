@@ -306,7 +306,7 @@ bool Foam::meshRefinement::isCollapsedFace
         vector d = ownCc - mesh_.cellCentres()[nei];
 
         scalar dDotS = (d & s)/(mag(d)*magS + VSMALL);
-        
+
         if (dDotS < maxNonOrtho)
         {
             return true;
