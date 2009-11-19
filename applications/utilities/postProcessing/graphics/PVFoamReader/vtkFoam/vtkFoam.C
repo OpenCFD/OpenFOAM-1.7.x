@@ -605,10 +605,7 @@ void Foam::vtkFoam::Update()
 
     const fvMesh& mesh = *meshPtr_;
 
-    // Construct interpolation on the raw mesh
-    Foam::pointMesh pMesh(mesh);
-
-    Foam::volPointInterpolation pInterp(mesh, pMesh);
+    Foam::volPointInterpolation pInterp(mesh);
 
     // Search for list of objects for this time
     Foam::IOobjectList objects(mesh, dbPtr_().timeName());
