@@ -24,7 +24,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "Matrix.H"
+#include "SquareMatrix.H"
 #include "vector.H"
 
 using namespace Foam;
@@ -34,7 +34,7 @@ using namespace Foam;
 
 int main(int argc, char *argv[])
 {
-    Matrix<scalar> hmm(3, 3);
+    SquareMatrix<scalar> hmm(3);
 
     hmm[0][0] = -3.0;
     hmm[0][1] = 10.0;
@@ -46,27 +46,27 @@ int main(int argc, char *argv[])
     hmm[2][1] = 6.0;
     hmm[2][2] = 1.0;
 
-    Info<< hmm << endl << hmm - 2.0*(-hmm) << endl;
+    //Info<< hmm << endl << hmm - 2.0*(-hmm) << endl;
     Info<< max(hmm) << endl;
     Info<< min(hmm) << endl;
 
-    Matrix<scalar> hmm2(3, 3, 1.0);
+    SquareMatrix<scalar> hmm2(3, 1.0);
 
     hmm = hmm2;
 
     Info<< hmm << endl;
 
-    Matrix<scalar> hmm3(Sin);
+    SquareMatrix<scalar> hmm3(Sin);
 
     Info<< hmm3 << endl;
 
-    Matrix<scalar> hmm4;
+    SquareMatrix<scalar> hmm4;
 
     hmm4 = hmm2;
 
     Info<< hmm4 << endl;
 
-    Matrix<scalar> hmm5;
+    SquareMatrix<scalar> hmm5;
 
     hmm4 = hmm5;
     Info<< hmm5 << endl;

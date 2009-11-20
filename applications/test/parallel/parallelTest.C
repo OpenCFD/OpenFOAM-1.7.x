@@ -60,13 +60,13 @@ int main(int argc, char *argv[])
             {
                 Perr<< "slave sending to master "
                     << Pstream::masterNo() << endl;
-                OPstream toMaster(Pstream::masterNo());
+                OPstream toMaster(Pstream::scheduled, Pstream::masterNo());
                 toMaster << data;
             }
 
-            Perr<< "slave receiving from master " 
+            Perr<< "slave receiving from master "
                 << Pstream::masterNo() << endl;
-            IPstream fromMaster(Pstream::masterNo());
+            IPstream fromMaster(Pstream::scheduled, Pstream::masterNo());
             fromMaster >> data;
 
             Perr<< data << endl;
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
             )
             {
                 Perr << "master receiving from slave " << slave << endl;
-                IPstream fromSlave(slave);
+                IPstream fromSlave(Pstream::scheduled, slave);
                 fromSlave >> data;
 
                 Perr<< data << endl;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
             )
             {
                 Perr << "master sending to slave " << slave << endl;
-                OPstream toSlave(slave);
+                OPstream toSlave(Pstream::scheduled, slave);
                 toSlave << data;
             }
         }

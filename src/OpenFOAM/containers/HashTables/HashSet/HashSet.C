@@ -105,7 +105,7 @@ template<class Key, class Hash>
 void Foam::HashSet<Key, Hash>::operator&=(const HashSet<Key, Hash>& rhs)
 {
     // Remove elements not also found in rhs
-    for (iterator iter = this->cbegin(); iter != this->cend(); ++iter)
+    for (iterator iter = this->begin(); iter != this->end(); ++iter)
     {
         if (!rhs.found(iter.key()))
         {
@@ -144,8 +144,6 @@ void Foam::HashSet<Key, Hash>::operator-=(const HashSet<Key, Hash>& rhs)
     }
 }
 
-
-// * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
 /* * * * * * * * * * * * * * * * Global operators  * * * * * * * * * * * * * */
 

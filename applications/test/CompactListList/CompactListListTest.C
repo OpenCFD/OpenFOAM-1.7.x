@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
     Info<< "cll2(2, 3) = " << cll2(2, 3) << nl << endl;
 
-    Info<< "cll2 as List<List<label > > " << List<List<label > >(cll2) << endl;
+    Info<< "cll2 as List<List<label > > " << cll2() << endl;
 
     cll2.setSize(3);
 

@@ -161,10 +161,10 @@ public:
 
     // Member operators
 
-        //- Return subscript-checked element of Matrix.
+        //- Return subscript-checked row of Matrix.
         inline Type* operator[](const label);
 
-        //- Return subscript-checked element of constant Matrix.
+        //- Return subscript-checked row of constant Matrix.
         inline const Type* operator[](const label) const;
 
         //- Assignment operator. Takes linear time.

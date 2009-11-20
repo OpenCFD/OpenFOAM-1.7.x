@@ -69,7 +69,7 @@ public:
         const scalar x,
         const scalarField& y,
         scalarField& dfdx,
-        Matrix<scalar>& dfdy
+        scalarSquareMatrix& dfdy
     ) const
     {
         dfdx[0] = 0.0;
