@@ -45,7 +45,7 @@ Description
     so cannot have any cells in any other zone.
     - useCellZonesOnly does not do a walk and uses the cellZones only. Use
     this if you don't mind having disconnected domains in a single region.
-    This option requires all cells to be in one (and one only) region.
+    This option requires all cells to be in one (and one only) cellZone.
 
 \*---------------------------------------------------------------------------*/
 
