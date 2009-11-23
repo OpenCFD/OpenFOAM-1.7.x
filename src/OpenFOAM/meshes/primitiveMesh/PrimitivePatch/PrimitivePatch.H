@@ -166,6 +166,9 @@ private:
         //- Local point order for most efficient search
         mutable labelList* localPointOrderPtr_;
 
+        //- Face centres
+        mutable Field<PointType>* faceCentresPtr_;
+
         //- Face unit normals
         mutable Field<PointType>* faceNormalsPtr_;
 
@@ -204,6 +207,9 @@ private:
 
         //- Calculate local point order
         void calcLocalPointOrder() const;
+
+        //- Calculate face centres
+        void calcFaceCentres() const;
 
         //- Calculate unit face normals
         void calcFaceNormals() const;
@@ -369,6 +375,9 @@ public:
                 const edgeList& allEdges,
                 const labelListList& pointEdges
             ) const;
+
+            //- Return face centres for patch
+            const Field<PointType>& faceCentres() const;
 
             //- Return face normals for patch
             const Field<PointType>& faceNormals() const;

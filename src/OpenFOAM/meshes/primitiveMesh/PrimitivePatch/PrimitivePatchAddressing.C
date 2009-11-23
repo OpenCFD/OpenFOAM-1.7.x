@@ -48,7 +48,6 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 calcAddressing() const

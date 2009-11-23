@@ -28,7 +28,6 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-// Construct from components
 template
 <
     class Face,
@@ -36,7 +35,6 @@ template
     class PointField,
     class PointType
 >
-
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 PrimitivePatch
 (
@@ -60,12 +58,12 @@ PrimitivePatch
     edgeLoopsPtr_(NULL),
     localPointsPtr_(NULL),
     localPointOrderPtr_(NULL),
+    faceCentresPtr_(NULL),
     faceNormalsPtr_(NULL),
     pointNormalsPtr_(NULL)
 {}
 
 
-// Construct from components
 template
 <
     class Face,
@@ -73,7 +71,6 @@ template
     class PointField,
     class PointType
 >
-
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 PrimitivePatch
 (
@@ -98,12 +95,12 @@ PrimitivePatch
     edgeLoopsPtr_(NULL),
     localPointsPtr_(NULL),
     localPointOrderPtr_(NULL),
+    faceCentresPtr_(NULL),
     faceNormalsPtr_(NULL),
     pointNormalsPtr_(NULL)
 {}
 
 
-// Construct as copy
 template
 <
     class Face,
@@ -111,7 +108,6 @@ template
     class PointField,
     class PointType
 >
-
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 PrimitivePatch
 (
@@ -135,6 +131,7 @@ PrimitivePatch
     edgeLoopsPtr_(NULL),
     localPointsPtr_(NULL),
     localPointOrderPtr_(NULL),
+    faceCentresPtr_(NULL),
     faceNormalsPtr_(NULL),
     pointNormalsPtr_(NULL)
 {}
@@ -149,8 +146,8 @@ template
     class PointField,
     class PointType
 >
-
-Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::~PrimitivePatch()
+Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
+~PrimitivePatch()
 {
     clearOut();
 }
@@ -158,7 +155,6 @@ Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::~PrimitivePatch()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-// Correct patch after moving points
 template
 <
     class Face,
@@ -166,7 +162,6 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 movePoints
@@ -193,7 +188,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::edgeList&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 edges() const
@@ -214,7 +208,6 @@ template
     class PointField,
     class PointType
 >
-
 Foam::label
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 nInternalEdges() const
@@ -235,7 +228,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::labelList&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 boundaryPoints() const
@@ -256,7 +248,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::labelListList&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 faceFaces() const
@@ -277,7 +268,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::labelListList&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 edgeFaces() const
@@ -298,7 +288,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::labelListList&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 faceEdges() const
@@ -319,7 +308,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::labelListList&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 pointEdges() const
@@ -340,7 +328,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::labelListList&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 pointFaces() const
@@ -361,7 +348,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::List<Face>&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 localFaces() const
@@ -382,7 +368,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::labelList&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 meshPoints() const
@@ -403,7 +388,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::Map<Foam::label>&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 meshPointMap() const
@@ -424,7 +408,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::Field<PointType>&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 localPoints() const
@@ -445,7 +428,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::labelList&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 localPointOrder() const
@@ -466,7 +448,6 @@ template
     class PointField,
     class PointType
 >
-
 Foam::label
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 whichPoint
@@ -495,7 +476,26 @@ template
     class PointField,
     class PointType
 >
+const Foam::Field<PointType>&
+Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
+faceCentres() const
+{
+    if (!faceCentresPtr_)
+    {
+        calcFaceCentres();
+    }
 
+    return *faceCentresPtr_;
+}
+
+
+template
+<
+    class Face,
+    template<class> class FaceList,
+    class PointField,
+    class PointType
+>
 const Foam::Field<PointType>&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 faceNormals() const
@@ -516,7 +516,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::Field<PointType>&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 pointNormals() const
@@ -539,7 +538,6 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 operator=
@@ -551,6 +549,7 @@ operator=
 
     FaceList<Face>::operator=(pp);
 }
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

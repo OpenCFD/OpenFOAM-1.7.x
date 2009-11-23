@@ -40,7 +40,6 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 calcPointEdges() const
@@ -112,7 +111,6 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 calcPointFaces() const
