@@ -206,6 +206,21 @@ done
 cmd=""
 if [ .$WM_MPLIB = .OPENMPI ]; then
     cmd="mpirun -app $PWD/mpirun.schema </dev/null"
+elif [ .$WM_MPLIB = .MPICH ]; then
+    cmd="mpiexec"
+    for ((proc=0; proc<$nProcs; proc++))
+    do
+        read procCmd
+
+        procXtermCmdFile="$PWD/processor${proc}Xterm.sh"
+        echo "#!/bin/sh" > $procXtermCmdFile
+        echo "$procCmd" >> $procXtermCmdFile
+        chmod +x $procXtermCmdFile
+        if [ $proc -ne 0 ]; then
+            cmd="${cmd} :"
+        fi
+        cmd="${cmd} -n 1 ${procXtermCmdFile}"
+    done < $PWD/mpirun.schema
 fi
 
 echo "Constructed $PWD/mpirun.schema file."
