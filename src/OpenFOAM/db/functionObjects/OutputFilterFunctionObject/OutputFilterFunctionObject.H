@@ -78,6 +78,10 @@ class OutputFilterFunctionObject
         //- Switch for the execution of the functionObject
         bool enabled_;
 
+        //- Switch to store filter in between writes or use on-the-fly
+        //  construction
+        bool storeFilter_;
+
         //- Output controls
         outputFilterOutputControl outputControl_;
 
@@ -89,6 +93,12 @@ class OutputFilterFunctionObject
 
         //- Read relevant dictionary entries
         void readDict();
+ 
+        //- Creates most of the data associated with this object.
+        void allocateFilter();
+
+        //- Destroys most of the data associated with this object.
+        void destroyFilter();
 
         //- Disallow default bitwise copy construct
         OutputFilterFunctionObject(const OutputFilterFunctionObject&);
