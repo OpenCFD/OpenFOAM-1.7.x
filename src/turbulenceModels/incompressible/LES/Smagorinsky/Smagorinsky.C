@@ -73,6 +73,8 @@ Smagorinsky::Smagorinsky
     )
 {
     updateSubGridScaleFields(fvc::grad(U));
+
+    printCoeffs();
 }
 
 
