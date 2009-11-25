@@ -99,7 +99,7 @@
     and a csh/tcsh example:
 
     + setenv FOAM_INST_DIR /data/app/OpenFOAM
-    + foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.6/etc/bashrc
+    + foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.6/etc/cshrc
     + if ( -f $foamDotFile ) source $foamDotFile
 
     The value set in '$FOAM_INST_DIR' will be used to locate the remaining parts
