@@ -918,7 +918,7 @@ Foam::label Foam::MeshedSurface<Face>::triangulate
             // 'face' not '<Face>'
             const face& f = faceLst[faceI];
 
-            label nTmp;
+            label nTmp = 0;
             f.triangles(this->points(), nTmp, tmpTri);
             for (label triI = 0; triI < nTmp; triI++)
             {
