@@ -41,7 +41,6 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 visitPointRegion
@@ -120,7 +119,6 @@ template
     class PointField,
     class PointType
 >
-
 typename Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::surfaceTopo
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 surfaceType() const
@@ -174,7 +172,6 @@ template
     class PointField,
     class PointType
 >
-
 bool
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 checkTopology
@@ -245,7 +242,6 @@ template
     class PointField,
     class PointType
 >
-
 bool
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 checkPointManifold

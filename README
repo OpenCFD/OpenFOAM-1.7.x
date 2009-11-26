@@ -99,7 +99,7 @@
     and a csh/tcsh example:
 
     + setenv FOAM_INST_DIR /data/app/OpenFOAM
-    + foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.6/etc/bashrc
+    + foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.6/etc/cshrc
     + if ( -f $foamDotFile ) source $foamDotFile
 
     The value set in '$FOAM_INST_DIR' will be used to locate the remaining parts
@@ -165,7 +165,7 @@
   directory, namely cmake-2.6.4 and gcc-4.3.3.  Execute the following:
   + cd $WM_THIRD_PARTY_DIR
   + rm -rf paraview-3.6.1/platforms
-  + makeParaView
+  + ./makeParaView
 
   The PV3FoamReader module is an OpenFOAM utility that can be compiled in the
   usual manner as follows:
@@ -179,12 +179,12 @@
     downloads a supported version of Qt /e.g./ 4.3.5 as described in the section
     on "Qt".  The user should unpack the source pack in the $WM_THIRD_PARTY_DIR.
     Then the user can build Qt by executing from within $WM_THIRD_PARTY_DIR:
-    + makeQt
+    + ./makeQt
 
     The user should then compile ParaView using the local version of Qt by
     executing makeParaView with the -qmake option, giving the full path of the
     newly built qmake as an argument:
-    + makeParaView -qmake <path_to_qmake>
+    + ./makeParaView -qmake <path_to_qmake>
 
     The user must then recompile the PV3FoamReader module as normal (see above).
 

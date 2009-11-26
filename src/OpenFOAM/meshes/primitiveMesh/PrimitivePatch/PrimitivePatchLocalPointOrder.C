@@ -39,14 +39,13 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 calcLocalPointOrder() const
 {
     // Note: Cannot use bandCompressing as point-point addressing does
     // not exist and is not considered generally useful.
-    //  
+    //
 
     if (debug)
     {
@@ -136,5 +135,6 @@ calcLocalPointOrder() const
             << endl;
     }
 }
+
 
 // ************************************************************************* //

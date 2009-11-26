@@ -27,8 +27,6 @@ License
 #include "PrimitivePatch.H"
 #include "Map.H"
 
-
-
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 template
@@ -38,7 +36,6 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 calcMeshData() const
@@ -76,13 +73,13 @@ calcMeshData() const
 
     ////- 1.5 code:
     //// if the point is used, set the mark to 1
-    //forAll (*this, faceI)
+    //forAll(*this, facei)
     //{
-    //    const Face& curPoints = this->operator[](faceI);
+    //    const Face& curPoints = this->operator[](facei);
     //
-    //    forAll (curPoints, pointI)
+    //    forAll(curPoints, pointi)
     //    {
-    //        markedPoints.insert(curPoints[pointI], -1);
+    //        markedPoints.insert(curPoints[pointi], -1);
     //    }
     //}
     //
@@ -95,22 +92,22 @@ calcMeshData() const
     //sort(pointPatch);
     //
     //// For every point in map give it its label in mesh points
-    //forAll (pointPatch, pointI)
+    //forAll(pointPatch, pointi)
     //{
-    //    markedPoints.find(pointPatch[pointI])() = pointI;
+    //    markedPoints.find(pointPatch[pointi])() = pointi;
     //}
 
     //- Unsorted version:
     DynamicList<label> meshPoints(2*this->size());
-    forAll (*this, faceI)
+    forAll(*this, facei)
     {
-        const Face& curPoints = this->operator[](faceI);
+        const Face& curPoints = this->operator[](facei);
 
-        forAll (curPoints, pointI)
+        forAll(curPoints, pointi)
         {
-            if (markedPoints.insert(curPoints[pointI], meshPoints.size()))
+            if (markedPoints.insert(curPoints[pointi], meshPoints.size()))
             {
-                meshPoints.append(curPoints[pointI]);
+                meshPoints.append(curPoints[pointi]);
             }
         }
     }
@@ -124,14 +121,14 @@ calcMeshData() const
     localFacesPtr_ = new List<Face>(*this);
     List<Face>& lf = *localFacesPtr_;
 
-    forAll (*this, faceI)
+    forAll(*this, facei)
     {
-        const Face& curFace = this->operator[](faceI);
-        lf[faceI].setSize(curFace.size());
+        const Face& curFace = this->operator[](facei);
+        lf[facei].setSize(curFace.size());
 
-        forAll (curFace, labelI)
+        forAll(curFace, labelI)
         {
-            lf[faceI][labelI] = markedPoints.find(curFace[labelI])();
+            lf[facei][labelI] = markedPoints.find(curFace[labelI])();
         }
     }
 
@@ -152,7 +149,6 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 calcMeshPointMap() const
@@ -182,7 +178,7 @@ calcMeshPointMap() const
     meshPointMapPtr_ = new Map<label>(2*mp.size());
     Map<label>& mpMap = *meshPointMapPtr_;
 
-    forAll (mp, i)
+    forAll(mp, i)
     {
         mpMap.insert(mp[i], i);
     }
@@ -204,7 +200,6 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 calcLocalPoints() const
@@ -235,9 +230,9 @@ calcLocalPoints() const
 
     Field<PointType>& locPts = *localPointsPtr_;
 
-    forAll (meshPts, pointI)
+    forAll(meshPts, pointi)
     {
-        locPts[pointI] = points_[meshPts[pointI]];
+        locPts[pointi] = points_[meshPts[pointi]];
     }
 
     if (debug)
@@ -257,7 +252,6 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 calcPointNormals() const
@@ -294,15 +288,15 @@ calcPointNormals() const
 
     Field<PointType>& n = *pointNormalsPtr_;
 
-    forAll (pf, pointI)
+    forAll(pf, pointi)
     {
-        PointType& curNormal = n[pointI];
+        PointType& curNormal = n[pointi];
 
-        const labelList& curFaces = pf[pointI];
+        const labelList& curFaces = pf[pointi];
 
-        forAll (curFaces, faceI)
+        forAll(curFaces, facei)
         {
-            curNormal += faceUnitNormals[curFaces[faceI]];
+            curNormal += faceUnitNormals[curFaces[facei]];
         }
 
         curNormal /= mag(curNormal) + VSMALL;
@@ -325,7 +319,56 @@ template
     class PointField,
     class PointType
 >
+void
+Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
+calcFaceCentres() const
+{
+    if (debug)
+    {
+        Pout<< "PrimitivePatch<Face, FaceList, PointField, PointType>::"
+               "calcFaceCentres() : "
+               "calculating faceCentres in PrimitivePatch"
+            << endl;
+    }
 
+    // It is considered an error to attempt to recalculate faceCentres
+    // if they have already been calculated.
+    if (faceCentresPtr_)
+    {
+        FatalErrorIn
+        (
+            "PrimitivePatch<Face, FaceList, PointField, PointType>::"
+            "calcFaceCentres()"
+        )   << "faceCentresPtr_already allocated"
+            << abort(FatalError);
+    }
+
+    faceCentresPtr_ = new Field<PointType>(this->size());
+
+    Field<PointType>& c = *faceCentresPtr_;
+
+    forAll(c, facei)
+    {
+        c[facei] = this->operator[](facei).centre(points_);
+    }
+
+    if (debug)
+    {
+        Pout<< "PrimitivePatch<Face, FaceList, PointField, PointType>::"
+               "calcFaceCentres() : "
+               "finished calculating faceCentres in PrimitivePatch"
+            << endl;
+    }
+}
+
+
+template
+<
+    class Face,
+    template<class> class FaceList,
+    class PointField,
+    class PointType
+>
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 calcFaceNormals() const
@@ -354,10 +397,10 @@ calcFaceNormals() const
 
     Field<PointType>& n = *faceNormalsPtr_;
 
-    forAll (n, faceI)
+    forAll(n, facei)
     {
-        n[faceI] = this->operator[](faceI).normal(points_);
-        n[faceI] /= mag(n[faceI]) + VSMALL;
+        n[facei] = this->operator[](facei).normal(points_);
+        n[facei] /= mag(n[facei]) + VSMALL;
     }
 
     if (debug)

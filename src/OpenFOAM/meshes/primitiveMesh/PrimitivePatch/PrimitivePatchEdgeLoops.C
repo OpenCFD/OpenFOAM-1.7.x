@@ -31,7 +31,6 @@ Description
 #include "PrimitivePatch.H"
 
 
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template
@@ -41,7 +40,6 @@ template
     class PointField,
     class PointType
 >
-
 void
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 calcEdgeLoops() const
@@ -174,7 +172,6 @@ template
     class PointField,
     class PointType
 >
-
 const Foam::labelListList&
 Foam::PrimitivePatch<Face, FaceList, PointField, PointType>::
 edgeLoops() const
