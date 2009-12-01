@@ -31,15 +31,21 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Key, class Hash>
+// Note different names for template arguments - needed for Icc11. Cannot
+// handle any already existing classname as template arg.
+template<class KeyClass, class HashClass>
 template<class AnyType>
-Foam::HashSet<Key, Hash>::HashSet(const HashTable<AnyType, Key, Hash>& h)
+Foam::HashSet<KeyClass, HashClass>::HashSet
+(
+    const HashTable<AnyType, KeyClass, HashClass>& h
+)
 :
-    HashTable<nil, Key, Hash>(h.size())
+    HashTable<nil, KeyClass, HashClass>(h.size())
 {
     for
     (
-        typename HashTable<AnyType, Key, Hash>::const_iterator cit = h.cbegin();
+        typename HashTable<AnyType, KeyClass, HashClass>::const_iterator cit =
+            h.cbegin();
         cit != h.cend();
         ++cit
     )

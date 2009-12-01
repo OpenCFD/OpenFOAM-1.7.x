@@ -35,7 +35,10 @@ template<class Type, class GeoMesh>
 inline const DimensionedField<Type, GeoMesh>&
 DimensionedField<Type, GeoMesh>::null()
 {
-    return *reinterpret_cast< DimensionedField<Type, GeoMesh>* >(0);
+    //Note: two liner only to work around Icc11 checking
+    DimensionedField<Type, GeoMesh>* nullPtr =
+        reinterpret_cast< DimensionedField<Type, GeoMesh>* >(0);
+    return *nullPtr;
 }
 
 

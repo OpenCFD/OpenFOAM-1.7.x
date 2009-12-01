@@ -57,6 +57,7 @@ class argList;
 
 class ensightMesh
 {
+public:
         class nFacePrimitives
         {
         public:
@@ -75,6 +76,7 @@ class ensightMesh
             {}
         };
 
+private:
 
     // Private data
 

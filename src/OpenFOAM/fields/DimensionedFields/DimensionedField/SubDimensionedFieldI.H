@@ -81,7 +81,10 @@ template<class Type, class GeoMesh>
 inline const SubDimensionedField<Type, GeoMesh>&
 SubDimensionedField<Type, GeoMesh>::null()
 {
-    return *reinterpret_cast< SubDimensionedField<Type, GeoMesh>* >(0);
+    //Note: two liner only to work around Icc11 checking
+    SubDimensionedField<Type, GeoMesh>* nullPtr =
+        reinterpret_cast< SubDimensionedField<Type, GeoMesh>* >(0);
+    return *nullPtr;
 }
 
 

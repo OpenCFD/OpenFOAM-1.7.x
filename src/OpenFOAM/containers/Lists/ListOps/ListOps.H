@@ -172,7 +172,7 @@ template<class ListType>
 ListType createWithValues
 (
     const label sz,
-    const typename ListType::const_reference initValue,
+    typename ListType::const_reference initValue,
     const UList<label>& indices,
     typename ListType::const_reference setValue
 );
