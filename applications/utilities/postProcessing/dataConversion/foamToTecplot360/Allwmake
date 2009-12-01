@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Build optional components (eg, may depend on third-party libraries)
+# -----------------------------------------------------------------------------
+cd ${0%/*} || exit 1    # run from this directory
+set -x
+
+# build tecio
+wmake libso tecio/tecsrc
+
+# build converter
+wmake
+
+# ----------------------------------------------------------------- end-of-file

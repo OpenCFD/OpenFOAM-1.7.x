@@ -1,0 +1,21 @@
+alloc.cpp
+arrlist.cpp
+auxdata.cpp
+dataio4.cpp
+dataio.cpp
+dataset0.cpp
+dataset.cpp
+datautil.cpp
+filestream.cpp
+geom2.cpp
+q_msg.cpp
+q_unicode.cpp
+set.cpp
+strlist.cpp
+strutil.cpp
+tassert.cpp
+tecxxx.cpp
+TranslatedString.cpp
+
+LIB = $(FOAM_USER_LIBBIN)/libtecio
+
