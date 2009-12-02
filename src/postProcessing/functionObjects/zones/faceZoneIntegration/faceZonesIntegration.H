@@ -37,14 +37,12 @@ SourceFiles
 #ifndef faceZonesIntegration_H
 #define faceZonesIntegration_H
 
-#include "fvCFD.H"
-#include "primitiveFieldsFwd.H"
-#include "volFieldsFwd.H"
+#include "faceZone.H"
 #include "HashPtrTable.H"
 #include "OFstream.H"
 #include "Switch.H"
+#include "surfaceFieldsFwd.H"
 #include "pointFieldFwd.H"
-#include "polyMesh.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -57,7 +55,7 @@ class dictionary;
 class mapPolyMesh;
 
 /*---------------------------------------------------------------------------*\
-                           Class faceZonesIntegration Declaration
+                      Class faceZonesIntegration Declaration
 \*---------------------------------------------------------------------------*/
 
 class faceZonesIntegration
@@ -68,7 +66,7 @@ protected:
     // Private data
 
         //- Name of this set of face zone integration,
-        //  Also used as the name of the probes directory.
+        //  Also used as the name of the results directory.
         word name_;
 
         const objectRegistry& obr_;
@@ -134,9 +132,8 @@ public:
         );
 
 
-    // Destructor
-
-        virtual ~faceZonesIntegration();
+    //- Destructor
+    virtual ~faceZonesIntegration();
 
 
     // Member Functions

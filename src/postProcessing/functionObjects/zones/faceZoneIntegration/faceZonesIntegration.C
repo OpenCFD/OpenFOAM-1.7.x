@@ -25,11 +25,10 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "faceZonesIntegration.H"
-#include "volFields.H"
+#include "surfaceFields.H"
 #include "dictionary.H"
 #include "Time.H"
 #include "IOmanip.H"
-#include "ListListOps.H"
 #include "processorPolyPatch.H"
 #include "cyclicPolyPatch.H"
 
