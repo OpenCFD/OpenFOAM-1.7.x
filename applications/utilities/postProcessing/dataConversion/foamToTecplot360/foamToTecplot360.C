@@ -797,7 +797,7 @@ int main(int argc, char *argv[])
                 (
                     writer.getFaceField
                     (
-                        fvc::interpolate(vsf[i])(),
+                        linearInterpolate(vsf[i])(),
                         faceLabels
                     )()
                 );
@@ -808,7 +808,7 @@ int main(int argc, char *argv[])
                 (
                     writer.getFaceField
                     (
-                        fvc::interpolate(vvf[i])(),
+                        linearInterpolate(vvf[i])(),
                         faceLabels
                     )()
                 );
@@ -819,7 +819,7 @@ int main(int argc, char *argv[])
                 (
                     writer.getFaceField
                     (
-                        fvc::interpolate(vSpheretf[i])(),
+                        linearInterpolate(vSpheretf[i])(),
                         faceLabels
                     )()
                 );
@@ -830,7 +830,7 @@ int main(int argc, char *argv[])
                 (
                     writer.getFaceField
                     (
-                        fvc::interpolate(vSymmtf[i])(),
+                        linearInterpolate(vSymmtf[i])(),
                         faceLabels
                     )()
                 );
@@ -841,7 +841,7 @@ int main(int argc, char *argv[])
                 (
                     writer.getFaceField
                     (
-                        fvc::interpolate(vtf[i])(),
+                        linearInterpolate(vtf[i])(),
                         faceLabels
                     )()
                 );
@@ -1094,7 +1094,7 @@ int main(int argc, char *argv[])
                     (
                         writer.getFaceField
                         (
-                            fvc::interpolate(vsf[i])(),
+                            linearInterpolate(vsf[i])(),
                             pp
                         )()
                     );
@@ -1105,7 +1105,7 @@ int main(int argc, char *argv[])
                     (
                         writer.getFaceField
                         (
-                            fvc::interpolate(vvf[i])(),
+                            linearInterpolate(vvf[i])(),
                             pp
                         )()
                     );
@@ -1116,7 +1116,7 @@ int main(int argc, char *argv[])
                     (
                         writer.getFaceField
                         (
-                            fvc::interpolate(vSpheretf[i])(),
+                            linearInterpolate(vSpheretf[i])(),
                             pp
                         )()
                     );
@@ -1127,7 +1127,7 @@ int main(int argc, char *argv[])
                     (
                         writer.getFaceField
                         (
-                            fvc::interpolate(vSymmtf[i])(),
+                            linearInterpolate(vSymmtf[i])(),
                             pp
                         )()
                     );
@@ -1138,7 +1138,7 @@ int main(int argc, char *argv[])
                     (
                         writer.getFaceField
                         (
-                            fvc::interpolate(vtf[i])(),
+                            linearInterpolate(vtf[i])(),
                             pp
                         )()
                     );
