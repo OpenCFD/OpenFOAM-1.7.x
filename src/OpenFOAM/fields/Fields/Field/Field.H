@@ -101,9 +101,7 @@ public:
         //- Return a null field
         inline static const Field<Type>& null()
         {
-            //Note: two liner only to work around Icc11 checking
-            Field<Type>* nullPtr = reinterpret_cast< Field<Type>* >(0);
-            return *nullPtr;
+            return *reinterpret_cast< Field<Type>* >(0);
         }
 
 

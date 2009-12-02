@@ -75,9 +75,7 @@ inline Foam::SubList<T>::SubList
 template<class T>
 inline const Foam::SubList<T>& Foam::SubList<T>::null()
 {
-    //Note: two liner only to work around Icc11 checking
-    SubList<T>* nullPtr = reinterpret_cast<SubList<T>*>(NULL);
-    return *nullPtr;
+    return *reinterpret_cast< SubList<T>* >(0);
 }
 
 

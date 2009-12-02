@@ -29,9 +29,7 @@ License
 template<class T>
 inline const Foam::Xfer<T>& Foam::Xfer<T>::null()
 {
-    //Note: two liner only to work around Icc11 checking
-    Xfer<T>* nullPtr = reinterpret_cast< Xfer<T>* >(0);
-    return *nullPtr;
+    return *reinterpret_cast< Xfer<T>* >(0);
 }
 
 
@@ -88,6 +86,9 @@ inline Foam::Xfer<T>::~Xfer()
 }
 
 
+// * * * * * * * * * * * * *  Member Functions * * * * * * * * * * * * * * * //
+
+
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
 template<class T>
@@ -123,6 +124,7 @@ inline T* Foam::Xfer<T>::operator->() const
 
 
 // * * * * * * * * * * * * *  Helper Functions * * * * * * * * * * * * * * * //
+
 
 template<class T>
 inline Foam::Xfer<T> Foam::xferCopy(const T& t)

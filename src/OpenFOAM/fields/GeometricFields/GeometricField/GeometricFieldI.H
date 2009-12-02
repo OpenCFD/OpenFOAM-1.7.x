@@ -30,10 +30,7 @@ template<class Type, template<class> class PatchField, class GeoMesh>
 inline const Foam::GeometricField<Type, PatchField, GeoMesh>&
 Foam::GeometricField<Type, PatchField, GeoMesh>::null()
 {
-    //Note: two liner only to work around Icc11 checking
-    GeometricField<Type, PatchField, GeoMesh>* nullPtr =
-        reinterpret_cast< GeometricField<Type, PatchField, GeoMesh>* >(0);
-    return *nullPtr;
+    return *reinterpret_cast< GeometricField<Type, PatchField, GeoMesh>* >(0);
 }
 
 

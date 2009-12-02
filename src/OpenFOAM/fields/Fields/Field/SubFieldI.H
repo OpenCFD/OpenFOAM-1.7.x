@@ -85,9 +85,7 @@ inline Foam::SubField<Type>::SubField
 template<class Type>
 inline const Foam::SubField<Type>& Foam::SubField<Type>::null()
 {
-    //Note: two liner only to work around Icc11 checking
-    SubField<Type>* nullPtr = reinterpret_cast< SubField<Type>* >(0);
-    return *nullPtr;
+    return *reinterpret_cast< SubField<Type>* >(0);
 }
 
 

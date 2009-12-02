@@ -36,8 +36,7 @@ inline Foam::Matrix<Form, Type>::Matrix()
 
 
 template<class Form, class Type>
-inline Foam::autoPtr<Foam::Matrix<Form, Type> >
-Foam::Matrix<Form, Type>::clone() const
+inline Foam::autoPtr<Foam::Matrix<Form, Type> > Foam::Matrix<Form, Type>::clone() const
 {
     return autoPtr<Matrix<Form, Type> >(new Matrix<Form, Type>(*this));
 }
@@ -48,9 +47,7 @@ Foam::Matrix<Form, Type>::clone() const
 template<class Form, class Type>
 inline const Foam::Matrix<Form, Type>& Foam::Matrix<Form, Type>::null()
 {
-    //Note: two liner only to work around Icc11 checking
-    Matrix<Form, Type>* nullPtr = reinterpret_cast< Matrix<Form, Type>* >(0);
-    return *nullPtr;
+    return *reinterpret_cast< Matrix<Form, Type>* >(0);
 }
 
 

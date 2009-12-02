@@ -43,9 +43,7 @@ inline Foam::autoPtr<Foam::List<T> > Foam::List<T>::clone() const
 template<class T>
 inline const Foam::List<T>& Foam::List<T>::null()
 {
-    //Note: two liner only to work around Icc11 checking
-    List<T>* nullPtr = reinterpret_cast<List<T>*>(NULL);
-    return *nullPtr;
+    return *reinterpret_cast< List<T>* >(0);
 }
 
 

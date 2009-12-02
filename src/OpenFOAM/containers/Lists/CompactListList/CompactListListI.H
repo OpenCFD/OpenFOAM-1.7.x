@@ -70,9 +70,7 @@ Foam::CompactListList<T>::clone() const
 template<class T>
 inline const Foam::CompactListList<T>& Foam::CompactListList<T>::null()
 {
-    //Note: two liner only to work around Icc11 checking
-    CompactListList<T>* nullPtr = reinterpret_cast<  >(0);
-    return *nullPtr;
+    return *reinterpret_cast< CompactListList<T>* >(0);
 }
 
 

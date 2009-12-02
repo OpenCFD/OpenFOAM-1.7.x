@@ -97,10 +97,7 @@ public:
         //- Return a null field
         inline static const DynamicField<Type>& null()
         {
-            //Note: two liner only to work around Icc11 checking
-            DynamicField<Type>* nullPtr =
-                reinterpret_cast< DynamicField<Type>* >(0);
-            return *nullPtr;
+            return *reinterpret_cast< DynamicField<Type>* >(0);
         }
 
 

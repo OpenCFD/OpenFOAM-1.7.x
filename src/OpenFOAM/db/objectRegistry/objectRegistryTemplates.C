@@ -147,9 +147,7 @@ const Type& Foam::objectRegistry::lookupObject(const word& name) const
         }
     }
 
-    //Note: two liner only to work around Icc11 checking
-    const Type* nullPtr = reinterpret_cast< const Type* >(0);
-    return *nullPtr;
+    return *reinterpret_cast< const Type* >(0);
 }
 
 

@@ -108,10 +108,7 @@ Foam::FixedList<T, Size>::clone() const
 template<class T, unsigned Size>
 inline const Foam::FixedList<T, Size>& Foam::FixedList<T, Size>::null()
 {
-    //Note: two liner only to work around Icc11 checking
-    const FixedList<T, Size>* nullPtr =
-        reinterpret_cast< FixedList<T, Size>* >(0);
-    return *nullPtr;
+    return *reinterpret_cast< FixedList<T, Size>* >(0);
 }
 
 
