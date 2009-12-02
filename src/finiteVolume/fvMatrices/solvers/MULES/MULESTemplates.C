@@ -142,8 +142,7 @@ void Foam::MULES::implicitSolve
 {
     const fvMesh& mesh = psi.mesh();
 
-    const dictionary& MULEScontrols = 
-       mesh.solverDict(psi.name()).subDict("MULESImplicit");
+    const dictionary& MULEScontrols = mesh.solverDict(psi.name());
 
     label maxIter
     (
@@ -255,7 +254,7 @@ void Foam::MULES::implicitSolve
         solve
         (
             psiConvectionDiffusion + fvc::div(lambda*phiCorr),
-            MULEScontrols.lookup("solver")
+            MULEScontrols
         );
 
         scalar maxPsiM1 = gMax(psi.internalField()) - 1.0;
