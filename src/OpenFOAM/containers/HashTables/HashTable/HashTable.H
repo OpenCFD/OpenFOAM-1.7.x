@@ -138,6 +138,7 @@ class HashTable
         //- Assign a new hashedEntry to a possibly already existing key
         bool set(const Key&, const T& newElmt, bool protect);
 
+
 public:
 
         //- Declare friendship with the HashPtrTable class
@@ -221,10 +222,10 @@ public:
 
             //- Remove entries given by the given keys from this HashTable
             //  Return the number of elements removed.
-            //  The parameter HashTable needs the same type of keys, but
-            //  but the type of values held is arbitrary.
-            template<class AnyType>
-            label erase(const HashTable<AnyType, Key, Hash>&);
+            //  The parameter HashTable needs the same type of key, but the
+            //  type of values held and the hashing function are arbitrary.
+            template<class AnyType, class AnyHash>
+            label erase(const HashTable<AnyType, Key, AnyHash>&);
 
             //- Resize the hash table for efficiency
             void resize(const label newSize);
@@ -265,7 +266,6 @@ public:
 
         //- The opposite of the equality operation. Takes linear time.
         bool operator!=(const HashTable<T, Key, Hash>&) const;
-
 
 
     // STL type definitions

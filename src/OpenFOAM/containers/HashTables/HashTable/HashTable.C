@@ -452,27 +452,22 @@ Foam::label Foam::HashTable<T, Key, Hash>::erase(const UList<Key>& keys)
 }
 
 
-// Note different names for template arguments - needed for Icc11. Cannot
-// handle any already existing classname as template arg.
-template<class T, class KeyClass, class HashClass>
-template<class AnyType>
-Foam::label Foam::HashTable<T, KeyClass, HashClass>::erase
+template<class T, class Key, class Hash>
+template<class AnyType, class AnyHash>
+Foam::label Foam::HashTable<T, Key, Hash>::erase
 (
-    const HashTable<AnyType, KeyClass, HashClass>& rhs
+    const HashTable<AnyType, Key, AnyHash>& rhs
 )
 {
     label count = 0;
 
-    // Remove rhs elements from this table
-    if (this->size())
+    // Remove rhs keys from this table - terminates early if possible
+    // Could optimize depending on which hash is smaller ...
+    for (iterator iter = begin(); iter != end(); ++iter)
     {
-        // NOTE: could further optimize depending on which hash is smaller
-        for (iterator iter = begin(); iter != end(); ++iter)
+        if (rhs.found(iter.key()) && erase(iter))
         {
-            if (rhs.found(iter.key()) && erase(iter))
-            {
-                count++;
-            }
+            count++;
         }
     }
 

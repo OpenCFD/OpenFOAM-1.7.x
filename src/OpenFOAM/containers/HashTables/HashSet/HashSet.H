@@ -114,8 +114,9 @@ public:
 
         //- Construct from the keys of another HashTable,
         //  the type of values held is arbitrary.
-        template<class AnyType>
-        HashSet(const HashTable<AnyType, Key, Hash>&);
+        template<class AnyType, class AnyHash>
+        HashSet(const HashTable<AnyType, Key, AnyHash>&);
+
 
     // Member Functions
 
@@ -132,6 +133,7 @@ public:
         {
             return HashTable<nil, Key, Hash>::insert(key, nil());
         }
+
 
     // Member Operators
 
@@ -163,7 +165,6 @@ public:
 
         //- Remove entries listed in the given HashSet from this HashSet
         void operator-=(const HashSet<Key, Hash>&);
-
 };
 
 
