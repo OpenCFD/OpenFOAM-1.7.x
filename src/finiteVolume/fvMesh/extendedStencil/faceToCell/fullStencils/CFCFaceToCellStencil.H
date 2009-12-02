@@ -56,12 +56,6 @@ class CFCFaceToCellStencil
 
         void calcCellStencil(labelListList& globalCellFaces) const;
 
-        // Icc and gcc4.1 need copy constructor
-
-        ////- Disallow default bitwise copy construct
-        //CFCFaceToCellStencil(const CFCFaceToCellStencil&);
-        ////- Disallow default bitwise assignment
-        //void operator=(const CFCFaceToCellStencil&);
 
 public:
 

@@ -64,15 +64,6 @@ class FECCellToFaceStencil
 
         void calcFaceStencil(labelListList& faceStencil) const;
 
-
-        // Icc and gcc4.1 need copy constructor
-
-        ////- Disallow default bitwise copy construct
-        //FECCellToFaceStencil(const FECCellToFaceStencil&);
-        ////- Disallow default bitwise assignment
-        //void operator=(const FECCellToFaceStencil&);
-
-
 public:
 
     // Constructors

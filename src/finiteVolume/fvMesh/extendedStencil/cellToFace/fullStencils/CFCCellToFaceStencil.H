@@ -51,12 +51,6 @@ class CFCCellToFaceStencil
 :
     public cellToFaceStencil
 {
-        // Icc and gcc4.1 need copy constructor
-
-        ////- Disallow default bitwise copy construct
-        //CFCCellToFaceStencil(const CFCCellToFaceStencil&);
-        ////- Disallow default bitwise assignment
-        //void operator=(const CFCCellToFaceStencil&);
 
 public:
 
