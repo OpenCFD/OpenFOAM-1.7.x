@@ -36,9 +36,10 @@ Description
     - mesh with cells put into cellZones (-makeCellZones)
 
     Note:
-    - Should work in parallel but cellZone interfaces cannot align with
-    processor boundaries so use the correct option in decomposition to
-    preserve those interfaces.
+    - Should work in parallel.
+    cellZones can differ on either side of processor boundaries in which case
+    the faces get moved from processor patch to directMapped patch. Not
+    ery well tested.
     - If a cell zone gets split into more than one region it can detect
     the largest matching region (-sloppyCellZones). This will accept any
     region that covers more than 50% of the zone. It has to be a subset
@@ -514,6 +515,10 @@ void getInterfaceSizes
     EdgeMap<label>& interfaceSizes
 )
 {
+
+    // Internal faces
+    // ~~~~~~~~~~~~~~
+
     forAll(mesh.faceNeighbour(), faceI)
     {
         label ownRegion = cellRegion[mesh.faceOwner()[faceI]];
@@ -539,6 +544,47 @@ void getInterfaceSizes
             }
         }
     }
+
+    // Boundary faces
+    // ~~~~~~~~~~~~~~
+
+    // Neighbour cellRegion.
+    labelList coupledRegion(mesh.nFaces()-mesh.nInternalFaces());
+
+    forAll(coupledRegion, i)
+    {
+        label cellI = mesh.faceOwner()[i+mesh.nInternalFaces()];
+        coupledRegion[i] = cellRegion[cellI];
+    }
+    syncTools::swapBoundaryFaceList(mesh, coupledRegion, false);
+
+    forAll(coupledRegion, i)
+    {
+        label faceI = i+mesh.nInternalFaces();
+        label ownRegion = cellRegion[mesh.faceOwner()[faceI]];
+        label neiRegion = coupledRegion[i];
+
+        if (ownRegion != neiRegion)
+        {
+            edge interface
+            (
+                min(ownRegion, neiRegion),
+                max(ownRegion, neiRegion)
+            );
+
+            EdgeMap<label>::iterator iter = interfaceSizes.find(interface);
+
+            if (iter != interfaceSizes.end())
+            {
+                iter()++;
+            }
+            else
+            {
+                interfaceSizes.insert(interface, 1);
+            }
+        }
+    }
+
 
     if (sumParallel && Pstream::parRun())
     {
@@ -672,6 +718,17 @@ autoPtr<mapPolyMesh> createRegionMesh
     }
 
 
+    // Neighbour cellRegion.
+    labelList coupledRegion(mesh.nFaces()-mesh.nInternalFaces());
+
+    forAll(coupledRegion, i)
+    {
+        label cellI = mesh.faceOwner()[i+mesh.nInternalFaces()];
+        coupledRegion[i] = cellRegion[cellI];
+    }
+    syncTools::swapBoundaryFaceList(mesh, coupledRegion, false);
+
+
     // Topology change container. Start off from existing mesh.
     polyTopoChange meshMod(mesh);
 
@@ -691,16 +748,17 @@ autoPtr<mapPolyMesh> createRegionMesh
     {
         label faceI = exposedFaces[i];
 
-        if (!mesh.isInternalFace(faceI))
-        {
-            FatalErrorIn("createRegionMesh(..)")
-                << "Exposed face:" << faceI << " is not an internal face."
-                << " fc:" << mesh.faceCentres()[faceI]
-                << exit(FatalError);
-        }
-
         label ownRegion = cellRegion[mesh.faceOwner()[faceI]];
-        label neiRegion = cellRegion[mesh.faceNeighbour()[faceI]];
+        label neiRegion = -1;
+
+        if (mesh.isInternalFace(faceI))
+        {
+            neiRegion = cellRegion[mesh.faceNeighbour()[faceI]];
+        }
+        else
+        {
+            neiRegion = coupledRegion[faceI-mesh.nInternalFaces()];
+        }
 
         label otherRegion = -1;
 
@@ -1357,22 +1415,14 @@ int main(int argc, char *argv[])
             }
         }
 
-        // Different cellZones on either side of processor patch are not
-        // allowed for now. Convert to processorPatches or what?
+        // Different cellZones on either side of processor patch.
         forAll(neiZoneID, i)
         {
             label faceI = i+mesh.nInternalFaces();
 
             if (zoneID[mesh.faceOwner()[faceI]] != neiZoneID[i])
             {
-                //blockedFace[faceI] = true;
-                FatalErrorIn(args.executable())
-                    << "Coupled face " << faceI
-                    << " fc:" << mesh.faceCentres()[faceI]
-                    << " has cellZone " << zoneID[mesh.faceOwner()[faceI]]
-                    << " on owner side but cellZone " << neiZoneID[i]
-                    << " on other side. This is not allowed."
-                    << exit(FatalError);
+                blockedFace[faceI] = true;
             }
         }
     }

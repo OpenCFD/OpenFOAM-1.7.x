@@ -475,6 +475,14 @@ public:
 
 
 template<class Cmpt>
+class innerProduct<Tensor2D<Cmpt>, Tensor2D<Cmpt> >
+{
+public:
+
+    typedef Tensor2D<Cmpt> type;
+};
+
+template<class Cmpt>
 class innerProduct<SphericalTensor2D<Cmpt>, Tensor2D<Cmpt> >
 {
 public:
@@ -489,6 +497,23 @@ public:
 
     typedef Tensor2D<Cmpt> type;
 };
+
+template<class Cmpt>
+class innerProduct<Tensor2D<Cmpt>, Vector2D<Cmpt> >
+{
+public:
+
+    typedef Vector2D<Cmpt> type;
+};
+
+template<class Cmpt>
+class innerProduct<Vector2D<Cmpt>, Tensor2D<Cmpt> >
+{
+public:
+
+    typedef Vector2D<Cmpt> type;
+};
+
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

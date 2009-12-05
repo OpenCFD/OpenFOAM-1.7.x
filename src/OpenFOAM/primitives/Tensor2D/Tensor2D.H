@@ -130,7 +130,7 @@ public:
 
     // Member Operators
 
-        //- Construct given SphericalTensor2D
+        //- Copy SphericalTensor2D
         inline void operator=(const SphericalTensor2D<Cmpt>&);
 };
 
