@@ -20,32 +20,9 @@ internalField   uniform 300;
 
 boundaryField
 {
-    minX
+    ".*"
     {
-        type            fixedValue;
-        value           uniform 300;
-    }
-    maxX
-    {
-        type            zeroGradient;
-    }
-
-    minY
-    {
-        type            zeroGradient;
-    }
-    maxY
-    {
-        type            zeroGradient;
-    }
-
-    minZ
-    {
-        type            zeroGradient;
-    }
-    maxZ
-    {
-        type            zeroGradient;
+        type            calculated;
     }
 }
 

@@ -21,46 +21,9 @@ internalField   uniform 0.01;
 
 boundaryField
 {
-    minY
+    ".*"
     {
-        type            epsilonWallFunction;
-        value           uniform 0.01;
-    }
-    maxY
-    {
-        type            epsilonWallFunction;
-        value           uniform 0.01;
-    }
-    minX
-    {
-        type            fixedValue;
-        value           uniform 0.01;
-    }
-    maxX
-    {
-        type            zeroGradient;
-    }
-    minZ
-    {
-        type            epsilonWallFunction;
-        value           uniform 0.01;
-    }
-    maxZ
-    {
-        type            epsilonWallFunction;
-        value           uniform 0.01;
-    }
-    topAir_to_leftSolid
-    {
-        type            zeroGradient;
-    }
-    topAir_to_heater
-    {
-        type            zeroGradient;
-    }
-    topAir_to_rightSolid
-    {
-        type            zeroGradient;
+        type            calculated;
     }
 }
 

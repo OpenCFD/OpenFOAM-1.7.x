@@ -13,11 +13,6 @@ rm -f constant/polyMesh/sets/*_old
 runApplication setsToZones -noFlipMap
 runApplication splitMeshRegions -cellZones
 
-for i in bottomAir topAir heater leftSolid rightSolid
-do
-   changeDictionary -region $i >& log.changeDictionary.$i
-done
-
 # remove fluid fields from solid regions (important for post-processing)
 for i in heater leftSolid rightSolid
 do
@@ -27,7 +22,12 @@ done
 # remove solid fields from fluid regions (important for post-processing)
 for i in bottomAir topAir
 do
-   rm -f 0*/$i/{cp,K}
+   rm -f 0*/$i/{cp,K,rho}
+done
+
+for i in bottomAir topAir heater leftSolid rightSolid
+do
+   changeDictionary -region $i >& log.changeDictionary.$i
 done
 
 

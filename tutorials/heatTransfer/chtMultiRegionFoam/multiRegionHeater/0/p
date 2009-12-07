@@ -20,36 +20,9 @@ internalField   uniform 1e5;
 
 boundaryField
 {
-    minX
+    ".*"
     {
-        type            buoyantPressure;
-        value           1e5;
-    }
-    maxX
-    {
-        type            buoyantPressure;
-        value           1e5;
-    }
-
-    minY
-    {
-        type            buoyantPressure;
-        value           1e5;
-    }
-    maxY
-    {
-        type            buoyantPressure;
-        value           1e5;
-    }
-    minZ
-    {
-        type            buoyantPressure;
-        value           1e5;
-    }
-    maxZ
-    {
-        type            buoyantPressure;
-        value           1e5;
+        type            calculated;
     }
 }
 

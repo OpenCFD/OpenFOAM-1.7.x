@@ -18,6 +18,10 @@ dictionaryReplacement
 {
     boundary
     {
+        ".*"
+        {
+            type            wall;
+        }
         bottomAir_to_leftSolid
         {
             offset          ( 0 0 0 );
@@ -43,32 +47,11 @@ dictionaryReplacement
 
     U
     {
-        internalField   uniform (0 0 0);
+        internalField   uniform (0.01 0 0);
+
         boundaryField
         {
-            minX
-            {
-                type            fixedValue;
-                value           uniform (0 0 0);
-            }
-            maxX
-            {
-                type            fixedValue;
-                value           uniform (0 0 0);
-            }
-
-            bottomAir_to_leftSolid
-            {
-                type            fixedValue;
-                value           uniform (0 0 0);
-
-            }
-            bottomAir_to_heater
-            {
-                type            fixedValue;
-                value           uniform (0 0 0);
-            }
-            bottomAir_to_rightSolid
+            ".*"
             {
                 type            fixedValue;
                 value           uniform (0 0 0);
@@ -78,28 +61,16 @@ dictionaryReplacement
 
     T
     {
+        internalField   uniform 300;
+
         boundaryField
         {
-            minX
+            ".*"
             {
                 type            zeroGradient;
             }
-            bottomAir_to_leftSolid
-            {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
-                value           uniform 300;
 
-            }
-            bottomAir_to_heater
-            {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
-                value           uniform 300;
-            }
-            bottomAir_to_rightSolid
+            "bottomAir_to_.*"
             {
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
@@ -111,58 +82,13 @@ dictionaryReplacement
 
     epsilon
     {
-        // Set the value on all bc to non-zero. Not used in simulation
-        // since zeroGradient; only used in initialisation.
         internalField   uniform 0.01;
 
         boundaryField
         {
-            minX
+            ".*"
             {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-            maxX
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-
-            minY
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-            maxY
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-
-            minZ
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-
-            bottomAir_to_leftSolid
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-            bottomAir_to_heater
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-            bottomAir_to_rightSolid
-            {
-                type            zeroGradient;
+                type            compressible::epsilonWallFunction;
                 value           uniform 0.01;
             }
         }
@@ -171,54 +97,12 @@ dictionaryReplacement
     k
     {
         internalField   uniform 0.1;
+
         boundaryField
         {
-            minX
+            ".*"
             {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-            maxX
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-
-            minY
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-            maxY
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-
-            minZ
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-
-            bottomAir_to_leftSolid
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-            bottomAir_to_heater
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-            bottomAir_to_rightSolid
-            {
-                type            zeroGradient;
+                type            compressible::kqRWallFunction;
                 value           uniform 0.1;
             }
         }
@@ -226,53 +110,17 @@ dictionaryReplacement
 
     p
     {
-        internalField   uniform 1E5;
+        internalField   uniform 100000;
 
         boundaryField
         {
-            minX
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-            maxX
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-            minY
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-            minZ
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-            maxZ
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-            bottomAir_to_leftSolid
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-            bottomAir_to_heater
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-            bottomAir_to_rightSolid
+            ".*"
             {
                 type            buoyantPressure;
                 value           1e5;
             }
         }
     }
-
 }
 
 // ************************************************************************* //
