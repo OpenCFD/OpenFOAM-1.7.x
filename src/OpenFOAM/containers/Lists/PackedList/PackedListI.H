@@ -670,7 +670,16 @@ inline void Foam::PackedList<nBits>::reserve
     // need more capacity?
     if (len > StorageList::size())
     {
-        StorageList::setSize(len, 0u);
+        // Like DynamicList with SizeInc=0, SizeMult=2, SizeDiv=1
+        StorageList::setSize
+        (
+            max
+            (
+                len,
+                StorageList::size()*2
+            ),
+            0u
+        );
     }
 }
 
