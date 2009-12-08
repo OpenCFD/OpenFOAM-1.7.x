@@ -38,7 +38,6 @@ Foam::entry::entry(const keyType& keyword)
 
 Foam::entry::entry(const entry& e)
 :
-    IDLList<entry>::link(),
     keyword_(e.keyword_)
 {}
 

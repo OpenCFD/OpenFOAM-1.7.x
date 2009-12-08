@@ -95,11 +95,12 @@ bool Foam::dictionary::substituteKeyword(const word& keyword)
 
 Foam::dictionary::dictionary
 (
+    const fileName& name,
     const dictionary& parentDict,
     Istream& is
 )
 :
-    name_(is.name()),
+    dictionaryName(parentDict.name() + "::" + name),
     parent_(parentDict)
 {
     read(is);
@@ -108,7 +109,7 @@ Foam::dictionary::dictionary
 
 Foam::dictionary::dictionary(Istream& is)
 :
-    name_(is.name()),
+    dictionaryName(is.name()),
     parent_(dictionary::null)
 {
     // Reset input mode as this is a "top-level" dictionary
@@ -132,6 +133,7 @@ Foam::Istream& Foam::operator>>(Istream& is, dictionary& dict)
     functionEntries::inputModeEntry::clear();
 
     dict.clear();
+    dict.name() = is.name();
     dict.read(is);
 
     return is;

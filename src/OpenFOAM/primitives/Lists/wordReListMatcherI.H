@@ -24,73 +24,55 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-template<class Matcher, class StringType>
-Foam::labelList Foam::findMatchingStrings
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+inline Foam::wordReListMatcher::wordReListMatcher
 (
-    const Matcher& matcher,
-    const UList<StringType>& lst,
-    const bool invert
+    const UList<wordRe>& lst
 )
+:
+    reList_(lst)
+{}
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+inline Foam::label Foam::wordReListMatcher::size() const
 {
-    labelList indices(lst.size());
-
-    label nElem = 0;
-    forAll(lst, elemI)
-    {
-        if (matcher.match(lst[elemI]) ? !invert : invert)
-        {
-            indices[nElem++] = elemI;
-        }
-    }
-    indices.setSize(nElem);
-
-    return indices;
+    return reList_.size();
 }
 
 
-template<class Matcher, class StringListType>
-StringListType Foam::subsetMatchingStrings
-(
-    const Matcher& matcher,
-    const StringListType& lst,
-    const bool invert
-)
+inline bool Foam::wordReListMatcher::empty() const
 {
-    StringListType newLst(lst.size());
-
-    label nElem = 0;
-    forAll(lst, elemI)
-    {
-        if (matcher.match(lst[elemI]) ? !invert : invert)
-        {
-            newLst[nElem++] = lst[elemI];
-        }
-    }
-    newLst.setSize(nElem);
-
-    return newLst;
+    return reList_.empty();
 }
 
 
-template<class Matcher, class StringListType>
-void Foam::inplaceSubsetMatchingStrings
-(
-    const Matcher& matcher,
-    StringListType& lst,
-    const bool invert
-)
+inline const Foam::UList<Foam::wordRe>&
+Foam::wordReListMatcher::operator()() const
 {
-    label nElem = 0;
-    forAll(lst, elemI)
+    return reList_;
+}
+
+
+inline bool Foam::wordReListMatcher::match
+(
+    const string& str,
+    bool literalMatch
+) const
+{
+    const label nElem = reList_.size();
+    for (label elemI = 0; elemI < nElem; ++elemI)
     {
-        if (matcher.match(lst[elemI]) ? !invert : invert)
+        if (reList_[elemI].match(str, literalMatch))
         {
-            lst[nElem++] = lst[elemI];
+            return true;
         }
     }
-    lst.setSize(nElem);
+
+    return false;
 }
 
 

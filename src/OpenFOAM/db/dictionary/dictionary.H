@@ -41,7 +41,7 @@ Description
 
 ToDo
     A merge() member function with a non-const dictionary parameter.
-    This would avoid unnecessary cloning in the add(entry*,bool) method
+    This would avoid unnecessary cloning in the add(entry*, bool) method.
 
 SourceFiles
     dictionary.C
@@ -74,6 +74,47 @@ class SHA1Digest;
 Istream& operator>>(Istream&, dictionary&);
 Ostream& operator<<(Ostream&, const dictionary&);
 
+/*---------------------------------------------------------------------------*\
+                        Class dictionaryName Declaration
+\*---------------------------------------------------------------------------*/
+
+class dictionaryName
+{
+    // Private data
+
+        fileName name_;
+
+
+public:
+
+    // Constructors
+
+        //- Construct dictionaryName null
+        dictionaryName()
+        {}
+
+        //- Construct dictionaryName as copy of the given fileName
+        dictionaryName(const fileName& name)
+        :
+            name_(name)
+        {}
+
+
+    // Member functions
+
+        //- Return the dictionary name
+        const fileName& name() const
+        {
+            return name_;
+        }
+
+        //- Return the dictionary name
+        fileName& name()
+        {
+            return name_;
+        }
+};
+
 
 /*---------------------------------------------------------------------------*\
                            Class dictionary Declaration
@@ -81,12 +122,10 @@ Ostream& operator<<(Ostream&, const dictionary&);
 
 class dictionary
 :
+    public dictionaryName,
     public IDLList<entry>
 {
     // Private data
-
-        //- Dictionary name
-        fileName name_;
 
         //- HashTable of the entries held on the DL-list for quick lookup
         HashTable<entry*> hashedEntries_;
@@ -99,6 +138,7 @@ class dictionary
 
         //- Patterns as precompiled regular expressions
         DLList<autoPtr<regExp> > patternRegexps_;
+
 
    // Private Member Functions
 
@@ -123,16 +163,6 @@ class dictionary
 
 public:
 
-        //- Read dictionary from Istream
-        bool read(Istream&);
-
-        //- Substitute the given keyword prepended by '$' with the
-        //  corresponding sub-dictionary entries
-        bool substituteKeyword(const word& keyword);
-
-
-public:
-
     //- Declare friendship with the entry class for IO
     friend class entry;
 
@@ -150,10 +180,14 @@ public:
         //- Construct top-level dictionary null
         dictionary();
 
-        //- Construct from the parent dictionary and Istream, reading entries
-        //  until lastEntry or EOF
+        //- Construct top-level empty dictionary with given name
+        dictionary(const fileName& name);
+
+        //- Construct given the entry name, parent dictionary and Istream,
+        //  reading entries until lastEntry or EOF
         dictionary
         (
+            const fileName& name,
             const dictionary& parentDict,
             Istream&
         );
@@ -191,18 +225,6 @@ public:
 
 
     // Member functions
-
-        //- Return the dictionary name
-        const fileName& name() const
-        {
-            return name_;
-        }
-
-        //- Return the dictionary name
-        fileName& name()
-        {
-            return name_;
-        }
 
         //- Return the parent dictionary
         const dictionary& parent() const
@@ -320,13 +342,22 @@ public:
             //- Find and return a sub-dictionary for manipulation
             dictionary& subDict(const word&);
 
+            //- Find and return a sub-dictionary as a copy, or
+            //  return an empty dictionary if the sub-dictionary does not exist
+            dictionary subOrEmptyDict(const word&) const;
+
             //- Return the table of contents
             wordList toc() const;
 
             //- Return the list of available keys or patterns
             List<keyType> keys(bool patterns=false) const;
 
+
         // Editing
+
+            //- Substitute the given keyword prepended by '$' with the
+            //  corresponding sub-dictionary entries
+            bool substituteKeyword(const word& keyword);
 
             //- Add a new entry
             //  With the merge option, dictionaries are interwoven and
@@ -400,11 +431,17 @@ public:
             //- Clear the dictionary
             void clear();
 
-            //- Transfer the contents of the argument and annull the argument.
+            //- Transfer the contents of the argument and annul the argument.
             void transfer(dictionary&);
 
             //- Transfer contents to the Xfer container
             Xfer<dictionary> xfer();
+
+
+        // Read
+
+            //- Read dictionary from Istream
+            bool read(Istream&);
 
 
         // Write

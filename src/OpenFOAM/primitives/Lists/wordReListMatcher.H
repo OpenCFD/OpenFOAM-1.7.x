@@ -23,76 +23,78 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::functionEntries::removeEntry
+    Foam::wordReListMatcher
 
 Description
-    Remove a dictionary entry.
+    A wrapper for matching a List of wordRe.
 
-    The @c \#remove directive takes a list or a single wordRe.
-    For example,
-    @verbatim
-        #remove entry0
-        #remove ( entry1 entry2 entry3 otherEntry )
-        #remove "entry[1-3]"
-        #remove ( "entry[1-3]" otherEntry )
-    @endverbatim
-
-    The removal only occurs in the current context.
-    Removing sub-entries or parent entries is not supported.
+Note
+    The constructor should remain non-explicit. This allows automatic
+    conversion from UList\<wordRe\> to wordReListMatcher in search
+    functions.
 
 SourceFiles
-    removeEntry.C
+    wordReListMatcherI.H
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef removeEntry_H
-#define removeEntry_H
+#ifndef wordReListMatcher_H
+#define wordReListMatcher_H
 
-#include "functionEntry.H"
+#include "wordReList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace functionEntries
-{
 
 /*---------------------------------------------------------------------------*\
-                           Class removeEntry Declaration
+                      Class wordReListMatcher Declaration
 \*---------------------------------------------------------------------------*/
 
-class removeEntry
-:
-    public functionEntry
+class wordReListMatcher
 {
-    // Private Member Functions
+    // Private data
 
-        //- Disallow default bitwise copy construct
-        removeEntry(const removeEntry&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const removeEntry&);
-
+        //- Reference to underlying list
+        const UList<wordRe>& reList_;
 
 public:
 
-    //- Runtime type information
-    ClassName("remove");
+    // Constructors
+
+        //- Construct from a List of wordRe
+        inline wordReListMatcher(const UList<wordRe>&);
 
 
     // Member Functions
 
-        //- Execute the functionEntry in a sub-dict context
-        static bool execute(dictionary& parentDict, Istream&);
+        // Access
+
+            inline label size() const;
+            inline bool  empty() const;
+
+            //- Return underlying list of wordRe
+            inline const UList<wordRe>& operator()() const;
+
+
+    // Searching
+
+            //- Return true if string matches any of the regular expressions
+            //  Smart match as regular expression or as a string.
+            //  Optionally specify a literal match only.
+            inline bool match(const string&, bool literalMatch=false) const;
+
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace functionEntries
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "wordReListMatcherI.H"
 
 #endif
 
