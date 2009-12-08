@@ -161,7 +161,18 @@ LaunderSharmaKE::LaunderSharmaKE
         mesh_
     ),
 
-    mut_(rho_*Cmu_*fMu()*sqr(k_)/(epsilon_ + epsilonSmall_)),
+    mut_
+    (
+        IOobject
+        (
+            "mut",
+            runTime_.timeName(),
+            mesh_,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        rho_*Cmu_*fMu()*sqr(k_)/(epsilon_ + epsilonSmall_)
+    ),
 
     alphat_
     (
