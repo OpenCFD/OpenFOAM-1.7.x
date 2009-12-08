@@ -51,6 +51,11 @@ maxCo           0.2;
 
 maxDeltaT       0.025;
 
-libs            ("libincompressibleRASModels.so" "libfvMotionSolvers.so");
+libs
+(
+    "libincompressibleRASModels.so"
+    "libfvMotionSolvers.so"
+    "libforces.so"
+);
 
 // ************************************************************************* //
