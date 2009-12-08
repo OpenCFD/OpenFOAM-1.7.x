@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2009-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,34 +22,49 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-InClass
-    Foam::curvedEdgeList
-
-Description
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef curvedEdgeList_H
-#define curvedEdgeList_H
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-#include "curvedEdge.H"
-#include "PtrList.H"
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
+inline Foam::label Foam::curvedEdge::start() const
 {
+    return start_;
+}
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-typedef PtrList<curvedEdge> curvedEdgeList;
+inline Foam::label Foam::curvedEdge::end() const
+{
+    return end_;
+}
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace Foam
+inline int Foam::curvedEdge::compare(const label start, const label end) const
+{
+    if (start_ == start && end_ == end)
+    {
+        return 1;
+    }
+    else if (start_ == end && end_ == start)
+    {
+        return -1;
+    }
+    else
+    {
+        return 0;
+    }
+}
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif
+inline int Foam::curvedEdge::compare(const curvedEdge& e) const
+{
+    return Foam::curvedEdge::compare(e.start(), e.end());
+}
+
+
+inline int Foam::curvedEdge::compare(const edge& e) const
+{
+    return Foam::curvedEdge::compare(e.start(), e.end());
+}
+
 
 // ************************************************************************* //

@@ -18,6 +18,18 @@ dictionaryReplacement
 {
     boundary
     {
+        ".*"
+        {
+            type            wall;
+        }
+        minX
+        {
+            type            patch;
+        }
+        maxX
+        {
+            type            patch;
+        }
         topAir_to_leftSolid
         {
             offset          ( 0 0 0 );
@@ -43,64 +55,53 @@ dictionaryReplacement
 
     U
     {
-        internalField   uniform ( 0.01 0 0 );
+        internalField   uniform (0.01 0 0);
+
         boundaryField
         {
+            ".*"
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
             minX
             {
                 type            fixedValue;
-                value           uniform (0.01 0 0);
+                value           uniform ( 0.01 0 0 );
             }
             maxX
             {
                 type            inletOutlet;
-                inletValue      uniform (0 0 0);
-            }
-
-            topAir_to_leftSolid
-            {
-                type            fixedValue;
-                value           uniform (0 0 0);
-
-            }
-            topAir_to_heater
-            {
-                type            fixedValue;
-                value           uniform (0 0 0);
-            }
-            topAir_to_rightSolid
-            {
-                type            fixedValue;
-                value           uniform (0 0 0);
+                inletValue      uniform ( 0 0 0 );
+                value           uniform ( 0 0 0 );
             }
         }
     }
 
     T
     {
+        internalField   uniform 300;
+
         boundaryField
         {
+            ".*"
+            {
+                type            zeroGradient;
+            }
+
             minX
             {
                 type            fixedValue;
                 value           uniform 300;
             }
-            topAir_to_leftSolid
+            maxX
             {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
+                type            inletOutlet;
+                inletValue      uniform 300;
                 value           uniform 300;
+            }
 
-            }
-            topAir_to_heater
-            {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
-                value           uniform 300;
-            }
-            topAir_to_rightSolid
+            "topAir_to_.*"
             {
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
@@ -112,10 +113,16 @@ dictionaryReplacement
 
     epsilon
     {
-        // Set the value on all bc to non-zero. Not used in simulation
-        // since zeroGradient; only used in initialisation.
+        internalField   uniform 0.01;
+
         boundaryField
         {
+            ".*"
+            {
+                type            compressible::epsilonWallFunction;
+                value           uniform 0.01;
+            }
+
             minX
             {
                 type            fixedValue;
@@ -123,44 +130,8 @@ dictionaryReplacement
             }
             maxX
             {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-
-            minY
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-            maxY
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-
-            minZ
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-            topAir_to_leftSolid
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-            topAir_to_heater
-            {
-                type            zeroGradient;
-                value           uniform 0.01;
-            }
-            topAir_to_rightSolid
-            {
-                type            zeroGradient;
+                type            inletOutlet;
+                inletValue      uniform 0.01;
                 value           uniform 0.01;
             }
         }
@@ -169,55 +140,24 @@ dictionaryReplacement
     k
     {
         internalField   uniform 0.1;
+
         boundaryField
         {
+            ".*"
+            {
+                type            compressible::kqRWallFunction;
+                value           uniform 0.1;
+            }
+
             minX
             {
                 type            fixedValue;
                 value           uniform 0.1;
             }
-
             maxX
             {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-
-            minY
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-            maxY
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-
-            minZ
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-
-            topAir_to_leftSolid
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-            topAir_to_heater
-            {
-                type            zeroGradient;
-                value           uniform 0.1;
-            }
-            topAir_to_rightSolid
-            {
-                type            zeroGradient;
+                type            inletOutlet;
+                inletValue      uniform 0.1;
                 value           uniform 0.1;
             }
         }
@@ -225,59 +165,23 @@ dictionaryReplacement
 
     p
     {
-        internalField   uniform 1E5;
+        internalField   uniform 100000;
 
         boundaryField
         {
-            minX
+            ".*"
             {
                 type            buoyantPressure;
                 value           1e5;
             }
+
             maxX
             {
                 type            waveTransmissive;
-                //field           p;
-                phi             phi;
-                rho             rho;
-                psi             psi;
-                gamma           1.4;    // cp/cv
-                fieldInf        1e5;
-                lInf            0.40;   // double length of domain
-                value           uniform 1e5;
-            }
-
-            minY
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-
-            minZ
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-            maxZ
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-
-            topAir_to_leftSolid
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-            topAir_to_heater
-            {
-                type            buoyantPressure;
-                value           1e5;
-            }
-            topAir_to_rightSolid
-            {
-                type            buoyantPressure;
-                value           1e5;
+                gamma           1.4;
+                fieldInf        100000;
+                lInf            0.4;
+                value           uniform 100000;
             }
         }
     }

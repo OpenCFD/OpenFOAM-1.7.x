@@ -22,32 +22,24 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Description
-    library functions that will define a curvedEdge in space
-    parameterised for 0<lambda<1 from the beginning
-    point to the end point.
-
 \*---------------------------------------------------------------------------*/
 
 #include "error.H"
-
 #include "curvedEdge.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-defineTypeNameAndDebug(curvedEdge, 0);
-defineRunTimeSelectionTable(curvedEdge, Istream);
+    defineTypeNameAndDebug(curvedEdge, 0);
+    defineRunTimeSelectionTable(curvedEdge, Istream);
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-// Construct from components
-curvedEdge::curvedEdge
+Foam::curvedEdge::curvedEdge
 (
     const pointField& points,
     const label start,
@@ -60,8 +52,7 @@ curvedEdge::curvedEdge
 {}
 
 
-// Construct from Istream
-curvedEdge::curvedEdge(const pointField& points, Istream& is)
+Foam::curvedEdge::curvedEdge(const pointField& points, Istream& is)
 :
     points_(points),
     start_(readLabel(is)),
@@ -69,8 +60,7 @@ curvedEdge::curvedEdge(const pointField& points, Istream& is)
 {}
 
 
-// Copy construct
-curvedEdge::curvedEdge(const curvedEdge& c)
+Foam::curvedEdge::curvedEdge(const curvedEdge& c)
 :
     points_(c.points_),
     start_(c.start_),
@@ -78,16 +68,18 @@ curvedEdge::curvedEdge(const curvedEdge& c)
 {}
 
 
-//- Clone function
-autoPtr<curvedEdge> curvedEdge::clone() const
+Foam::autoPtr<Foam::curvedEdge> Foam::curvedEdge::clone() const
 {
     notImplemented("curvedEdge::clone() const");
     return autoPtr<curvedEdge>(NULL);
 }
 
 
-//- New function which constructs and returns pointer to a curvedEdge
-autoPtr<curvedEdge> curvedEdge::New(const pointField& points, Istream& is)
+Foam::autoPtr<Foam::curvedEdge> Foam::curvedEdge::New
+(
+    const pointField& points,
+    Istream& is
+)
 {
     if (debug)
     {
@@ -96,16 +88,15 @@ autoPtr<curvedEdge> curvedEdge::New(const pointField& points, Istream& is)
             << endl;
     }
 
-    word curvedEdgeType(is);
+    word edgeType(is);
 
     IstreamConstructorTable::iterator cstrIter =
-        IstreamConstructorTablePtr_
-            ->find(curvedEdgeType);
+        IstreamConstructorTablePtr_->find(edgeType);
 
     if (cstrIter == IstreamConstructorTablePtr_->end())
     {
         FatalErrorIn("curvedEdge::New(const pointField&, Istream&)")
-            << "Unknown curvedEdge type " << curvedEdgeType << endl << endl
+            << "Unknown curvedEdge type " << edgeType << endl << endl
             << "Valid curvedEdge types are" << endl
             << IstreamConstructorTablePtr_->toc()
             << abort(FatalError);
@@ -117,50 +108,44 @@ autoPtr<curvedEdge> curvedEdge::New(const pointField& points, Istream& is)
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-//- Return the complete knotList by adding the start and end points to the
-//  given list
-pointField knotlist
+Foam::pointField Foam::curvedEdge::appendEndPoints
 (
     const pointField& points,
     const label start,
     const label end,
-    const pointField& otherknots
+    const pointField& otherKnots
 )
 {
-    label listsize(otherknots.size() + 2);
-    pointField tmp(listsize);
+    pointField allKnots(otherKnots.size() + 2);
 
-    tmp[0] = points[start];
+    // start/end knots
+    allKnots[0] = points[start];
+    allKnots[otherKnots.size() + 1] = points[end];
 
-    for (register label i=1; i<listsize-1; i++)
+    // intermediate knots
+    forAll(otherKnots, knotI)
     {
-        tmp[i] = otherknots[i-1];
+        allKnots[knotI+1] = otherKnots[knotI];
     }
 
-    tmp[listsize-1] = points[end];
-
-    return tmp;
+    return allKnots;
 }
 
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
-void curvedEdge::operator=(const curvedEdge&)
+void Foam::curvedEdge::operator=(const curvedEdge&)
 {
     notImplemented("void curvedEdge::operator=(const curvedEdge&)");
 }
 
 
-Ostream& operator<<(Ostream& os, const curvedEdge& p)
+Foam::Ostream& Foam::operator<<(Ostream& os, const curvedEdge& p)
 {
     os << p.start_ << tab << p.end_ << endl;
 
     return os;
 }
 
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //

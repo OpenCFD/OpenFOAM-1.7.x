@@ -26,8 +26,7 @@ Class
     Foam::polyLineEdge
 
 Description
-    polyLineEdge class : defines a curvedEdge in terms of a series of straight
-    line segments. This is the public face of polyLine
+    A curvedEdge defined in terms of a series of straight line segments.
 
 SourceFiles
     polyLineEdge.C
@@ -46,7 +45,7 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class polyLineEdge Declaration
+                        Class polyLineEdge Declaration
 \*---------------------------------------------------------------------------*/
 
 class polyLineEdge
@@ -54,6 +53,14 @@ class polyLineEdge
     public curvedEdge,
     public polyLine
 {
+    // Private Member Functions
+
+        //- Disallow default bitwise copy construct
+        polyLineEdge(const polyLineEdge&);
+
+        //- Disallow default bitwise assignment
+        void operator=(const polyLineEdge&);
+
 
 public:
 
@@ -66,26 +73,25 @@ public:
         //- Construct from components
         polyLineEdge
         (
-            const pointField& ps,
+            const pointField&,
             const label start,
             const label end,
-            const pointField& otherpoints
+            const pointField& otherPoints
         );
 
         //- Construct from Istream
-        polyLineEdge(const pointField& ps, Istream&);
+        polyLineEdge(const pointField&, Istream&);
 
 
-    // Destructor
-
-        virtual ~polyLineEdge(){}
+        //- Destructor
+        virtual ~polyLineEdge();
 
 
     // Member Functions
 
-        //- Return the position of a point on the curve given by
-        //  the parameter 0 <= lambda <= 1
-        vector position(const scalar lambda) const;
+        //- Return the point position corresponding to the curve parameter
+        //  0 <= lambda <= 1
+        point position(const scalar lambda) const;
 
         //- Return the length of the curve
         scalar length() const;

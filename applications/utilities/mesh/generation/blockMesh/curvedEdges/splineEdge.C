@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2009-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,85 +22,96 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Description
-    simpleSplineEdge : the actual access class for Bspline
-
 \*---------------------------------------------------------------------------*/
 
-#include "simpleSplineEdge.H"
+#include "splineEdge.H"
 #include "addToRunTimeSelectionTable.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-defineTypeNameAndDebug(simpleSplineEdge, 0);
-addToRunTimeSelectionTable(curvedEdge, simpleSplineEdge, Istream);
+namespace Foam
+{
+    defineTypeNameAndDebug(splineEdge, 0);
+
+    addToRunTimeSelectionTable
+    (
+        curvedEdge,
+        splineEdge,
+        Istream
+    );
+
+    // compatibility with old names
+    addNamedToRunTimeSelectionTable
+    (
+        curvedEdge,
+        splineEdge,
+        Istream,
+        simpleSpline
+    );
+
+    // compatibility with old names
+    addNamedToRunTimeSelectionTable
+    (
+        curvedEdge,
+        splineEdge,
+        Istream,
+        polySpline
+    );
+
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-// Construct from components
-simpleSplineEdge::simpleSplineEdge
+Foam::splineEdge::splineEdge
 (
     const pointField& points,
     const label start,
     const label end,
-    const pointField& otherknots
+    const pointField& internalPoints
 )
 :
     curvedEdge(points, start, end),
-    BSpline(knotlist(points, start, end, otherknots))
+    CatmullRomSpline(appendEndPoints(points, start, end, internalPoints))
 {}
 
 
-// Construct from components
-simpleSplineEdge::simpleSplineEdge
-(
-    const pointField& points,
-    const label start,
-    const label end,
-    const pointField& otherknots,
-    const vector& fstend,
-    const vector& sndend
-)
-:
-    curvedEdge(points, start, end),
-    BSpline(knotlist(points, start, end, otherknots), fstend, sndend)
-{}
-
-
-// Construct from Istream
-simpleSplineEdge::simpleSplineEdge(const pointField& points, Istream& is)
+Foam::splineEdge::splineEdge(const pointField& points, Istream& is)
 :
     curvedEdge(points, is),
-    BSpline(knotlist(points, start_, end_, pointField(is)))
+    CatmullRomSpline(appendEndPoints(points, start_, end_, pointField(is)))
+{
+    token t(is);
+    is.putBack(t);
+
+    // compatibility - might also have start/end tangents - discard them
+    if (t == token::BEGIN_LIST)
+    {
+        vector tangent0Ignored(is);
+        vector tangent1Ignored(is);
+    }
+}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::splineEdge::~splineEdge()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-//- Return the position of a point on the simple spline curve given by
-//  the parameter 0 <= lambda <= 1
-vector simpleSplineEdge::position(const scalar mu) const
+Foam::point Foam::splineEdge::position(const scalar mu) const
 {
-    return BSpline::position(mu);
+    return CatmullRomSpline::position(mu);
 }
 
 
-//- Return the length of the simple spline curve
-scalar simpleSplineEdge::length() const
+Foam::scalar Foam::splineEdge::length() const
 {
-    notImplemented("simpleSplineEdge::length() const");
-    return 1.0;
+    return CatmullRomSpline::length();
 }
 
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //

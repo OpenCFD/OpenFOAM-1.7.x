@@ -22,9 +22,6 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Description
-    lineDivide class : divides a line into segments
-
 \*---------------------------------------------------------------------------*/
 
 #include "error.H"
@@ -32,66 +29,58 @@ Description
 #include "lineDivide.H"
 #include "curvedEdge.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-// Construct from components
-lineDivide::lineDivide(const curvedEdge& bc, const label n, const scalar xratio)
+Foam::lineDivide::lineDivide
+(
+    const curvedEdge& cedge,
+    const label ndiv,
+    const scalar xratio
+)
 :
-    points_(n + 1),
-    divisions_(n + 1),
-    noPoints_(n)
+    points_(ndiv + 1),
+    divisions_(ndiv + 1)
 {
-    scalar np(n);
-    scalar lambda(0.0);
+    divisions_[0]    = 0.0;
+    divisions_[ndiv] = 1.0;
 
+    // calculate the spacing
     if (xratio == 1.0)
     {
-        scalar y(1.0/np);
-        for (label i=0; i<=noPoints_; i++)
+        for (label i=1; i < ndiv; i++)
         {
-            lambda = scalar(i)/np;
-            points_[i] = bc.position(lambda);
-            divisions_[i] = y*i;
+            divisions_[i] = scalar(i)/ndiv;
         }
     }
     else
     {
-        points_[0] = bc.position(0.0);
-        divisions_[0] = 0.0;
-        scalar xrpower = 1.0;
-
-        for (label i=1; i<=noPoints_; i++)
+        for (label i=1; i < ndiv; i++)
         {
-            lambda = (1.0 - pow(xratio, i))/(1.0 - pow(xratio, np));
-            points_[i] = bc.position(lambda);
-            divisions_[i] = lambda;
-            xrpower *= xratio;
+            divisions_[i] = (1.0 - pow(xratio, i))/(1.0 - pow(xratio, ndiv));
         }
+    }
+
+    // calculate the points
+    for (label i=0; i <= ndiv; i++)
+    {
+        points_[i] = cedge.position(divisions_[i]);
     }
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-const pointField& lineDivide::points() const
+const Foam::pointField& Foam::lineDivide::points() const
 {
     return points_;
 }
 
 
-const scalarList& lineDivide::lambdaDivisions() const
+const Foam::scalarList& Foam::lineDivide::lambdaDivisions() const
 {
     return divisions_;
 }
 
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //

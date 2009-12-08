@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2009-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,21 +23,25 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::polySplineEdge
+    Foam::splineEdge
 
 Description
-    polySplineEdge class : representation of a spline via a polyLine
+    A curvedEdge interface for Catmull-Rom splines.
+
+Note
+    For compatibility, also accepts the type names 'polySpline' and
+    'simpleSpline'.
 
 SourceFiles
-    polySplineEdge.C
+    splineEdge.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef polySplineEdge_H
-#define polySplineEdge_H
+#ifndef splineEdge_H
+#define splineEdge_H
 
 #include "curvedEdge.H"
-#include "polyLine.H"
+#include "CatmullRomSpline.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -45,69 +49,56 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class polySplineEdge Declaration
+                      Class splineEdge Declaration
 \*---------------------------------------------------------------------------*/
 
-class polySplineEdge
+class splineEdge
 :
     public curvedEdge,
-    public polyLine
+    public CatmullRomSpline
 {
-    // Private data
+    // Private Member Functions
 
-        pointField otherKnots_;
+        //- Disallow default bitwise copy construct
+        splineEdge(const splineEdge&);
 
-
-    // Private member functions
-
-        pointField intervening
-        (
-            const pointField& otherknots,
-             const label nbetweenKnots,
-            const vector&, const vector&
-        );
-
-        label nsize(const label otherknotsSize, const label nbetweenKnots)
-        {
-            return otherknotsSize*(1 + nbetweenKnots) + nbetweenKnots + 2;
-        }
+        //- Disallow default bitwise assignment
+        void operator=(const splineEdge&);
 
 
 public:
 
     //- Runtime type information
-    TypeName("polySpline");
+    TypeName("spline");
 
 
     // Constructors
 
         //- Construct from components
-        polySplineEdge
+        splineEdge
         (
-            const pointField& ps,
+            const pointField&,
             const label start,
             const label end,
-            const pointField& otherknots,
-            const label nInterKnots = 20
+            const pointField& internalPoints
         );
 
-        //- Construct from Istream setting pointsList
-        polySplineEdge(const pointField& points, Istream& is);
+        //- Construct from Istream, setting pointsList
+        splineEdge(const pointField&, Istream&);
 
 
-    // Destructor
-
-        virtual ~polySplineEdge(){}
+    //- Destructor
+    virtual ~splineEdge();
 
 
     // Member Functions
 
-        //- Return the position of a point on the curve given by
-        //  the parameter 0 <= lambda <= 1
-        vector position(const scalar mu) const;
+        //- Return the point position corresponding to the curve parameter
+        //  0 <= lambda <= 1
+        virtual point position(const scalar) const;
 
-        //- Return the length of the curve
-        scalar length() const;
+        //- Return the length of the spline curve (not implemented)
+        virtual scalar length() const;
 };
 
 

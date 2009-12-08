@@ -18,6 +18,10 @@ dictionaryReplacement
 {
     boundary
     {
+        ".*"
+        {
+            type            patch;
+        }
         rightSolid_to_heater
         {
             offset          ( 0 0 0 );
@@ -47,33 +51,12 @@ dictionaryReplacement
 
         boundaryField
         {
-            maxX
+            ".*"
             {
                 type            zeroGradient;
-            }
-            minZ
-            {
-                type            zeroGradient;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-            }
-            rightSolid_to_heater
-            {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
                 value           uniform 300;
             }
-            rightSolid_to_bottomAir
-            {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
-                value           uniform 300;
-            }
-            rightSolid_to_topAir
+            "rightSolid_to_.*"
             {
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
@@ -89,29 +72,9 @@ dictionaryReplacement
 
         boundaryField
         {
-            maxX
+            ".*"
             {
-                type            zeroGradient;
-            }
-            minZ
-            {
-                type            zeroGradient;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-            }
-            rightSolid_to_bottomAir
-            {
-                type            zeroGradient;
-            }
-            rightSolid_to_heater
-            {
-                type            zeroGradient;
-            }
-            rightSolid_to_topAir
-            {
-                type            zeroGradient;
+                type            calculated;
             }
         }
     }
@@ -122,27 +85,7 @@ dictionaryReplacement
 
         boundaryField
         {
-            maxX
-            {
-                type            zeroGradient;
-            }
-            minZ
-            {
-                type            zeroGradient;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-            }
-            rightSolid_to_bottomAir
-            {
-                type            zeroGradient;
-            }
-            rightSolid_to_heater
-            {
-                type            zeroGradient;
-            }
-            rightSolid_to_topAir
+            ".*"
             {
                 type            zeroGradient;
             }
@@ -155,27 +98,7 @@ dictionaryReplacement
 
         boundaryField
         {
-            maxX
-            {
-                type            zeroGradient;
-            }
-            minZ
-            {
-                type            zeroGradient;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-            }
-            rightSolid_to_bottomAir
-            {
-                type            zeroGradient;
-            }
-            rightSolid_to_heater
-            {
-                type            zeroGradient;
-            }
-            rightSolid_to_topAir
+            ".*"
             {
                 type            zeroGradient;
             }
