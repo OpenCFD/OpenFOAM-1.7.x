@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     rhoPorousSimpleFoam;
+application     porousSimpleFoam;
 
 startFrom       startTime;
 
