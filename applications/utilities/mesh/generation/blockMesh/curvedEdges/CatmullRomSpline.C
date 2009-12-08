@@ -25,11 +25,11 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "error.H"
-#include "BSpline.H"
+#include "CatmullRomSpline.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::BSpline::BSpline
+Foam::CatmullRomSpline::CatmullRomSpline
 (
     const pointField& knots,
     const bool closed
@@ -41,16 +41,16 @@ Foam::BSpline::BSpline
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::point Foam::BSpline::position(const scalar mu) const
+Foam::point Foam::CatmullRomSpline::position(const scalar mu) const
 {
     // endpoints
     if (mu < SMALL)
     {
-        return points_[0];
+        return points()[0];
     }
     else if (mu > 1 - SMALL)
     {
-        return points_[points_.size()-1];
+        return points()[points().size()-1];
     }
 
     scalar lambda = mu;
@@ -59,7 +59,7 @@ Foam::point Foam::BSpline::position(const scalar mu) const
 }
 
 
-Foam::point Foam::BSpline::position
+Foam::point Foam::CatmullRomSpline::position
 (
     const label segment,
     const scalar mu
@@ -68,11 +68,11 @@ Foam::point Foam::BSpline::position
     // out-of-bounds
     if (segment < 0)
     {
-        return points_[0];
+        return points()[0];
     }
     else if (segment > nSegments())
     {
-        return points_[points_.size()-1];
+        return points()[points().size()-1];
     }
 
     const point& p0 = points()[segment];
@@ -114,15 +114,15 @@ Foam::point Foam::BSpline::position
     }
 
 
-    return 1.0/6.0 *
+    return 0.5 *
     (
-        ( e0 + 4*p0 + p1 )
+        ( 2*p0 )
       + mu *
         (
-            ( -3*e0 + 3*p1 )
+            ( -e0 + p1 )
           + mu *
             (
-                ( 3*e0 - 6*p0 + 3*p1 )
+                ( 2*e0 - 5*p0 + 4*p1 - e1 )
               + mu *
                 ( -e0 + 3*p0 - 3*p1 + e1 )
             )
@@ -131,9 +131,9 @@ Foam::point Foam::BSpline::position
 }
 
 
-Foam::scalar Foam::BSpline::length() const
+Foam::scalar Foam::CatmullRomSpline::length() const
 {
-    notImplemented("BSpline::length() const");
+    notImplemented("CatmullRomSpline::length() const");
     return 1.0;
 }
 

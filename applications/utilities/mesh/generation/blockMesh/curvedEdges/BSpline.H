@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2009-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,7 +26,33 @@ Class
     Foam::BSpline
 
 Description
-    BSpline : cubic spline going through all the knots
+    An implementation of B-splines.
+
+    In this implementation, the end tangents are created automatically
+    by reflection.
+
+    In matrix form, the @e local interpolation on the interval t=[0..1] is
+    described as follows:
+    @verbatim
+    P(t) = 1/6 * [ t^3 t^2 t 1 ] * [ -1  3 -3  1 ] * [ P-1 ]
+                                   [  3 -6  3  0 ]   [ P0 ]
+                                   [ -3  0  3  0 ]   [ P1 ]
+                                   [  1  4  1  0 ]   [ P2 ]
+    @endverbatim
+
+    Where P-1 and P2 represent the neighbouring points or the extrapolated
+    end points. Simple reflection is used to automatically create the end
+    points.
+
+    The spline is discretized based on the chord length of the individual
+    segments. In rare cases (sections with very high curvatures), the
+    resulting distribution may be sub-optimal.
+
+SeeAlso
+    CatmullRomSpline
+
+ToDo
+    A future implementation could also handle closed splines.
 
 SourceFiles
     BSpline.C
@@ -36,7 +62,7 @@ SourceFiles
 #ifndef BSpline_H
 #define BSpline_H
 
-#include "spline.H"
+#include "polyLine.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,18 +75,15 @@ namespace Foam
 
 class BSpline
 :
-    public spline
+    public polyLine
 {
-    // Private member functions
+    // Private Member Functions
 
-        scalar remap(const scalar&);
+        //- Disallow default bitwise copy construct
+        BSpline(const BSpline&);
 
-        pointField findKnots
-        (
-            const pointField&,
-            const vector& fstend = vector::zero,
-            const vector& sndend = vector::zero
-        );
+        //- Disallow default bitwise assignment
+        void operator=(const BSpline&);
 
 
 public:
@@ -68,26 +91,22 @@ public:
     // Constructors
 
         //- Construct from components
-        BSpline(const pointField& knots);
-
-        //- Construct from components
         BSpline
         (
             const pointField& knots,
-            const vector& fstend,
-            const vector& sndend
+            const bool notImplementedClosed = false
         );
 
 
     // Member Functions
 
-        //- Return the real position of a point on the curve given by
-        //  the parameter 0 <= lambda <= 1
-        vector realPosition(scalar lambda);
+        //- Return the point position corresponding to the curve parameter
+        //  0 <= lambda <= 1
+        point position(const scalar lambda) const;
 
-        //- Return the position of a point on the curve given by
-        //  the parameter 0 <= lambda <= 1
-        vector position(const scalar lambda) const;
+        //- Return the point position corresponding to the local parameter
+        //  0 <= lambda <= 1 on the given segment
+        point position(const label segment, const scalar lambda) const;
 
         //- Return the length of the curve
         scalar length() const;

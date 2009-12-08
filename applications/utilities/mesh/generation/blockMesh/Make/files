@@ -5,10 +5,7 @@ $(curvedEdges)/lineEdge.C
 $(curvedEdges)/polyLine.C
 $(curvedEdges)/polyLineEdge.C
 $(curvedEdges)/arcEdge.C
-$(curvedEdges)/spline.C
 $(curvedEdges)/BSpline.C
-$(curvedEdges)/simpleSplineEdge.C
-$(curvedEdges)/polySplineEdge.C
 $(curvedEdges)/lineDivide.C
 
 blockMesh.C

@@ -22,58 +22,47 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Description
-    line class : defines a straight line between the start point and the
-    end point
-
 \*---------------------------------------------------------------------------*/
 
 #include "error.H"
-
 #include "lineEdge.H"
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
+#include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-defineTypeNameAndDebug(lineEdge, 0);
-
-// Add the curvedEdge constructor functions to the hash tables
-curvedEdge::addIstreamConstructorToTable<lineEdge>
-    addLineEdgeIstreamConstructorToTable_;
+namespace Foam
+{
+    defineTypeNameAndDebug(lineEdge, 0);
+    addToRunTimeSelectionTable(curvedEdge, lineEdge, Istream);
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-// Construct from components
-lineEdge::lineEdge
+Foam::lineEdge::lineEdge
 (
     const pointField& points,
     const label start,
     const label end
 )
 :
-    curvedEdge(points, start, end),
-    startPoint_(points_[start_]),
-    direction_(points_[end_] - points_[start_])
+    curvedEdge(points, start, end)
 {}
 
 
-// Construct from Istream
-lineEdge::lineEdge(const pointField& points, Istream& is)
+Foam::lineEdge::lineEdge(const pointField& points, Istream& is)
 :
-    curvedEdge(points, is),
-    startPoint_(points_[start_]),
-    direction_(points_[end_] - points_[start_])
+    curvedEdge(points, is)
 {}
 
+// * * * * * * * * * * * * * * * * Destructor * * * * * * * * * * * * * * * * //
+
+Foam::lineEdge::~lineEdge()
+{}
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-vector lineEdge::position(const scalar lambda) const
+Foam::point Foam::lineEdge::position(const scalar lambda) const
 {
     if (lambda < 0 || lambda > 1)
     {
@@ -82,19 +71,14 @@ vector lineEdge::position(const scalar lambda) const
             << abort(FatalError);
     }
 
-    return startPoint_ + lambda*direction_;
+    return points_[start_] + lambda * (points_[end_] - points_[start_]);
 }
 
 
-//- Return the length of the curve
-scalar lineEdge::length() const
+Foam::scalar Foam::lineEdge::length() const
 {
-    return mag(direction_);
+    return mag(points_[end_] - points_[start_]);
 }
 
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //

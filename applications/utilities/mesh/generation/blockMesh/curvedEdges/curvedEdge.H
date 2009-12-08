@@ -26,9 +26,8 @@ Class
     Foam::curvedEdge
 
 Description
-    curvedEdges : library functions that will define a curvedEdge in space
-    parameterised for 0<lambda<1 from the beginning point to the end point.
-    This file contains the abstract base class curvedEdge.
+    Define a curved edge that is parameterized for 0<lambda<1
+    between the start and end point.
 
 SourceFiles
     curvedEdge.C
@@ -38,6 +37,7 @@ SourceFiles
 #ifndef curvedEdges_H
 #define curvedEdges_H
 
+#include "edge.H"
 #include "pointField.H"
 #include "typeInfo.H"
 #include "HashTable.H"
@@ -49,7 +49,7 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class curvedEdge Declaration
+                         Class curvedEdge Declaration
 \*---------------------------------------------------------------------------*/
 
 class curvedEdge
@@ -59,13 +59,26 @@ protected:
     // Protected data
 
         const pointField& points_;
-        const label start_, end_;
+        const label start_;
+        const label end_;
+
+    // Protected Member Functions
+
+        //- Return a complete point field by appending the start/end points
+        //  to the given list
+        static pointField appendEndPoints
+        (
+            const pointField&,
+            const label start,
+            const label end,
+            const pointField& otherKnots
+        );
+
 
 public:
 
     //- Runtime type information
     TypeName("curvedEdge");
-
 
     // Declare run-time constructor selection tables
 
@@ -113,33 +126,36 @@ public:
     // Member Functions
 
         //- Return label of start point
-        label start() const
-        {
-            return start_;
-        }
+        inline label start() const;
 
         //- Return label of end point
-        label end() const
-        {
-            return end_;
-        }
+        inline label end() const;
 
-        //- Compare the given start and end points with those of this curve
-        bool compare(const label start, const label end) const
-        {
-            return
-            (
-                (start_ == start && end_ == end)
-             || (start_ == end && end_ == start)
-            );
-        }
+        //- Compare the given start and end points with this curve
+        //  -  0: different
+        //  - +1: identical
+        //  - -1: same edge, but different orientation
+        inline int compare(const curvedEdge&) const;
 
-        //- Return the position of a point on the curve given by
-        //  the parameter 0 <= lambda <= 1
-        virtual vector position(const scalar) const = 0;
+        //- Compare the given start and end points with this curve
+        //  -  0: different
+        //  - +1: identical
+        //  - -1: same edge, but different orientation
+        inline int compare(const edge&) const;
+
+        //- Compare the given start and end points with this curve
+        //  -  0: different
+        //  - +1: identical
+        //  - -1: same edge, but different orientation
+        inline int compare(const label start, const label end) const;
+
+        //- Return the point position corresponding to the curve parameter
+        //  0 <= lambda <= 1
+        virtual point position(const scalar) const = 0;
 
         //- Return the length of the curve
         virtual scalar length() const = 0;
+
 
     // Member operators
 
@@ -151,20 +167,13 @@ public:
 };
 
 
-//- Return the complete knotList by adding the start and end points to the
-//  given list
-pointField knotlist
-(
-    const pointField& points,
-    const label start,
-    const label end,
-    const pointField& otherknots
-);
-
-
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "curvedEdgeI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

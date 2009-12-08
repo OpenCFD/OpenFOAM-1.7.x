@@ -22,71 +22,61 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Description
-
 \*---------------------------------------------------------------------------*/
 
 #include "error.H"
-
 #include "polyLineEdge.H"
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
+#include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-defineTypeNameAndDebug(polyLineEdge, 0);
-
-// Add the curvedEdge constructor functions to the hash tables
-curvedEdge::addIstreamConstructorToTable<polyLineEdge>
-    addPolyLineEdgeIstreamConstructorToTable_;
+namespace Foam
+{
+    defineTypeNameAndDebug(polyLineEdge, 0);
+    addToRunTimeSelectionTable(curvedEdge, polyLineEdge, Istream);
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-// Construct from components
-polyLineEdge::polyLineEdge
+Foam::polyLineEdge::polyLineEdge
 (
     const pointField& ps,
     const label start,
     const label end,
-    const pointField& otherpoints
+    const pointField& otherPoints
 )
 :
     curvedEdge(ps, start, end),
-    polyLine(knotlist(ps,start,end,otherpoints))
+    polyLine(appendEndPoints(ps, start_, end_, otherPoints))
 {}
 
 
-// Construct from Istream
-polyLineEdge::polyLineEdge(const pointField& ps, Istream& is)
+Foam::polyLineEdge::polyLineEdge(const pointField& ps, Istream& is)
 :
     curvedEdge(ps, is),
-    polyLine(knotlist(ps, start_, end_, pointField(is)))
+    polyLine(appendEndPoints(ps, start_, end_, pointField(is)))
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::polyLineEdge::~polyLineEdge()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-//- Return the position of a point on the curve given by
-//  the parameter 0 <= lambda <= 1
-vector polyLineEdge::position(const scalar lambda) const
+Foam::point Foam::polyLineEdge::position(const scalar lambda) const
 {
     return polyLine::position(lambda);
 }
 
 
-//- Return the length of the curve
-scalar polyLineEdge::length() const
+Foam::scalar Foam::polyLineEdge::length() const
 {
     return polyLine::lineLength_;
 }
 
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //

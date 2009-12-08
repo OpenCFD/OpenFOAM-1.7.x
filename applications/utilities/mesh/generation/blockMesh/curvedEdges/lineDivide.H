@@ -26,7 +26,7 @@ Class
     Foam::lineDivide
 
 Description
-    lineDivide class : divides a line into segments
+    Divides a line into segments
 
 SourceFiles
     lineDivide.C
@@ -47,7 +47,7 @@ namespace Foam
 class curvedEdge;
 
 /*---------------------------------------------------------------------------*\
-                           Class lineDivide Declaration
+                         Class lineDivide Declaration
 \*---------------------------------------------------------------------------*/
 
 class lineDivide
@@ -55,16 +55,20 @@ class lineDivide
     // Private data
 
         pointField points_;
-        scalarList divisions_;
-        label noPoints_;
 
+        scalarList divisions_;
 
 public:
 
     // Constructors
 
-        //- Construct from components
-        lineDivide(const curvedEdge&, const label, const scalar = 1.0);
+        //- Construct from components with discretization and expansion ratio
+        lineDivide
+        (
+            const curvedEdge&,
+            const label ndiv,
+            const scalar xratio = 1.0
+        );
 
 
     // Member Functions

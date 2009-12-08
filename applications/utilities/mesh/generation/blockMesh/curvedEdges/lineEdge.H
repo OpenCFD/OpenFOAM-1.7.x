@@ -26,8 +26,7 @@ Class
     Foam::lineEdge
 
 Description
-    lineEdge class : defines a straight line between the start point and the
-    end point
+    A straight edge between the start point and the end point.
 
 SourceFiles
     lineEdge.C
@@ -45,7 +44,7 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class lineEdge Declaration
+                          Class lineEdge Declaration
 \*---------------------------------------------------------------------------*/
 
 
@@ -53,11 +52,13 @@ class lineEdge
 :
     public curvedEdge
 {
-    // Private data
+    // Private Member Functions
 
-        vector startPoint_;
-        vector direction_;
+        //- Disallow default bitwise copy construct
+        lineEdge(const lineEdge&);
 
+        //- Disallow default bitwise assignment
+        void operator=(const lineEdge&);
 
 public:
 
@@ -67,22 +68,21 @@ public:
     // Constructors
 
         //- Construct from components
-        lineEdge(const pointField& points, const label start, const label end);
+        lineEdge(const pointField&, const label start, const label end);
 
-        //- Construct from Istream setting pointsList
-        lineEdge(const pointField& points, Istream&);
+        //- Construct from Istream with a pointField
+        lineEdge(const pointField&, Istream&);
 
 
-    // Destructor
-
-        virtual ~lineEdge(){}
+        //- Destructor
+        virtual ~lineEdge();
 
 
     // Member Functions
 
-        //- Return the position of a point on the curve given by
-        //  the parameter 0 <= lambda <= 1
-        vector position(const scalar) const;
+        //- Return the point position corresponding to the curve parameter
+        //  0 <= lambda <= 1
+        point position(const scalar) const;
 
         //- Return the length of the curve
         scalar length() const;

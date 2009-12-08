@@ -22,116 +22,162 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Description
-    polyLineEdge class : defines a curvedEdge in terms of a series of
-    straight line segments
-
 \*---------------------------------------------------------------------------*/
 
 #include "error.H"
-
 #include "polyLine.H"
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-// calcDistances generates the distances_ lookup table (cumulative
-// distance along the line) from the individual vectors to the points
-
-void polyLine::calcDistances()
+void Foam::polyLine::calcParam()
 {
-    distances_[0] = 0.0;
+    param_.setSize(points_.size());
 
-    for (label i=1; i<distances_.size(); i++)
+    if (param_.size())
     {
-        distances_[i] =
-            mag(controlPoints_[i] - controlPoints_[i-1])
-          + distances_[i-1];
+        param_[0] = 0.0;
+
+        for (label i=1; i < param_.size(); i++)
+        {
+            param_[i] = param_[i-1] + mag(points_[i] - points_[i-1]);
+        }
+
+        // normalize on the interval 0-1
+        lineLength_ = param_[param_.size()-1];
+        for (label i=1; i < param_.size() - 1; i++)
+        {
+            param_[i] /= lineLength_;
+        }
+        param_[param_.size()-1] = 1.0;
     }
-
-    lineLength_ = distances_[distances_.size()-1];
-
-    for (label i=1; i<distances_.size(); i++)
+    else
     {
-        distances_[i] /= lineLength_;
+        lineLength_ = 0.0;
     }
 }
 
 
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-polyLine::polyLine(const pointField& ps)
+Foam::polyLine::polyLine(const pointField& ps, const bool)
 :
-    controlPoints_(ps),
-    distances_(ps.size())
+    points_(ps),
+    lineLength_(0.0),
+    param_(0)
 {
-    if (ps.size())
-    {
-        calcDistances();
-    }
+    calcParam();
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-vector polyLine::position(const scalar lambda) const
+const Foam::pointField& Foam::polyLine::points() const
 {
-    // check range of lambda
-
-    if (lambda < 0 || lambda > 1)
-    {
-        FatalErrorIn("polyLine::position(const scalar)")
-            << "Parameter out of range, "
-            << "lambda = " << lambda
-            << abort(FatalError);
-    }
-
-    // Quick calc of endpoints
-
-    if (lambda < SMALL)
-    {
-        return controlPoints_[0];
-    }
-    else if (lambda > 1 - SMALL)
-    {
-        return controlPoints_[controlPoints_.size()-1];
-    }
-
-
-    // search table of cumulative distance to find which linesegment we
-    // are on
-
-    label i(0);
-    do
-    {
-        i++;
-    } while (distances_[i] < lambda);
-
-    i--;               // we overshot!
-
-    // construct position vector
-    scalar offsetDist =
-        (lambda - distances_[i])
-       /(distances_[i+1] - distances_[i]);
-
-    vector offsetV = controlPoints_[i+1] - controlPoints_[i];
-
-    return controlPoints_[i] + offsetDist*offsetV;
+    return points_;
 }
 
 
-scalar polyLine::length() const
+Foam::label Foam::polyLine::nSegments() const
+{
+    return points_.size()-1;
+}
+
+
+Foam::label Foam::polyLine::localParameter(scalar& lambda) const
+{
+    // check endpoints
+    if (lambda < SMALL)
+    {
+        lambda = 0;
+        return 0;
+    }
+    else if (lambda > 1 - SMALL)
+    {
+        lambda = 1;
+        return nSegments();
+    }
+
+    // search table of cumulative distances to find which line-segment
+    // we are on. Check the upper bound.
+
+    label segmentI = 1;
+    while (param_[segmentI] < lambda)
+    {
+        segmentI++;
+    }
+    segmentI--;   // we want the corresponding lower bound
+
+    // the local parameter [0-1] on this line segment
+    lambda =
+    (
+        ( lambda - param_[segmentI] )
+      / ( param_[segmentI+1] - param_[segmentI] )
+    );
+
+    return segmentI;
+}
+
+
+Foam::point Foam::polyLine::position(const scalar mu) const
+{
+    // check endpoints
+    if (mu < SMALL)
+    {
+        return points_[0];
+    }
+    else if (mu > 1 - SMALL)
+    {
+        return points_[points_.size()-1];
+    }
+
+
+    scalar lambda = mu;
+    label segment = localParameter(lambda);
+    return position(segment, lambda);
+}
+
+
+Foam::point Foam::polyLine::position
+(
+    const label segment,
+    const scalar mu
+) const
+{
+    // out-of-bounds
+    if (segment < 0)
+    {
+        return points_[0];
+    }
+    else if (segment > nSegments())
+    {
+        return points_[points_.size()-1];
+    }
+
+    const point& p0 = points()[segment];
+    const point& p1 = points()[segment+1];
+
+    // special cases - no calculation needed
+    if (mu <= 0.0)
+    {
+        return p0;
+    }
+    else if (mu >= 1.0)
+    {
+        return p1;
+    }
+    else
+    {
+        // linear interpolation
+        return points_[segment] + mu * (p1 - p0);
+    }
+}
+
+
+Foam::scalar Foam::polyLine::length() const
 {
     return lineLength_;
 }
 
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //
