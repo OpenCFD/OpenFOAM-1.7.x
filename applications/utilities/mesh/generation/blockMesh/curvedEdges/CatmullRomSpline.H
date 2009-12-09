@@ -110,7 +110,7 @@ public:
         //  0 <= lambda <= 1 on the given segment
         point position(const label segment, const scalar lambda) const;
 
-        //- Return the length of the curve
+        //- Return the length of the curve - not implemented
         scalar length() const;
 };
 
