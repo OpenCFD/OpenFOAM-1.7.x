@@ -472,6 +472,15 @@ public:
                 const labelList& cellZoneMap
             );
 
+            //- Explicitly pre-size the dynamic storage for expected mesh
+            //  size for if construct-without-mesh
+            void setCapacity
+            (
+                const label nPoints,
+                const label nFaces,
+                const label nCells
+            );
+
             //- Move all points. Incompatible with other topology changes.
             void movePoints(const pointField& newPoints);
 
@@ -555,6 +564,7 @@ public:
             //- Explicitly set the number of patches if construct-without-mesh
             //  used.
             inline void setNumPatches(const label nPatches);
+
 
         // Other
 
