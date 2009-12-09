@@ -218,6 +218,69 @@ bool Foam::triSurfaceMesh::isSurfaceClosed() const
 }
 
 
+// Gets all intersections after initial one. Adds smallVec and starts tracking
+// from there.
+void Foam::triSurfaceMesh::getNextIntersections
+(
+    const indexedOctree<treeDataTriSurface>& octree,
+    const point& start,
+    const point& end,
+    const vector& smallVec,
+    DynamicList<pointIndexHit, 1, 1>& hits
+)
+{
+    const vector dirVec(end-start);
+    const scalar magSqrDirVec(magSqr(dirVec));
+
+    // Initial perturbation amount
+    vector perturbVec(smallVec);
+
+    while (true)
+    {
+        // Start tracking from last hit.
+        point pt = hits[hits.size()-1].hitPoint() + perturbVec;
+
+        if (((pt-start)&dirVec) > magSqrDirVec)
+        {
+            return;
+        }
+
+        // See if any intersection between pt and end
+        pointIndexHit inter = octree.findLine(pt, end);
+
+        if (!inter.hit())
+        {
+            return;
+        }
+
+        // Check if already found this intersection
+        bool duplicateHit = false;
+        forAllReverse(hits, i)
+        {
+            if (hits[i].index() == inter.index())
+            {
+                duplicateHit = true;
+                break;
+            }
+        }
+
+
+        if (duplicateHit)
+        {
+            // Hit same triangle again. Increase perturbVec and try again.
+            perturbVec *= 2;
+        }
+        else
+        {
+            // Proper hit
+            hits.append(inter);
+            // Restore perturbVec
+            perturbVec = smallVec;
+        }
+    }
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::triSurfaceMesh::triSurfaceMesh(const IOobject& io, const triSurface& s)
@@ -620,27 +683,14 @@ void Foam::triSurfaceMesh::findLineAll
             hits.clear();
             hits.append(inter);
 
-            point pt = inter.hitPoint() + smallVec[pointI];
-
-            while (((pt-start[pointI])&dirVec[pointI]) <= magSqrDirVec[pointI])
-            {
-                // See if any intersection between pt and end
-                pointIndexHit inter = octree.findLine(pt, end[pointI]);
-
-                // Check for not hit or hit same triangle as before (can happen
-                // if vector along surface of triangle)
-                if
-                (
-                    !inter.hit()
-                 || (inter.index() == hits[hits.size()-1].index())
-                )
-                {
-                    break;
-                }
-                hits.append(inter);
-
-                pt = inter.hitPoint() + smallVec[pointI];
-            }
+            getNextIntersections
+            (
+                octree,
+                start[pointI],
+                end[pointI],
+                smallVec[pointI],
+                hits
+            );
 
             info[pointI].transfer(hits);
         }

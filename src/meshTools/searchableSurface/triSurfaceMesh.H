@@ -111,6 +111,17 @@ private:
         //  addressing.
         bool isSurfaceClosed() const;
 
+        //- Steps to next intersection. Adds smallVec and starts tracking
+        //  from there.
+        static void getNextIntersections
+        (
+            const indexedOctree<treeDataTriSurface>& octree,
+            const point& start,
+            const point& end,
+            const vector& smallVec,
+            DynamicList<pointIndexHit, 1, 1>& hits
+        );
+
         //- Disallow default bitwise copy construct
         triSurfaceMesh(const triSurfaceMesh&);
 
