@@ -674,7 +674,7 @@ int main(int argc, char *argv[])
                   + timeDesc
                   + ".plt"
                 );
-                
+
                 tecplotWriter writer(runTime);
 
                 writer.writeInit
@@ -909,106 +909,115 @@ int main(int argc, char *argv[])
             const polyPatch& pp = patches[patchID];
             //INTEGER4 strandID = 1 + i;
 
-            Info<< "    Writing patch " << patchID << "\t" << pp.name()
-                << "\tstrand:" << strandID << nl << endl;
-
-            const indirectPrimitivePatch ipp
-            (
-                IndirectList<face>(pp, identity(pp.size())),
-                pp.points()
-            );
-
-            writer.writePolygonalZone
-            (
-                pp.name(),
-                strandID++,     //strandID,
-                ipp,
-                allVarLocation
-            );
-
-            // Write coordinates
-            writer.writeField(ipp.localPoints().component(0)());
-            writer.writeField(ipp.localPoints().component(1)());
-            writer.writeField(ipp.localPoints().component(2)());
-
-            // Write all fields
-            forAll(vsf, i)
+            if (pp.size() > 0)
             {
-                writer.writeField
+                Info<< "    Writing patch " << patchID << "\t" << pp.name()
+                    << "\tstrand:" << strandID << nl << endl;
+
+                const indirectPrimitivePatch ipp
                 (
-                    writer.getPatchField
+                    IndirectList<face>(pp, identity(pp.size())),
+                    pp.points()
+                );
+
+                writer.writePolygonalZone
+                (
+                    pp.name(),
+                    strandID++,     //strandID,
+                    ipp,
+                    allVarLocation
+                );
+
+                // Write coordinates
+                writer.writeField(ipp.localPoints().component(0)());
+                writer.writeField(ipp.localPoints().component(1)());
+                writer.writeField(ipp.localPoints().component(2)());
+
+                // Write all fields
+                forAll(vsf, i)
+                {
+                    writer.writeField
                     (
-                        nearCellValue,
-                        vsf[i],
-                        patchID
-                    )()
-                );
-            }
-            forAll(vvf, i)
-            {
-                writer.writeField
-                (
-                    writer.getPatchField
+                        writer.getPatchField
+                        (
+                            nearCellValue,
+                            vsf[i],
+                            patchID
+                        )()
+                    );
+                }
+                forAll(vvf, i)
+                {
+                    writer.writeField
                     (
-                        nearCellValue,
-                        vvf[i],
-                        patchID
-                    )()
-                );
-            }
-            forAll(vSpheretf, i)
-            {
-                writer.writeField
-                (
-                    writer.getPatchField
+                        writer.getPatchField
+                        (
+                            nearCellValue,
+                            vvf[i],
+                            patchID
+                        )()
+                    );
+                }
+                forAll(vSpheretf, i)
+                {
+                    writer.writeField
                     (
-                        nearCellValue,
-                        vSpheretf[i],
-                        patchID
-                    )()
-                );
-            }
-            forAll(vSymmtf, i)
-            {
-                writer.writeField
-                (
-                    writer.getPatchField
+                        writer.getPatchField
+                        (
+                            nearCellValue,
+                            vSpheretf[i],
+                            patchID
+                        )()
+                    );
+                }
+                forAll(vSymmtf, i)
+                {
+                    writer.writeField
                     (
-                        nearCellValue,
-                        vSymmtf[i],
-                        patchID
-                    )()
-                );
-            }
-            forAll(vtf, i)
-            {
-                writer.writeField
-                (
-                    writer.getPatchField
+                        writer.getPatchField
+                        (
+                            nearCellValue,
+                            vSymmtf[i],
+                            patchID
+                        )()
+                    );
+                }
+                forAll(vtf, i)
+                {
+                    writer.writeField
                     (
-                        nearCellValue,
-                        vtf[i],
-                        patchID
-                    )()
-                );
-            }
+                        writer.getPatchField
+                        (
+                            nearCellValue,
+                            vtf[i],
+                            patchID
+                        )()
+                    );
+                }
 
-            forAll(psf, i)
-            {
-                writer.writeField
-                (
-                    psf[i].boundaryField()[patchID].patchInternalField()()
-                );
-            }
-            forAll(pvf, i)
-            {
-                writer.writeField
-                (
-                    pvf[i].boundaryField()[patchID].patchInternalField()()
-                );
-            }
+                forAll(psf, i)
+                {
+                    writer.writeField
+                    (
+                        psf[i].boundaryField()[patchID].patchInternalField()()
+                    );
+                }
+                forAll(pvf, i)
+                {
+                    writer.writeField
+                    (
+                        pvf[i].boundaryField()[patchID].patchInternalField()()
+                    );
+                }
 
-            writer.writeConnectivity(ipp);
+                writer.writeConnectivity(ipp);
+            }
+            else
+            {
+                Info<< "    Skipping zero sized patch " << patchID
+                    << "\t" << pp.name()
+                    << nl << endl;
+            }
         }
         writer.writeEnd();
 
