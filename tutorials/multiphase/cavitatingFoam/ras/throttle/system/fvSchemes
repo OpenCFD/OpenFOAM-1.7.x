@@ -53,8 +53,7 @@ laplacianSchemes
 
 snGradSchemes
 {
-    default         none;
-    snGrad(p)       corrected;
+    default         corrected;
 }
 
 fluxRequired

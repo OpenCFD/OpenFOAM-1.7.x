@@ -158,7 +158,7 @@ cp ${MAIN_CONTROL_DICT} ${MAIN_CONTROL_DICT}.org
 
 sed \
 -e s/"\(fvSchemes[ \t]*\)\([0-9]\);"/"\1 1;"/g \
--e s/"\(fvSolution[ \t]*\)\([0-9]\);"/"\1 1;"/g \
+-e s/"\(solution[ \t]*\)\([0-9]\);"/"\1 1;"/g \
 ${MAIN_CONTROL_DICT}.org > ${MAIN_CONTROL_DICT}
 
 echo "Copying the tutorials"

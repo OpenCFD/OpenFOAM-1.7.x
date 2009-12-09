@@ -77,7 +77,7 @@ class entry
     // Private Member Functions
 
         //- Get the next valid keyword otherwise return false
-        static bool getKeyword(keyType& keyword, Istream& is);
+        static bool getKeyword(keyType&, Istream&);
 
 
 public:
@@ -85,7 +85,7 @@ public:
     // Constructors
 
         //- Construct from keyword
-        entry(const keyType& keyword);
+        entry(const keyType&);
 
         //- Construct as copy
         entry(const entry&);
@@ -102,16 +102,15 @@ public:
         virtual autoPtr<entry> clone() const;
 
         //- Construct from Istream and insert into dictionary
-        static bool New(dictionary& parentDict, Istream& is);
+        static bool New(dictionary& parentDict, Istream&);
 
         //- Construct on freestore from Istream and return
         static autoPtr<entry> New(Istream& is);
 
 
-    // Destructor
-
-        virtual ~entry()
-        {}
+    //- Destructor
+    virtual ~entry()
+    {}
 
 
     // Member functions

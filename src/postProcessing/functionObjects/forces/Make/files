@@ -4,4 +4,10 @@ forces/forcesFunctionObject.C
 forceCoeffs/forceCoeffs.C
 forceCoeffs/forceCoeffsFunctionObject.C
 
+pointPatchFields/derived/sixDoFRigidBodyDisplacement/sixDoFRigidBodyDisplacementPointPatchVectorField.C
+pointPatchFields/derived/sixDoFRigidBodyDisplacement/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion.C
+pointPatchFields/derived/sixDoFRigidBodyDisplacement/sixDoFRigidBodyMotion/sixDoFRigidBodyMotionIO.C
+pointPatchFields/derived/sixDoFRigidBodyDisplacement/sixDoFRigidBodyMotion/sixDoFRigidBodyMotionState.C
+pointPatchFields/derived/sixDoFRigidBodyDisplacement/sixDoFRigidBodyMotion/sixDoFRigidBodyMotionStateIO.C
+
 LIB = $(FOAM_LIBBIN)/libforces

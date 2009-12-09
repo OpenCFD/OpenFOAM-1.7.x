@@ -77,7 +77,7 @@ LESModel::LESModel
     ),
 
     printCoeffs_(lookupOrDefault<Switch>("printCoeffs", false)),
-    coeffDict_(subDictPtr(type + "Coeffs")),
+    coeffDict_(subOrEmptyDict(type + "Coeffs")),
 
     k0_("k0", dimVelocity*dimVelocity, SMALL),
 

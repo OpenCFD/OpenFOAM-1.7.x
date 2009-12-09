@@ -39,7 +39,7 @@ Foam::dictionaryEntry::dictionaryEntry
     Istream& is
 )
 :
-    entry(is),
+    entry(keyType(is)),
     dictionary(parentDict, is)
 {
     is.fatalCheck
@@ -58,10 +58,8 @@ Foam::dictionaryEntry::dictionaryEntry
 )
 :
     entry(key),
-    dictionary(parentDict, is)
+    dictionary(key, parentDict, is)
 {
-    name() += "::" + key;
-
     is.fatalCheck
     (
         "dictionaryEntry::dictionaryEntry"

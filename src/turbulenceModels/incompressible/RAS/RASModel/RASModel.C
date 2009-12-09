@@ -78,7 +78,7 @@ RASModel::RASModel
 
     turbulence_(lookup("turbulence")),
     printCoeffs_(lookupOrDefault<Switch>("printCoeffs", false)),
-    coeffDict_(subDictPtr(type + "Coeffs")),
+    coeffDict_(subOrEmptyDict(type + "Coeffs")),
 
     k0_("k0", dimVelocity*dimVelocity, SMALL),
     epsilon0_("epsilon", k0_.dimensions()/dimTime, SMALL),

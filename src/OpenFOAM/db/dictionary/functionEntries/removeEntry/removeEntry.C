@@ -26,6 +26,7 @@ License
 
 #include "removeEntry.H"
 #include "dictionary.H"
+#include "stringListOps.H"
 #include "IStringStream.H"
 #include "OStringStream.H"
 #include "addToMemberFunctionSelectionTable.H"
@@ -64,22 +65,14 @@ bool Foam::functionEntries::removeEntry::execute
     Istream& is
 )
 {
-    token currToken(is);
-    is.putBack(currToken);
+    wordList   dictKeys = parentDict.toc();
+    wordReList patterns = readList<wordRe>(is);
 
-    if (currToken == token::BEGIN_LIST)
-    {
-        wordList keys(is);
+    labelList indices = findStrings(patterns, dictKeys);
 
-        forAll(keys, keyI)
-        {
-            parentDict.remove(keys[keyI]);
-        }
-    }
-    else
+    forAll(indices, indexI)
     {
-        word key(is);
-        parentDict.remove(key);
+        parentDict.remove(dictKeys[indices[indexI]]);
     }
 
     return true;

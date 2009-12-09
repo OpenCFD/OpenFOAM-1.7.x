@@ -636,12 +636,12 @@ void Foam::argList::displayDoc(bool source) const
     List<fileName> docDirs(docDict.lookup("doxyDocDirs"));
     List<fileName> docExts(docDict.lookup("doxySourceFileExts"));
 
-    // for source code: change foo_8C.html to foo_8C-source.html
+    // for source code: change foo_8C.html to foo_8C_source.html
     if (source)
     {
         forAll(docExts, extI)
         {
-            docExts[extI].replace(".", "-source.");
+            docExts[extI].replace(".", "_source.");
         }
     }
 

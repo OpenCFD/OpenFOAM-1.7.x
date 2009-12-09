@@ -109,14 +109,21 @@ Foam::dictionary::dictionary()
 {}
 
 
+Foam::dictionary::dictionary(const fileName& name)
+:
+    dictionaryName(name),
+    parent_(dictionary::null)
+{}
+
+
 Foam::dictionary::dictionary
 (
     const dictionary& parentDict,
     const dictionary& dict
 )
 :
+    dictionaryName(dict.name()),
     IDLList<entry>(dict, *this),
-    name_(dict.name()),
     parent_(parentDict)
 {
     forAllIter(IDLList<entry>, *this, iter)
@@ -140,8 +147,8 @@ Foam::dictionary::dictionary
     const dictionary& dict
 )
 :
+    dictionaryName(dict.name()),
     IDLList<entry>(dict, *this),
-    name_(dict.name()),
     parent_(dictionary::null)
 {
     forAllIter(IDLList<entry>, *this, iter)
@@ -183,6 +190,7 @@ Foam::dictionary::dictionary
     parent_(parentDict)
 {
     transfer(dict());
+    name() = parentDict.name() + "::" + name();
 }
 
 
@@ -472,6 +480,24 @@ Foam::dictionary& Foam::dictionary::subDict(const word& keyword)
 }
 
 
+Foam::dictionary Foam::dictionary::subOrEmptyDict
+(
+    const word& keyword
+) const
+{
+    const entry* entryPtr = lookupEntryPtr(keyword, false, true);
+
+    if (entryPtr == NULL)
+    {
+        return dictionary(*this, dictionary(name() + "::" + keyword));
+    }
+    else
+    {
+        return entryPtr->dict();
+    }
+}
+
+
 Foam::wordList Foam::dictionary::toc() const
 {
     wordList keys(size());
@@ -530,7 +556,7 @@ bool Foam::dictionary::add(entry* entryPtr, bool mergeEntry)
 
             if (hashedEntries_.insert(entryPtr->keyword(), entryPtr))
             {
-                entryPtr->name() = name_ + "::" + entryPtr->keyword();
+                entryPtr->name() = name() + "::" + entryPtr->keyword();
 
                 if (entryPtr->keyword().isPattern())
                 {
@@ -558,7 +584,7 @@ bool Foam::dictionary::add(entry* entryPtr, bool mergeEntry)
 
     if (hashedEntries_.insert(entryPtr->keyword(), entryPtr))
     {
-        entryPtr->name() = name_ + "::" + entryPtr->keyword();
+        entryPtr->name() = name() + "::" + entryPtr->keyword();
         IDLList<entry>::append(entryPtr);
 
         if (entryPtr->keyword().isPattern())
@@ -763,7 +789,7 @@ bool Foam::dictionary::changeKeyword
 
     // change name and HashTable, but leave DL-List untouched
     iter()->keyword() = newKeyword;
-    iter()->name() = name_ + "::" + newKeyword;
+    iter()->name() = name() + "::" + newKeyword;
     hashedEntries_.erase(oldKeyword);
     hashedEntries_.insert(newKeyword, iter());
 
@@ -838,7 +864,7 @@ void Foam::dictionary::transfer(dictionary& dict)
 {
     // changing parents probably doesn't make much sense,
     // but what about the names?
-    name_ = dict.name_;
+    name() = dict.name();
 
     IDLList<entry>::transfer(dict);
     hashedEntries_.transfer(dict.hashedEntries_);
@@ -871,7 +897,7 @@ void Foam::dictionary::operator=(const dictionary& rhs)
             << abort(FatalError);
     }
 
-    name_ = rhs.name();
+    name() = rhs.name();
     clear();
 
     // Create clones of the entries in the given dictionary

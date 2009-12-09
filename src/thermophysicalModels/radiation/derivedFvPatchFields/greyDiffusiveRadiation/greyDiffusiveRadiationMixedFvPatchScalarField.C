@@ -80,7 +80,7 @@ greyDiffusiveRadiationMixedFvPatchScalarField
     TName_(dict.lookup("T")),
     emissivity_(readScalar(dict.lookup("emissivity")))
 {
-    if (dict.found("value"))
+    if (dict.found("refValue"))
     {
         fvPatchScalarField::operator=
         (

@@ -6,7 +6,7 @@ EXE_INC = \
     -I$(LIB_SRC)/finiteVolume/lnInclude
 
 LIB_LIBS = \
-    -lforces \
+    /*-lforces include in controlDict if needed */ \
     -ltriSurface \
     -lmeshTools \
     -ldynamicMesh \
