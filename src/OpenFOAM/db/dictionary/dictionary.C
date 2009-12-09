@@ -122,7 +122,7 @@ Foam::dictionary::dictionary
     const dictionary& dict
 )
 :
-    dictionaryName(parentDict.name() + "::" + dict.name()),
+    dictionaryName(dict.name()),
     IDLList<entry>(dict, *this),
     parent_(parentDict)
 {
@@ -489,7 +489,7 @@ Foam::dictionary Foam::dictionary::subOrEmptyDict
 
     if (entryPtr == NULL)
     {
-        return dictionary(*this, dictionary(keyword));
+        return dictionary(*this, dictionary(name() + "::" + keyword));
     }
     else
     {
