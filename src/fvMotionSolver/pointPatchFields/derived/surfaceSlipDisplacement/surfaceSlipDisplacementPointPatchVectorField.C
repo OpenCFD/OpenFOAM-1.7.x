@@ -176,7 +176,7 @@ void surfaceSlipDisplacementPointPatchVectorField::calcProjection
 
         // Knock out any wedge component
         scalarField offset(start.size(), 0.0);
-        if (wedgePlane_ >= 0 && wedgePlane_ <= vector::nComponents)
+        if (wedgePlane_ >= 0 && wedgePlane_ < vector::nComponents)
         {
             forAll(offset, i)
             {
@@ -197,7 +197,7 @@ void surfaceSlipDisplacementPointPatchVectorField::calcProjection
                 rightHit
             );
         }
-        
+
         List<pointIndexHit> leftHit;
         {
             labelList leftSurf;
@@ -262,7 +262,7 @@ void surfaceSlipDisplacementPointPatchVectorField::calcProjection
 
                 if (interPt.hit())
                 {
-                    if (wedgePlane_ >= 0 && wedgePlane_ <= vector::nComponents)
+                    if (wedgePlane_ >= 0 && wedgePlane_ < vector::nComponents)
                     {
                         interPt.rawPoint()[wedgePlane_] += offset[i];
                     }
