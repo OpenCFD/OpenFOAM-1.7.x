@@ -34,13 +34,19 @@ Description
 
     Can also work like decomposePar:
 
+        # Create empty processors
         mkdir processor0
+                ..
+        mkdir processorN
+
+        # Copy undecomposed polyMesh
         cp -r constant processor0
+
+        # Distribute
         mpirun -np ddd redistributeMeshPar -parallel
 
 \*---------------------------------------------------------------------------*/
 
-#include "Field.H"
 #include "fvMesh.H"
 #include "decompositionMethod.H"
 #include "PstreamReduceOps.H"
@@ -62,6 +68,7 @@ static const scalar defaultMergeTol = 1E-6;
 autoPtr<fvMesh> createMesh
 (
     const Time& runTime,
+    const word& regionName,
     const fileName& instDir,
     const bool haveMesh
 )
@@ -69,43 +76,33 @@ autoPtr<fvMesh> createMesh
     Pout<< "Create mesh for time = "
         << runTime.timeName() << nl << endl;
 
-    // Create dummy mesh. Only used on procs that don't have mesh.
-    // Note constructed on all processors since does parallel comms.
-    fvMesh dummyMesh
+    IOobject io
     (
-        IOobject
-        (
-            fvMesh::defaultRegion,
-            instDir,
-            runTime,
-            IOobject::MUST_READ
-        ),
-        xferCopy(pointField()),
-        xferCopy(faceList()),
-        xferCopy(labelList()),
-        xferCopy(labelList())
+        regionName,
+        instDir,
+        runTime,
+        IOobject::MUST_READ
     );
 
     if (!haveMesh)
     {
-        Pout<< "Writing dummy mesh to " << runTime.path()/instDir << endl;
+        // Create dummy mesh. Only used on procs that don't have mesh.
+        fvMesh dummyMesh
+        (
+            io,
+            xferCopy(pointField()),
+            xferCopy(faceList()),
+            xferCopy(labelList()),
+            xferCopy(labelList()),
+            false
+        );
+        Pout<< "Writing dummy mesh to " << dummyMesh.polyMesh::objectPath()
+            << endl;
         dummyMesh.write();
     }
 
-    Pout<< "Reading mesh from " << runTime.path()/instDir << endl;
-    autoPtr<fvMesh> meshPtr
-    (
-        new fvMesh
-        (
-            IOobject
-            (
-                fvMesh::defaultRegion,
-                instDir,
-                runTime,
-                IOobject::MUST_READ
-            )
-        )
-    );
+    Pout<< "Reading mesh from " << io.objectPath() << endl;
+    autoPtr<fvMesh> meshPtr(new fvMesh(io));
     fvMesh& mesh = meshPtr();
 
 
@@ -229,8 +226,9 @@ autoPtr<fvMesh> createMesh
     if (!haveMesh)
     {
         // We created a dummy mesh file above. Delete it.
-        Pout<< "Removing dummy mesh in " << runTime.path()/instDir << endl;
-        rmDir(runTime.path()/instDir/polyMesh::meshSubDir);
+        Pout<< "Removing dummy mesh " << io.objectPath()
+            << endl;
+        rmDir(io.objectPath());
     }
 
     // Force recreation of globalMeshData.
@@ -285,7 +283,6 @@ scalar getMergeDistance
 void printMeshData(Ostream& os, const polyMesh& mesh)
 {
     os  << "Number of points:           " << mesh.points().size() << nl
-        << "          edges:            " << mesh.edges().size() << nl
         << "          faces:            " << mesh.faces().size() << nl
         << "          internal faces:   " << mesh.faceNeighbour().size() << nl
         << "          cells:            " << mesh.cells().size() << nl
@@ -506,17 +503,35 @@ void compareFields
 
 int main(int argc, char *argv[])
 {
+#   include "addRegionOption.H"
     argList::validOptions.insert("mergeTol", "relative merge distance");
+
+    // Create argList. This will check for non-existing processor dirs.
 #   include "setRootCase.H"
 
-    // Create processor directory if non-existing
-    if (!Pstream::master() && !isDir(args.path()))
-    {
-        Pout<< "Creating case directory " << args.path() << endl;
-        mkDir(args.path());
-    }
+    //- Not useful anymore. See above.
+    //// Create processor directory if non-existing
+    //if (!Pstream::master() && !isDir(args.path()))
+    //{
+    //    Pout<< "Creating case directory " << args.path() << endl;
+    //    mkDir(args.path());
+    //}
 
 #   include "createTime.H"
+
+    word regionName = polyMesh::defaultRegion;
+    fileName meshSubDir;
+
+    if (args.optionReadIfPresent("region", regionName))
+    {
+        meshSubDir = regionName/polyMesh::meshSubDir;
+    }
+    else
+    {
+        meshSubDir = polyMesh::meshSubDir;
+    }
+    Info<< "Using mesh subdirectory " << meshSubDir << nl << endl;
+
 
     // Get time instance directory. Since not all processors have meshes
     // just use the master one everywhere.
@@ -524,15 +539,18 @@ int main(int argc, char *argv[])
     fileName masterInstDir;
     if (Pstream::master())
     {
-        masterInstDir = runTime.findInstance(polyMesh::meshSubDir, "points");
+        masterInstDir = runTime.findInstance(meshSubDir, "points");
     }
     Pstream::scatter(masterInstDir);
 
     // Check who has a mesh
-    const fileName meshDir = runTime.path()/masterInstDir/polyMesh::meshSubDir;
+    const fileName meshPath = runTime.path()/masterInstDir/meshSubDir;
+
+    Info<< "Found points in " << meshPath << nl << endl;
+
 
     boolList haveMesh(Pstream::nProcs(), false);
-    haveMesh[Pstream::myProcNo()] = isDir(meshDir);
+    haveMesh[Pstream::myProcNo()] = isDir(meshPath);
     Pstream::gatherList(haveMesh);
     Pstream::scatterList(haveMesh);
     Info<< "Per processor mesh availability : " << haveMesh << endl;
@@ -542,6 +560,7 @@ int main(int argc, char *argv[])
     autoPtr<fvMesh> meshPtr = createMesh
     (
         runTime,
+        regionName,
         masterInstDir,
         haveMesh[Pstream::myProcNo()]
     );
@@ -799,7 +818,7 @@ int main(int argc, char *argv[])
         << nl
         << "the processor directories with 0 sized meshes in them." << nl
         << "Below is a sample set of commands to do this."
-        << " Take care when issueing these" << nl
+        << " Take care when issuing these" << nl
         << "commands." << nl << endl;
 
     forAll(nFaces, procI)
@@ -812,8 +831,8 @@ int main(int argc, char *argv[])
         }
         else
         {
-            fileName timeDir = procDir/runTime.timeName()/polyMesh::meshSubDir;
-            fileName constDir = procDir/runTime.constant()/polyMesh::meshSubDir;
+            fileName timeDir = procDir/runTime.timeName()/meshSubDir;
+            fileName constDir = procDir/runTime.constant()/meshSubDir;
 
             Info<< "    rm -r " << constDir.c_str() << nl
                 << "    mv " << timeDir.c_str()
