@@ -45,6 +45,17 @@ inline Foam::icoPolynomial<PolySize>::icoPolynomial
 template<int PolySize>
 inline Foam::icoPolynomial<PolySize>::icoPolynomial
 (
+    const icoPolynomial<PolySize>& ip
+)
+:
+    specie(ip),
+    rhoPolynomial_(ip.rhoPolynomial_)
+{}
+
+
+template<int PolySize>
+inline Foam::icoPolynomial<PolySize>::icoPolynomial
+(
     const word& name,
     const icoPolynomial<PolySize>& ip
 )
@@ -78,7 +89,7 @@ Foam::icoPolynomial<PolySize>::New(Istream& is)
 template<int PolySize>
 inline Foam::scalar Foam::icoPolynomial<PolySize>::rho(scalar, scalar T) const
 {
-    return rhoPolynomial_.evaluate(T);
+    return rhoPolynomial_.evaluate(T)/this->W();
 }
 
 
@@ -97,6 +108,20 @@ inline Foam::scalar Foam::icoPolynomial<PolySize>::Z(scalar, scalar) const
 
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
+
+template<int PolySize>
+inline Foam::icoPolynomial<PolySize>& Foam::icoPolynomial<PolySize>::operator=
+(
+    const icoPolynomial<PolySize>& ip
+)
+{
+    specie::operator=(ip);
+
+    rhoPolynomial_ = ip.rhoPolynomial_;
+
+    return *this;
+}
+
 
 template<int PolySize>
 inline void Foam::icoPolynomial<PolySize>::operator+=
@@ -122,6 +147,7 @@ inline void Foam::icoPolynomial<PolySize>::operator-=
 )
 {
     scalar molr1 = this->nMoles();
+
     specie::operator-=(ip);
 
     molr1 /= this->nMoles();
@@ -147,15 +173,15 @@ Foam::icoPolynomial<PolySize> Foam::operator+
     const icoPolynomial<PolySize>& ip2
 )
 {
-    scalar mol1 = ip1.nMoles();
-    scalar mol2 = ip2.nMoles();
-    scalar nMoles = mol1 + mol2;
+    scalar nMoles = ip1.nMoles() + ip2.nMoles();
+    scalar molr1 = ip1.nMoles()/nMoles;
+    scalar molr2 = ip2.nMoles()/nMoles;
 
     return icoPolynomial<PolySize>
     (
         static_cast<const specie&>(ip1)
       + static_cast<const specie&>(ip2),
-        (mol1/nMoles)*ip1.rhoPolynomial_ + (mol2/nMoles)*ip2.rhoPolynomial_
+        molr1*ip1.rhoPolynomial_ + molr2*ip2.rhoPolynomial_
     );
 }
 
@@ -167,15 +193,15 @@ Foam::icoPolynomial<PolySize> Foam::operator-
     const icoPolynomial<PolySize>& ip2
 )
 {
-    scalar mol1 = ip1.nMoles();
-    scalar mol2 = ip2.nMoles();
-    scalar nMoles = mol1 + mol2;
+    scalar nMoles = ip1.nMoles() + ip2.nMoles();
+    scalar molr1 = ip1.nMoles()/nMoles;
+    scalar molr2 = ip2.nMoles()/nMoles;
 
     return icoPolynomial<PolySize>
     (
         static_cast<const specie&>(ip1)
       - static_cast<const specie&>(ip2),
-        (mol1/nMoles)*ip1.rhoPolynomial_ - (mol2/nMoles)*ip2.rhoPolynomial_
+        molr1*ip1.rhoPolynomial_ - molr2*ip2.rhoPolynomial_
     );
 }
 

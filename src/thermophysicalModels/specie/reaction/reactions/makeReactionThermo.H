@@ -30,7 +30,7 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef makeReactionTherno_H
+#ifndef makeReactionThermo_H
 #define makeReactionThermo_H
 
 #include "Reaction.H"

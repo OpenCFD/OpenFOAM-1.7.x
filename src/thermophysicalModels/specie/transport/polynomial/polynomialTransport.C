@@ -35,7 +35,10 @@ Foam::polynomialTransport<Thermo, PolySize>::polynomialTransport(Istream& is)
     Thermo(is),
     muPolynomial_("muPolynomial", is),
     kappaPolynomial_("kappaPolynomial", is)
-{}
+{
+    muPolynomial_ *= this->W();
+    kappaPolynomial_ *= this->W();
+}
 
 
 // * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
@@ -47,7 +50,9 @@ Foam::Ostream& Foam::operator<<
     const polynomialTransport<Thermo, PolySize>& pt
 )
 {
-    os << static_cast<const Thermo&>(pt);
+    os  << static_cast<const Thermo&>(pt) << tab
+        << "muPolynomial" << tab << pt.muPolynomial_/pt.W() << tab
+        << "kappaPolynomial" << tab << pt.kappaPolynomial_/pt.W();
 
     os.check
     (

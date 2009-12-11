@@ -96,9 +96,11 @@ class polynomialTransport
     // Private data
 
         //- Dynamic viscosity
+        //  Note: input in [Pa.s], but internally uses [Pa.s/kmol]
         Polynomial<PolySize> muPolynomial_;
 
         //- Thermal conductivity
+        //  Note: input in [W/m/K], but internally uses [W/m/K/kmol]
         Polynomial<PolySize> kappaPolynomial_;
 
 
@@ -116,6 +118,9 @@ class polynomialTransport
 public:
 
     // Constructors
+
+        //- Construct copy
+        inline polynomialTransport(const polynomialTransport&);
 
         //- Construct as named copy
         inline polynomialTransport(const word&, const polynomialTransport&);
@@ -148,6 +153,9 @@ public:
     // Member operators
 
         inline polynomialTransport& operator=(const polynomialTransport&);
+        inline void operator+=(const polynomialTransport&);
+        inline void operator-=(const polynomialTransport&);
+        inline void operator*=(const scalar);
 
 
     // Friend operators

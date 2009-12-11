@@ -35,7 +35,7 @@ inline Foam::hPolynomialThermo<EquationOfState, PolySize>::hPolynomialThermo
     const scalar Hf,
     const scalar Sf,
     const Polynomial<PolySize>& cpPoly,
-    const typename Polynomial<PolySize>::intPolyType& dhPoly,
+    const typename Polynomial<PolySize>::intPolyType& hPoly,
     const Polynomial<PolySize>& sPoly
 )
 :
@@ -43,12 +43,27 @@ inline Foam::hPolynomialThermo<EquationOfState, PolySize>::hPolynomialThermo
     Hf_(Hf),
     Sf_(Sf),
     cpPolynomial_(cpPoly),
-    dhPolynomial_(dhPoly),
+    hPolynomial_(hPoly),
     sPolynomial_(sPoly)
 {}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+template<class EquationOfState, int PolySize>
+inline Foam::hPolynomialThermo<EquationOfState, PolySize>::hPolynomialThermo
+(
+    const hPolynomialThermo& pt
+)
+:
+    EquationOfState(pt),
+    Hf_(pt.Hf_),
+    Sf_(pt.Sf_),
+    cpPolynomial_(pt.cpPolynomial_),
+    hPolynomial_(pt.hPolynomial_),
+    sPolynomial_(pt.sPolynomial_)
+{}
+
 
 template<class EquationOfState, int PolySize>
 inline Foam::hPolynomialThermo<EquationOfState, PolySize>::hPolynomialThermo
@@ -61,7 +76,7 @@ inline Foam::hPolynomialThermo<EquationOfState, PolySize>::hPolynomialThermo
     Hf_(pt.Hf_),
     Sf_(pt.Sf_),
     cpPolynomial_(pt.cpPolynomial_),
-    dhPolynomial_(pt.dhPolynomial_),
+    hPolynomial_(pt.hPolynomial_),
     sPolynomial_(pt.sPolynomial_)
 {}
 
@@ -74,7 +89,7 @@ inline Foam::scalar Foam::hPolynomialThermo<EquationOfState, PolySize>::cp
     const scalar T
 ) const
 {
-    return cpPolynomial_.evaluate(T)*this->W();
+    return cpPolynomial_.evaluate(T);
 }
 
 
@@ -84,7 +99,7 @@ inline Foam::scalar Foam::hPolynomialThermo<EquationOfState, PolySize>::h
     const scalar T
 ) const
 {
-    return (dhPolynomial_.evaluate(T) + Hf_)*this->W();
+    return hPolynomial_.evaluate(T);
 }
 
 
@@ -94,7 +109,7 @@ inline Foam::scalar Foam::hPolynomialThermo<EquationOfState, PolySize>::hs
     const scalar T
 ) const
 {
-    return dhPolynomial_.evaluate(T)*this->W();
+    return h(T) - hc();
 }
 
 
@@ -102,7 +117,7 @@ template<class EquationOfState, int PolySize>
 inline Foam::scalar Foam::hPolynomialThermo<EquationOfState, PolySize>::hc()
 const
 {
-    return Hf_*this->W();
+    return Hf_;
 }
 
 
@@ -112,11 +127,30 @@ inline Foam::scalar Foam::hPolynomialThermo<EquationOfState, PolySize>::s
     const scalar T
 ) const
 {
-    return (sPolynomial_.evaluate(T) + Sf_)*this->W();
+    return sPolynomial_.evaluate(T);
 }
 
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
+
+template<class EquationOfState, int PolySize>
+inline Foam::hPolynomialThermo<EquationOfState, PolySize>&
+Foam::hPolynomialThermo<EquationOfState, PolySize>::operator=
+(
+    const hPolynomialThermo<EquationOfState, PolySize>& pt
+)
+{
+    EquationOfState::operator=(pt);
+
+    Hf_ = pt.Hf_;
+    Sf_ = pt.Sf_;
+    cpPolynomial_ = pt.cpPolynomial_;
+    hPolynomial_ = pt.hPolynomial_;
+    sPolynomial_ = pt.sPolynomial_;
+
+    return *this;
+}
+
 
 template<class EquationOfState, int PolySize>
 inline void Foam::hPolynomialThermo<EquationOfState, PolySize>::operator+=
@@ -134,7 +168,7 @@ inline void Foam::hPolynomialThermo<EquationOfState, PolySize>::operator+=
     Hf_ = molr1*Hf_ + molr2*pt.Hf_;
     Sf_ = molr1*Sf_ + molr2*pt.Sf_;
     cpPolynomial_ = molr1*cpPolynomial_ + molr2*pt.cpPolynomial_;
-    dhPolynomial_ = molr1*dhPolynomial_ + molr2*pt.dhPolynomial_;
+    hPolynomial_ = molr1*hPolynomial_ + molr2*pt.hPolynomial_;
     sPolynomial_ = molr1*sPolynomial_ + molr2*pt.sPolynomial_;
 }
 
@@ -155,8 +189,18 @@ inline void Foam::hPolynomialThermo<EquationOfState, PolySize>::operator-=
     Hf_ = molr1*Hf_ - molr2*pt.Hf_;
     Sf_ = molr1*Sf_ - molr2*pt.Sf_;
     cpPolynomial_ = molr1*cpPolynomial_ - molr2*pt.cpPolynomial_;
-    dhPolynomial_ = molr1*dhPolynomial_ - molr2*pt.dhPolynomial_;
+    hPolynomial_ = molr1*hPolynomial_ - molr2*pt.hPolynomial_;
     sPolynomial_ = molr1*sPolynomial_ - molr2*pt.sPolynomial_;
+}
+
+
+template<class EquationOfState, int PolySize>
+inline void Foam::hPolynomialThermo<EquationOfState, PolySize>::operator*=
+(
+    const scalar s
+)
+{
+    EquationOfState::operator*=(s);
 }
 
 
@@ -169,21 +213,19 @@ inline Foam::hPolynomialThermo<EquationOfState, PolySize> Foam::operator+
     const hPolynomialThermo<EquationOfState, PolySize>& pt2
 )
 {
-    EquationOfState eofs
-    (
-        static_cast<const EquationOfState&>(pt1)
-      + static_cast<const EquationOfState&>(pt2)
-    );
+    EquationOfState eofs = pt1;
+    eofs += pt2;
 
     scalar molr1 = pt1.nMoles()/eofs.nMoles();
     scalar molr2 = pt2.nMoles()/eofs.nMoles();
+
     return hPolynomialThermo<EquationOfState, PolySize>
     (
         eofs,
         molr1*pt1.Hf_ + molr2*pt2.Hf_,
         molr1*pt1.Sf_ + molr2*pt2.Sf_,
         molr1*pt1.cpPolynomial_ + molr2*pt2.cpPolynomial_,
-        molr1*pt1.dhPolynomial_ + molr2*pt2.dhPolynomial_,
+        molr1*pt1.hPolynomial_ + molr2*pt2.hPolynomial_,
         molr1*pt1.sPolynomial_ + molr2*pt2.sPolynomial_
     );
 }
@@ -196,21 +238,19 @@ inline Foam::hPolynomialThermo<EquationOfState, PolySize> Foam::operator-
     const hPolynomialThermo<EquationOfState, PolySize>& pt2
 )
 {
-    EquationOfState eofs
-    (
-        static_cast<const EquationOfState&>(pt1)
-      - static_cast<const EquationOfState&>(pt2)
-    );
+    EquationOfState eofs = pt1;
+    eofs -= pt2;
 
     scalar molr1 = pt1.nMoles()/eofs.nMoles();
     scalar molr2 = pt2.nMoles()/eofs.nMoles();
+
     return hPolynomialThermo<EquationOfState, PolySize>
     (
         eofs,
         molr1*pt1.Hf_ - molr2*pt2.Hf_,
         molr1*pt1.Sf_ - molr2*pt2.Sf_,
         molr1*pt1.cpPolynomial_ - molr2*pt2.cpPolynomial_,
-        molr1*pt1.dhPolynomial_ - molr2*pt2.dhPolynomial_,
+        molr1*pt1.hPolynomial_ - molr2*pt2.hPolynomial_,
         molr1*pt1.sPolynomial_ - molr2*pt2.sPolynomial_
     );
 }
@@ -229,7 +269,7 @@ inline Foam::hPolynomialThermo<EquationOfState, PolySize> Foam::operator*
         pt.Hf_,
         pt.Sf_,
         pt.cpPolynomial_,
-        pt.dhPolynomial_,
+        pt.hPolynomial_,
         pt.sPolynomial_
     );
 }
