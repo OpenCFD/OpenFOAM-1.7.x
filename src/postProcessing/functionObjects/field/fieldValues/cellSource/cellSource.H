@@ -1,0 +1,220 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 2009-2009 OpenCFD Ltd.
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software; you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation; either version 2 of the License, or (at your
+    option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM; if not, write to the Free Software Foundation,
+    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+
+Class
+    Foam::fieldValues::cellSource
+
+Description
+    Cell source variant of field value function object. Values of user-
+    specified fields reported for collections of cells.
+
+    cellObj1                        // Name also used to identify output folder
+    {
+        type            cellSource;
+        functionObjectLibs ("libfieldValueFunctionObjects.so");
+        enabled         true;
+        outputControl   outputTime;
+        log             true;       // log to screen?
+        valueOutput     true;       // Write values at run-time output times?
+        source          cellZone;   // Type of cell source
+        sourceName      c0;
+        operation       volAverage; // none, sum, volAverage, volIntegrate
+        fields
+        (
+            p
+            U
+        );
+    }
+
+SourceFiles
+    cellSource.C
+
+\*---------------------------------------------------------------------------*/
+
+#ifndef cellSource_H
+#define cellSource_H
+
+#include "NamedEnum.H"
+#include "fieldValue.H"
+#include "labelList.H"
+#include "volFieldsFwd.H"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace fieldValues
+{
+
+/*---------------------------------------------------------------------------*\
+                         Class cellSource Declaration
+\*---------------------------------------------------------------------------*/
+
+class cellSource
+:
+    public fieldValue
+{
+
+public:
+
+    // Public data types
+
+        //- Source type enumeration
+        enum sourceType
+        {
+            stCellZone
+        };
+
+        //- Source type names
+        static const NamedEnum<sourceType, 1> sourceTypeNames_;
+
+
+        //- Operation type enumeration
+        enum operationType
+        {
+            opNone,
+            opSum,
+            opVolAverage,
+            opVolIntegrate
+        };
+
+        //- Operation type names
+        static const NamedEnum<operationType, 4> operationTypeNames_;
+
+
+private:
+
+    // Private member functions
+
+        //- Set cells to evaluate based on a cell zone
+        void setCellZoneCells();
+
+        //- Set cells to evaluate based on a patch
+        void setPatchCells();
+
+
+protected:
+
+    // Protected data
+
+        //- Source type
+        sourceType source_;
+
+        //- Operation to apply to values
+        operationType operation_;
+
+        //- Local list of cell IDs
+        labelList cellId_;
+
+
+    // Protected member functions
+
+        //- Initialise, e.g. cell addressing
+        void initialise();
+
+        //- Insert field values into values list
+        template<class Type>
+        bool setFieldValues
+        (
+            const word& fieldName,
+            List<Type>& values
+        ) const;
+
+        //- Apply the 'operation' to the values
+        template<class Type>
+        Type processValues(const List<Type>& values) const;
+
+        //- Output file header information
+        virtual void writeFileHeader();
+
+
+public:
+
+    //- Run-time type information
+    TypeName("cellSource");
+
+
+    //- Construct from components
+    cellSource
+    (
+        const word& name,
+        const objectRegistry& obr,
+        const dictionary& dict,
+        const bool loadFromFiles = false
+    );
+
+
+    //- Destructor
+    virtual ~cellSource();
+
+
+    // Public member functions
+
+        // Access
+
+            //- Return the source type
+            inline const sourceType& source() const;
+
+            //- Return the local list of cell IDs
+            inline const labelList& cellId() const;
+
+
+        // Function object functions
+
+            //- Read from dictionary
+            virtual void read(const dictionary&);
+
+            //- Calculate and write
+            virtual void write();
+
+            //- Templated helper function to output field values
+            template<class Type>
+            bool writeValues(const word& fieldName);
+
+            //- Filter a field according to cellIds
+            template<class Type>
+            tmp<Field<Type> > filterField(const Field<Type>& field) const;
+};
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace fieldValues
+} // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "cellSourceI.H"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+    #include "cellSourceTemplates.C"
+#endif
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#endif
+
+// ************************************************************************* //

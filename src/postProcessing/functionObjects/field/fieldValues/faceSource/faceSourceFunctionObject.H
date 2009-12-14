@@ -23,24 +23,29 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Typedef
-    Foam::IOfaceZonesIntegration
+    Foam::faceSourceFunctionObject
 
 Description
-    Instance of the generic IOOutputFilter for faceZonesIntegration.
+    FunctionObject wrapper around faceSource to allow it to be
+    created via the functions entry within controlDict.
+
+SourceFiles
+    faceSourceFunctionObject.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef IOfaceZonesIntegration_H
-#define IOfaceZonesIntegration_H
+#ifndef faceSourceFunctionObject_H
+#define faceSourceFunctionObject_H
 
-#include "faceZonesIntegration.H"
-#include "IOOutputFilter.H"
+#include "faceSource.H"
+#include "OutputFilterFunctionObject.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    typedef IOOutputFilter<faceZonesIntegration> IOfaceZonesIntegration;
+    typedef OutputFilterFunctionObject<fieldValues::faceSource>
+        faceSourceFunctionObject;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

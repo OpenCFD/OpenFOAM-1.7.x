@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2009-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,46 +24,55 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "polynomialTransport.H"
-#include "IOstreams.H"
+#include "fieldValue.H"
 
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, int PolySize>
-Foam::polynomialTransport<Thermo, PolySize>::polynomialTransport(Istream& is)
-:
-    Thermo(is),
-    muPolynomial_("muPolynomial", is),
-    kappaPolynomial_("kappaPolynomial", is)
+inline const Foam::word& Foam::fieldValue::name() const
 {
-    muPolynomial_ *= this->W();
-    kappaPolynomial_ *= this->W();
+    return name_;
 }
 
 
-// * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
-
-template<class Thermo, int PolySize>
-Foam::Ostream& Foam::operator<<
-(
-    Ostream& os,
-    const polynomialTransport<Thermo, PolySize>& pt
-)
+inline const Foam::objectRegistry& Foam::fieldValue::obr() const
 {
-    os  << static_cast<const Thermo&>(pt) << tab
-        << "muPolynomial" << tab << pt.muPolynomial_/pt.W() << tab
-        << "kappaPolynomial" << tab << pt.kappaPolynomial_/pt.W();
+    return obr_;
+}
 
-    os.check
-    (
-        "Ostream& operator<<"
-        "("
-            "Ostream&, "
-            "const polynomialTransport<Thermo, PolySize>&"
-        ")"
-    );
 
-    return os;
+inline bool Foam::fieldValue::active() const
+{
+    return active_;
+}
+
+
+inline const Foam::Switch& Foam::fieldValue::log() const
+{
+    return log_;
+}
+
+
+inline const Foam::word& Foam::fieldValue::sourceName() const
+{
+    return sourceName_;
+}
+
+
+inline const Foam::wordList& Foam::fieldValue::fields() const
+{
+    return fields_;
+}
+
+
+inline const Foam::Switch& Foam::fieldValue::valueOutput() const
+{
+    return valueOutput_;
+}
+
+
+inline const Foam::fvMesh& Foam::fieldValue::mesh() const
+{
+    return refCast<const fvMesh>(obr_);
 }
 
 

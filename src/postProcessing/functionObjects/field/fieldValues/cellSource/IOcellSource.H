@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2009-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,49 +22,30 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+Typedef
+    Foam::IOcellSource
+
+
+Description
+    Instance of the generic IOOutputFilter for cellSource.
+
 \*---------------------------------------------------------------------------*/
 
-#include "polynomialTransport.H"
-#include "IOstreams.H"
+#ifndef IOcellSource_H
+#define IOcellSource_H
 
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+#include "cellSource.H"
+#include "IOOutputFilter.H"
 
-template<class Thermo, int PolySize>
-Foam::polynomialTransport<Thermo, PolySize>::polynomialTransport(Istream& is)
-:
-    Thermo(is),
-    muPolynomial_("muPolynomial", is),
-    kappaPolynomial_("kappaPolynomial", is)
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
 {
-    muPolynomial_ *= this->W();
-    kappaPolynomial_ *= this->W();
+    typedef IOOutputFilter<cellSource> IOcellSource;
 }
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
-
-template<class Thermo, int PolySize>
-Foam::Ostream& Foam::operator<<
-(
-    Ostream& os,
-    const polynomialTransport<Thermo, PolySize>& pt
-)
-{
-    os  << static_cast<const Thermo&>(pt) << tab
-        << "muPolynomial" << tab << pt.muPolynomial_/pt.W() << tab
-        << "kappaPolynomial" << tab << pt.kappaPolynomial_/pt.W();
-
-    os.check
-    (
-        "Ostream& operator<<"
-        "("
-            "Ostream&, "
-            "const polynomialTransport<Thermo, PolySize>&"
-        ")"
-    );
-
-    return os;
-}
-
+#endif
 
 // ************************************************************************* //

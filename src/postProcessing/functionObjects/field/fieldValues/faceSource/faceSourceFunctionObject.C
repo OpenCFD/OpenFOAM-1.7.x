@@ -22,34 +22,26 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Typedef
-    Foam::faceZonesIntegrationFunctionObject
-
-Description
-    FunctionObject wrapper around faceZonesIntegration to allow them to be
-    created via the functions list within controlDict.
-
-SourceFiles
-    faceZonesIntegrationFunctionObject.C
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef faceZonesIntegrationFunctionObject_H
-#define faceZonesIntegrationFunctionObject_H
+#include "faceSourceFunctionObject.H"
 
-#include "faceZonesIntegration.H"
-#include "OutputFilterFunctionObject.H"
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    typedef OutputFilterFunctionObject<faceZonesIntegration>
-        faceZonesIntegrationFunctionObject;
+    defineNamedTemplateTypeNameAndDebug
+    (
+        faceSourceFunctionObject,
+        0
+    );
+
+    addToRunTimeSelectionTable
+    (
+        functionObject,
+        faceSourceFunctionObject,
+        dictionary
+    );
 }
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#endif
 
 // ************************************************************************* //

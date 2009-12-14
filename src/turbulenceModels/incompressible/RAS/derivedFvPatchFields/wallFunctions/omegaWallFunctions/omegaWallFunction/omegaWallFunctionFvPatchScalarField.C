@@ -72,7 +72,8 @@ omegaWallFunctionFvPatchScalarField::omegaWallFunctionFvPatchScalarField
     nutName_("nut"),
     Cmu_(0.09),
     kappa_(0.41),
-    E_(9.8)
+    E_(9.8),
+    beta1_(0.075)
 {
     checkType();
 }
@@ -94,7 +95,8 @@ omegaWallFunctionFvPatchScalarField::omegaWallFunctionFvPatchScalarField
     nutName_(ptf.nutName_),
     Cmu_(ptf.Cmu_),
     kappa_(ptf.kappa_),
-    E_(ptf.E_)
+    E_(ptf.E_),
+    beta1_(ptf.beta1_)
 {
     checkType();
 }
@@ -115,7 +117,8 @@ omegaWallFunctionFvPatchScalarField::omegaWallFunctionFvPatchScalarField
     nutName_(dict.lookupOrDefault<word>("nut", "nut")),
     Cmu_(dict.lookupOrDefault<scalar>("Cmu", 0.09)),
     kappa_(dict.lookupOrDefault<scalar>("kappa", 0.41)),
-    E_(dict.lookupOrDefault<scalar>("E", 9.8))
+    E_(dict.lookupOrDefault<scalar>("E", 9.8)),
+    beta1_(dict.lookupOrDefault<scalar>("beta1", 0.075))
 {
     checkType();
 }
@@ -134,7 +137,8 @@ omegaWallFunctionFvPatchScalarField::omegaWallFunctionFvPatchScalarField
     nutName_(owfpsf.nutName_),
     Cmu_(owfpsf.Cmu_),
     kappa_(owfpsf.kappa_),
-    E_(owfpsf.E_)
+    E_(owfpsf.E_),
+    beta1_(owfpsf.beta1_)
 {
     checkType();
 }
@@ -154,7 +158,8 @@ omegaWallFunctionFvPatchScalarField::omegaWallFunctionFvPatchScalarField
     nutName_(owfpsf.nutName_),
     Cmu_(owfpsf.Cmu_),
     kappa_(owfpsf.kappa_),
-    E_(owfpsf.E_)
+    E_(owfpsf.E_),
+    beta1_(owfpsf.beta1_)
 {
     checkType();
 }
@@ -196,7 +201,11 @@ void omegaWallFunctionFvPatchScalarField::updateCoeffs()
 
         scalar yPlus = Cmu25*y[faceI]*sqrt(k[faceCellI])/nuw[faceI];
 
-        omega[faceCellI] = sqrt(k[faceCellI])/(Cmu25*kappa_*y[faceI]);
+        scalar omegaVis = 6.0*nuw[faceI]/(beta1_*sqr(y[faceI]));
+
+        scalar omegaLog = sqrt(k[faceCellI])/(Cmu25*kappa_*y[faceI]);
+
+        omega[faceCellI] = sqrt(sqr(omegaVis) + sqr(omegaLog));
 
         if (yPlus > yPlusLam)
         {
@@ -227,6 +236,7 @@ void omegaWallFunctionFvPatchScalarField::write(Ostream& os) const
     os.writeKeyword("Cmu") << Cmu_ << token::END_STATEMENT << nl;
     os.writeKeyword("kappa") << kappa_ << token::END_STATEMENT << nl;
     os.writeKeyword("E") << E_ << token::END_STATEMENT << nl;
+    os.writeKeyword("beta1") << beta1_ << token::END_STATEMENT << nl;
     writeEntry("value", os);
 }
 

@@ -39,11 +39,21 @@ Foam::hPolynomialThermo<EquationOfState, PolySize>::hPolynomialThermo
     Hf_(readScalar(is)),
     Sf_(readScalar(is)),
     cpPolynomial_("cpPolynomial", is),
-    dhPolynomial_(cpPolynomial_.integrate()),
-    sPolynomial_(cpPolynomial_.integrateMinus1())
+    hPolynomial_(),
+    sPolynomial_()
 {
-    // Offset dh poly so that it is relative to the enthalpy at Tstd
-    dhPolynomial_[0] -= dhPolynomial_.evaluate(specie::Tstd);
+    Hf_ *= this->W();
+    Sf_ *= this->W();
+    cpPolynomial_ *= this->W();
+
+    hPolynomial_ = cpPolynomial_.integrate();
+    sPolynomial_ = cpPolynomial_.integrateMinus1();
+
+    // Offset h poly so that it is relative to the enthalpy at Tstd
+    hPolynomial_[0] += Hf_ - hPolynomial_.evaluate(specie::Tstd);
+
+    // Offset s poly so that it is relative to the entropy at Tstd
+    sPolynomial_[0] += Sf_ - sPolynomial_.evaluate(specie::Tstd);
 }
 
 
@@ -57,15 +67,17 @@ Foam::Ostream& Foam::operator<<
 )
 {
     os  << static_cast<const EquationOfState&>(pt) << tab
-        << pt.Hf_ << tab
+        << pt.Hf_/pt.W() << tab
         << pt.Sf_ << tab
-        << pt.cpPolynomial_ << tab
-        << pt.dhPolynomial_ << tab
-        << pt.sPolynomial;
+        << "cpPolynomial" << tab << pt.cpPolynomial_/pt.W();
 
     os.check
     (
-        "operator<<(Ostream& os, const hPolynomialThermo<EquationOfState>& pt)"
+        "operator<<"
+        "("
+            "Ostream&, "
+            "const hPolynomialThermo<EquationOfState, PolySize>&"
+        ")"
     );
 
     return os;

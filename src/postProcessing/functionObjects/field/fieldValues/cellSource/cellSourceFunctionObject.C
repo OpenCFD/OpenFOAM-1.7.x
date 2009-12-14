@@ -24,18 +24,22 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "faceZonesIntegrationFunctionObject.H"
+#include "cellSourceFunctionObject.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    defineNamedTemplateTypeNameAndDebug(faceZonesIntegrationFunctionObject, 0);
+    defineNamedTemplateTypeNameAndDebug
+    (
+        cellSourceFunctionObject,
+        0
+    );
 
     addToRunTimeSelectionTable
     (
         functionObject,
-        faceZonesIntegrationFunctionObject,
+        cellSourceFunctionObject,
         dictionary
     );
 }

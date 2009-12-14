@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2009-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,47 +24,37 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "polynomialTransport.H"
-#include "IOstreams.H"
+#include "faceSource.H"
 
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Thermo, int PolySize>
-Foam::polynomialTransport<Thermo, PolySize>::polynomialTransport(Istream& is)
-:
-    Thermo(is),
-    muPolynomial_("muPolynomial", is),
-    kappaPolynomial_("kappaPolynomial", is)
+inline const Foam::fieldValues::faceSource::sourceType&
+Foam::fieldValues::faceSource::source() const
 {
-    muPolynomial_ *= this->W();
-    kappaPolynomial_ *= this->W();
+    return source_;
 }
 
 
-// * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
-
-template<class Thermo, int PolySize>
-Foam::Ostream& Foam::operator<<
-(
-    Ostream& os,
-    const polynomialTransport<Thermo, PolySize>& pt
-)
+inline const Foam::labelList&
+Foam::fieldValues::faceSource::faceId() const
 {
-    os  << static_cast<const Thermo&>(pt) << tab
-        << "muPolynomial" << tab << pt.muPolynomial_/pt.W() << tab
-        << "kappaPolynomial" << tab << pt.kappaPolynomial_/pt.W();
+    return faceId_;
+}
 
-    os.check
-    (
-        "Ostream& operator<<"
-        "("
-            "Ostream&, "
-            "const polynomialTransport<Thermo, PolySize>&"
-        ")"
-    );
 
-    return os;
+inline const Foam::labelList&
+Foam::fieldValues::faceSource::facePatch() const
+{
+    return facePatchId_;
+}
+
+
+inline const Foam::labelList&
+Foam::fieldValues::faceSource::flipMap() const
+{
+    return flipMap_;
 }
 
 
 // ************************************************************************* //
+

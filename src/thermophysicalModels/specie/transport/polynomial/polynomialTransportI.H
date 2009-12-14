@@ -31,6 +31,18 @@ License
 template<class Thermo, int PolySize>
 inline Foam::polynomialTransport<Thermo, PolySize>::polynomialTransport
 (
+    const polynomialTransport& pt
+)
+:
+    Thermo(pt),
+    muPolynomial_(pt.muPolynomial_),
+    kappaPolynomial_(pt.kappaPolynomial_)
+{}
+
+
+template<class Thermo, int PolySize>
+inline Foam::polynomialTransport<Thermo, PolySize>::polynomialTransport
+(
     const Thermo& t,
     const Polynomial<PolySize>& muPoly,
     const Polynomial<PolySize>& kappaPoly
@@ -85,7 +97,7 @@ inline Foam::scalar Foam::polynomialTransport<Thermo, PolySize>::mu
     const scalar T
 ) const
 {
-    return muPolynomial_.evaluate(T);
+    return muPolynomial_.evaluate(T)/this->W();
 }
 
 
@@ -95,7 +107,7 @@ inline Foam::scalar Foam::polynomialTransport<Thermo, PolySize>::kappa
     const scalar T
 ) const
 {
-    return kappaPolynomial_.evaluate(T);
+    return kappaPolynomial_.evaluate(T)/this->W();
 }
 
 
@@ -132,6 +144,52 @@ Foam::polynomialTransport<Thermo, PolySize>::operator=
 }
 
 
+template<class Thermo, int PolySize>
+inline void Foam::polynomialTransport<Thermo, PolySize>::operator+=
+(
+    const polynomialTransport<Thermo, PolySize>& pt
+)
+{
+    scalar molr1 = this->nMoles();
+
+    Thermo::operator+=(pt);
+
+    molr1 /= this->nMoles();
+    scalar molr2 = pt.nMoles()/this->nMoles();
+
+    muPolynomial_ = molr1*muPolynomial_ + molr2*pt.muPolynomial_;
+    kappaPolynomial_ = molr1*kappaPolynomial_ + molr2*pt.kappaPolynomial_;
+}
+
+
+template<class Thermo, int PolySize>
+inline void Foam::polynomialTransport<Thermo, PolySize>::operator-=
+(
+    const polynomialTransport<Thermo, PolySize>& pt
+)
+{
+    scalar molr1 = this->nMoles();
+
+    Thermo::operator-=(pt);
+
+    molr1 /= this->nMoles();
+    scalar molr2 = pt.nMoles()/this->nMoles();
+
+    muPolynomial_ = molr1*muPolynomial_ - molr2*pt.muPolynomial_;
+    kappaPolynomial_ = molr1*kappaPolynomial_ - molr2*pt.kappaPolynomial_;
+}
+
+
+template<class Thermo, int PolySize>
+inline void Foam::polynomialTransport<Thermo, PolySize>::operator*=
+(
+    const scalar s
+)
+{
+    Thermo::operator*=(s);
+}
+
+
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
 template<class Thermo, int PolySize>
@@ -145,7 +203,6 @@ inline Foam::polynomialTransport<Thermo, PolySize> Foam::operator+
     (
         static_cast<const Thermo&>(pt1) + static_cast<const Thermo&>(pt2)
     );
-
 
     scalar molr1 = pt1.nMoles()/t.nMoles();
     scalar molr2 = pt2.nMoles()/t.nMoles();
