@@ -1,7 +1,7 @@
-include $(RULES)/tecio
+#include "tecioOptions"
 
 EXE_INC = \
-    $(TECIOFLAGS) $(TECIOINC)
+    $(TECIO_FLAGS) $(TECIO_INC)
 
 LIB_LIBS = \
-    $(TECIOLIBS)
+    $(TECIO_LIBS)
