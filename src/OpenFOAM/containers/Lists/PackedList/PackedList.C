@@ -267,8 +267,8 @@ Foam::Ostream& Foam::PackedList<nBits>::print(Ostream& os) const
 template<unsigned nBits>
 void Foam::PackedList<nBits>::operator=(const PackedList<nBits>& lst)
 {
-    setCapacity(lst.size());
     StorageList::operator=(lst);
+    size_ = lst.size();
 }
 
 
@@ -276,6 +276,7 @@ template<unsigned nBits>
 void Foam::PackedList<nBits>::operator=(const UList<label>& lst)
 {
     setCapacity(lst.size());
+    size_ = lst.size();
 
     forAll(lst, i)
     {
