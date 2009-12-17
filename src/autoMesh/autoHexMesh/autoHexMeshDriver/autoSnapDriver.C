@@ -1511,8 +1511,12 @@ void Foam::autoSnapDriver::doSnap
         // meshMover.
         calcNearestSurface(snapDist, meshMover);
 
-        // Get smoothly varying internal displacement field.
-        smoothDisplacement(snapParams, meshMover);
+        //// Get smoothly varying internal displacement field.
+        //- 2009-12-16 : was not found to be beneficial. Keeping internal
+        // fields fixed slightly increases skewness (on boundary)
+        // but lowers non-orthogonality quite a bit (e.g. 65->59 degrees).
+        // Maybe if better smoother?
+        //smoothDisplacement(snapParams, meshMover);
 
         // Apply internal displacement to mesh.
         scaleMesh(snapParams, nInitErrors, baffles, meshMover);
