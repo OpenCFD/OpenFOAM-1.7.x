@@ -162,7 +162,7 @@ public:
         inline PackedList();
 
         //- Construct with given size, initializes list to 0.
-        inline PackedList(const label size);
+        explicit inline PackedList(const label size);
 
         //- Construct with given size and value for all elements.
         PackedList(const label size, const unsigned val);
@@ -174,7 +174,7 @@ public:
         inline PackedList(const Xfer< PackedList<nBits> >&);
 
         //- Construct from a list of labels
-        PackedList(const UList<label>&);
+        explicit PackedList(const UList<label>&);
 
         //- Clone
         inline autoPtr< PackedList<nBits> > clone() const;
@@ -200,6 +200,10 @@ public:
         //  Does auto-vivify for non-existent entries.
         //  Default value set is the max_value.
         inline bool set(const label, const unsigned int val = ~0u);
+
+        //- Unset the entry at index I. Return true if value changed.
+        //  Never auto-vivify entries.
+        inline bool unset(const label);
 
         //- Return the underlying packed storage
         inline List<unsigned int>& storage();
@@ -240,6 +244,8 @@ public:
 
         //- Reserve allocation space for at least this size.
         //  Never shrinks the allocated size.
+        //  The list size is adjusted as per DynamicList with
+        //  SizeInc=0, SizeMult=2, SizeDiv=1
         inline void reserve(const label);
 
         //- Clear the list, i.e. set addressable size to zero.
@@ -249,11 +255,11 @@ public:
         //- Clear the list and delete storage.
         inline void clearStorage();
 
-        //- Shrink the allocated space to what is used.
+        //- Shrink the allocated space to what is actually used.
         inline void shrink();
 
         //- Transfer the contents of the argument list into this list
-        //  and annull the argument list.
+        //  and annul the argument list.
         inline void transfer(PackedList<nBits>&);
 
         //- Transfer contents to the Xfer container

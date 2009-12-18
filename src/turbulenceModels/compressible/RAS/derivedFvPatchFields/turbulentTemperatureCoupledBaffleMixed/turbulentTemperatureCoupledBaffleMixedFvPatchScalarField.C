@@ -24,7 +24,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "turbulentTemperatureCoupledBaffleFvPatchScalarField.H"
+#include "turbulentTemperatureCoupledBaffleMixedFvPatchScalarField.H"
 #include "addToRunTimeSelectionTable.H"
 #include "fvPatchFieldMapper.H"
 #include "volFields.H"
@@ -33,9 +33,16 @@ License
 #include "basicThermo.H"
 #include "RASModel.H"
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace compressible
+{
+
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-bool Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::interfaceOwner
+bool turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::interfaceOwner
 (
     const polyMesh& nbrRegion,
     const polyPatch& nbrPatch
@@ -64,7 +71,7 @@ bool Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::interfaceOwner
             {
                 FatalErrorIn
                 (
-                    "turbulentTemperatureCoupledBaffleFvPatchScalarField"
+                    "turbulentTemperatureCoupledBaffleMixedFvPatchScalarField"
                     "::interfaceOwner(const polyMesh&"
                     ", const polyPatch&)const"
                 )   << "Cannot find region " << myRegion.name()
@@ -96,7 +103,6 @@ bool Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::interfaceOwner
             }
             nbrIndex = props.fluidRegionNames().size() + i;
         }
-
         return myIndex < nbrIndex;
     }
 }
@@ -104,43 +110,49 @@ bool Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::interfaceOwner
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::
-turbulentTemperatureCoupledBaffleFvPatchScalarField
+turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::
+turbulentTemperatureCoupledBaffleMixedFvPatchScalarField
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    fixedValueFvPatchScalarField(p, iF),
+    mixedFvPatchScalarField(p, iF),
     neighbourFieldName_("undefined-neighbourFieldName"),
     KName_("undefined-K")
-{}
+{
+    this->refValue() = 0.0;
+    this->refGrad() = 0.0;
+    this->valueFraction() = 1.0;
+    this->fixesValue_ = true;
+}
 
 
-Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::
-turbulentTemperatureCoupledBaffleFvPatchScalarField
+turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::
+turbulentTemperatureCoupledBaffleMixedFvPatchScalarField
 (
-    const turbulentTemperatureCoupledBaffleFvPatchScalarField& ptf,
+    const turbulentTemperatureCoupledBaffleMixedFvPatchScalarField& ptf,
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF,
     const fvPatchFieldMapper& mapper
 )
 :
-    fixedValueFvPatchScalarField(ptf, p, iF, mapper),
+    mixedFvPatchScalarField(ptf, p, iF, mapper),
     neighbourFieldName_(ptf.neighbourFieldName_),
-    KName_(ptf.KName_)
+    KName_(ptf.KName_),
+    fixesValue_(ptf.fixesValue_)
 {}
 
 
-Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::
-turbulentTemperatureCoupledBaffleFvPatchScalarField
+turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::
+turbulentTemperatureCoupledBaffleMixedFvPatchScalarField
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF,
     const dictionary& dict
 )
 :
-    fixedValueFvPatchScalarField(p, iF, dict),
+    mixedFvPatchScalarField(p, iF),
     neighbourFieldName_(dict.lookup("neighbourFieldName")),
     KName_(dict.lookup("K"))
 {
@@ -148,8 +160,8 @@ turbulentTemperatureCoupledBaffleFvPatchScalarField
     {
         FatalErrorIn
         (
-            "turbulentTemperatureCoupledBaffleFvPatchScalarField::"
-            "turbulentTemperatureCoupledBaffleFvPatchScalarField\n"
+            "turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::"
+            "turbulentTemperatureCoupledBaffleMixedFvPatchScalarField\n"
             "(\n"
             "    const fvPatch& p,\n"
             "    const DimensionedField<scalar, volMesh>& iF,\n"
@@ -162,26 +174,46 @@ turbulentTemperatureCoupledBaffleFvPatchScalarField
             << " in file " << dimensionedInternalField().objectPath()
             << exit(FatalError);
     }
+
+    fvPatchScalarField::operator=(scalarField("value", dict, p.size()));
+
+    if (dict.found("refValue"))
+    {
+        // Full restart
+        refValue() = scalarField("refValue", dict, p.size());
+        refGrad() = scalarField("refGradient", dict, p.size());
+        valueFraction() = scalarField("valueFraction", dict, p.size());
+        fixesValue_ = readBool(dict.lookup("fixesValue"));
+    }
+    else
+    {
+        // Start from user entered data. Assume fixedValue.
+        refValue() = *this;
+        refGrad() = 0.0;
+        valueFraction() = 1.0;
+        fixesValue_ = true;
+    }
 }
 
 
-Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::
-turbulentTemperatureCoupledBaffleFvPatchScalarField
+turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::
+turbulentTemperatureCoupledBaffleMixedFvPatchScalarField
 (
-    const turbulentTemperatureCoupledBaffleFvPatchScalarField& wtcsf,
+    const turbulentTemperatureCoupledBaffleMixedFvPatchScalarField& wtcsf,
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    fixedValueFvPatchScalarField(wtcsf, iF),
+    mixedFvPatchScalarField(wtcsf, iF),
     neighbourFieldName_(wtcsf.neighbourFieldName_),
-    KName_(wtcsf.KName_)
+    KName_(wtcsf.KName_),
+    fixesValue_(wtcsf.fixesValue_)
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::tmp<Foam::scalarField>
-Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::K() const
+tmp<scalarField>
+turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::K() const
 {
     const fvMesh& mesh = patch().boundaryMesh().mesh();
 
@@ -216,7 +248,8 @@ Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::K() const
     {
         FatalErrorIn
         (
-            "turbulentTemperatureCoupledBaffleFvPatchScalarField::K() const"
+            "turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::K()"
+            " const"
         )   << "Did not find field " << KName_
             << " on mesh " << mesh.name() << " patch " << patch().name()
             << endl
@@ -228,7 +261,7 @@ Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::K() const
 }
 
 
-void Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::updateCoeffs()
+void turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::updateCoeffs()
 {
     if (updated())
     {
@@ -262,8 +295,12 @@ void Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::updateCoeffs()
         // Calculate the temperature by harmonic averaging
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        const turbulentTemperatureCoupledBaffleFvPatchScalarField& nbrField =
-        refCast<const turbulentTemperatureCoupledBaffleFvPatchScalarField>
+        const turbulentTemperatureCoupledBaffleMixedFvPatchScalarField&
+        nbrField =
+        refCast
+        <
+            const turbulentTemperatureCoupledBaffleMixedFvPatchScalarField
+        >
         (
             nbrPatch.lookupPatchField<volScalarField, scalar>
             (
@@ -315,19 +352,24 @@ void Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::updateCoeffs()
             distMap.subMap(),
             Twall
         );
-        const_cast<turbulentTemperatureCoupledBaffleFvPatchScalarField&>
+        const_cast<turbulentTemperatureCoupledBaffleMixedFvPatchScalarField&>
         (
             nbrField
         ).fvPatchScalarField::operator=(Twall);
     }
 
+
+    // Switch between fixed value (of harmonic avg) or gradient
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    label nFixed = 0;
+
+    // Like snGrad but bypass switching on refValue/refGrad.
+    tmp<scalarField> normalGradient = (*this-intFld())*patch().deltaCoeffs();
+
     if (debug)
     {
-        //tmp<scalarField> normalGradient =
-        //    (*this-intFld())
-        //  * patch().deltaCoeffs();
-
-        scalar Q = gSum(K()*patch().magSf()*snGrad());
+        scalar Q = gSum(K()*patch().magSf()*normalGradient());
 
         Info<< patch().boundaryMesh().mesh().name() << ':'
             << patch().name() << ':'
@@ -343,33 +385,74 @@ void Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::updateCoeffs()
             << endl;
     }
 
-    fixedValueFvPatchScalarField::updateCoeffs();
+    forAll(*this, i)
+    {
+        // if outgoing flux use fixed value.
+        if (normalGradient()[i] < 0.0)
+        {
+            this->refValue()[i] = operator[](i);
+            this->refGrad()[i] = 0.0;   // not used
+            this->valueFraction()[i] = 1.0;
+            nFixed++;
+        }
+        else
+        {
+            this->refValue()[i] = 0.0;  // not used
+            this->refGrad()[i] = normalGradient()[i];
+            this->valueFraction()[i] = 0.0;
+        }
+    }
+
+    reduce(nFixed, sumOp<label>());
+
+    fixesValue_ = (nFixed > 0);
+
+    if (debug)
+    {
+        label nTotSize = returnReduce(this->size(), sumOp<label>());
+
+        Info<< patch().boundaryMesh().mesh().name() << ':'
+            << patch().name() << ':'
+            << this->dimensionedInternalField().name() << " -> "
+            << nbrMesh.name() << ':'
+            << nbrPatch.name() << ':'
+            << this->dimensionedInternalField().name() << " :"
+            << " patch:" << patch().name()
+            << " out of:" << nTotSize
+            << " fixedBC:" << nFixed
+            << " gradient:" << nTotSize-nFixed << endl;
+    }
+
+    mixedFvPatchScalarField::updateCoeffs();
 }
 
 
-void Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::write
+void turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::write
 (
     Ostream& os
 ) const
 {
-    fixedValueFvPatchScalarField::write(os);
+    mixedFvPatchScalarField::write(os);
     os.writeKeyword("neighbourFieldName")<< neighbourFieldName_
         << token::END_STATEMENT << nl;
     os.writeKeyword("K") << KName_ << token::END_STATEMENT << nl;
+    os.writeKeyword("fixesValue") << fixesValue_ << token::END_STATEMENT << nl;
 }
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
-{
-
 makePatchTypeField
 (
     fvPatchScalarField,
-    turbulentTemperatureCoupledBaffleFvPatchScalarField
+    turbulentTemperatureCoupledBaffleMixedFvPatchScalarField
 );
 
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace compressible
 } // End namespace Foam
+
 
 // ************************************************************************* //

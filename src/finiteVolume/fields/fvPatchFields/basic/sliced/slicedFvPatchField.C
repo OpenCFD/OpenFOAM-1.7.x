@@ -55,7 +55,7 @@ slicedFvPatchField<Type>::slicedFvPatchField
     const DimensionedField<Type, volMesh>& iF
 )
 :
-    fvPatchField<Type>(p, iF)
+    fvPatchField<Type>(p, iF, Field<Type>())
 {}
 
 

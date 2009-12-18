@@ -811,6 +811,19 @@ inline bool Foam::PackedList<nBits>::set
 
 
 template<unsigned nBits>
+inline bool Foam::PackedList<nBits>::unset(const label i)
+{
+    // lazy - ignore out-of-bounds
+    if (i < 0 || i >= size_)
+    {
+        return false;
+    }
+
+    return iteratorBase(this, i).set(0u);
+}
+
+
+template<unsigned nBits>
 inline void Foam::PackedList<nBits>::append(const unsigned int val)
 {
     label elemI = size_;
@@ -848,7 +861,24 @@ Foam::PackedList<nBits>::operator[](const label i)
 }
 
 
-// specialization for nBits=1 isn't worth the bother
+namespace Foam
+{
+    // specialization for nBits=1
+    template<>
+    inline void Foam::PackedList<1>::operator=(const unsigned int val)
+    {
+        if (val)
+        {
+            StorageList::operator=(~0u);
+        }
+        else
+        {
+            StorageList::operator=(0u);
+        }
+    }
+}
+
+
 template<unsigned nBits>
 inline void Foam::PackedList<nBits>::operator=(const unsigned int val)
 {
