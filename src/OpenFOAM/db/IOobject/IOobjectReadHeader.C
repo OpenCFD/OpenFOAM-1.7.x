@@ -91,7 +91,7 @@ bool Foam::IOobject::readHeader(Istream& is)
             << "First token could not be read or is not the keyword 'FoamFile'"
             << nl << nl << "Check header is of the form:" << nl << endl;
 
-        writeHeader(SeriousError);
+        writeHeader(Info);
 
         return false;
     }
