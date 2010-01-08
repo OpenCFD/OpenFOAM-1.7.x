@@ -199,13 +199,20 @@ Foam::scalarField Foam::coupledPolyPatch::calcFaceTol
 
         const face& f = faces[faceI];
 
+        // 1. calculate a typical size of the face. Use maximum distance
+        //    to face centre
         scalar maxLenSqr = -GREAT;
+        // 2. as measure of truncation error when comparing two coordinates
+        //    use SMALL * maximum component
+        scalar maxCmpt = -GREAT;
 
         forAll(f, fp)
         {
-            maxLenSqr = max(maxLenSqr, magSqr(points[f[fp]] - cc));
+            const point& pt = points[f[fp]];
+            maxLenSqr = max(maxLenSqr, magSqr(pt - cc));
+            maxCmpt = max(maxCmpt, cmptMax(cmptMag(pt)));
         }
-        tols[faceI] = matchTol * Foam::sqrt(maxLenSqr);
+        tols[faceI] = max(SMALL*maxCmpt, matchTol*Foam::sqrt(maxLenSqr));
     }
     return tols;
 }
