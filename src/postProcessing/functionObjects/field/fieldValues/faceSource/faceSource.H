@@ -153,17 +153,22 @@ protected:
         //- Initialise, e.g. face addressing
         void initialise(const dictionary& dict);
 
-        //- Insert field values into values list
+        //- Return true if the field name is valid
         template<class Type>
-        bool setFieldValues
-        (
-            const word& fieldName,
-            List<Type>& values
-        ) const;
+        bool validField(const word& fieldName) const;
+
+        //- Return field values by looking up field name
+        template<class Type>
+        tmp<Field<Type> > setFieldValues(const word& fieldName) const;
 
         //- Apply the 'operation' to the values
         template<class Type>
-        Type processValues(const List<Type>& values) const;
+        Type processValues
+        (
+            const Field<Type>& values,
+            const scalarField& magSf,
+            const scalarField& weightField
+        ) const;
 
         //- Output file header information
         virtual void writeFileHeader();
