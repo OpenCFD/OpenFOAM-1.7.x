@@ -825,7 +825,7 @@ bool Foam::polyMeshGeometry::checkFaceSkewness
             // (i.e. treat as if mirror cell on other side)
 
             vector faceNormal = faceAreas[faceI];
-            faceNormal /= mag(faceNormal) + VSMALL;
+            faceNormal /= mag(faceNormal) + ROOTVSMALL;
 
             vector dOwn = faceCentres[faceI] - cellCentres[own[faceI]];
 
@@ -835,7 +835,7 @@ bool Foam::polyMeshGeometry::checkFaceSkewness
 
             scalar skewness =
                 mag(faceCentres[faceI] - faceIntersection)
-                /(2*mag(dWall) + VSMALL);
+                /(2*mag(dWall) + ROOTVSMALL);
 
             // Check if the skewness vector is greater than the PN vector.
             // This does not cause trouble but is a good indication of a poor
