@@ -23,20 +23,21 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::pointSet
+    Foam::setToFaceZone
 
 Description
-    A set of point labels.
+    A topoSetSource to select faces based on usage in a faceSet. Sets flipMap
+    to true.
 
 SourceFiles
-    pointSet.C
+    setToFaceZone.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef pointSet_H
-#define pointSet_H
+#ifndef setToFaceZone_H
+#define setToFaceZone_H
 
-#include "topoSet.H"
+#include "topoSetSource.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,89 +45,61 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                         Class pointSet Declaration
+                        Class setToFaceZone Declaration
 \*---------------------------------------------------------------------------*/
 
-class pointSet
+class setToFaceZone
 :
-    public topoSet
+    public topoSetSource
 {
+    // Private data
 
+        //- Add usage string
+        static addToUsageTable usage_;
+
+        //- Name of set to use
+        word setName_;
 
 public:
 
     //- Runtime type information
-    TypeName("pointSet");
-
+    TypeName("setToFaceZone");
 
     // Constructors
 
-
-        //- Construct from IOobject
-        pointSet(const IOobject& obj);
-
-        //- Construct from objectRegistry and name
-        pointSet
+        //- Construct from components
+        setToFaceZone
         (
             const polyMesh& mesh,
-            const word& name,
-            readOption r=MUST_READ,
-            writeOption w=NO_WRITE
+            const word& setName
         );
 
-        //- Construct from additional size of labelHashSet
-        pointSet
+        //- Construct from dictionary
+        setToFaceZone
         (
             const polyMesh& mesh,
-            const word& name,
-            const label,
-            writeOption w=NO_WRITE
+            const dictionary& dict
         );
 
-        //- Construct from additional labelHashSet
-        pointSet
+        //- Construct from Istream
+        setToFaceZone
         (
             const polyMesh& mesh,
-            const word& name,
-            const topoSet&,
-            writeOption w=NO_WRITE
-        );
-
-        //- Construct from additional labelHashSet
-        pointSet
-        (
-            const polyMesh& mesh,
-            const word& name,
-            const labelHashSet&,
-            writeOption w=NO_WRITE
+            Istream&
         );
 
 
     // Destructor
 
-        virtual ~pointSet();
+        virtual ~setToFaceZone();
 
 
-    // Member functions
+    // Member Functions
 
-        //- Sync set across coupled patches. Adds coupled points to set.
-        virtual void sync(const polyMesh& mesh);
-
-        //- Return max index+1.
-        virtual label maxSize(const polyMesh& mesh) const;
-
-        //- Update any stored data for new labels
-        virtual void updateMesh(const mapPolyMesh& morphMap);
-
-        //- Update any stored data for new labels
-        //virtual void updateMesh(const polyTopoChange& meshMod);
-
-        //- Write maxLen items with label and coordinates.
-        virtual void writeDebug
+        virtual void applyToSet
         (
-            Ostream& os,
-            const primitiveMesh&,
-            const label maxLen
+            const topoSetSource::setAction action,
+            topoSet&
         ) const;
 
 };

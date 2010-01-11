@@ -55,7 +55,6 @@ namespace Foam
 class mapPolyMesh;
 class polyMesh;
 class primitiveMesh;
-//class directPolyTopoChange;
 
 /*---------------------------------------------------------------------------*\
                            Class topoSet Declaration
@@ -154,6 +153,21 @@ public:
             (mesh, name, size, w)
         );
 
+        // For the constructor as copy
+        declareRunTimeSelectionTable
+        (
+            autoPtr,
+            topoSet,
+            set,
+            (
+                const polyMesh& mesh,
+                const word& name,
+                const topoSet& set,
+                writeOption w
+            ),
+            (mesh, name, set, w)
+        );
+
 
     // Constructors
 
@@ -208,7 +222,7 @@ public:
 
     // Selectors
 
-        //- Return a reference to the selected source
+        //- Return a pointer to a toposet read from file
         static autoPtr<topoSet> New
         (
             const word& setType,
@@ -218,13 +232,23 @@ public:
             writeOption w=NO_WRITE
         );
 
-        //- Return a reference to the selected source
+        //- Return a pointer to a new toposet of given size
         static autoPtr<topoSet> New
         (
             const word& setType,
             const polyMesh& mesh,
             const word& name,
             const label size,
+            writeOption w=NO_WRITE
+        );
+
+        //- Return a pointer to a new toposet as copy of another toposet
+        static autoPtr<topoSet> New
+        (
+            const word& setType,
+            const polyMesh& mesh,
+            const word& name,
+            const topoSet& set,
             writeOption w=NO_WRITE
         );
 
@@ -256,13 +280,13 @@ public:
         virtual void writeDebug(Ostream& os, const label maxLen) const;
 
         //- Like above but also writes mesh related quantity
-        //  (usually coordinate). Not implemented.
+        //  (usually coordinate).
         virtual void writeDebug
         (
             Ostream& os,
             const primitiveMesh&,
             const label maxLen
-        ) const;
+        ) const;    // = 0;
 
         //- Write contents.
         virtual bool writeData(Ostream&) const;
@@ -271,7 +295,7 @@ public:
         virtual void updateMesh(const mapPolyMesh& morphMap);
 
         //- Return max allowable index (+1). Not implemented.
-        virtual label maxSize(const polyMesh& mesh) const;
+        virtual label maxSize(const polyMesh& mesh) const;  // = 0;
 
 
 

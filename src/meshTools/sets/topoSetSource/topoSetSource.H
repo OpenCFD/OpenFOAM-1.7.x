@@ -77,7 +77,8 @@ public:
             ADD,
             DELETE,
             SUBSET,
-            LIST
+            LIST,
+            REMOVE
         };
 
 protected:
@@ -120,7 +121,7 @@ protected:
 
 private:
 
-        static const NamedEnum<setAction, 7> actionNames_;
+        static const NamedEnum<setAction, 8> actionNames_;
 
         static const string illegalSource_;
 

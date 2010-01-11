@@ -23,20 +23,21 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::pointSet
+    Foam::pointZoneSet
 
 Description
-    A set of point labels.
+    Like pointSet but updates pointZone when writing.
 
 SourceFiles
-    pointSet.C
+    pointZone.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef pointSet_H
-#define pointSet_H
+#ifndef pointZoneSet_H
+#define pointZoneSet_H
 
-#include "topoSet.H"
+#include "pointSet.H"
+#include "boolList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,29 +45,32 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                         Class pointSet Declaration
+                           Class pointZoneSet Declaration
 \*---------------------------------------------------------------------------*/
 
-class pointSet
+class pointZoneSet
 :
-    public topoSet
+    public pointSet
 {
+    // Private data
+
+        const polyMesh& mesh_;
+
+        labelList addressing_;
+
+   // Private Member Functions
 
 
 public:
 
     //- Runtime type information
-    TypeName("pointSet");
+    TypeName("pointZoneSet");
 
 
     // Constructors
 
-
-        //- Construct from IOobject
-        pointSet(const IOobject& obj);
-
         //- Construct from objectRegistry and name
-        pointSet
+        pointZoneSet
         (
             const polyMesh& mesh,
             const word& name,
@@ -75,7 +79,7 @@ public:
         );
 
         //- Construct from additional size of labelHashSet
-        pointSet
+        pointZoneSet
         (
             const polyMesh& mesh,
             const word& name,
@@ -83,8 +87,8 @@ public:
             writeOption w=NO_WRITE
         );
 
-        //- Construct from additional labelHashSet
-        pointSet
+        //- Construct from existing set
+        pointZoneSet
         (
             const polyMesh& mesh,
             const word& name,
@@ -92,34 +96,43 @@ public:
             writeOption w=NO_WRITE
         );
 
-        //- Construct from additional labelHashSet
-        pointSet
-        (
-            const polyMesh& mesh,
-            const word& name,
-            const labelHashSet&,
-            writeOption w=NO_WRITE
-        );
 
 
     // Destructor
 
-        virtual ~pointSet();
+        virtual ~pointZoneSet();
 
 
     // Member functions
 
-        //- Sync set across coupled patches. Adds coupled points to set.
+        const labelList& addressing() const
+        {
+            return addressing_;
+        }
+
+        labelList& addressing()
+        {
+            return addressing_;
+        }
+
+        //- Sort addressing and make pointSet part consistent with addressing
+        void updateSet();
+
+        //- Invert contents. (insert all members 0..maxLen-1 which were not in
+        //  set)
+        virtual void invert(const label maxLen);
+
+        //- Subset contents. Only elements present in both sets remain.
+        virtual void subset(const topoSet& set);
+
+        //- Add elements present in set.
+        virtual void addSet(const topoSet& set);
+
+        //- Delete elements present in set.
+        virtual void deleteSet(const topoSet& set);
+
+        //- Sync pointZoneSet across coupled patches.
         virtual void sync(const polyMesh& mesh);
-
-        //- Return max index+1.
-        virtual label maxSize(const polyMesh& mesh) const;
-
-        //- Update any stored data for new labels
-        virtual void updateMesh(const mapPolyMesh& morphMap);
-
-        //- Update any stored data for new labels
-        //virtual void updateMesh(const polyTopoChange& meshMod);
 
         //- Write maxLen items with label and coordinates.
         virtual void writeDebug
@@ -128,6 +141,23 @@ public:
             const primitiveMesh&,
             const label maxLen
         ) const;
+
+        //- Write pointZone
+        virtual bool writeObject
+        (
+            IOstream::streamFormat,
+            IOstream::versionNumber,
+            IOstream::compressionType
+        ) const;
+
+        //- Update any stored data for new labels
+        virtual void updateMesh(const mapPolyMesh& morphMap);
+
+        //- Return max index+1.
+        virtual label maxSize(const polyMesh& mesh) const;
+
+
+
 
 };
 

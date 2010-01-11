@@ -83,6 +83,15 @@ public:
             writeOption w=NO_WRITE
         );
 
+        //- Construct from existing set
+        faceSet
+        (
+            const polyMesh& mesh,
+            const word& name,
+            const topoSet&,
+            writeOption w=NO_WRITE
+        );
+
         //- Construct from additional labelHashSet
         faceSet
         (
@@ -109,7 +118,7 @@ public:
         //- Update any stored data for new labels
         virtual void updateMesh(const mapPolyMesh& morphMap);
 
-        //- Write maxLen items with label and coordinates. 
+        //- Write maxLen items with label and coordinates.
         virtual void writeDebug
         (
             Ostream& os,
