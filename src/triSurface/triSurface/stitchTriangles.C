@@ -26,6 +26,7 @@ License
 
 #include "triSurface.H"
 #include "mergePoints.H"
+#include "PackedBoolList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -46,46 +47,44 @@ bool triSurface::stitchTriangles
     pointField newPoints;
     bool hasMerged = mergePoints(rawPoints, tol, verbose, pointMap, newPoints);
 
+    pointField& ps = storedPoints();
 
+    // Set the coordinates to the merged ones
+    ps.transfer(newPoints);
 
     if (hasMerged)
     {
         if (verbose)
         {
             Pout<< "stitchTriangles : Merged from " << rawPoints.size()
-                << " points down to " << newPoints.size() << endl;
+                << " points down to " << ps.size() << endl;
         }
-
-        pointField& ps = storedPoints();
-
-        // Set the coordinates to the merged ones
-        ps = newPoints;
 
         // Reset the triangle point labels to the unique points array
         label newTriangleI = 0;
         forAll(*this, i)
         {
-            label newA = pointMap[operator[](i)[0]];
-            label newB = pointMap[operator[](i)[1]];
-            label newC = pointMap[operator[](i)[2]];
+            const labelledTri& tri = operator[](i);
+            labelledTri newTri
+            (
+                pointMap[tri[0]],
+                pointMap[tri[1]],
+                pointMap[tri[2]],
+                tri.region()
+            );
 
-            if ((newA != newB) && (newA != newC) && (newB != newC))
+            if ((newTri[0] != newTri[1]) && (newTri[0] != newTri[2]) && (newTri[1] != newTri[2]))
             {
-                operator[](newTriangleI)[0] = newA;
-                operator[](newTriangleI)[1] = newB;
-                operator[](newTriangleI)[2] = newC;
-                operator[](newTriangleI).region() = operator[](i).region();
-                newTriangleI++;
+                operator[](newTriangleI++) = newTri;
             }
             else if (verbose)
             {
                 Pout<< "stitchTriangles : "
-                    << "Removing triangle " << i << " with non-unique vertices."
-                    << endl
-                    << "    vertices   :" << newA << ' ' << newB << ' ' << newC
-                    << endl
-                    << "    coordinates:" << ps[newA] << ' ' << ps[newB]
-                    << ' ' << ps[newC]  << endl;
+                    << "Removing triangle " << i
+                    << " with non-unique vertices." << endl
+                    << "    vertices   :" << newTri << endl
+                    << "    coordinates:" << newTri.points(ps)
+                    << endl;
             }
         }
 
@@ -98,6 +97,58 @@ bool triSurface::stitchTriangles
                     << " triangles" << endl;
             }
             setSize(newTriangleI);
+
+            // And possibly compact out any unused points (since used only
+            // by triangles that have just been deleted)
+            // Done in two passes to save memory (pointField)
+
+            // 1. Detect only
+            PackedBoolList pointIsUsed(ps.size());
+
+            label nPoints = 0;
+
+            forAll(*this, i)
+            {
+                const labelledTri& tri = operator[](i);
+
+                forAll(tri, fp)
+                {
+                    label pointI = tri[fp];
+                    if (pointIsUsed.set(pointI, 1))
+                    {
+                        nPoints++;
+                    }
+                }
+            }
+
+            if (nPoints != ps.size())
+            {
+                // 2. Compact.
+                pointMap.setSize(ps.size());
+                label newPointI = 0;
+                forAll(pointIsUsed, pointI)
+                {
+                    if (pointIsUsed[pointI])
+                    {
+                        ps[newPointI] = ps[pointI];
+                        pointMap[pointI] = newPointI++;
+                    }
+                }
+                ps.setSize(newPointI);
+
+                newTriangleI = 0;
+                forAll(*this, i)
+                {
+                    const labelledTri& tri = operator[](i);
+                    operator[](newTriangleI++) = labelledTri
+                    (
+                        pointMap[tri[0]],
+                        pointMap[tri[1]],
+                        pointMap[tri[2]],
+                        tri.region()
+                    );
+                }
+            }
         }
     }
 
