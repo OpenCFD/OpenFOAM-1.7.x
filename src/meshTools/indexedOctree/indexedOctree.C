@@ -705,7 +705,7 @@ Foam::treeBoundBox Foam::indexedOctree<Type>::subBbox
 
 
 // Takes a bb and a point on/close to the edge of the bb and pushes the point
-// inside by a small fraction. 
+// inside by a small fraction.
 template <class Type>
 Foam::point Foam::indexedOctree<Type>::pushPoint
 (
@@ -776,7 +776,7 @@ Foam::point Foam::indexedOctree<Type>::pushPoint
 
 
 // Takes a bb and a point on the edge of the bb and pushes the point
-// outside by a small fraction. 
+// outside by a small fraction.
 template <class Type>
 Foam::point Foam::indexedOctree<Type>::pushPoint
 (
@@ -957,6 +957,7 @@ Foam::point Foam::indexedOctree<Type>::pushPointIntoFace
     }
     else if (nFaces == 1)
     {
+        // Point is on a single face
         keepFaceID = faceIndices[0];
     }
     else
@@ -1042,7 +1043,7 @@ Foam::point Foam::indexedOctree<Type>::pushPointIntoFace
     }
 
 
-    return facePoint;   
+    return facePoint;
 }
 
 
@@ -1150,7 +1151,7 @@ Foam::point Foam::indexedOctree<Type>::pushPointIntoFace
 //    //     |    |
 //    //     +----+
 //    // Shift point down (away from top):
-//    //     
+//    //
 //    //    a+----+
 //    // ----|    |
 //    //     |    |
@@ -1364,7 +1365,7 @@ bool Foam::indexedOctree<Type>::walkToNeighbour
     // |  a+-+-+
     // |   |\| |
     // +---+-+-+
-    //        \ 
+    //        \
     //
     // e.g. ray is at (a) in octant 0(or 4) with faceIDs : LEFTBIT+TOPBIT.
     // If we would be in octant 1(or 5) we could go to the correct octant
@@ -1782,16 +1783,6 @@ Foam::pointIndexHit Foam::indexedOctree<Type>::findLine
     label i = 0;
     for (; i < 100000; i++)
     {
-        if (verbose)
-        {
-            Pout<< "iter:" << i
-                << " at startPoint:" << hitInfo.rawPoint() << endl
-                << "    node:" << nodeI
-                << " octant:" << octant
-                << " bb:" << subBbox(nodeI, octant) << endl;
-        }
-
-
         // Ray-trace to end of current node. Updates point (either on triangle
         // in case of hit or on node bounding box in case of miss)
 
@@ -1807,6 +1798,19 @@ Foam::pointIndexHit Foam::indexedOctree<Type>::findLine
                 hitInfo.rawPoint()
             )
         );
+
+        if (verbose)
+        {
+            Pout<< "iter:" << i
+                << " at current:" << hitInfo.rawPoint()
+                << " (perturbed:" << startPoint << ")" << endl
+                << "    node:" << nodeI
+                << " octant:" << octant
+                << " bb:" << subBbox(nodeI, octant) << endl;
+        }
+
+
+
 
         // Faces of current bounding box current point is on
         direction hitFaceID = 0;
@@ -1833,12 +1837,23 @@ Foam::pointIndexHit Foam::indexedOctree<Type>::findLine
             break;
         }
 
-        if (hitFaceID == 0)
+        if (hitFaceID == 0 || hitInfo.rawPoint() == treeEnd)
         {
             // endpoint inside the tree. Return miss.
             break;
         }
 
+        // Create a point on other side of face.
+        point perturbedPoint
+        (
+            pushPoint
+            (
+                octantBb,
+                hitFaceID,
+                hitInfo.rawPoint(),
+                false                   // push outside of octantBb
+            )
+        );
 
         if (verbose)
         {
@@ -1848,14 +1863,7 @@ Foam::pointIndexHit Foam::indexedOctree<Type>::findLine
                 << "    node:" << nodeI
                 << " octant:" << octant
                 << " bb:" << subBbox(nodeI, octant) << nl
-                << "    walking to neighbour containing:"
-                <<  pushPoint
-                    (
-                        octantBb,
-                        hitFaceID,
-                        hitInfo.rawPoint(),
-                        false                   // push outside of octantBb
-                    )
+                << "    walking to neighbour containing:" << perturbedPoint
                 << endl;
         }
 
@@ -1866,13 +1874,7 @@ Foam::pointIndexHit Foam::indexedOctree<Type>::findLine
 
         bool ok = walkToNeighbour
         (
-            pushPoint
-            (
-                octantBb,
-                hitFaceID,
-                hitInfo.rawPoint(),
-                false                   // push outside of octantBb
-            ),
+            perturbedPoint,
             hitFaceID,  // face(s) that hitInfo is on
 
             nodeI,
