@@ -38,6 +38,7 @@ SourceFiles
 
 #include "fvPatchFields.H"
 #include "fixedGradientFvPatchFields.H"
+#include "NamedEnum.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -54,13 +55,31 @@ class turbulentHeatFluxTemperatureFvPatchScalarField
 :
     public fixedGradientFvPatchScalarField
 {
-// Private data
+public:
 
-    //- Heat flux [W]
-    scalarField q_;
+    // Data types
 
-    //- Name of density field
-    word rhoName_;
+        //- Enumeration listing the possible hest source input modes
+        enum heatSourceType
+        {
+            hsPower,
+            hsFlux
+        };
+
+
+private:
+
+    // Private data
+
+        //- Heat source type names
+        static const NamedEnum<heatSourceType, 2> heatSourceTypeNames_;
+
+        //- Heat source type
+        heatSourceType heatSource_;
+
+        //- Heat power [W] or flux [W/m2]
+        scalarField q_;
+
 
 
 public:
