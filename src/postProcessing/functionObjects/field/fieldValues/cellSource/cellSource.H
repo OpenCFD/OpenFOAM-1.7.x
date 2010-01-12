@@ -39,13 +39,20 @@ Description
         valueOutput     true;       // Write values at run-time output times?
         source          cellZone;   // Type of cell source
         sourceName      c0;
-        operation       volAverage; // none, sum, volAverage, volIntegrate
+        operation       volAverage;
         fields
         (
             p
             U
         );
     }
+
+    where operation is one of:
+      - none
+      - sum
+      - volAverage
+      - volIntegrate
+      - weightedAverage
 
 SourceFiles
     cellSource.C
@@ -96,11 +103,12 @@ public:
             opNone,
             opSum,
             opVolAverage,
-            opVolIntegrate
+            opVolIntegrate,
+            opWeightedAverage
         };
 
         //- Operation type names
-        static const NamedEnum<operationType, 4> operationTypeNames_;
+        static const NamedEnum<operationType, 5> operationTypeNames_;
 
 
 private:
@@ -127,23 +135,34 @@ protected:
         //- Local list of cell IDs
         labelList cellId_;
 
+        //- Weight field name - only used for opWeightedAverage mode
+        word weightFieldName_;
+
 
     // Protected member functions
 
         //- Initialise, e.g. cell addressing
-        void initialise();
+        void initialise(const dictionary& dict);
+
+        //- Return true if the field name is valid
+        template<class Type>
+        bool validField(const word& fieldName) const;
 
         //- Insert field values into values list
         template<class Type>
-        bool setFieldValues
+        tmp<Field<Type> > setFieldValues
         (
-            const word& fieldName,
-            List<Type>& values
+            const word& fieldName
         ) const;
 
         //- Apply the 'operation' to the values
         template<class Type>
-        Type processValues(const List<Type>& values) const;
+        Type processValues
+        (
+            const Field<Type>& values,
+            const scalarField& V,
+            const scalarField& weightField
+        ) const;
 
         //- Output file header information
         virtual void writeFileHeader();

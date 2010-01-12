@@ -220,7 +220,7 @@ void Foam::fieldValues::faceSource::initialise(const dictionary& dict)
         }
         default:
         {
-            FatalErrorIn("faceSource::constructFaceAddressing()")
+            FatalErrorIn("faceSource::initiliase()")
                 << type() << " " << name_ << ": "
                 << sourceTypeNames_[source_] << "(" << sourceName_ << "):"
                 << nl << "    Unknown source type. Valid source types are:"
@@ -245,7 +245,7 @@ void Foam::fieldValues::faceSource::initialise(const dictionary& dict)
         }
         else
         {
-            FatalErrorIn("faceSource::constructFaceAddressing()")
+            FatalErrorIn("faceSource::initialise()")
                 << type() << " " << name_ << ": "
                 << sourceTypeNames_[source_] << "(" << sourceName_ << "):"
                 << nl << "    Weight field " << weightFieldName_
@@ -326,9 +326,12 @@ void Foam::fieldValues::faceSource::write()
 
     if (active_)
     {
-        outputFilePtr_()
-            << obr_.time().value() << tab
-            << sum(filterField(mesh().magSf()));
+        if (Pstream::master())
+        {
+            outputFilePtr_()
+                << obr_.time().value() << tab
+                << sum(filterField(mesh().magSf()));
+        }
 
         forAll(fields_, i)
         {
@@ -339,7 +342,10 @@ void Foam::fieldValues::faceSource::write()
             writeValues<tensor>(fields_[i]);
         }
 
-        outputFilePtr_()<< endl;
+        if (Pstream::master())
+        {
+            outputFilePtr_()<< endl;
+        }
 
         if (log_)
         {
@@ -350,4 +356,3 @@ void Foam::fieldValues::faceSource::write()
 
 
 // ************************************************************************* //
-

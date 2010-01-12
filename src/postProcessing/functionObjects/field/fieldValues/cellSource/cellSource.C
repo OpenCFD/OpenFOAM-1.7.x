@@ -46,10 +46,13 @@ namespace Foam
         fieldValues::cellSource::sourceTypeNames_;
 
     template<>
-    const char* NamedEnum<fieldValues::cellSource::operationType, 4>::
-        names[] = {"none", "sum", "volAverage", "volIntegrate"};
+    const char* NamedEnum<fieldValues::cellSource::operationType, 5>::
+        names[] =
+        {
+            "none", "sum", "volAverage", "volIntegrate", "weightedAverage"
+        };
 
-    const NamedEnum<fieldValues::cellSource::operationType, 4>
+    const NamedEnum<fieldValues::cellSource::operationType, 5>
         fieldValues::cellSource::operationTypeNames_;
 
 }
@@ -93,7 +96,7 @@ void Foam::fieldValues::cellSource::setCellZoneCells()
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-void Foam::fieldValues::cellSource::initialise()
+void Foam::fieldValues::cellSource::initialise(const dictionary& dict)
 {
     switch (source_)
     {
@@ -104,7 +107,7 @@ void Foam::fieldValues::cellSource::initialise()
         }
         default:
         {
-            FatalErrorIn("cellSource::constructCellAddressing()")
+            FatalErrorIn("cellSource::initialise()")
                 << "Unknown source type. Valid source types are:"
                 << sourceTypeNames_ << nl << exit(FatalError);
         }
@@ -114,6 +117,29 @@ void Foam::fieldValues::cellSource::initialise()
         << "    total cells  = " << cellId_.size() << nl
         << "    total volume = " << sum(filterField(mesh().V()))
         << nl << endl;
+
+    if (operation_ == opWeightedAverage)
+    {
+        dict.lookup("weightField") >> weightFieldName_;
+        if
+        (
+            obr().foundObject<volScalarField>(weightFieldName_)
+        )
+        {
+            Info<< "    weight field = " << weightFieldName_;
+        }
+        else
+        {
+            FatalErrorIn("cellSource::initialise()")
+                << type() << " " << name_ << ": "
+                << sourceTypeNames_[source_] << "(" << sourceName_ << "):"
+                << nl << "    Weight field " << weightFieldName_
+                << " must be a " << volScalarField::typeName
+                << nl << exit(FatalError);
+        }
+    }
+
+    Info<< nl << endl;
 }
 
 
@@ -172,7 +198,7 @@ void Foam::fieldValues::cellSource::read(const dictionary& dict)
     if (active_)
     {
         // no additional info to read
-        initialise();
+        initialise(dict);
     }
 }
 
@@ -183,9 +209,12 @@ void Foam::fieldValues::cellSource::write()
 
     if (active_)
     {
-        outputFilePtr_()
-            << obr_.time().value() << tab
-            << sum(filterField(mesh().V()));
+        if (Pstream::master())
+        {
+            outputFilePtr_()
+                << obr_.time().value() << tab
+                << sum(filterField(mesh().V()));
+        }
 
         forAll(fields_, i)
         {
@@ -196,7 +225,10 @@ void Foam::fieldValues::cellSource::write()
             writeValues<tensor>(fields_[i]);
         }
 
-        outputFilePtr_()<< endl;
+        if (Pstream::master())
+        {
+            outputFilePtr_()<< endl;
+        }
 
         if (log_)
         {
