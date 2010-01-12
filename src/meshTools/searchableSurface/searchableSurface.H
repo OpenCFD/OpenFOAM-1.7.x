@@ -190,6 +190,10 @@ public:
             return size();
         }
 
+        //- Get representative set of element coordinates
+        //  Usually the element centres (should be of length size()).
+        virtual pointField coordinates() const = 0;
+
 
         // Single point queries.
 
@@ -319,6 +323,18 @@ public:
             )
             {}
 
+            //- WIP. Store element-wise field.
+            virtual void setField(const labelList& values)
+            {}
+
+            //- WIP. From a set of hits (points and
+            //  indices) get the specified field. Misses do not get set. Return
+            //  empty field if not supported.
+            virtual void getField(const List<pointIndexHit>&, labelList& values)
+            const
+            {
+                values.clear();
+            }
 
 };
 

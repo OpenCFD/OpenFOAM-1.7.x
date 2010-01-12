@@ -26,7 +26,7 @@ Class
     Foam::searchablePlane
 
 Description
-    Searching on plane. See plane.H
+    Searching on (infinite) plane. See plane.H
 
 SourceFiles
     searchablePlane.C
@@ -120,6 +120,14 @@ public:
         virtual label size() const
         {
             return 1;
+        }
+
+        //- Get representative set of element coordinates
+        //  Usually the element centres (should be of length size()).
+        virtual pointField coordinates() const
+        {
+            //notImplemented("searchablePlane::coordinates()")
+            return pointField(1, refPoint());
         }
 
 

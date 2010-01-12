@@ -145,6 +145,13 @@ public:
             return 1;
         }
 
+        //- Get representative set of element coordinates
+        //  Usually the element centres (should be of length size()).
+        virtual pointField coordinates() const
+        {
+            return pointField(1, origin_);
+        }
+
 
         // Multiple point queries.
 

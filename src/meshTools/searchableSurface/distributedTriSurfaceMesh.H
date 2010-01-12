@@ -418,7 +418,7 @@ public:
             //  Should really be split into a routine to determine decomposition
             //  and one that does actual distribution but determining
             //  decomposition with duplicate triangle merging requires
-            //  same amoun as work as actual distribution.
+            //  same amount as work as actual distribution.
             virtual void distribute
             (
                 const List<treeBoundBox>&,
@@ -430,14 +430,9 @@ public:
 
         // Other
 
-            //- Specific to triSurfaceMesh: from a set of hits (points and
+            //- WIP. From a set of hits (points and
             //  indices) get the specified field. Misses do not get set.
-            virtual void getField
-            (
-                const word& fieldName,
-                const List<pointIndexHit>&,
-                labelList& values
-            ) const;
+            virtual void getField(const List<pointIndexHit>&, labelList&) const;
 
             //- Subset the part of surface that is overlapping bounds.
             static triSurface overlappingSurface

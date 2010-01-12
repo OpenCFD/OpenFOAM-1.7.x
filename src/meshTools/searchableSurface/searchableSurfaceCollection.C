@@ -101,10 +101,70 @@ void Foam::searchableSurfaceCollection::findNearest
                     minDistSqr[pointI] = distSqr;
                     nearestInfo[pointI].setPoint(globalPt);
                     nearestInfo[pointI].setHit();
-                    nearestInfo[pointI].setIndex(hitInfo[pointI].index());
+                    nearestInfo[pointI].setIndex
+                    (
+                        hitInfo[pointI].index()
+                      + indexOffset_[surfI]
+                    );
                     nearestSurf[pointI] = surfI;
                 }
             }
+        }
+    }
+}
+
+
+// Sort hits into per-surface bins. Misses are rejected. Maintains map back
+// to position
+void Foam::searchableSurfaceCollection::sortHits
+(
+    const List<pointIndexHit>& info,
+    List<List<pointIndexHit> >& surfInfo,
+    labelListList& infoMap
+) const
+{
+    // Count hits per surface.
+    labelList nHits(subGeom_.size(), 0);
+
+    forAll(info, pointI)
+    {
+        if (info[pointI].hit())
+        {
+            label index = info[pointI].index();
+            label surfI = findLower(indexOffset_, index+1);
+            nHits[surfI]++;
+        }
+    }
+
+    // Per surface the hit
+    surfInfo.setSize(subGeom_.size());
+    // Per surface the original position
+    infoMap.setSize(subGeom_.size());
+
+    forAll(surfInfo, surfI)
+    {
+        surfInfo[surfI].setSize(nHits[surfI]);
+        infoMap[surfI].setSize(nHits[surfI]);
+    }
+    nHits = 0;
+
+    forAll(info, pointI)
+    {
+        if (info[pointI].hit())
+        {
+            label index = info[pointI].index();
+            label surfI = findLower(indexOffset_, index+1);
+
+            // Store for correct surface and adapt indices back to local
+            // ones
+            label localI = nHits[surfI]++;
+            surfInfo[surfI][localI] = pointIndexHit
+            (
+                info[pointI].hit(),
+                info[pointI].rawPoint(),
+                index-indexOffset_[surfI]
+            );
+            infoMap[surfI][localI] = pointI;
         }
     }
 }
@@ -123,11 +183,13 @@ Foam::searchableSurfaceCollection::searchableSurfaceCollection
     scale_(dict.size()),
     transform_(dict.size()),
     subGeom_(dict.size()),
-    mergeSubRegions_(dict.lookup("mergeSubRegions"))
+    mergeSubRegions_(dict.lookup("mergeSubRegions")),
+    indexOffset_(dict.size()+1)
 {
     Info<< "SearchableCollection : " << name() << endl;
 
     label surfI = 0;
+    label startIndex = 0;
     forAllConstIter(dictionary, dict, iter)
     {
         if (dict.isDict(iter().keyword()))
@@ -153,7 +215,23 @@ Foam::searchableSurfaceCollection::searchableSurfaceCollection
             const searchableSurface& s =
                 io.db().lookupObject<searchableSurface>(subGeomName);
 
+            // I don't know yet how to handle the globalSize combined with
+            // regionOffset. Would cause non-consecutive indices locally
+            // if all indices offset by globalSize() of the local region...
+            if (s.size() != s.globalSize())
+            {
+                FatalErrorIn
+                (
+                    "searchableSurfaceCollection::searchableSurfaceCollection"
+                    "(const IOobject&, const dictionary&)"
+                )   << "Cannot use a distributed surface in a collection."
+                    << exit(FatalError);
+            }
+
             subGeom_.set(surfI, &const_cast<searchableSurface&>(s));
+
+            indexOffset_[surfI] = startIndex;
+            startIndex += subGeom_[surfI].size();
 
             Info<< "    instance : " << instance_[surfI] << endl;
             Info<< "    surface  : " << s.name() << endl;
@@ -163,10 +241,13 @@ Foam::searchableSurfaceCollection::searchableSurfaceCollection
             surfI++;
         }
     }
+    indexOffset_[surfI] = startIndex;
+
     instance_.setSize(surfI);
     scale_.setSize(surfI);
     transform_.setSize(surfI);
     subGeom_.setSize(surfI);
+    indexOffset_.setSize(surfI+1);
 }
 
 
@@ -212,12 +293,36 @@ const Foam::wordList& Foam::searchableSurfaceCollection::regions() const
 
 Foam::label Foam::searchableSurfaceCollection::size() const
 {
-    label n = 0;
+    return indexOffset_[indexOffset_.size()-1];
+}
+
+
+Foam::pointField Foam::searchableSurfaceCollection::coordinates() const
+{
+    // Get overall size
+    pointField coords(size());
+
+    // Append individual coordinates
+    label coordI = 0;
+
     forAll(subGeom_, surfI)
     {
-        n += subGeom_[surfI].size();
+        const pointField subCoords = subGeom_[surfI].coordinates();
+
+        forAll(subCoords, i)
+        {
+            coords[coordI++] = transform_[surfI].globalPosition
+            (
+                cmptMultiply
+                (
+                    subCoords[i],
+                    scale_[surfI]
+                )
+            );
+        }
     }
-    return n;
+
+    return coords;
 }
 
 
@@ -296,6 +401,11 @@ void Foam::searchableSurfaceCollection::findLine
                 );
                 info[pointI] = hitInfo[pointI];
                 info[pointI].rawPoint() = nearest[pointI];
+                info[pointI].setIndex
+                (
+                    hitInfo[pointI].index()
+                  + indexOffset_[surfI]
+                );
             }
         }
     }
@@ -397,79 +507,42 @@ void Foam::searchableSurfaceCollection::getRegion
     }
     else
     {
+        // Multiple surfaces. Sort by surface.
+
+        // Per surface the hit
+        List<List<pointIndexHit> > surfInfo;
+        // Per surface the original position
+        List<List<label> > infoMap;
+        sortHits(info, surfInfo, infoMap);
+
         region.setSize(info.size());
         region = -1;
 
-        // Which region did point come from. Retest for now to see which
-        // surface it originates from - crap solution! Should use global indices
-        // in index inside pointIndexHit to do this better.
+        // Do region tests
 
-        pointField samples(info.size());
-        forAll(info, pointI)
+        if (mergeSubRegions_)
         {
-            if (info[pointI].hit())
+            // Actually no need for surfInfo. Just take region for surface.
+            forAll(infoMap, surfI)
             {
-                samples[pointI] = info[pointI].hitPoint();
-            }
-            else
-            {
-                samples[pointI] = vector::zero;
-            }
-        }
-        //scalarField minDistSqr(info.size(), SMALL);
-        scalarField minDistSqr(info.size(), GREAT);
-
-        labelList nearestSurf;
-        List<pointIndexHit> nearestInfo;
-        findNearest
-        (
-            samples,
-            minDistSqr,
-            nearestInfo,
-            nearestSurf
-        );
-
-        // Check
-        {
-            forAll(info, pointI)
-            {
-                if (info[pointI].hit() && nearestSurf[pointI] == -1)
+                const labelList& map = infoMap[surfI];
+                forAll(map, i)
                 {
-                    FatalErrorIn
-                    (
-                        "searchableSurfaceCollection::getRegion(..)"
-                    )   << "pointI:" << pointI
-                        << " sample:" << samples[pointI]
-                        << " nearest:" << nearestInfo[pointI]
-                        << " nearestsurf:" << nearestSurf[pointI]
-                        << abort(FatalError);
+                    region[map[i]] = regionOffset_[surfI];
                 }
             }
         }
-
-        forAll(subGeom_, surfI)
+        else
         {
-            // Collect points from my surface
-            labelList indices(findIndices(nearestSurf, surfI));
-
-            if (mergeSubRegions_)
-            {
-                forAll(indices, i)
-                {
-                    region[indices[i]] = regionOffset_[surfI];
-                }
-            }
-            else
+            forAll(infoMap, surfI)
             {
                 labelList surfRegion;
-                subGeom_[surfI].getRegion
-                (
-                    UIndirectList<pointIndexHit>(info, indices),
-                    surfRegion
-                );
-                forAll(indices, i)
+                subGeom_[surfI].getRegion(surfInfo[surfI], surfRegion);
+
+                const labelList& map = infoMap[surfI];
+                forAll(map, i)
                 {
-                    region[indices[i]] = regionOffset_[surfI] + surfRegion[i];
+                    region[map[i]] = regionOffset_[surfI] + surfRegion[i];
                 }
             }
         }
@@ -491,49 +564,26 @@ void Foam::searchableSurfaceCollection::getNormal
     }
     else
     {
+        // Multiple surfaces. Sort by surface.
+
+        // Per surface the hit
+        List<List<pointIndexHit> > surfInfo;
+        // Per surface the original position
+        List<List<label> > infoMap;
+        sortHits(info, surfInfo, infoMap);
+
         normal.setSize(info.size());
 
-        // See above - crap retest to find surface point originates from.
-        pointField samples(info.size());
-        forAll(info, pointI)
+        // Do region tests
+        forAll(surfInfo, surfI)
         {
-            if (info[pointI].hit())
-            {
-                samples[pointI] = info[pointI].hitPoint();
-            }
-            else
-            {
-                samples[pointI] = vector::zero;
-            }
-        }
-        //scalarField minDistSqr(info.size(), SMALL);
-        scalarField minDistSqr(info.size(), GREAT);
-
-        labelList nearestSurf;
-        List<pointIndexHit> nearestInfo;
-        findNearest
-        (
-            samples,
-            minDistSqr,
-            nearestInfo,
-            nearestSurf
-        );
-
-
-        forAll(subGeom_, surfI)
-        {
-            // Collect points from my surface
-            labelList indices(findIndices(nearestSurf, surfI));
-
             vectorField surfNormal;
-            subGeom_[surfI].getNormal
-            (
-                UIndirectList<pointIndexHit>(info, indices),
-                surfNormal
-            );
-            forAll(indices, i)
+            subGeom_[surfI].getNormal(surfInfo[surfI], surfNormal);
+
+            const labelList& map = infoMap[surfI];
+            forAll(map, i)
             {
-                normal[indices[i]] = surfNormal[i];
+                normal[map[i]] = surfNormal[i];
             }
         }
     }
@@ -552,6 +602,101 @@ void Foam::searchableSurfaceCollection::getVolumeType
         ", List<volumeType>&) const"
     )   << "Volume type not supported for collection."
         << exit(FatalError);
+}
+
+
+void Foam::searchableSurfaceCollection::distribute
+(
+    const List<treeBoundBox>& bbs,
+    const bool keepNonLocal,
+    autoPtr<mapDistribute>& faceMap,
+    autoPtr<mapDistribute>& pointMap
+)
+{
+    forAll(subGeom_, surfI)
+    {
+        // Note:Tranform the bounding boxes? Something like
+        // pointField bbPoints =
+        // cmptDivide
+        // (
+        //     transform_[surfI].localPosition
+        //     (
+        //         bbs[i].points()
+        //     ),
+        //     scale_[surfI]
+        // );
+        // treeBoundBox newBb(bbPoints);
+
+        // Note: what to do with faceMap, pointMap from multiple surfaces?
+        subGeom_[surfI].distribute
+        (
+            bbs,
+            keepNonLocal,
+            faceMap,
+            pointMap
+        );
+    }
+}
+
+
+void Foam::searchableSurfaceCollection::setField(const labelList& values)
+{
+    forAll(subGeom_, surfI)
+    {
+        subGeom_[surfI].setField
+        (
+            static_cast<const labelList&>
+            (
+                SubList<label>
+                (
+                    values,
+                    subGeom_[surfI].size(),
+                    indexOffset_[surfI]
+                )
+            )
+        );
+    }
+}
+
+
+void Foam::searchableSurfaceCollection::getField
+(
+    const List<pointIndexHit>& info,
+    labelList& values
+) const
+{
+    if (subGeom_.size() == 0)
+    {}
+    else if (subGeom_.size() == 1)
+    {
+        subGeom_[0].getField(info, values);
+    }
+    else
+    {
+        // Multiple surfaces. Sort by surface.
+
+        // Per surface the hit
+        List<List<pointIndexHit> > surfInfo;
+        // Per surface the original position
+        List<List<label> > infoMap;
+        sortHits(info, surfInfo, infoMap);
+
+        values.setSize(info.size());
+        //?Misses do not get set? values = 0;
+
+        // Do surface tests
+        forAll(surfInfo, surfI)
+        {
+            labelList surfValues;
+            subGeom_[surfI].getField(surfInfo[surfI], surfValues);
+
+            const labelList& map = infoMap[surfI];
+            forAll(map, i)
+            {
+                values[map[i]] = surfValues[i];
+            }
+        }
+    }
 }
 
 

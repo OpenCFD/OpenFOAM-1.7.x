@@ -229,6 +229,21 @@ const Foam::wordList& Foam::searchableBox::regions() const
 }
 
 
+Foam::pointField Foam::searchableBox::coordinates() const
+{
+    pointField ctrs(6);
+
+    const pointField pts = treeBoundBox::points();
+    const faceList& fcs = treeBoundBox::faces;
+
+    forAll(fcs, i)
+    {
+        ctrs[i] = fcs[i].centre(pts);
+    }
+    return ctrs;
+}
+
+
 Foam::pointIndexHit Foam::searchableBox::findNearest
 (
     const point& sample,

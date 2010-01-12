@@ -40,6 +40,14 @@ addToRunTimeSelectionTable(searchableSurface, searchableCylinder, dict);
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
+Foam::pointField Foam::searchableCylinder::coordinates() const
+{
+    pointField ctrs(1, 0.5*(point1_ + point2_));
+
+    return ctrs;
+}
+
+
 Foam::pointIndexHit Foam::searchableCylinder::findNearest
 (
     const point& sample,

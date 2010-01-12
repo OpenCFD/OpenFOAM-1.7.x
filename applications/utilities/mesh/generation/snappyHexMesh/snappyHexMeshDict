@@ -40,6 +40,10 @@ geometry
     {
         type triSurfaceMesh;
 
+        //tolerance   1E-3;   // optional:non-default tolerance on intersections
+        //maxTreeDepth 10;    // optional:depth of octree. Decrease only in case
+                              // of memory limitations.
+
         // Per region the patchname. If not provided will be <name>_<region>.
         regions
         {
@@ -280,11 +284,14 @@ addLayersControls
     nBufferCellsNoExtrude 0;
 
 
-    // Overall max number of layer addition iterations
+    // Overall max number of layer addition iterations. The mesher will exit
+    // if it reaches this number of iterations; possibly with an illegal
+    // mesh.
     nLayerIter 50;
 
     // Max number of iterations after which relaxed meshQuality controls
-    // get used.
+    // get used. Up to nRelaxIter it uses the settings in meshQualityControls,
+    // after nRelaxIter it uses the values in meshQualityControls::relaxed.
     nRelaxedIter 20;
 }
 

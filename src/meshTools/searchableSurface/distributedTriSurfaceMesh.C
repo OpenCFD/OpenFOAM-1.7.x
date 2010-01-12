@@ -36,15 +36,19 @@ License
 #include "IFstream.H"
 #include "decompositionMethod.H"
 #include "vectorList.H"
+#include "PackedBoolList.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-defineTypeNameAndDebug(distributedTriSurfaceMesh, 0);
-addToRunTimeSelectionTable(searchableSurface, distributedTriSurfaceMesh, dict);
-
+    defineTypeNameAndDebug(distributedTriSurfaceMesh, 0);
+    addToRunTimeSelectionTable
+    (
+        searchableSurface,
+        distributedTriSurfaceMesh,
+        dict
+    );
 }
 
 
@@ -876,7 +880,7 @@ Foam::distributedTriSurfaceMesh::independentlyDistributedBbs
         bbs[procI].setSize(1);
         //bbs[procI][0] = boundBox::invertedBox;
         bbs[procI][0].min() = point( VGREAT,  VGREAT,  VGREAT);
-        bbs[procI][0].max() = point(-VGREAT, -VGREAT, -VGREAT); 
+        bbs[procI][0].max() = point(-VGREAT, -VGREAT, -VGREAT);
     }
 
     forAll (s, triI)
@@ -920,8 +924,7 @@ void Foam::distributedTriSurfaceMesh::calcBounds
     // Unfortunately nPoints constructs meshPoints() so do compact version
     // ourselves
 
-    PackedList<1> pointIsUsed(points().size());
-    pointIsUsed = 0U;
+    PackedBoolList pointIsUsed(points().size());
 
     nPoints = 0;
     bb.min() = point(VGREAT, VGREAT, VGREAT);
@@ -936,7 +939,7 @@ void Foam::distributedTriSurfaceMesh::calcBounds
         forAll(f, fp)
         {
             label pointI = f[fp];
-            if (pointIsUsed.set(pointI, 1))
+            if (pointIsUsed.set(pointI, 1u))
             {
                 bb.min() = ::Foam::min(bb.min(), points()[pointI]);
                 bb.max() = ::Foam::max(bb.max(), points()[pointI]);
@@ -1935,20 +1938,7 @@ void Foam::distributedTriSurfaceMesh::getNormal
 {
     if (!Pstream::parRun())
     {
-        normal.setSize(info.size());
-
-        forAll(info, i)
-        {
-            if (info[i].hit())
-            {
-                normal[i] = faceNormals()[info[i].index()];
-            }
-            else
-            {
-                // Set to what?
-                normal[i] = vector::zero;
-            }
-        }
+        triSurfaceMesh::getNormal(info, normal);
         return;
     }
 
@@ -2006,70 +1996,64 @@ void Foam::distributedTriSurfaceMesh::getNormal
 
 void Foam::distributedTriSurfaceMesh::getField
 (
-    const word& fieldName,
     const List<pointIndexHit>& info,
     labelList& values
 ) const
 {
-    const triSurfaceLabelField& fld = lookupObject<triSurfaceLabelField>
-    (
-        fieldName
-    );
-
-
     if (!Pstream::parRun())
     {
-        values.setSize(info.size());
-        forAll(info, i)
-        {
-            if (info[i].hit())
-            {
-                values[i] = fld[info[i].index()];
-            }
-        }
+        triSurfaceMesh::getField(info, values);
         return;
     }
 
-
-    // Get query data (= local index of triangle)
-    // ~~~~~~~~~~~~~~
-
-    labelList triangleIndex(info.size());
-    autoPtr<mapDistribute> mapPtr
-    (
-        calcLocalQueries
-        (
-            info,
-            triangleIndex
-        )
-    );
-    const mapDistribute& map = mapPtr();
-
-
-    // Do my tests
-    // ~~~~~~~~~~~
-
-    values.setSize(triangleIndex.size());
-
-    forAll(triangleIndex, i)
+    if (foundObject<triSurfaceLabelField>("values"))
     {
-        label triI = triangleIndex[i];
-        values[i] = fld[triI];
+        const triSurfaceLabelField& fld = lookupObject<triSurfaceLabelField>
+        (
+            "values"
+        );
+
+
+        // Get query data (= local index of triangle)
+        // ~~~~~~~~~~~~~~
+
+        labelList triangleIndex(info.size());
+        autoPtr<mapDistribute> mapPtr
+        (
+            calcLocalQueries
+            (
+                info,
+                triangleIndex
+            )
+        );
+        const mapDistribute& map = mapPtr();
+
+
+        // Do my tests
+        // ~~~~~~~~~~~
+
+        values.setSize(triangleIndex.size());
+
+        forAll(triangleIndex, i)
+        {
+            label triI = triangleIndex[i];
+            values[i] = fld[triI];
+        }
+
+
+        // Send back results
+        // ~~~~~~~~~~~~~~~~~
+
+        map.distribute
+        (
+            Pstream::nonBlocking,
+            List<labelPair>(0),
+            info.size(),
+            map.constructMap(),     // what to send
+            map.subMap(),           // what to receive
+            values
+        );
     }
-
-
-    // Send back results
-    // ~~~~~~~~~~~~~~~~~
-
-    map.distribute
-    (
-        Pstream::nonBlocking,
-        List<labelPair>(0),
-        info.size(),
-        map.constructMap(),     // what to send
-        map.subMap(),           // what to receive
-        values
-    );
 }
 
 
