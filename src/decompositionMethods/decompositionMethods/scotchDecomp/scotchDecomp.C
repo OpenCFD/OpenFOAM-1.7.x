@@ -129,6 +129,51 @@ Foam::label Foam::scotchDecomp::decompose
     List<int>& finalDecomp
 )
 {
+    // Dump graph
+    if (decompositionDict_.found("scotchCoeffs"))
+    {
+        const dictionary& scotchCoeffs =
+            decompositionDict_.subDict("scotchCoeffs");
+
+        if (scotchCoeffs.found("writeGraph"))
+        {
+            Switch writeGraph(scotchCoeffs.lookup("writeGraph"));
+
+            if (writeGraph)
+            {
+                OFstream str(mesh_.time().path() / mesh_.name() + ".grf");
+
+                Info<< "Dumping Scotch graph file to " << str.name() << endl
+                    << "Use this in combination with gpart." << endl;
+
+                label version = 0;
+                str << version << nl;
+                // Numer of vertices
+                str << xadj.size()-1 << ' ' << adjncy.size() << nl;
+                // Numbering starts from 0
+                label baseval = 0;
+                // Has weights?
+                label hasEdgeWeights = 0;
+                label hasVertexWeights = 0;
+                label numericflag = 10*hasEdgeWeights+hasVertexWeights;
+                str << baseval << ' ' << numericflag << nl;
+                for (label cellI = 0; cellI < xadj.size()-1; cellI++)
+                {
+                    label start = xadj[cellI];
+                    label end = xadj[cellI+1];
+                    str << end-start;
+
+                    for (label i = start; i < end; i++)
+                    {
+                        str << ' ' << adjncy[i];
+                    }
+                    str << nl;
+                }
+            }
+        }
+    }
+
+
     // Strategy
     // ~~~~~~~~
 
@@ -180,51 +225,6 @@ Foam::label Foam::scotchDecomp::decompose
         "SCOTCH_graphBuild"
     );
     check(SCOTCH_graphCheck(&grafdat), "SCOTCH_graphCheck");
-
-
-    // Dump graph
-    if (decompositionDict_.found("scotchCoeffs"))
-    {
-        const dictionary& scotchCoeffs =
-            decompositionDict_.subDict("scotchCoeffs");
-
-        if (scotchCoeffs.found("writeGraph"))
-        {
-            Switch writeGraph(scotchCoeffs.lookup("writeGraph"));
-
-            if (writeGraph)
-            {
-                OFstream str(mesh_.time().path() / mesh_.name() + ".grf");
-
-                Info<< "Dumping Scotch graph file to " << str.name() << endl
-                    << "Use this in combination with gpart." << endl;
-
-                label version = 0;
-                str << version << nl;
-                // Numer of vertices
-                str << xadj.size()-1 << ' ' << adjncy.size() << nl;
-                // Numbering starts from 0
-                label baseval = 0;
-                // Has weights?
-                label hasEdgeWeights = 0;
-                label hasVertexWeights = 0;
-                label numericflag = 10*hasEdgeWeights+hasVertexWeights;
-                str << baseval << ' ' << numericflag << nl;
-                for (label cellI = 0; cellI < xadj.size()-1; cellI++)
-                {
-                    label start = xadj[cellI];
-                    label end = xadj[cellI+1];
-                    str << end-start;
-
-                    for (label i = start; i < end; i++)
-                    {
-                        str << ' ' << adjncy[i];
-                    }
-                    str << nl;
-                }
-            }
-        }
-    }
 
 
     // Architecture
