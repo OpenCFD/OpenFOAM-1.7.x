@@ -40,7 +40,7 @@ geometry
     {
         type triSurfaceMesh;
 
-        //tolerance   1E-3;   // optional:non-default tolerance on intersections
+        //tolerance   1E-5;   // optional:non-default tolerance on intersections
         //maxTreeDepth 10;    // optional:depth of octree. Decrease only in case
                               // of memory limitations.
 
