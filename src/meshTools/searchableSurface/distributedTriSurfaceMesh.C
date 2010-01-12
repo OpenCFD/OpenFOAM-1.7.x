@@ -915,41 +915,6 @@ Foam::distributedTriSurfaceMesh::independentlyDistributedBbs
 }
 
 
-void Foam::distributedTriSurfaceMesh::calcBounds
-(
-    boundBox& bb,
-    label& nPoints
-) const
-{
-    // Unfortunately nPoints constructs meshPoints() so do compact version
-    // ourselves
-
-    PackedBoolList pointIsUsed(points().size());
-
-    nPoints = 0;
-    bb.min() = point(VGREAT, VGREAT, VGREAT);
-    bb.max() = point(-VGREAT, -VGREAT, -VGREAT);
-
-    const triSurface& s = static_cast<const triSurface&>(*this);
-
-    forAll(s, triI)
-    {
-        const labelledTri& f = s[triI];
-
-        forAll(f, fp)
-        {
-            label pointI = f[fp];
-            if (pointIsUsed.set(pointI, 1u))
-            {
-                bb.min() = ::Foam::min(bb.min(), points()[pointI]);
-                bb.max() = ::Foam::max(bb.max(), points()[pointI]);
-                nPoints++;
-            }
-        }
-    }
-}
-
-
 // Does any part of triangle overlap bb.
 bool Foam::distributedTriSurfaceMesh::overlaps
 (

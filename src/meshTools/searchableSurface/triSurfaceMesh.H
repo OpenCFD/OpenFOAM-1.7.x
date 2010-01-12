@@ -132,6 +132,11 @@ private:
         void operator=(const triSurfaceMesh&);
 
 
+protected:
+
+        //- Calculate (number of)used points and their bounding box
+        void calcBounds(boundBox& bb, label& nPoints) const;
+
 public:
 
     //- Runtime type information

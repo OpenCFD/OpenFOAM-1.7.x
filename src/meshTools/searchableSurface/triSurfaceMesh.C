@@ -282,6 +282,36 @@ void Foam::triSurfaceMesh::getNextIntersections
 }
 
 
+void Foam::triSurfaceMesh::calcBounds(boundBox& bb, label& nPoints) const
+{
+    // Unfortunately nPoints constructs meshPoints() so do compact version
+    // ourselves
+
+    const triSurface& s = static_cast<const triSurface&>(*this);
+
+    PackedBoolList pointIsUsed(points().size());
+
+    nPoints = 0;
+    bb = boundBox::invertedBox;
+
+    forAll(s, triI)
+    {
+        const labelledTri& f = s[triI];
+
+        forAll(f, fp)
+        {
+            label pointI = f[fp];
+            if (pointIsUsed.set(pointI, 1u))
+            {
+                bb.min() = ::Foam::min(bb.min(), points()[pointI]);
+                bb.max() = ::Foam::max(bb.max(), points()[pointI]);
+                nPoints++;
+            }
+        }
+    }
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::triSurfaceMesh::triSurfaceMesh(const IOobject& io, const triSurface& s)
@@ -468,35 +498,16 @@ const Foam::indexedOctree<Foam::treeDataTriSurface>&
     if (tree_.empty())
     {
         // Calculate bb without constructing local point numbering.
-        const triSurface& s = static_cast<const triSurface>(*this);
+        treeBoundBox bb;
+        label nPoints;
+        calcBounds(bb, nPoints);
 
-        PackedBoolList pointIsUsed(s.points().size());
-
-        label nPoints = 0;
-        treeBoundBox bb(boundBox::invertedBox);
-
-        forAll(s, triI)
-        {
-            const labelledTri& f = s[triI];
-
-            forAll(f, fp)
-            {
-                label pointI = f[fp];
-                if (pointIsUsed.set(pointI, 1))
-                {
-                    bb.min() = ::Foam::min(bb.min(), s.points()[pointI]);
-                    bb.max() = ::Foam::max(bb.max(), s.points()[pointI]);
-                    nPoints++;
-                }
-            }
-        }
-
-        if (nPoints != s.points().size())
+        if (nPoints != points().size())
         {
             WarningIn("triSurfaceMesh::tree() const")
                 << "Surface " << searchableSurface::name()
                 << " does not have compact point numbering."
-                << " Of " << s.points().size() << " only " << nPoints
+                << " Of " << points().size() << " only " << nPoints
                 << " are used. This might give problems in some routines."
                 << endl;
         }
@@ -507,7 +518,7 @@ const Foam::indexedOctree<Foam::treeDataTriSurface>&
 
         // Slightly extended bb. Slightly off-centred just so on symmetric
         // geometry there are less face/edge aligned items.
-        bb.extend(rndGen, 1E-4);
+        bb = bb.extend(rndGen, 1E-4);
         bb.min() -= point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
         bb.max() += point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
 
@@ -549,15 +560,17 @@ const Foam::indexedOctree<Foam::treeDataEdge>&
           + nInternalEdges()
         );
 
+        treeBoundBox bb;
+        label nPoints;
+        calcBounds(bb, nPoints);
+
         // Random number generator. Bit dodgy since not exactly random ;-)
         Random rndGen(65431);
 
         // Slightly extended bb. Slightly off-centred just so on symmetric
         // geometry there are less face/edge aligned items.
-        treeBoundBox bb
-        (
-            treeBoundBox(points(), meshPoints()).extend(rndGen, 1E-4)
-        );
+
+        bb = bb.extend(rndGen, 1E-4);
         bb.min() -= point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
         bb.max() += point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
 

@@ -217,9 +217,6 @@ private:
                 const triSurface&
             );
 
-            //- Calculate surface bounding box
-            void calcBounds(boundBox& bb, label& nPoints) const;
-
             //- Does any part of triangle overlap bb.
             static bool overlaps
             (
