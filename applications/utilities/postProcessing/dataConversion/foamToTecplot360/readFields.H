@@ -26,7 +26,7 @@ InClass
     Foam::readFields
 
 Description
-    
+
 SourceFiles
     readFields.C
 
