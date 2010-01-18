@@ -163,6 +163,7 @@ int main(int argc, char *argv[])
         writeMeshObject<labelIOList>("pointProcAddressing", runTime);
         writeMeshObject<labelIOList>("faceProcAddressing", runTime);
         writeMeshObject<labelIOList>("cellProcAddressing", runTime);
+        writeMeshObject<labelIOList>("boundaryProcAddressing", runTime);
 
         if (runTime.writeFormat() == IOstream::ASCII)
         {
