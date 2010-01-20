@@ -52,20 +52,11 @@ Foam::tmp
     typename Foam::GeometricField<Type, PatchField, GeoMesh>::
     GeometricBoundaryField
 >
-Foam::GeometricField<Type, PatchField, GeoMesh>::readField(Istream& is)
+Foam::GeometricField<Type, PatchField, GeoMesh>::readField
+(
+    const dictionary& fieldDict
+)
 {
-    if (is.version() < 2.0)
-    {
-        FatalIOErrorIn
-        (
-            "GeometricField<Type, PatchField, GeoMesh>::readField(Istream&)",
-            is
-        )   << "IO versions < 2.0 are not supported."
-            << exit(FatalIOError);
-    }
-
-    dictionary fieldDict(is);
-
     DimensionedField<Type, GeoMesh>::readField(fieldDict, "internalField");
 
     tmp<GeometricBoundaryField> tboundaryField
@@ -93,6 +84,28 @@ Foam::GeometricField<Type, PatchField, GeoMesh>::readField(Istream& is)
     }
 
     return tboundaryField;
+}
+
+
+template<class Type, template<class> class PatchField, class GeoMesh>
+Foam::tmp
+<
+    typename Foam::GeometricField<Type, PatchField, GeoMesh>::
+    GeometricBoundaryField
+>
+Foam::GeometricField<Type, PatchField, GeoMesh>::readField(Istream& is)
+{
+    if (is.version() < 2.0)
+    {
+        FatalIOErrorIn
+        (
+            "GeometricField<Type, PatchField, GeoMesh>::readField(Istream&)",
+            is
+        )   << "IO versions < 2.0 are not supported."
+            << exit(FatalIOError);
+    }
+
+    return readField(dictionary(is));
 }
 
 
@@ -398,6 +411,44 @@ Foam::GeometricField<Type, PatchField, GeoMesh>::GeometricField
     if (debug)
     {
         Info<< "Finishing read-construct of "
+               "GeometricField<Type, PatchField, GeoMesh>"
+            << endl << this->info() << endl;
+    }
+}
+
+
+template<class Type, template<class> class PatchField, class GeoMesh>
+Foam::GeometricField<Type, PatchField, GeoMesh>::GeometricField
+(
+    const IOobject& io,
+    const Mesh& mesh,
+    const dictionary& dict
+)
+:
+    DimensionedField<Type, GeoMesh>(io, mesh, dimless),
+    timeIndex_(this->time().timeIndex()),
+    field0Ptr_(NULL),
+    fieldPrevIterPtr_(NULL),
+    boundaryField_(*this, readField(dict))
+{
+    // Check compatibility between field and mesh
+
+    if (this->size() != GeoMesh::size(this->mesh()))
+    {
+        FatalErrorIn
+        (
+            "GeometricField<Type, PatchField, GeoMesh>::GeometricField"
+            "(const IOobject&, const Mesh&, const dictionary&)"
+        )   << "   number of field elements = " << this->size()
+            << " number of mesh elements = " << GeoMesh::size(this->mesh())
+            << exit(FatalIOError);
+    }
+
+    readOldTimeIfPresent();
+
+    if (debug)
+    {
+        Info<< "Finishing dictionary-construct of "
                "GeometricField<Type, PatchField, GeoMesh>"
             << endl << this->info() << endl;
     }
