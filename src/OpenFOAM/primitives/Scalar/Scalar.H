@@ -66,6 +66,12 @@ public:
 
     // Constructors
 
+        //- Construct from Scalar
+        pTraits(const Scalar s)
+        {
+            p_ = s;
+        }
+
         //- Construct from Istream
         pTraits(Istream&);
 

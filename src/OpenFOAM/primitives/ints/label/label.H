@@ -164,6 +164,12 @@ public:
 
     // Constructors
 
+        //- Construct from label
+        pTraits(const label l)
+        {
+            p_ = l;
+        }
+
         //- Construct from Istream
         pTraits(Istream&);
 

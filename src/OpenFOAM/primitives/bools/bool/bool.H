@@ -90,6 +90,12 @@ public:
 
     // Constructors
 
+        //- Construct from bool
+        pTraits(const bool b)
+        {
+            p_ = b;
+        }
+
         //- Construct from Istream
         pTraits(Istream&);
 
