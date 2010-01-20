@@ -39,7 +39,7 @@ laplacianSchemes
 {
     default         none;
     laplacian(muEff,U) Gauss linear corrected;
-    laplacian((rho*(1|A(U))),p) Gauss linear corrected;
+    laplacian((rho*(1|A(U))),pmh) Gauss linear corrected;
     laplacian(DkEff,k) Gauss linear corrected;
     laplacian(DepsilonEff,epsilon) Gauss linear corrected;
     laplacian(mut,Alpha) Gauss linear corrected;
@@ -58,7 +58,7 @@ snGradSchemes
 fluxRequired
 {
     default         no;
-    p               ;
+    pmh             ;
 }
 
 

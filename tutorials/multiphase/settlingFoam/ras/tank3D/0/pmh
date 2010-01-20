@@ -10,7 +10,7 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volScalarField;
-    object      p;
+    object      pmh;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -28,27 +28,32 @@ boundaryField
 
     INLE1
     {
-        type            zeroGradient;
+        type            buoyantPressure;
+        value           uniform 0;
     }
 
     OUTL9
     {
-        type            zeroGradient;
+        type            buoyantPressure;
+        value           uniform 0;
     }
 
     OUTL10
     {
-        type            zeroGradient;
+        type            buoyantPressure;
+        value           uniform 0;
     }
 
     OUTL11
     {
-        type            zeroGradient;
+        type            buoyantPressure;
+        value           uniform 0;
     }
 
     OUTL12
     {
-        type            zeroGradient;
+        type            buoyantPressure;
+        value           uniform 0;
     }
 
     WALL6

@@ -121,6 +121,7 @@ $(derivedFvPatchFields)/inletOutlet/inletOutletFvPatchFields.C
 $(derivedFvPatchFields)/inletOutletTotalTemperature/inletOutletTotalTemperatureFvPatchScalarField.C
 $(derivedFvPatchFields)/flowRateInletVelocity/flowRateInletVelocityFvPatchVectorField.C
 $(derivedFvPatchFields)/movingWallVelocity/movingWallVelocityFvPatchVectorField.C
+$(derivedFvPatchFields)/translatingWallVelocity/translatingWallVelocityFvPatchVectorField.C
 $(derivedFvPatchFields)/rotatingWallVelocity/rotatingWallVelocityFvPatchVectorField.C
 $(derivedFvPatchFields)/oscillatingFixedValue/oscillatingFixedValueFvPatchFields.C
 $(derivedFvPatchFields)/outletInlet/outletInletFvPatchFields.C

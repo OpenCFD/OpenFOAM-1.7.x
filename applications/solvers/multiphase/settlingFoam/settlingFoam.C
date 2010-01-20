@@ -64,22 +64,24 @@ int main(int argc, char *argv[])
 
         #include "rhoEqn.H"
 
-        #include "calcVdj.H"
-
-        #include "UEqn.H"
-
-        #include "alphaEqn.H"
-
-        #include "correctViscosity.H"
-
-
-        // --- PISO loop
-        for (int corr=0; corr<nCorr; corr++)
+        for (int oCorr=0; oCorr<nOuterCorr; oCorr++)
         {
-            #include "pEqn.H"
-        }
+            #include "calcVdj.H"
 
-        #include "kEpsilon.H"
+            #include "UEqn.H"
+
+            #include "alphaEqn.H"
+
+            #include "correctViscosity.H"
+
+            // --- PISO loop
+            for (int corr=0; corr<nCorr; corr++)
+            {
+                #include "pmhEqn.H"
+            }
+
+            #include "kEpsilon.H"
+        }
 
         runTime.write();
 

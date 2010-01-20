@@ -17,7 +17,7 @@ FoamFile
 
 solvers
 {
-    p
+    pmh
     {
         solver          PCG;
         preconditioner  DIC;
@@ -68,9 +68,17 @@ solvers
 
 PISO
 {
-    nCorrectors     2;
+    momentumPredictor yes;
+    nOuterCorrectors  1;
+    nCorrectors       2;
     nNonOrthogonalCorrectors 0;
 }
 
+relaxationFactors
+{
+    U               1;
+    k               1;
+    epsilon         1;
+}
 
 // ************************************************************************* //
