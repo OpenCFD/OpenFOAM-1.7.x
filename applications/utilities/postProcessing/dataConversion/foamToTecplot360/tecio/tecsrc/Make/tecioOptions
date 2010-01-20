@@ -1,10 +1,14 @@
-#if defined(linux)
-
-    TECIO_FLAGS = -DMAKEARCHIVE -DLINUX -DUSEENUM -DTHREED -U_WIN32
-
-#elif defined(linux64)
+#if defined(linux64)
 
     TECIO_FLAGS = -DMAKEARCHIVE -DLINUX -DLINUX64 -DUSEENUM -DTHREED -U_WIN32
+
+#elif defined(linuxIA64)
+
+    TECIO_FLAGS = -DMAKEARCHIVE -DLINUX -DLINUXI64 -DUSEENUM -DTHREED -U_WIN32
+
+#elif defined(linux)
+
+    TECIO_FLAGS = -DMAKEARCHIVE -DLINUX -DUSEENUM -DTHREED -U_WIN32
 
 #else
 

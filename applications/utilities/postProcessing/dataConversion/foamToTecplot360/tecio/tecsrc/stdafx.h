@@ -63,39 +63,6 @@
 #define MSWIN
 #endif
 
-// Turn of smart heap for win 64 builds
-#if defined _WIN64 && defined USE_SMARTHEAP
-#undef USE_SMARTHEAP
-#endif
-
-#if defined USE_SMARTHEAP
-#pragma message("Using SMARTHEAP...")
-/* SmartHeap must be first so its libraries are scanned first for malloc/free/etc. */
-//#define USE_SMARTHEAP_SMP_VERSION_8_1
-#define USE_SMARTHEAP_VERSION_8_1
-#if defined _WIN64
-#error "SmartHeap not available for Win64"
-#else
-#ifdef _DEBUG
-#error "Don't build debug versions with SmartHeap"
-#else
-#if defined USE_SMARTHEAP_SMP_VERSION_8_1
-#include "\\groupstore\workgroups\marketing\jim\SmartHeapSMP\windows\include\smrtheap.h"
-#pragma comment(lib, "\\\\groupstore\\workgroups\\marketing\\jim\\SmartHeapSMP\\windows\\msvc\\shdsmpmt.lib")
-#elif defined USE_SMARTHEAP_VERSION_8_1
-#include "\\groupstore\workgroups\development\tecplot\libs\SmartHeap8.1\Sh81winb\include\smrtheap.h"
-#pragma comment(lib, "\\\groupstore\\workgroups\\development\\tecplot\\libs\\SmartHeap8.1\\Sh81winb\\msvc\\shdw32mt.lib")
-#elif defined USE_SMARTHEAP_VERSION_8_0
-#include "\\groupstore\workgroups\workgroups\development\tecplot\Builds\smartheap\8.0.0\include\smrtheap.h"
-#pragma comment(lib, "\\\\groupstore\\workgroups\\development\\tecplot\\Builds\\smartheap\\8.0.0\\msvc\\shdw32mt.lib")
-#else
-#include "\\groupstore\workgroups\development\tecplot\Builds\smartheap\6.0.3\include\smrtheap.h"
-#pragma comment(lib, "\\\\groupstore\\workgroups\\development\\tecplot\\Builds\\smartheap\\6.0.3\\msvc\\shdw32mt.lib")
-#endif
-#endif
-#endif
-#endif
-
 #define ENGLISH_ONLY // remove to support non-english dll's
 
 #if !defined WINVER

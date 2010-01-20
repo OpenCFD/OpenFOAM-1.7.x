@@ -463,7 +463,7 @@ const Foam::indexedOctree<Foam::treeDataFace>& Foam::meshSearch::boundaryTree()
 
         treeBoundBox overallBb(mesh_.points());
         Random rndGen(123456);
-        overallBb.extend(rndGen, 1E-4);
+        overallBb = overallBb.extend(rndGen, 1E-4);
         overallBb.min() -= point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
         overallBb.max() += point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
 
@@ -497,7 +497,7 @@ const Foam::indexedOctree<Foam::treeDataCell>& Foam::meshSearch::cellTree()
 
         treeBoundBox overallBb(mesh_.points());
         Random rndGen(123456);
-        overallBb.extend(rndGen, 1E-4);
+        overallBb = overallBb.extend(rndGen, 1E-4);
         overallBb.min() -= point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
         overallBb.max() += point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
 
@@ -531,7 +531,7 @@ const Foam::indexedOctree<Foam::treeDataPoint>&
 
         treeBoundBox overallBb(mesh_.cellCentres());
         Random rndGen(123456);
-        overallBb.extend(rndGen, 1E-4);
+        overallBb = overallBb.extend(rndGen, 1E-4);
         overallBb.min() -= point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
         overallBb.max() += point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
 

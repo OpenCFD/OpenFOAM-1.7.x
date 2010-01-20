@@ -22,8 +22,6 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Description
-
 \*---------------------------------------------------------------------------*/
 
 #include "rotatedBoxToCell.H"
@@ -77,7 +75,7 @@ void Foam::rotatedBoxToCell::combine(topoSet& set, const bool add) const
     }
 
     const cellModel& hex = *(cellModeller::lookup("hex"));
-    
+
     // Get outwards pointing faces.
     faceList boxFaces(cellShape(hex, boxVerts).faces());
 
@@ -89,7 +87,7 @@ void Foam::rotatedBoxToCell::combine(topoSet& set, const bool add) const
 
         Pout<< "Face:" << i << " position:" << boxFaces[i].centre(boxPoints)
             << " normal:" << boxFaceNormals[i] << endl;
-    }    
+    }
 
     // Check whether cell centre is inside all faces of box.
 

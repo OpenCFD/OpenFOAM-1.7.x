@@ -30,6 +30,7 @@ License
 #include "EdgeMap.H"
 #include "triSurfaceFields.H"
 #include "Time.H"
+#include "PackedBoolList.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -281,6 +282,36 @@ void Foam::triSurfaceMesh::getNextIntersections
 }
 
 
+void Foam::triSurfaceMesh::calcBounds(boundBox& bb, label& nPoints) const
+{
+    // Unfortunately nPoints constructs meshPoints() so do compact version
+    // ourselves
+
+    const triSurface& s = static_cast<const triSurface&>(*this);
+
+    PackedBoolList pointIsUsed(points().size());
+
+    nPoints = 0;
+    bb = boundBox::invertedBox;
+
+    forAll(s, triI)
+    {
+        const labelledTri& f = s[triI];
+
+        forAll(f, fp)
+        {
+            label pointI = f[fp];
+            if (pointIsUsed.set(pointI, 1u))
+            {
+                bb.min() = ::Foam::min(bb.min(), points()[pointI]);
+                bb.max() = ::Foam::max(bb.max(), points()[pointI]);
+                nPoints++;
+            }
+        }
+    }
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::triSurfaceMesh::triSurfaceMesh(const IOobject& io, const triSurface& s)
@@ -301,6 +332,7 @@ Foam::triSurfaceMesh::triSurfaceMesh(const IOobject& io, const triSurface& s)
     ),
     triSurface(s),
     tolerance_(indexedOctree<treeDataTriSurface>::perturbTol()),
+    maxTreeDepth_(10),
     surfaceClosed_(-1)
 {}
 
@@ -344,6 +376,7 @@ Foam::triSurfaceMesh::triSurfaceMesh(const IOobject& io)
         )
     ),
     tolerance_(indexedOctree<treeDataTriSurface>::perturbTol()),
+    maxTreeDepth_(10),
     surfaceClosed_(-1)
 {}
 
@@ -390,6 +423,7 @@ Foam::triSurfaceMesh::triSurfaceMesh
         )
     ),
     tolerance_(indexedOctree<treeDataTriSurface>::perturbTol()),
+    maxTreeDepth_(10),
     surfaceClosed_(-1)
 {
     scalar scaleFactor = 0;
@@ -409,6 +443,14 @@ Foam::triSurfaceMesh::triSurfaceMesh
     {
         Info<< searchableSurface::name() << " : using intersection tolerance "
             << tolerance_ << endl;
+    }
+
+
+    // Have optional non-standard tree-depth to limit storage.
+    if (dict.readIfPresent("maxTreeDepth", maxTreeDepth_) && maxTreeDepth_ > 0)
+    {
+        Info<< searchableSurface::name() << " : using maximum tree depth "
+            << maxTreeDepth_ << endl;
     }
 }
 
@@ -431,6 +473,17 @@ void Foam::triSurfaceMesh::clearOut()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
+Foam::pointField Foam::triSurfaceMesh::coordinates() const
+{
+    // Use copy to calculate face centres so they don't get stored
+    return PrimitivePatch<labelledTri, SubList, const pointField&>
+    (
+        SubList<labelledTri>(*this, triSurface::size()),
+        triSurface::points()
+    ).faceCentres();
+}
+
+
 void Foam::triSurfaceMesh::movePoints(const pointField& newPoints)
 {
     tree_.clear();
@@ -444,15 +497,28 @@ const Foam::indexedOctree<Foam::treeDataTriSurface>&
 {
     if (tree_.empty())
     {
+        // Calculate bb without constructing local point numbering.
+        treeBoundBox bb;
+        label nPoints;
+        calcBounds(bb, nPoints);
+
+        if (nPoints != points().size())
+        {
+            WarningIn("triSurfaceMesh::tree() const")
+                << "Surface " << searchableSurface::name()
+                << " does not have compact point numbering."
+                << " Of " << points().size() << " only " << nPoints
+                << " are used. This might give problems in some routines."
+                << endl;
+        }
+
+
         // Random number generator. Bit dodgy since not exactly random ;-)
         Random rndGen(65431);
 
         // Slightly extended bb. Slightly off-centred just so on symmetric
         // geometry there are less face/edge aligned items.
-        treeBoundBox bb
-        (
-            treeBoundBox(points(), meshPoints()).extend(rndGen, 1E-4)
-        );
+        bb = bb.extend(rndGen, 1E-4);
         bb.min() -= point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
         bb.max() += point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
 
@@ -465,9 +531,9 @@ const Foam::indexedOctree<Foam::treeDataTriSurface>&
             (
                 treeDataTriSurface(*this),
                 bb,
-                10,     // maxLevel
-                10,     // leafsize
-                3.0     // duplicity
+                maxTreeDepth_,  // maxLevel
+                10,             // leafsize
+                3.0             // duplicity
             )
         );
 
@@ -494,15 +560,17 @@ const Foam::indexedOctree<Foam::treeDataEdge>&
           + nInternalEdges()
         );
 
+        treeBoundBox bb;
+        label nPoints;
+        calcBounds(bb, nPoints);
+
         // Random number generator. Bit dodgy since not exactly random ;-)
         Random rndGen(65431);
 
         // Slightly extended bb. Slightly off-centred just so on symmetric
         // geometry there are less face/edge aligned items.
-        treeBoundBox bb
-        (
-            treeBoundBox(points(), meshPoints()).extend(rndGen, 1E-4)
-        );
+
+        bb = bb.extend(rndGen, 1E-4);
         bb.min() -= point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
         bb.max() += point(ROOTVSMALL, ROOTVSMALL, ROOTVSMALL);
 
@@ -517,10 +585,10 @@ const Foam::indexedOctree<Foam::treeDataEdge>&
                     localPoints(),  // points
                     bEdges          // selected edges
                 ),
-                bb,     // bb
-                8,      // maxLevel
-                10,     // leafsize
-                3.0     // duplicity
+                bb,                 // bb
+                maxTreeDepth_,      // maxLevel
+                10,                 // leafsize
+                3.0                 // duplicity
             )
         );
     }
@@ -754,24 +822,53 @@ void Foam::triSurfaceMesh::getNormal
 }
 
 
+void Foam::triSurfaceMesh::setField(const labelList& values)
+{
+    autoPtr<triSurfaceLabelField> fldPtr
+    (
+        new triSurfaceLabelField
+        (
+            IOobject
+            (
+                "values",
+                objectRegistry::time().timeName(),  // instance
+                "triSurface",                       // local
+                *this,
+                IOobject::NO_READ,
+                IOobject::AUTO_WRITE
+            ),
+            *this,
+            dimless,
+            labelField(values)
+        )
+    );
+
+    // Store field on triMesh
+    fldPtr.ptr()->store();
+}
+
+
 void Foam::triSurfaceMesh::getField
 (
-    const word& fieldName,
     const List<pointIndexHit>& info,
     labelList& values
 ) const
 {
-    const triSurfaceLabelField& fld = lookupObject<triSurfaceLabelField>
-    (
-        fieldName
-    );
-
-    values.setSize(info.size());
-    forAll(info, i)
+    if (foundObject<triSurfaceLabelField>("values"))
     {
-        if (info[i].hit())
+        values.setSize(info.size());
+
+        const triSurfaceLabelField& fld = lookupObject<triSurfaceLabelField>
+        (
+            "values"
+        );
+
+        forAll(info, i)
         {
-            values[i] = fld[info[i].index()];
+            if (info[i].hit())
+            {
+                values[i] = fld[info[i].index()];
+            }
         }
     }
 }

@@ -150,6 +150,10 @@ public:
             return 1;
         }
 
+        //- Get representative set of element coordinates
+        //  Usually the element centres (should be of length size()).
+        virtual pointField coordinates() const;
+
 
         // Multiple point queries.
 

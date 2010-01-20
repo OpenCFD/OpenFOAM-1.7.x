@@ -131,7 +131,7 @@ class surfaceToCell
         //- Depending on surface add to or delete from cellSet.
         void combine(topoSet& set, const bool add) const;
 
-        //- Check values at construction time. 
+        //- Check values at construction time.
         void checkSettings() const;
 
         const triSurfaceSearch& querySurf() const

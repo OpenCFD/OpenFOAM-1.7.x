@@ -151,6 +151,13 @@ public:
             return surface().size();
         }
 
+        //- Get representative set of element coordinates
+        //  Usually the element centres (should be of length size()).
+        virtual pointField coordinates() const
+        {
+            return surface().coordinates();
+        }
+
 
         // Multiple point queries.
 
@@ -224,6 +231,41 @@ public:
                 surface().getVolumeType(samples, info);
             }
 
+
+        // Other
+
+            //- Set bounds of surface. Bounds currently set as list of
+            //  bounding boxes. The bounds are hints to the surface as for
+            //  the range of queries it can expect. faceMap/pointMap can be
+            //  set if the surface has done any redistribution.
+            virtual void distribute
+            (
+                const List<treeBoundBox>& bbs,
+                const bool keepNonLocal,
+                autoPtr<mapDistribute>& faceMap,
+                autoPtr<mapDistribute>& pointMap
+            )
+            {
+                subGeom_[0].distribute(bbs, keepNonLocal, faceMap, pointMap);
+            }
+
+            //- WIP. Store element-wise field.
+            virtual void setField(const labelList& values)
+            {
+                subGeom_[0].setField(values);
+            }
+
+            //- WIP. From a set of hits (points and
+            //  indices) get the specified field. Misses do not get set. Return
+            //  empty field if not supported.
+            virtual void getField
+            (
+                const List<pointIndexHit>& info,
+                labelList& values
+            ) const
+            {
+                surface().getField(info, values);
+            }
 
         // regIOobject implementation
 

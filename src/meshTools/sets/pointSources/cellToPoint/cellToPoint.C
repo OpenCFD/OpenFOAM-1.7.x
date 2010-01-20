@@ -22,8 +22,6 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Description
-
 \*---------------------------------------------------------------------------*/
 
 #include "cellToPoint.H"
@@ -128,7 +126,7 @@ Foam::cellToPoint::cellToPoint
 Foam::cellToPoint::cellToPoint
 (
     const polyMesh& mesh,
-    Istream& is        
+    Istream& is
 )
 :
     topoSetSource(mesh),
@@ -153,13 +151,13 @@ void Foam::cellToPoint::applyToSet
 {
     if ((action == topoSetSource::NEW) || (action == topoSetSource::ADD))
     {
-        Pout<< "    Adding from " << setName_ << " ..." << endl;
+        Info<< "    Adding from " << setName_ << " ..." << endl;
 
         combine(set, true);
     }
     else if (action == topoSetSource::DELETE)
     {
-        Pout<< "    Removing from " << setName_ << " ..." << endl;
+        Info<< "    Removing from " << setName_ << " ..." << endl;
 
         combine(set, false);
     }

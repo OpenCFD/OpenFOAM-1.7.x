@@ -61,7 +61,7 @@ void Foam::nbrToCell::combine(topoSet& set, const bool add) const
     boolList isCoupled(mesh_.nFaces()-mesh_.nInternalFaces(), false);
 
     forAll(patches, patchI)
-    {   
+    {
         const polyPatch& pp = patches[patchI];
 
         if (pp.coupled())

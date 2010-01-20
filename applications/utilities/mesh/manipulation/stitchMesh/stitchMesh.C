@@ -96,7 +96,7 @@ void checkPatch(const polyBoundaryMesh& bMesh, const word& name)
 int main(int argc, char *argv[])
 {
     Foam::argList::noParallel();
-
+#   include "addRegionOption.H"
     Foam::argList::validArgs.append("masterPatch");
     Foam::argList::validArgs.append("slavePatch");
 
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 #   include "setRootCase.H"
 #   include "createTime.H"
     runTime.functionObjects().off();
-#   include "createMesh.H"
+#   include "createNamedMesh.H"
     const word oldInstance = mesh.pointsInstance();
 
 

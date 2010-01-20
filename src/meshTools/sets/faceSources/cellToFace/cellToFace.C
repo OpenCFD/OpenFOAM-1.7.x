@@ -74,7 +74,7 @@ void Foam::cellToFace::combine(topoSet& set, const bool add) const
         SeriousError<< "Cannot load set "
             << setName_ << endl;
     }
-    
+
     cellSet loadedSet(mesh_, setName_);
 
     if (option_ == ALL)
@@ -179,7 +179,7 @@ Foam::cellToFace::cellToFace
 Foam::cellToFace::cellToFace
 (
     const polyMesh& mesh,
-    const dictionary& dict          
+    const dictionary& dict
 )
 :
     topoSetSource(mesh),
@@ -217,14 +217,14 @@ void Foam::cellToFace::applyToSet
 {
     if ((action == topoSetSource::NEW) || (action == topoSetSource::ADD))
     {
-        Pout<< "    Adding faces according to cellSet " << setName_
+        Info<< "    Adding faces according to cellSet " << setName_
             << " ..." << endl;
 
         combine(set, true);
     }
     else if (action == topoSetSource::DELETE)
     {
-        Pout<< "    Removing faces according to cellSet " << setName_
+        Info<< "    Removing faces according to cellSet " << setName_
             << " ..." << endl;
 
         combine(set, false);

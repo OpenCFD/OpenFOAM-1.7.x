@@ -27,27 +27,16 @@ License
 #include "cellSource.H"
 #include "volFields.H"
 #include "IOList.H"
-#include "ListListOps.H"
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 template<class Type>
-bool Foam::fieldValues::cellSource::setFieldValues
-(
-    const word& fieldName,
-    List<Type>& values
-) const
+bool Foam::fieldValues::cellSource::validField(const word& fieldName) const
 {
-    values.setSize(cellId_.size(), pTraits<Type>::zero);
-
     typedef GeometricField<Type, fvPatchField, volMesh> vf;
 
     if (obr_.foundObject<vf>(fieldName))
     {
-        const vf& field = obr_.lookupObject<vf>(fieldName);
-
-        values = UIndirectList<Type>(field, cellId_);
-
         return true;
     }
 
@@ -56,9 +45,28 @@ bool Foam::fieldValues::cellSource::setFieldValues
 
 
 template<class Type>
+Foam::tmp<Foam::Field<Type> > Foam::fieldValues::cellSource::setFieldValues
+(
+    const word& fieldName
+) const
+{
+    typedef GeometricField<Type, fvPatchField, volMesh> vf;
+
+    if (obr_.foundObject<vf>(fieldName))
+    {
+        return filterField(obr_.lookupObject<vf>(fieldName));
+    }
+
+    return tmp<Field<Type> >(new Field<Type>(0.0));
+}
+
+
+template<class Type>
 Type Foam::fieldValues::cellSource::processValues
 (
-    const List<Type>& values
+    const Field<Type>& values,
+    const scalarField& V,
+    const scalarField& weightField
 ) const
 {
     Type result = pTraits<Type>::zero;
@@ -71,13 +79,17 @@ Type Foam::fieldValues::cellSource::processValues
         }
         case opVolAverage:
         {
-            tmp<scalarField> V = filterField(mesh().V());
-            result = sum(values*V())/sum(V());
+            result = sum(values*V)/sum(V);
             break;
         }
         case opVolIntegrate:
         {
-            result = sum(values*filterField(mesh().V()));
+            result = sum(values*V);
+            break;
+        }
+        case opWeightedAverage:
+        {
+            result = sum(values*weightField)/sum(weightField);
             break;
         }
         default:
@@ -95,25 +107,20 @@ Type Foam::fieldValues::cellSource::processValues
 template<class Type>
 bool Foam::fieldValues::cellSource::writeValues(const word& fieldName)
 {
-    List<List<Type> > allValues(Pstream::nProcs());
+    const bool ok = validField<Type>(fieldName);
 
-    bool validField =
-        setFieldValues<Type>(fieldName, allValues[Pstream::myProcNo()]);
-
-    if (validField)
+    if (ok)
     {
-        Pstream::gatherList(allValues);
+        Field<Type> values = combineFields(setFieldValues<Type>(fieldName));
+
+        scalarField V = combineFields(filterField(mesh().V()));
+
+        scalarField weightField =
+            combineFields(setFieldValues<scalar>(weightFieldName_));
 
         if (Pstream::master())
         {
-            List<Type> values =
-                ListListOps::combine<List<Type> >
-                (
-                    allValues,
-                    accessOp<List<Type> >()
-                );
-
-            Type result = processValues(values);
+            Type result = processValues(values, V, weightField);
 
             if (valueOutput_)
             {
@@ -144,7 +151,7 @@ bool Foam::fieldValues::cellSource::writeValues(const word& fieldName)
         }
     }
 
-    return validField;
+    return ok;
 }
 
 

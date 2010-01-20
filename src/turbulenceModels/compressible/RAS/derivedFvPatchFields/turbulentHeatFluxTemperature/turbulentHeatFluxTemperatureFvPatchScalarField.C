@@ -37,6 +37,22 @@ namespace Foam
 namespace compressible
 {
 
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+template<>
+const char*
+NamedEnum<turbulentHeatFluxTemperatureFvPatchScalarField::heatSourceType, 2>::
+names[] =
+    {
+        "power",
+        "flux"
+    };
+
+const
+NamedEnum<turbulentHeatFluxTemperatureFvPatchScalarField::heatSourceType, 2>
+    turbulentHeatFluxTemperatureFvPatchScalarField::heatSourceTypeNames_;
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 turbulentHeatFluxTemperatureFvPatchScalarField::
@@ -47,8 +63,8 @@ turbulentHeatFluxTemperatureFvPatchScalarField
 )
 :
     fixedGradientFvPatchScalarField(p, iF),
-    q_(p.size(), 0.0),
-    rhoName_("rho")
+    heatSource_(hsPower),
+    q_(p.size(), 0.0)
 {}
 
 
@@ -62,8 +78,8 @@ turbulentHeatFluxTemperatureFvPatchScalarField
 )
 :
     fixedGradientFvPatchScalarField(ptf, p, iF, mapper),
-    q_(ptf.q_, mapper),
-    rhoName_(ptf.rhoName_)
+    heatSource_(ptf.heatSource_),
+    q_(ptf.q_, mapper)
 {}
 
 
@@ -76,8 +92,8 @@ turbulentHeatFluxTemperatureFvPatchScalarField
 )
 :
     fixedGradientFvPatchScalarField(p, iF),
-    q_("q", dict, p.size()),
-    rhoName_(dict.lookupOrDefault<word>("rho", "rho"))
+    heatSource_(heatSourceTypeNames_.read(dict.lookup("heatSource"))),
+    q_("q", dict, p.size())
 {
     fvPatchField<scalar>::operator=(patchInternalField());
     gradient() = 0.0;
@@ -91,8 +107,8 @@ turbulentHeatFluxTemperatureFvPatchScalarField
 )
 :
     fixedGradientFvPatchScalarField(thftpsf),
-    q_(thftpsf.q_),
-    rhoName_(thftpsf.rhoName_)
+    heatSource_(thftpsf.heatSource_),
+    q_(thftpsf.q_)
 {}
 
 
@@ -104,8 +120,8 @@ turbulentHeatFluxTemperatureFvPatchScalarField
 )
 :
     fixedGradientFvPatchScalarField(thftpsf, iF),
-    q_(thftpsf.q_),
-    rhoName_(thftpsf.rhoName_)
+    heatSource_(thftpsf.heatSource_),
+    q_(thftpsf.q_)
 {}
 
 
@@ -152,20 +168,38 @@ void turbulentHeatFluxTemperatureFvPatchScalarField::updateCoeffs()
 
     const scalarField alphaEffp = rasModel.alphaEff()().boundaryField()[patchI];
 
-    const basicThermo& thermo =
-        db().lookupObject<basicThermo>("thermophysicalProperties");
-
 //    const scalarField& Tp = thermo.T().boundaryField()[patchI];
     const scalarField& Tp = *this;
 
-    const scalarField Cpp = thermo.Cp(Tp, patchI);
+    const scalarField Cpp = rasModel.thermo().Cp(Tp, patchI);
 
-    const scalarField& rhop =
-        patch().lookupPatchField<volScalarField, scalar>(rhoName_);
-
-    const scalar Ap = gSum(patch().magSf());
-
-    gradient() = q_/(Ap*rhop*Cpp*alphaEffp);
+    switch (heatSource_)
+    {
+        case hsPower:
+        {
+            const scalar Ap = gSum(patch().magSf());
+            gradient() = q_/(Ap*Cpp*alphaEffp);
+            break;
+        }
+        case hsFlux:
+        {
+            gradient() = q_/(Cpp*alphaEffp);
+            break;
+        }
+        default:
+        {
+            FatalErrorIn
+            (
+                "turbulentHeatFluxTemperatureFvPatchScalarField"
+                "("
+                    "const fvPatch&, "
+                    "const DimensionedField<scalar, volMesh>&, "
+                    "const dictionary&"
+                ")"
+            )   << "Unknown heat source type. Valid types are: "
+                << heatSourceTypeNames_ << nl << exit(FatalError);
+        }
+    }
 
     fixedGradientFvPatchScalarField::updateCoeffs();
 }
@@ -177,8 +211,9 @@ void turbulentHeatFluxTemperatureFvPatchScalarField::write
 ) const
 {
     fvPatchScalarField::write(os);
+    os.writeKeyword("heatSource") << heatSourceTypeNames_[heatSource_]
+        << token::END_STATEMENT << nl;
     q_.writeEntry("q", os);
-    os.writeKeyword("rho") << rhoName_ << token::END_STATEMENT << nl;
     gradient().writeEntry("gradient", os);
     writeEntry("value", os);
 }

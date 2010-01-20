@@ -37,10 +37,10 @@ Description
     Example usage:
         myInterfacePatchName
         {
-            type                turbulentTemperatureCoupledBaffleMixed;
+            type        compressible::turbulentTemperatureCoupledBaffleMixed;
             neighbourFieldName  T;
-            K                   K; // or none
-            value               uniform 300;
+            K           K; // or none
+            value       uniform 300;
         }
 
     Needs to be on underlying directMapped(Wall)FvPatch.

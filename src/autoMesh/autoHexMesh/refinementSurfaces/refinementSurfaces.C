@@ -532,7 +532,7 @@ void Foam::refinementSurfaces::setMinLevelFields
                 (
                     IOobject
                     (
-                        "minLevel",
+                        "values",
                         triMesh.objectRegistry::time().timeName(),  // instance
                         "triSurface",                               // local
                         triMesh,
@@ -619,7 +619,7 @@ void Foam::refinementSurfaces::findHigherIntersection
             const triSurfaceMesh& triMesh = refCast<const triSurfaceMesh>(geom);
             triMesh.getField
             (
-                "minLevel",
+                //"minLevel",
                 hitInfo,
                 minLevelField
             );

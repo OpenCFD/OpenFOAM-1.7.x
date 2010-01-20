@@ -24,13 +24,13 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "tecplotWriter.H"
-
 //extern "C"
 //{
     #include "MASTER.h"
     #include "GLOBAL.h"
 //}
+
+#include "tecplotWriter.H"
 
 #include "fvc.H"
 

@@ -36,7 +36,7 @@ Description
     Example usage:
         myInterfacePatchName
         {
-            type                turbulentTemperatureCoupledBaffle;
+            type                compressible::turbulentTemperatureCoupledBaffle;
             neighbourFieldName  T;
             K                   K; // or none
             value               uniform 300;

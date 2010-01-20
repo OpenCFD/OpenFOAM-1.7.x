@@ -88,6 +88,15 @@ public:
         (
             const polyMesh& mesh,
             const word& name,
+            const topoSet&,
+            writeOption w=NO_WRITE
+        );
+
+        //- Construct from additional labelHashSet
+        pointSet
+        (
+            const polyMesh& mesh,
+            const word& name,
             const labelHashSet&,
             writeOption w=NO_WRITE
         );
@@ -112,7 +121,7 @@ public:
         //- Update any stored data for new labels
         //virtual void updateMesh(const polyTopoChange& meshMod);
 
-        //- Write maxLen items with label and coordinates. 
+        //- Write maxLen items with label and coordinates.
         virtual void writeDebug
         (
             Ostream& os,

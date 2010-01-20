@@ -71,6 +71,9 @@ private:
         //- Optional tolerance to use in searches
         scalar tolerance_;
 
+        //- Optional max tree depth of octree
+        label maxTreeDepth_;
+
         //- Search tree (triangles)
         mutable autoPtr<indexedOctree<treeDataTriSurface> > tree_;
 
@@ -129,6 +132,11 @@ private:
         void operator=(const triSurfaceMesh&);
 
 
+protected:
+
+        //- Calculate (number of)used points and their bounding box
+        void calcBounds(boundBox& bb, label& nPoints) const;
+
 public:
 
     //- Runtime type information
@@ -185,6 +193,10 @@ public:
                 return triSurface::size();
             }
 
+            //- Get representative set of element coordinates
+            //  Usually the element centres (should be of length size()).
+            virtual pointField coordinates() const;
+
             virtual void findNearest
             (
                 const pointField& sample,
@@ -236,6 +248,8 @@ public:
                 List<volumeType>&
             ) const;
 
+        // Other
+
             //- Set bounds of surface. Bounds currently set as list of
             //  bounding boxes. The bounds are hints to the surface as for
             //  the range of queries it can expect. faceMap/pointMap can be
@@ -249,16 +263,12 @@ public:
             )
             {}
 
-        // Other
+            //- WIP. Store element-wise field.
+            virtual void setField(const labelList& values);
 
-            //- Specific to triSurfaceMesh: from a set of hits (points and
+            //- WIP. From a set of hits (points and
             //  indices) get the specified field. Misses do not get set.
-            virtual void getField
-            (
-                const word& fieldName,
-                const List<pointIndexHit>&,
-                labelList& values
-            ) const;
+            virtual void getField(const List<pointIndexHit>&, labelList&) const;
 
 
         // regIOobject implementation

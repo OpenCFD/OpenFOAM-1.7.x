@@ -22,8 +22,6 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Description
-
 \*---------------------------------------------------------------------------*/
 
 #include "cellToCell.H"
@@ -72,7 +70,7 @@ Foam::cellToCell::cellToCell
 Foam::cellToCell::cellToCell
 (
     const polyMesh& mesh,
-    const dictionary& dict          
+    const dictionary& dict
 )
 :
     topoSetSource(mesh),
@@ -108,7 +106,7 @@ void Foam::cellToCell::applyToSet
 {
     if ((action == topoSetSource::ADD) || (action == topoSetSource::NEW))
     {
-        Pout<< "    Adding all elements of cellSet " << setName_ << " ..."
+        Info<< "    Adding all elements of cellSet " << setName_ << " ..."
             << endl;
 
         // Load the set
@@ -118,7 +116,7 @@ void Foam::cellToCell::applyToSet
     }
     else if (action == topoSetSource::DELETE)
     {
-        Pout<< "    Removing all elements of cellSet " << setName_ << " ..."
+        Info<< "    Removing all elements of cellSet " << setName_ << " ..."
             << endl;
 
         // Load the set

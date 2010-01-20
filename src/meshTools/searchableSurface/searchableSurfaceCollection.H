@@ -77,6 +77,10 @@ private:
 
             Switch mergeSubRegions_;
 
+            //- offsets for indices coming from different surfaces
+            //  (sized with size() of each surface)
+            labelList indexOffset_;
+
         //- Region names
         mutable wordList regions_;
         //- From individual regions to collection regions
@@ -93,6 +97,15 @@ private:
             scalarField& minDistSqr,
             List<pointIndexHit>& nearestInfo,
             labelList& nearestSurf
+        ) const;
+
+        //- Sort hits into per-surface bins. Misses are rejected.
+        //  Maintains map back to position
+        void sortHits
+        (
+            const List<pointIndexHit>& info,
+            List<List<pointIndexHit> >& surfInfo,
+            labelListList& infoMap
         ) const;
 
 
@@ -135,6 +148,10 @@ public:
 
         //- Range of local indices that can be returned.
         virtual label size() const;
+
+        //- Get representative set of element coordinates
+        //  Usually the element centres (should be of length size()).
+        virtual pointField coordinates() const;
 
 
         // Multiple point queries.
@@ -190,6 +207,27 @@ public:
                 List<volumeType>&
             ) const;
 
+        // Other
+
+            //- Set bounds of surface. Bounds currently set as list of
+            //  bounding boxes. The bounds are hints to the surface as for
+            //  the range of queries it can expect. faceMap/pointMap can be
+            //  set if the surface has done any redistribution.
+            virtual void distribute
+            (
+                const List<treeBoundBox>&,
+                const bool keepNonLocal,
+                autoPtr<mapDistribute>& faceMap,
+                autoPtr<mapDistribute>& pointMap
+            );
+
+            //- WIP. Store element-wise field.
+            virtual void setField(const labelList& values);
+
+            //- WIP. From a set of hits (points and
+            //  indices) get the specified field. Misses do not get set. Return
+            //  empty field if not supported.
+            virtual void getField(const List<pointIndexHit>&, labelList&) const;
 
         // regIOobject implementation
 
