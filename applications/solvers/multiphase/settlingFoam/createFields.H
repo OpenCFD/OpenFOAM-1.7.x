@@ -1,4 +1,4 @@
-    Info<< "Reading field p\n" << endl;
+    Info<< "Reading field pmh\n" << endl;
     volScalarField pmh
     (
         IOobject
@@ -378,6 +378,7 @@
         ),
         mut + mul
     );
+
 
     Info<< "Calculating field (g.h)f\n" << endl;
     volScalarField gh("gh", g & mesh.C());

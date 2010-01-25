@@ -136,7 +136,8 @@ boundaryField
 
     OUTL15
     {
-        type            zeroGradient;
+        type            inletOutlet;
+        inletValue      uniform (0 0 0);
     }
 }
 
