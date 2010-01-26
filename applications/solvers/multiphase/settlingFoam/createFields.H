@@ -1,9 +1,9 @@
-    Info<< "Reading field p\n" << endl;
-    volScalarField p
+    Info<< "Reading field pmh\n" << endl;
+    volScalarField pmh
     (
         IOobject
         (
-            "p",
+            "pmh",
             runTime.timeName(),
             mesh,
             IOobject::MUST_READ,
@@ -129,11 +129,6 @@
     );
 
     #include "compressibleCreatePhi.H"
-
-
-    label pRefCell = 0;
-    scalar pRefValue = 0.0;
-    setRefCell(p, mesh.solutionDict().subDict("PISO"), pRefCell, pRefValue);
 
 
     Info<< "Calculating field mul\n" << endl;
@@ -383,3 +378,48 @@
         ),
         mut + mul
     );
+
+
+    Info<< "Calculating field (g.h)f\n" << endl;
+    volScalarField gh("gh", g & mesh.C());
+    surfaceScalarField ghf = surfaceScalarField("gh", g & mesh.Cf());
+
+    volScalarField p
+    (
+        IOobject
+        (
+            "p",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        pmh + rho*gh
+    );
+
+    label pmhRefCell = 0;
+    scalar pmhRefValue = 0.0;
+    setRefCell
+    (
+        pmh,
+        mesh.solutionDict().subDict("PISO"),
+        pmhRefCell,
+        pmhRefValue
+    );
+
+    scalar pRefValue = 0.0;
+
+    if (pmh.needReference())
+    {
+        pRefValue = readScalar
+        (
+            mesh.solutionDict().subDict("PISO").lookup("pRefValue")
+        );
+
+        p += dimensionedScalar
+        (
+            "p",
+            p.dimensions(),
+            pRefValue - getRefCellValue(p, pmhRefCell)
+        );
+    }

@@ -148,9 +148,14 @@ public:
 
     // Constructors
 
+        //- Construct from uLabel
+        pTraits(const uLabel ul)
+        {
+            p_ = ul;
+        }
+
         //- Construct from Istream
         pTraits(Istream&);
-
 
     // Member Functions
 

@@ -52,9 +52,32 @@
         }
     }
 
-    Info<< "max-min p: " << max(p).value()
+    Info<< "Predicted p max-min : " << max(p).value()
         << " " << min(p).value() << endl;
 
+    rho == max
+    (
+        psi*p
+      + (1.0 - gamma)*rhol0
+      + ((gamma*psiv + (1.0 - gamma)*psil) - psi)*pSat,
+        rhoMin
+    );
+
+    #include "gammaPsi.H"
+
+    p =
+    (
+        rho
+      - (1.0 - gamma)*rhol0
+      - ((gamma*psiv + (1.0 - gamma)*psil) - psi)*pSat
+    )/psi;
+
+    p.correctBoundaryConditions();
+
+    Info<< "Phase-change corrected p max-min : " << max(p).value()
+        << " " << min(p).value() << endl;
+
+    // Correct velocity
 
     U = HbyA - rUA*fvc::grad(p);
 
@@ -70,17 +93,4 @@
     U.correctBoundaryConditions();
 
     Info<< "max(U) " << max(mag(U)).value() << endl;
-
-    rho == max
-    (
-        psi*p
-      + (1.0 - gamma)*rhol0
-      + ((gamma*psiv + (1.0 - gamma)*psil) - psi)*pSat,
-        rhoMin
-    );
-
-    Info<< "max-min rho: " << max(rho).value()
-        << " " << min(rho).value() << endl;
-
-    #include "gammaPsi.H"
 }

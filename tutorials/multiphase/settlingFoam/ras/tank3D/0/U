@@ -57,7 +57,8 @@ boundaryField
 
     WALL6
     {
-        type            fixedValue;
+        type            translatingWallVelocity;
+        U               (-0.003 0 0);
         value           uniform (-0.003 0 0);
     }
 
@@ -135,7 +136,8 @@ boundaryField
 
     OUTL15
     {
-        type            zeroGradient;
+        type            inletOutlet;
+        inletValue      uniform (0 0 0);
     }
 }
 

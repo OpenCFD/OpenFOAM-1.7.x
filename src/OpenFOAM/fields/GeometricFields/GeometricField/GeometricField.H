@@ -184,7 +184,7 @@ public:
             //- Return a list of the patch types
             wordList types() const;
 
-            //- Return BoundaryField of the cell values neighbouring 
+            //- Return BoundaryField of the cell values neighbouring
             //  the boundary
             GeometricBoundaryField boundaryInternalField() const;
 
@@ -194,7 +194,7 @@ public:
 
             //- Write boundary field as dictionary entry
             void writeEntry(const word& keyword, Ostream& os) const;
- 
+
 
         // Member operators
 
@@ -208,7 +208,7 @@ public:
             void operator=(const Type&);
 
 
-            //- Forced assignment to 
+            //- Forced assignment to
             //  BoundaryField<Type, PatchField, BoundaryMesh>
             void operator==(const GeometricBoundaryField&);
 
@@ -224,7 +224,7 @@ private:
 
     // Private data
 
-        //- Current time index.  
+        //- Current time index.
         //  Used to trigger the storing of the old-time value
         mutable label timeIndex_;
 
@@ -239,6 +239,9 @@ private:
 
 
     // Private member functions
+
+        //- Read the field from the dictionary
+        tmp<GeometricBoundaryField> readField(const dictionary&);
 
         //- Read the field from the given stream
         tmp<GeometricBoundaryField> readField(Istream& is);
@@ -327,6 +330,14 @@ public:
             Istream&
         );
 
+        //- Construct from dictionary
+        GeometricField
+        (
+            const IOobject&,
+            const Mesh&,
+            const dictionary&
+        );
+
         //- Construct as copy
         GeometricField
         (
@@ -334,12 +345,12 @@ public:
         );
 
         //- Construct as copy of tmp<GeometricField> deleting argument
-#       ifdef ConstructFromTmp
+        #ifdef ConstructFromTmp
         GeometricField
         (
             const tmp<GeometricField<Type, PatchField, GeoMesh> >&
         );
-#       endif
+        #endif
 
         //- Construct as copy resetting IO parameters
         GeometricField
@@ -356,13 +367,13 @@ public:
         );
 
         //- Construct as copy resetting name
-#       ifdef ConstructFromTmp
+        #ifdef ConstructFromTmp
         GeometricField
         (
             const word& newName,
             const tmp<GeometricField<Type, PatchField, GeoMesh> >&
         );
-#       endif
+        #endif
 
         //- Construct as copy resetting IO parameters and patch type
         GeometricField
@@ -381,9 +392,8 @@ public:
         );
 
 
-    // Destructor
-
-        virtual ~GeometricField();
+    //- Destructor
+    virtual ~GeometricField();
 
 
     // Member Functions

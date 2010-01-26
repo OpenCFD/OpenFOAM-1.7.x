@@ -26,7 +26,8 @@ Application
     cavitatingFoam
 
 Description
-    Transient cavitation code based on the barotropic equation of state.
+    Transient cavitation code based on the homogeneous equilibrium model
+    from which the compressibility of the liquid/vapour "mixture" is obtained.
 
     Turbulence modelling is generic, i.e. laminar, RAS or LES may be selected.
 

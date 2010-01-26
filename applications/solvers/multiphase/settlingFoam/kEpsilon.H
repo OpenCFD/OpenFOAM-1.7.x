@@ -45,7 +45,7 @@ if(turbulence)
 
     // Turbulent kinetic energy equation
 
-    solve
+    fvScalarMatrix kEqn
     (
         fvm::ddt(rho, k)
       + fvm::div(phi, k)
@@ -60,11 +60,14 @@ if(turbulence)
       - fvm::Sp(rho*epsilon/k, k)
     );
 
+    kEqn.relax();
+    kEqn.solve();
+
     bound(k, k0);
 
 
     //- Re-calculate viscosity
-    mut = rho*Cmu*sqr(k)/(epsilon + epsilon0);
+    mut = rho*Cmu*sqr(k)/epsilon;
 
 #   include "wallViscosity.H"
 }
