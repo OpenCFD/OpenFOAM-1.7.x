@@ -157,6 +157,16 @@ public:
             const vectorField& offset
         );
 
+        //- Construct from components
+        directMappedPatchBase
+        (
+            const polyPatch& pp,
+            const word& sampleRegion,
+            const sampleMode sampleMode,
+            const word& samplePatch,
+            const vector& offset
+        );
+
         //- Construct from dictionary
         directMappedPatchBase(const polyPatch&, const dictionary&);
 

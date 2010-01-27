@@ -90,6 +90,31 @@ Foam::directMappedWallPolyPatch::directMappedWallPolyPatch
 Foam::directMappedWallPolyPatch::directMappedWallPolyPatch
 (
     const word& name,
+    const label size,
+    const label start,
+    const label index,
+    const word& sampleRegion,
+    const directMappedPatchBase::sampleMode mode,
+    const word& samplePatch,
+    const vector& offset,
+    const polyBoundaryMesh& bm
+)
+:
+    wallPolyPatch(name, size, start, index, bm),
+    directMappedPatchBase
+    (
+        static_cast<const polyPatch&>(*this),
+        sampleRegion,
+        mode,
+        samplePatch,
+        offset
+    )
+{}
+
+
+Foam::directMappedWallPolyPatch::directMappedWallPolyPatch
+(
+    const word& name,
     const dictionary& dict,
     const label index,
     const polyBoundaryMesh& bm
