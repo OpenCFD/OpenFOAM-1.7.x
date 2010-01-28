@@ -626,6 +626,27 @@ Foam::directMappedPatchBase::directMappedPatchBase
 Foam::directMappedPatchBase::directMappedPatchBase
 (
     const polyPatch& pp,
+    const word& sampleRegion,
+    const sampleMode mode,
+    const word& samplePatch,
+    const vector& offset
+)
+:
+    patch_(pp),
+    sampleRegion_(sampleRegion),
+    mode_(mode),
+    samplePatch_(samplePatch),
+    uniformOffset_(true),
+    offset_(offset),
+    offsets_(0),
+    sameRegion_(sampleRegion_ == patch_.boundaryMesh().mesh().name()),
+    mapPtr_(NULL)
+{}
+
+
+Foam::directMappedPatchBase::directMappedPatchBase
+(
+    const polyPatch& pp,
     const dictionary& dict
 )
 :

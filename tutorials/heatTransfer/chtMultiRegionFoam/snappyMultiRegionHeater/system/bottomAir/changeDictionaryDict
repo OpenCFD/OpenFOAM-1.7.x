@@ -16,31 +16,6 @@ FoamFile
 
 dictionaryReplacement
 {
-    boundary
-    {
-        bottomAir_to_leftSolid
-        {
-            offset          ( 0 0 0 );
-            sampleMode      nearestPatchFace;
-            sampleRegion    leftSolid;
-            samplePatch     leftSolid_to_bottomAir;
-        }
-        bottomAir_to_rightSolid
-        {
-            offset          ( 0 0 0 );
-            sampleMode      nearestPatchFace;
-            sampleRegion    rightSolid;
-            samplePatch     rightSolid_to_bottomAir;
-        }
-        bottomAir_to_heater
-        {
-            offset          ( 0 0 0 );
-            sampleMode      nearestPatchFace;
-            sampleRegion    heater;
-            samplePatch     heater_to_bottomAir;
-        }
-    }
-
     U
     {
         internalField   uniform (0 0 0);

@@ -43,6 +43,8 @@ FoamFile
 matchTolerance 1E-3;
 
 // Do a synchronisation of coupled points after creation of any patches.
+// Note: this does not work with points that are on multiple coupled patches
+//       with transformations.
 pointSync true;
 
 // Patches to create.
