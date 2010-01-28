@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -81,12 +81,14 @@ public:
             nComponents = 1  // Number of components in bool is 1
         };
 
+
     // Static data members
 
         static const char* const typeName;
         static const char* componentNames[];
         static const bool zero;
         static const bool one;
+
 
     // Constructors
 
@@ -99,9 +101,15 @@ public:
         //- Construct from Istream
         pTraits(Istream&);
 
+
     // Member Functions
 
         operator bool() const
+        {
+            return p_;
+        }
+
+        operator bool&()
         {
             return p_;
         }
