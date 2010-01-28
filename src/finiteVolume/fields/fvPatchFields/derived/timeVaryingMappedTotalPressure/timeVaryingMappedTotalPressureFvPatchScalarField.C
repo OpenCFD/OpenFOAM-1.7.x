@@ -277,6 +277,7 @@ void Foam::timeVaryingMappedTotalPressureFvPatchScalarField::write
     writeEntryIfDifferent<word>(os, "UName", "U", UName_);
     writeEntryIfDifferent<word>(os, "phiName", "phi", phiName_);
     os.writeKeyword("rhoName") << rhoName_ << token::END_STATEMENT << nl;
+    os.writeKeyword("rho") << rho_ << token::END_STATEMENT << nl;
     os.writeKeyword("psiName") << psiName_ << token::END_STATEMENT << nl;
     os.writeKeyword("gamma") << gamma_ << token::END_STATEMENT << nl;
     timeVaryingMappedFixedValueFvPatchScalarField::write(os);
