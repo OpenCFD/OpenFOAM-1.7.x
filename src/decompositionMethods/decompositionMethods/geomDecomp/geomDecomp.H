@@ -65,7 +65,7 @@ public:
 
     // Constructors
 
-        //- Construct given the decomposition dictionary 
+        //- Construct given the decomposition dictionary
         //  and the derived type name
         geomDecomp
         (

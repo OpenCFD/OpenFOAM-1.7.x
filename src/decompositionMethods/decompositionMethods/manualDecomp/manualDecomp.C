@@ -66,7 +66,7 @@ Foam::manualDecomp::manualDecomp(const dictionary& decompositionDict)
 
 Foam::manualDecomp::manualDecomp
 (
-    const dictionary& decompositionDict, 
+    const dictionary& decompositionDict,
     const polyMesh& mesh
 )
 :
@@ -82,7 +82,11 @@ Foam::manualDecomp::manualDecomp
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::labelList Foam::manualDecomp::decompose(const pointField& points)
+Foam::labelList Foam::manualDecomp::decompose
+(
+    const pointField& points,
+    const scalarField& pointWeights
+)
 {
     const polyMesh& mesh = *meshPtr_;
 
@@ -103,8 +107,10 @@ Foam::labelList Foam::manualDecomp::decompose(const pointField& points)
 
     if (finalDecomp.size() != points.size())
     {
-        FatalErrorIn("manualDecomp::decompose(const pointField&)")
-            << "Size of decomposition list does not correspond "
+        FatalErrorIn
+        (
+            "manualDecomp::decompose(const pointField&, const scalarField&)"
+        )   << "Size of decomposition list does not correspond "
             << "to the number of points.  Size: "
             << finalDecomp.size() << " Number of points: "
             << points.size()
@@ -115,8 +121,10 @@ Foam::labelList Foam::manualDecomp::decompose(const pointField& points)
 
     if (min(finalDecomp) < 0 || max(finalDecomp) > nProcessors_ - 1)
     {
-        FatalErrorIn("labelList manualDecomp::decompose(const pointField&)")
-            << "According to the decomposition, cells assigned to "
+        FatalErrorIn
+        (
+            "manualDecomp::decompose(const pointField&, const scalarField&)"
+        )   << "According to the decomposition, cells assigned to "
             << "impossible processor numbers.  Min processor = "
             << min(finalDecomp) << " Max processor = " << max(finalDecomp)
             << ".\n" << "Manual decomposition data read from file "

@@ -60,6 +60,7 @@ class metisDecomp
         (
             const List<int>& adjncy,
             const List<int>& xadj,
+            const scalarField& cellWeights,
             List<int>& finalDecomp
         );
 
@@ -100,16 +101,25 @@ public:
 
         //- Return for every coordinate the wanted processor number. Use the
         //  mesh connectivity (if needed)
-        virtual labelList decompose(const pointField&);
+        //  Weights get normalised so the minimum value is 1 before truncation
+        //  to an integer so the weights should be multiples of the minimum
+        //  value. The overall sum of weights might otherwise overflow.
+        virtual labelList decompose
+        (
+            const pointField& points,
+            const scalarField& pointWeights
+        );
 
         //- Return for every coordinate the wanted processor number. Gets
         //  passed agglomeration map (from fine to coarse cells) and coarse cell
         //  location. Can be overridden by decomposers that provide this
         //  functionality natively.
+        //  See note on weights above.
         virtual labelList decompose
         (
             const labelList& agglom,
-            const pointField&
+            const pointField& regionPoints,
+            const scalarField& regionWeights
         );
 
         //- Return for every coordinate the wanted processor number. Explicitly
@@ -119,13 +129,25 @@ public:
         //    from 0 at processor0 and then incrementing all through the
         //    processors)
         //  - the connections are across coupled patches
+        //  See note on weights above.
         virtual labelList decompose
         (
             const labelListList& globalCellCells,
-            const pointField& cc
+            const pointField& cc,
+            const scalarField& cWeights
         );
 
-        //- Helper to convert cellcells into Metis storage
+        //- Helper to convert connectivity (supplied as owner,neighbour) into
+        //  Metis storage
+        static void calcMetisCSR
+        (
+            const polyMesh& mesh,
+            List<int>& adjncy,
+            List<int>& xadj
+        );
+
+        //- Helper to convert connectivity (supplied as cellcells) into
+        //  Metis storage
         static void calcMetisCSR
         (
             const labelListList& globalCellCells,

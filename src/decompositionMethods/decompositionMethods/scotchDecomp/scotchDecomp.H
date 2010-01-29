@@ -63,6 +63,7 @@ class scotchDecomp
         (
             const List<int>& adjncy,
             const List<int>& xadj,
+            const scalarField& cWeights,
             List<int>& finalDecomp
         );
 
@@ -103,16 +104,25 @@ public:
 
         //- Return for every coordinate the wanted processor number. Use the
         //  mesh connectivity (if needed)
-        virtual labelList decompose(const pointField&);
+        //  Weights get normalised so the minimum value is 1 before truncation
+        //  to an integer so the weights should be multiples of the minimum
+        //  value. The overall sum of weights might otherwise overflow.
+        virtual labelList decompose
+        (
+            const pointField& points,
+            const scalarField& pointWeights
+        );
 
         //- Return for every coordinate the wanted processor number. Gets
         //  passed agglomeration map (from fine to coarse cells) and coarse cell
         //  location. Can be overridden by decomposers that provide this
         //  functionality natively.
+        //  See note on weights above.
         virtual labelList decompose
         (
             const labelList& agglom,
-            const pointField&
+            const pointField& regionPoints,
+            const scalarField& regionWeights
         );
 
         //- Return for every coordinate the wanted processor number. Explicitly
@@ -122,18 +132,12 @@ public:
         //    from 0 at processor0 and then incrementing all through the
         //    processors)
         //  - the connections are across coupled patches
+        //  See note on weights above.
         virtual labelList decompose
         (
             const labelListList& globalCellCells,
-            const pointField& cc
-        );
-
-        //- Helper to convert cellcells into compact row storage
-        static void calcMetisCSR
-        (
-            const labelListList& globalCellCells,
-            List<int>& adjncy,
-            List<int>& xadj
+            const pointField& cc,
+            const scalarField& cWeights
         );
 
 };
