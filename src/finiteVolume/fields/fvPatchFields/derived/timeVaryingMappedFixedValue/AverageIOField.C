@@ -51,7 +51,7 @@ Foam::AverageIOField<Type>::AverageIOField
 :
     regIOobject(io),
     Field<Type>(size),
-    average_(0)
+    average_(pTraits<Type>::zero)
 {}
 
 
