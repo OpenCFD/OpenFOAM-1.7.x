@@ -42,7 +42,7 @@ Description
 
     Darcy-Forchheimer (@e d and @e f parameters)
     @f[
-        S = - (\mu \, d \, U + \frac{\rho |U|}{2} \, f) U
+        S = - (\mu \, d + \frac{\rho |U|}{2} \, f) U
     @f]
 
 
@@ -198,7 +198,6 @@ public:
             return autoPtr<porousZone>(NULL);
         }
 
-
         //- Return pointer to new porousZone created on freestore from Istream
         class iNew
         {
@@ -222,6 +221,11 @@ public:
         };
 
 
+    //- Destructor
+    virtual ~porousZone()
+    {}
+
+
     // Member Functions
 
         // Access
@@ -230,6 +234,12 @@ public:
             const word& zoneName() const
             {
                 return name_;
+            }
+
+            //- Return mesh
+            const fvMesh& mesh() const
+            {
+                return mesh_;
             }
 
             //- cellZone number
@@ -263,7 +273,7 @@ public:
             }
 
             //- Return porosity
-            const scalar& porosity() const
+            scalar porosity() const
             {
                 return porosity_;
             }
@@ -275,7 +285,7 @@ public:
             }
 
 
-        //- modify time derivative elements according to porosity
+        //- Modify time derivative elements according to porosity
         template<class Type>
         void modifyDdt(fvMatrix<Type>&) const;
 
@@ -294,7 +304,7 @@ public:
         ) const;
 
         //- Write the porousZone dictionary
-        void writeDict(Ostream&, bool subDict = true) const;
+        virtual void writeDict(Ostream&, bool subDict = true) const;
 
 
     // Ostream Operator
