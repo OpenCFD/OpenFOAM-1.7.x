@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -54,15 +54,30 @@ class pTraits
 
 public:
 
-    pTraits(const PrimitiveType& p)
-    :
-        PrimitiveType(p)
-    {}
+    // Constructors
 
-    pTraits(Istream& is)
-    :
-        PrimitiveType(is)
-    {}
+        pTraits(const PrimitiveType& p)
+        :
+            PrimitiveType(p)
+        {}
+
+        pTraits(Istream& is)
+        :
+            PrimitiveType(is)
+        {}
+
+
+    // Member operators
+
+        operator PrimitiveType() const
+        {
+            return *this;
+        }
+
+        operator PrimitiveType&()
+        {
+            return *this;
+        }
 };
 
 

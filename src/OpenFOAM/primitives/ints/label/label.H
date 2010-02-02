@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -153,6 +153,7 @@ public:
             nComponents = 1  // Number of components in label is 1
         };
 
+
     // Static data members
 
         static const char* const typeName;
@@ -161,6 +162,7 @@ public:
         static const label one;
         static const label min;
         static const label max;
+
 
     // Constructors
 
@@ -173,9 +175,15 @@ public:
         //- Construct from Istream
         pTraits(Istream&);
 
+
     // Member Functions
 
         operator label() const
+        {
+            return p_;
+        }
+
+        operator label&()
         {
             return p_;
         }

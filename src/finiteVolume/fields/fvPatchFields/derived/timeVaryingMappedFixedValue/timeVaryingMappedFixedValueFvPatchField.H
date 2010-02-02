@@ -57,6 +57,9 @@ class timeVaryingMappedFixedValueFvPatchField
 {
     // Private data
 
+        //- Name of the field data table, defaults to the name of the field
+        word fieldTableName_;
+
         //- If true adjust the mapped field to maintain average value
         bool setAverage_;
 

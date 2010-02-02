@@ -49,6 +49,7 @@ timeVaryingMappedFixedValueFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(p, iF),
+    fieldTableName_(iF.name()),
     setAverage_(false),
     referenceCS_(NULL),
     nearestVertex_(0),
@@ -80,6 +81,7 @@ timeVaryingMappedFixedValueFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(ptf, p, iF, mapper),
+    fieldTableName_(ptf.fieldTableName_),
     setAverage_(ptf.setAverage_),
     referenceCS_(NULL),
     nearestVertex_(0),
@@ -110,6 +112,7 @@ timeVaryingMappedFixedValueFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(p, iF),
+    fieldTableName_(iF.name()),
     setAverage_(readBool(dict.lookup("setAverage"))),
     referenceCS_(NULL),
     nearestVertex_(0),
@@ -126,6 +129,11 @@ timeVaryingMappedFixedValueFvPatchField
     {
         Pout<< "timeVaryingMappedFixedValue : construct from dictionary"
             << endl;
+    }
+
+    if (dict.found("fieldTableName"))
+    {
+        dict.lookup("fieldTableName") >> fieldTableName_;
     }
 
     if (dict.found("value"))
@@ -147,6 +155,7 @@ timeVaryingMappedFixedValueFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(ptf),
+    fieldTableName_(ptf.fieldTableName_),
     setAverage_(ptf.setAverage_),
     referenceCS_(ptf.referenceCS_),
     nearestVertex_(ptf.nearestVertex_),
@@ -177,6 +186,7 @@ timeVaryingMappedFixedValueFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(ptf, iF),
+    fieldTableName_(ptf.fieldTableName_),
     setAverage_(ptf.setAverage_),
     referenceCS_(ptf.referenceCS_),
     nearestVertex_(ptf.nearestVertex_),
@@ -271,8 +281,8 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
             << "Need at least three non-colinear samplePoints"
             << " to be able to interpolate."
             << "\n    on patch " << this->patch().name()
-            << " of field " << this->dimensionedInternalField().name()
-            << " in file " << this->dimensionedInternalField().objectPath()
+            << " of points " << samplePoints.name()
+            << " in file " << samplePoints.objectPath()
             << exit(FatalError);
     }
 
@@ -332,8 +342,8 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
         )   << "Cannot find points that make valid normal." << nl
             << "Need at least three sample points which are not in a line."
             << "\n    on patch " << this->patch().name()
-            << " of field " << this->dimensionedInternalField().name()
-            << " in file " << this->dimensionedInternalField().objectPath()
+            << " of points " << samplePoints.name()
+            << " in file " << samplePoints.objectPath()
             << exit(FatalError);
     }
 
@@ -474,8 +484,7 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::findTime
             << "In directory "
             <<  this->db().time().constant()/"boundaryData"/this->patch().name()
             << "\n    on patch " << this->patch().name()
-            << " of field " << this->dimensionedInternalField().name()
-            << " in file " << this->dimensionedInternalField().objectPath()
+            << " of field " << fieldTableName_
             << exit(FatalError);
     }
 
@@ -563,7 +572,7 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::checkTable()
             (
                 IOobject
                 (
-                    this->dimensionedInternalField().name(),
+                    fieldTableName_,
                     this->db().time().constant(),
                     "boundaryData"
                    /this->patch().name()
@@ -608,7 +617,7 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::checkTable()
             (
                 IOobject
                 (
-                    this->dimensionedInternalField().name(),
+                    fieldTableName_,
                     this->db().time().constant(),
                     "boundaryData"
                    /this->patch().name()
@@ -771,6 +780,12 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::write(Ostream& os) const
 {
     fvPatchField<Type>::write(os);
     os.writeKeyword("setAverage") << setAverage_ << token::END_STATEMENT << nl;
+
+    if (fieldTableName_ != this->dimensionedInternalField().name())
+    {
+        os.writeKeyword("fieldTableName") << fieldTableName_ << token::END_STATEMENT << nl;
+    }
+
     this->writeEntry("value", os);
 }
 

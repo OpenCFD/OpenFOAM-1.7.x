@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -55,6 +55,7 @@ public:
             nComponents = 1  // Number of components in Scalar is 1
         };
 
+
     // Static data members
 
         static const char* const typeName;
@@ -63,6 +64,7 @@ public:
         static const Scalar one;
         static const Scalar max;
         static const Scalar min;
+
 
     // Constructors
 
@@ -76,9 +78,14 @@ public:
         pTraits(Istream&);
 
 
-    // Member Functions
+    // Member operators
 
         operator Scalar() const
+        {
+            return p_;
+        }
+
+        operator Scalar&()
         {
             return p_;
         }
