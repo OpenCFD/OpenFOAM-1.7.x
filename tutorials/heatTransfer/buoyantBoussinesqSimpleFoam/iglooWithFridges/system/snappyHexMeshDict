@@ -116,9 +116,9 @@ castellatedMeshControls
     // Refinement parameters
     // ~~~~~~~~~~~~~~~~~~~~~
 
-    // While refining maximum number of cells per processor. This is basically
-    // the number of cells that fit on a processor. If you choose this too small
-    // it will do just more refinement iterations to obtain a similar mesh.
+    // If local number of cells is >= maxLocalCells on any processor
+    // switches from from refinement followed by balancing
+    // (current method) to (weighted) balancing before refinement.
     maxLocalCells 1000000;
 
     // Overall cell limit (approximately). Refinement will stop immediately
@@ -249,6 +249,8 @@ snapControls
 // Settings for the layer addition.
 addLayersControls
 {
+    // Are the thickness parameters below relative to the undistorted
+    // size of the refined cell outside layer (true) or absolute sizes (false).
     relativeSizes true;
 
     // Per final patch (so not geometry!) the layer information
@@ -268,14 +270,13 @@ addLayersControls
     expansionRatio 1.0;
 
     //- Wanted thickness of final added cell layer. If multiple layers
-    //  is the
-    //  thickness of the layer furthest away from the wall.
-    //  Relative to undistorted size of cell outside layer.
+    //  is the thickness of the layer furthest away from the wall.
+    //  See relativeSizes parameter.
     finalLayerThickness 0.5;
 
     //- Minimum thickness of cell layer. If for any reason layer
     //  cannot be above minThickness do not add layer.
-    //  Relative to undistorted size of cell outside layer.
+    //  See relativeSizes parameter.
     minThickness 0.25;
 
     //- If points get not extruded do nGrow layers of connected faces that are
@@ -316,7 +317,10 @@ addLayersControls
     // Create buffer region for new layer terminations
     nBufferCellsNoExtrude 0;
 
-    // Overall max number of layer addition iterations
+
+    // Overall max number of layer addition iterations. The mesher will exit
+    // if it reaches this number of iterations; possibly with an illegal
+    // mesh.
     nLayerIter 50;
 }
 
@@ -342,6 +346,7 @@ meshQualityControls
     minFlatness 0.5;
 
     //- Minimum pyramid volume. Is absolute volume of cell pyramid.
+    //  Set to a sensible fraction of the smallest cell volume expected.
     //  Set to very negative number (e.g. -1E30) to disable.
     minVol 1e-13;
 

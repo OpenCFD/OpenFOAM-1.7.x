@@ -38,6 +38,7 @@ SourceFiles
 
 #include "dictionary.H"
 #include "pointField.H"
+#include "Switch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -72,6 +73,13 @@ class refinementParameters
 
         //- Areas to keep
         const pointField keepPoints_;
+
+        //- FaceZone faces allowed which have owner and neighbour in same
+        //  cellZone?
+        Switch allowFreeStandingZoneFaces_;
+
+        //- Allowed load unbalance
+        scalar maxLoadUnbalance_;
 
 
     // Private Member Functions
@@ -132,6 +140,19 @@ public:
             const pointField& keepPoints() const
             {
                 return keepPoints_;
+            }
+
+            //- Are zone faces allowed only inbetween different cell zones
+            //  or also just free standing?
+            bool allowFreeStandingZoneFaces() const
+            {
+                return allowFreeStandingZoneFaces_;
+            }
+
+            //- Allowed load unbalance
+            scalar maxLoadUnbalance() const
+            {
+                return maxLoadUnbalance_;
             }
 
 

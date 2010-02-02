@@ -51,9 +51,9 @@ castellatedMeshControls
     // Refinement parameters
     // ~~~~~~~~~~~~~~~~~~~~~
 
-    // While refining maximum number of cells per processor. This is basically
-    // the number of cells that fit on a processor. If you choose this too small
-    // it will do just more refinement iterations to obtain a similar mesh.
+    // If local number of cells is >= maxLocalCells on any processor
+    // switches from from refinement followed by balancing
+    // (current method) to (weighted) balancing before refinement.
     maxLocalCells 1000000;
 
     // Overall cell limit (approximately). Refinement will stop immediately
@@ -68,6 +68,13 @@ castellatedMeshControls
     // are selected for refinement. Note: it will at least do one iteration
     // (unless the number of cells to refine is 0)
     minRefinementCells 10;
+
+    // Allow a certain level of imbalance during refining
+    // (since balancing is quite expensive)
+    // Expressed as fraction of perfect balance (= overall number of cells /
+    // nProcs). 0=balance always.
+    maxLoadUnbalance 0.10;
+
 
     // Number of buffer layers between different levels.
     // 1 means normal 2:1 refinement restriction, larger means slower
@@ -174,6 +181,8 @@ snapControls
 // Settings for the layer addition.
 addLayersControls
 {
+    // Are the thickness parameters below relative to the undistorted
+    // size of the refined cell outside layer (true) or absolute sizes (false).
     relativeSizes true;
 
     // Per final patch (so not geometry!) the layer information
@@ -457,9 +466,8 @@ addLayersControls
     expansionRatio 1.0;
 
     //- Wanted thickness of final added cell layer. If multiple layers
-    //  is the
-    //  thickness of the layer furthest away from the wall.
-    //  Relative to undistorted size of cell outside layer.
+    //  is the thickness of the layer furthest away from the wall.
+    //  See relativeSizes parameter.
     finalLayerThickness 0.3;
 
     //- Minimum thickness of cell layer. If for any reason layer
@@ -531,6 +539,7 @@ meshQualityControls
     minFlatness 0.5;
 
     //- Minimum pyramid volume. Is absolute volume of cell pyramid.
+    //  Set to a sensible fraction of the smallest cell volume expected.
     //  Set to very negative number (e.g. -1E30) to disable.
     minVol 1e-13;
 

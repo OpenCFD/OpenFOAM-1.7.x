@@ -2515,138 +2515,159 @@ void Foam::autoLayerDriver::addLayers
 (
     const layerParameters& layerParams,
     const dictionary& motionDict,
+    const labelList& patchIDs,
     const label nAllowableErrors,
-    motionSmoother& meshMover,
     decompositionMethod& decomposer,
     fvMeshDistribute& distributor
 )
 {
     fvMesh& mesh = meshRefiner_.mesh();
-    const indirectPrimitivePatch& pp = meshMover.patch();
-    const labelList& meshPoints = pp.meshPoints();
 
-    // Precalculate mesh edge labels for patch edges
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    labelList meshEdges(pp.nEdges());
-    forAll(pp.edges(), edgeI)
-    {
-        const edge& ppEdge = pp.edges()[edgeI];
-        label v0 = meshPoints[ppEdge[0]];
-        label v1 = meshPoints[ppEdge[1]];
-        meshEdges[edgeI] = meshTools::findEdge
+    autoPtr<indirectPrimitivePatch> pp
+    (
+        meshRefinement::makePatch
         (
-            mesh.edges(),
-            mesh.pointEdges()[v0],
-            v0,
-            v1
-        );
-    }
+            mesh,
+            patchIDs
+        )
+    );
+
+    // Construct iterative mesh mover.
+    Info<< "Constructing mesh displacer ..." << endl;
+
+    autoPtr<motionSmoother> meshMover
+    (
+        new motionSmoother
+        (
+            mesh,
+            pp(),
+            patchIDs,
+            meshRefinement::makeDisplacementField
+            (
+                pointMesh::New(mesh),
+                patchIDs
+            ),
+            motionDict
+        )
+    );
+
+
+    // Point-wise extrusion data
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~
 
     // Displacement for all pp.localPoints.
-    vectorField patchDisp(pp.nPoints(), vector::one);
+    vectorField patchDisp(pp().nPoints(), vector::one);
 
     // Number of layers for all pp.localPoints. Note: only valid if
     // extrudeStatus = EXTRUDE.
-    labelList patchNLayers(pp.nPoints(), 0);
+    labelList patchNLayers(pp().nPoints(), 0);
 
     // Whether to add edge for all pp.localPoints.
-    List<extrudeMode> extrudeStatus(pp.nPoints(), EXTRUDE);
+    List<extrudeMode> extrudeStatus(pp().nPoints(), EXTRUDE);
+
+    {
+        // Get number of layer per point from number of layers per patch
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        setNumLayers
+        (
+            layerParams.numLayers(),    // per patch the num layers
+            meshMover().adaptPatchIDs(),// patches that are being moved
+            pp,                         // indirectpatch for all faces moving
+
+            patchDisp,
+            patchNLayers,
+            extrudeStatus
+        );
+
+        // Precalculate mesh edge labels for patch edges
+        labelList meshEdges(pp().meshEdges(mesh.edges(), mesh.pointEdges()));
+
+        // Disable extrusion on non-manifold points
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        handleNonManifolds
+        (
+            pp,
+            meshEdges,
+
+            patchDisp,
+            patchNLayers,
+            extrudeStatus
+        );
+
+        // Disable extrusion on feature angles
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        handleFeatureAngle
+        (
+            pp,
+            meshEdges,
+            layerParams.featureAngle()*mathematicalConstant::pi/180.0,
+
+            patchDisp,
+            patchNLayers,
+            extrudeStatus
+        );
+
+        // Disable extrusion on warped faces
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // Undistorted edge length
+        const scalar edge0Len = meshRefiner_.meshCutter().level0EdgeLength();
+        const labelList& cellLevel = meshRefiner_.meshCutter().cellLevel();
+
+        handleWarpedFaces
+        (
+            pp,
+            layerParams.maxFaceThicknessRatio(),
+            edge0Len,
+            cellLevel,
+
+            patchDisp,
+            patchNLayers,
+            extrudeStatus
+        );
+
+        //// Disable extrusion on cells with multiple patch faces
+        //// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        //
+        //handleMultiplePatchFaces
+        //(
+        //    pp,
+        //
+        //    patchDisp,
+        //    patchNLayers,
+        //    extrudeStatus
+        //);
 
 
-    // Get number of layer per point from number of layers per patch
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Grow out region of non-extrusion
+        for (label i = 0; i < layerParams.nGrow(); i++)
+        {
+            growNoExtrusion
+            (
+                pp,
+                patchDisp,
+                patchNLayers,
+                extrudeStatus
+            );
+        }
+    }
 
-    setNumLayers
-    (
-        layerParams.numLayers(),    // per patch the num layers
-        meshMover.adaptPatchIDs(),  // patches that are being moved
-        pp,                         // indirectpatch for all faces moving
-
-        patchDisp,
-        patchNLayers,
-        extrudeStatus
-    );
-
-    // Disable extrusion on non-manifold points
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    handleNonManifolds
-    (
-        pp,
-        meshEdges,
-
-        patchDisp,
-        patchNLayers,
-        extrudeStatus
-    );
-
-    // Disable extrusion on feature angles
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    handleFeatureAngle
-    (
-        pp,
-        meshEdges,
-        layerParams.featureAngle()*mathematicalConstant::pi/180.0,
-
-        patchDisp,
-        patchNLayers,
-        extrudeStatus
-    );
-
-    // Disable extrusion on warped faces
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     // Undistorted edge length
     const scalar edge0Len = meshRefiner_.meshCutter().level0EdgeLength();
     const labelList& cellLevel = meshRefiner_.meshCutter().cellLevel();
 
-    handleWarpedFaces
-    (
-        pp,
-        layerParams.maxFaceThicknessRatio(),
-        edge0Len,
-        cellLevel,
-
-        patchDisp,
-        patchNLayers,
-        extrudeStatus
-    );
-
-    //// Disable extrusion on cells with multiple patch faces
-    //// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    //
-    //handleMultiplePatchFaces
-    //(
-    //    pp,
-    //
-    //    patchDisp,
-    //    patchNLayers,
-    //    extrudeStatus
-    //);
-
-
-    // Grow out region of non-extrusion
-    for (label i = 0; i < layerParams.nGrow(); i++)
-    {
-        growNoExtrusion
-        (
-            pp,
-            patchDisp,
-            patchNLayers,
-            extrudeStatus
-        );
-    }
-
     // Determine (wanted) point-wise layer thickness and expansion ratio
-    scalarField thickness(pp.nPoints());
-    scalarField minThickness(pp.nPoints());
-    scalarField expansionRatio(pp.nPoints());
+    scalarField thickness(pp().nPoints());
+    scalarField minThickness(pp().nPoints());
+    scalarField expansionRatio(pp().nPoints());
     calculateLayerThickness
     (
         pp,
-        meshMover.adaptPatchIDs(),
+        meshMover().adaptPatchIDs(),
         layerParams.expansionRatio(),
 
         layerParams.relativeSizes(),        // thickness relative to cellsize?
@@ -2669,14 +2690,14 @@ void Foam::autoLayerDriver::addLayers
 
         // Find maximum length of a patch name, for a nicer output
         label maxPatchNameLen = 0;
-        forAll(meshMover.adaptPatchIDs(), i)
+        forAll(meshMover().adaptPatchIDs(), i)
         {
-            label patchI = meshMover.adaptPatchIDs()[i];
+            label patchI = meshMover().adaptPatchIDs()[i];
             word patchName = patches[patchI].name();
-            maxPatchNameLen = max(maxPatchNameLen,label(patchName.size()));
+            maxPatchNameLen = max(maxPatchNameLen, label(patchName.size()));
         }
 
-        Info<< nl 
+        Info<< nl
             << setf(ios_base::left) << setw(maxPatchNameLen) << "patch"
             << setw(0) << " faces    layers avg thickness[m]" << nl
             << setf(ios_base::left) << setw(maxPatchNameLen) << " "
@@ -2684,9 +2705,9 @@ void Foam::autoLayerDriver::addLayers
             << setf(ios_base::left) << setw(maxPatchNameLen) << "-----"
             << setw(0) << " -----    ------ --------- -------" << endl;
 
-        forAll(meshMover.adaptPatchIDs(), i)
+        forAll(meshMover().adaptPatchIDs(), i)
         {
-            label patchI = meshMover.adaptPatchIDs()[i];
+            label patchI = meshMover().adaptPatchIDs()[i];
 
             const labelList& meshPoints = patches[patchI].meshPoints();
 
@@ -2697,7 +2718,7 @@ void Foam::autoLayerDriver::addLayers
 
             forAll(meshPoints, patchPointI)
             {
-                label ppPointI = pp.meshPointMap()[meshPoints[patchPointI]];
+                label ppPointI = pp().meshPointMap()[meshPoints[patchPointI]];
 
                 //maxThickness = max(maxThickness, thickness[ppPointI]);
                 //minThickness = min(minThickness, thickness[ppPointI]);
@@ -2767,7 +2788,7 @@ void Foam::autoLayerDriver::addLayers
             IOobject::NO_WRITE,
             false
         ),
-        meshMover.pMesh(),
+        meshMover().pMesh(),
         dimensionedScalar("pointMedialDist", dimless, 0.0)
     );
 
@@ -2782,7 +2803,7 @@ void Foam::autoLayerDriver::addLayers
             IOobject::NO_WRITE,
             false
         ),
-        meshMover.pMesh(),
+        meshMover().pMesh(),
         dimensionedVector("dispVec", dimless, vector::zero)
     );
 
@@ -2797,7 +2818,7 @@ void Foam::autoLayerDriver::addLayers
             IOobject::NO_WRITE,
             false
         ),
-        meshMover.pMesh(),
+        meshMover().pMesh(),
         dimensionedScalar("medialRatio", dimless, 0.0)
     );
 
@@ -2877,7 +2898,7 @@ void Foam::autoLayerDriver::addLayers
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         {
-            pointField oldPatchPos(pp.localPoints());
+            pointField oldPatchPos(pp().localPoints());
 
             //// Laplacian displacement shrinking.
             //shrinkMeshDistance
@@ -2892,7 +2913,7 @@ void Foam::autoLayerDriver::addLayers
             // Medial axis based shrinking
             shrinkMeshMedialDistance
             (
-                meshMover,
+                meshMover(),
                 meshQualityDict,
 
                 layerParams.nSmoothThickness(),
@@ -2914,7 +2935,7 @@ void Foam::autoLayerDriver::addLayers
             );
 
             // Update patchDisp (since not all might have been honoured)
-            patchDisp = oldPatchPos - pp.localPoints();
+            patchDisp = oldPatchPos - pp().localPoints();
         }
 
         // Truncate displacements that are too small (this will do internal
@@ -2922,7 +2943,7 @@ void Foam::autoLayerDriver::addLayers
         faceSet dummySet(mesh, "wrongPatchFaces", 0);
         truncateDisplacement
         (
-            meshMover,
+            meshMover(),
             minThickness,
             dummySet,
             patchDisp,
@@ -2937,7 +2958,7 @@ void Foam::autoLayerDriver::addLayers
             dumpDisplacement
             (
                 mesh.time().path()/"layer",
-                pp,
+                pp(),
                 patchDisp,
                 extrudeStatus
             );
@@ -2961,11 +2982,11 @@ void Foam::autoLayerDriver::addLayers
         // Determine per point/per face number of layers to extrude. Also
         // handles the slow termination of layers when going switching layers
 
-        labelList nPatchPointLayers(pp.nPoints(),-1);
-        labelList nPatchFaceLayers(pp.localFaces().size(),-1);
+        labelList nPatchPointLayers(pp().nPoints(),-1);
+        labelList nPatchFaceLayers(pp().localFaces().size(),-1);
         setupLayerInfoTruncation
         (
-            meshMover,
+            meshMover(),
             patchNLayers,
             extrudeStatus,
             layerParams.nBufferCellsNoExtrude(),
@@ -3004,7 +3025,7 @@ void Foam::autoLayerDriver::addLayers
         addLayer.setRefinement
         (
             invExpansionRatio,
-            pp,
+            pp(),
             nPatchFaceLayers,   // layers per face
             nPatchPointLayers,  // layers per point
             firstDisp,          // thickness of layer nearest internal mesh
@@ -3055,8 +3076,8 @@ void Foam::autoLayerDriver::addLayers
         addLayer.updateMesh
         (
             map,
-            identity(pp.size()),
-            identity(pp.nPoints())
+            identity(pp().size()),
+            identity(pp().nPoints())
         );
 
         // Collect layer faces and cells for outside loop.
@@ -3103,7 +3124,7 @@ void Foam::autoLayerDriver::addLayers
         (
             addLayer,
             meshQualityDict,
-            pp,
+            pp(),
             newMesh,
 
             patchDisp,
@@ -3112,7 +3133,7 @@ void Foam::autoLayerDriver::addLayers
         );
 
         Info<< "Extruding " << countExtrusion(pp, extrudeStatus)
-            << " out of " << returnReduce(pp.size(), sumOp<label>())
+            << " out of " << returnReduce(pp().size(), sumOp<label>())
             << " faces. Removed extrusion at " << nTotChanged << " faces."
             << endl;
 
@@ -3122,8 +3143,8 @@ void Foam::autoLayerDriver::addLayers
         }
 
         // Reset mesh points and start again
-        meshMover.movePoints(oldPoints);
-        meshMover.correct();
+        meshMover().movePoints(oldPoints);
+        meshMover().correct();
 
         Info<< endl;
     }
@@ -3178,6 +3199,7 @@ void Foam::autoLayerDriver::addLayers
         (
             false,
             false,
+            scalarField(mesh.nCells(), 1.0),
             decomposer,
             distributor
         );
@@ -3212,11 +3234,12 @@ void Foam::autoLayerDriver::doLayers
     const dictionary& shrinkDict,
     const dictionary& motionDict,
     const layerParameters& layerParams,
+    const bool preBalance,
     decompositionMethod& decomposer,
     fvMeshDistribute& distributor
 )
 {
-    fvMesh& mesh = meshRefiner_.mesh();
+    const fvMesh& mesh = meshRefiner_.mesh();
 
     Info<< nl
         << "Shrinking and layer addition phase" << nl
@@ -3250,59 +3273,80 @@ void Foam::autoLayerDriver::doLayers
     }
     else
     {
-        autoPtr<indirectPrimitivePatch> ppPtr
+        // Check that outside of mesh is not multiply connected.
+        checkMeshManifold();
+
+        // Check initial mesh
+        Info<< "Checking initial mesh ..." << endl;
+        labelHashSet wrongFaces(mesh.nFaces()/100);
+        motionSmoother::checkMesh(false, mesh, motionDict, wrongFaces);
+        const label nInitErrors = returnReduce
         (
-            meshRefinement::makePatch
-            (
-                mesh,
-                patchIDs
-            )
+            wrongFaces.size(),
+            sumOp<label>()
         );
-        indirectPrimitivePatch& pp = ppPtr();
 
-        // Construct iterative mesh mover.
-        Info<< "Constructing mesh displacer ..." << endl;
+        Info<< "Detected " << nInitErrors << " illegal faces"
+            << " (concave, zero area or negative cell pyramid volume)"
+            << endl;
 
+
+        // Balance
+        if (Pstream::parRun() && preBalance)
         {
-            const pointMesh& pMesh = pointMesh::New(mesh);
-
-            motionSmoother meshMover
-            (
-                mesh,
-                pp,
-                patchIDs,
-                meshRefinement::makeDisplacementField(pMesh, patchIDs),
-                motionDict
-            );
-
-            // Check that outside of mesh is not multiply connected.
-            checkMeshManifold();
-
-            // Check initial mesh
-            Info<< "Checking initial mesh ..." << endl;
-            labelHashSet wrongFaces(mesh.nFaces()/100);
-            motionSmoother::checkMesh(false, mesh, motionDict, wrongFaces);
-            const label nInitErrors = returnReduce
-            (
-                wrongFaces.size(),
-                sumOp<label>()
-            );
-
-            Info<< "Detected " << nInitErrors << " illegal faces"
-                << " (concave, zero area or negative cell pyramid volume)"
+            Info<< nl
+                << "Doing initial balancing" << nl
+                << "-----------------------" << nl
                 << endl;
 
-            // Do all topo changes
-            addLayers
+            scalarField cellWeights(mesh.nCells(), 1);
+            forAll(numLayers, patchI)
+            {
+                if (numLayers[patchI] > 0)
+                {
+                    const polyPatch& pp = mesh.boundaryMesh()[patchI];
+                    forAll(pp.faceCells(), i)
+                    {
+                        cellWeights[pp.faceCells()[i]] += numLayers[patchI];
+                    }
+                }
+            }
+
+            // Balance mesh (and meshRefinement). No restriction on face zones
+            // and baffles.
+            autoPtr<mapDistributePolyMesh> map = meshRefiner_.balance
             (
-                layerParams,
-                motionDict,
-                nInitErrors,
-                meshMover,
+                false,
+                false,
+                cellWeights,
                 decomposer,
                 distributor
             );
+
+            //{
+            //    globalIndex globalCells(mesh.nCells());
+            //
+            //    Info<< "** Distribution after balancing:" << endl;
+            //    for (label procI = 0; procI < Pstream::nProcs(); procI++)
+            //    {
+            //        Info<< "    " << procI << '\t'
+            //            << globalCells.localSize(procI) << endl;
+            //    }
+            //    Info<< endl;
+            //}
         }
+
+
+        // Do all topo changes
+        addLayers
+        (
+            layerParams,
+            motionDict,
+            patchIDs,
+            nInitErrors,
+            decomposer,
+            distributor
+        );
     }
 }
 

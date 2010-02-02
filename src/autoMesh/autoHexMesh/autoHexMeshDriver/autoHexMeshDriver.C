@@ -539,6 +539,7 @@ void Foam::autoHexMeshDriver::doMesh()
             shrinkDict,
             motionDict,
             layerParams,
+            true,                   // pre-balance
             decomposerPtr_(),
             distributorPtr_()
         );

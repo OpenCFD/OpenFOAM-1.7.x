@@ -396,7 +396,7 @@ class autoLayerDriver
                     const PackedBoolList& isMasterEdge,
                     const labelList& meshEdges,
                     const scalarField& fieldMin,
-                    const label& nSmoothDisp,
+                    const label nSmoothDisp,
                     scalarField& field
                 ) const;
 
@@ -523,8 +523,8 @@ public:
             (
                 const layerParameters& layerParams,
                 const dictionary& motionDict,
+                const labelList& patchIDs,
                 const label nAllowableErrors,
-                motionSmoother& meshMover,
                 decompositionMethod& decomposer,
                 fvMeshDistribute& distributor
             );
@@ -535,6 +535,7 @@ public:
                 const dictionary& shrinkDict,
                 const dictionary& motionDict,
                 const layerParameters& layerParams,
+                const bool preBalance,              // balance before adding?
                 decompositionMethod& decomposer,
                 fvMeshDistribute& distributor
             );

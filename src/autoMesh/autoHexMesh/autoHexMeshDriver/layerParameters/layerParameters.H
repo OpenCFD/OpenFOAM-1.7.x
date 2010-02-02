@@ -206,20 +206,20 @@ public:
                 return nGrow_;
             }
 
-            //- Number of smoothing iterations of surface normals 
+            //- Number of smoothing iterations of surface normals
             label nSmoothSurfaceNormals() const
             {
                 return nSmoothSurfaceNormals_;
             }
 
             //- Number of smoothing iterations of interior mesh movement
-            //  direction  
+            //  direction
             label nSmoothNormals() const
             {
                 return nSmoothNormals_;
             }
 
-            //- Stop layer growth on highly warped cells 
+            //- Stop layer growth on highly warped cells
             scalar maxFaceThicknessRatio() const
             {
                 return maxFaceThicknessRatio_;
@@ -236,8 +236,8 @@ public:
                 return nSmoothThickness_;
             }
 
-            //- Reduce layer growth where ratio thickness to medial 
-            //  distance is large 
+            //- Reduce layer growth where ratio thickness to medial
+            //  distance is large
             scalar maxThicknessToMedialRatio() const
             {
                 return maxThicknessToMedialRatio_;
