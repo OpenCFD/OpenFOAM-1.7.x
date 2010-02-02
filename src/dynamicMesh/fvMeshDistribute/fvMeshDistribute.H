@@ -54,7 +54,7 @@ SourceFiles
 #define fvMeshDistribute_H
 
 #include "Field.H"
-#include "uLabel.H"
+//#include "uLabel.H"
 #include "fvMeshSubset.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -82,37 +82,7 @@ class fvMeshDistribute
         const scalar mergeTol_;
 
 
-    // Private classes
-
-        //- Check words are the same. Used in patch type checking of similarly
-        //  named patches.
-        class checkEqualType
-        {
-        public:
-
-            void operator()(word& x, const word& y) const
-            {
-                if (x != y)
-                {
-                    FatalErrorIn("checkEqualType()(word&, const word&) const")
-                        << "Patch type " << x << " possibly on processor "
-                        << Pstream::myProcNo()
-                        << " does not equal patch type " << y
-                        << " on some other processor." << nl
-                        << "Please check similarly named patches for"
-                        << " having exactly the same type."
-                        << abort(FatalError);
-                }
-            }
-        };
-
-
     // Private Member Functions
-
-        //- Given distribution work out a communication schedule. Is list
-        //  of pairs. First element of pair is send processor, second is
-        //  receive processor.
-        //static List<labelPair> getSchedule(const labelList&);
 
         //- Find indices with value
         static labelList select
@@ -123,7 +93,7 @@ class fvMeshDistribute
         );
 
         //- Check all procs have same names and in exactly same order.
-        static void checkEqualWordList(const wordList&);
+        static void checkEqualWordList(const string&, const wordList&);
 
         //- Merge wordlists over all processors
         static wordList mergeWordList(const wordList&);
@@ -288,7 +258,8 @@ class fvMeshDistribute
                 const wordList& cellZoneNames,
                 const labelList& sourceFace,
                 const labelList& sourceProc,
-                const labelList& sourceNewProc
+                const labelList& sourceNewProc,
+                OSstream& toDomain
             );
             //- Send subset of fields
             template<class GeoField>
@@ -296,7 +267,8 @@ class fvMeshDistribute
             (
                 const label domain,
                 const wordList& fieldNames,
-                const fvMeshSubset&
+                const fvMeshSubset&,
+                OSstream& toNbr
             );
 
             //- Receive mesh. Opposite of sendMesh
@@ -309,7 +281,8 @@ class fvMeshDistribute
                 const Time& runTime,
                 labelList& domainSourceFace,
                 labelList& domainSourceProc,
-                labelList& domainSourceNewProc
+                labelList& domainSourceNewProc,
+                ISstream& fromNbr
             );
 
             //- Receive fields. Opposite of sendFields
@@ -319,7 +292,17 @@ class fvMeshDistribute
                 const label domain,
                 const wordList& fieldNames,
                 fvMesh&,
-                PtrList<GeoField>&
+                PtrList<GeoField>&,
+                const dictionary& fieldDicts
+            );
+
+            //- Do parallel exchange
+            template <class Container, class T>
+            static void exchange
+            (
+                const List<Container >& sendBufs,
+                List<Container >& recvBufs,
+                labelListList& sizes
             );
 
             //- Disallow default bitwise copy construct
