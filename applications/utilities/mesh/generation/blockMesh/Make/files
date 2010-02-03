@@ -7,6 +7,8 @@ $(curvedEdges)/polyLineEdge.C
 $(curvedEdges)/arcEdge.C
 $(curvedEdges)/BSpline.C
 $(curvedEdges)/lineDivide.C
+$(curvedEdges)/CatmullRomSpline.C
+$(curvedEdges)/splineEdge.C
 
 blockMesh.C
 blockDescriptor.C
