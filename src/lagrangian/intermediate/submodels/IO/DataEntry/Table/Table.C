@@ -99,43 +99,53 @@ Type Foam::Table<Type>::integrate(const scalar x1, const scalar x2) const
         return sum;
     }
 
-    // Find start index
+    // Find next index greater than x1
     label id1 = 0;
     while ((table_[id1].first() < x1) && (id1 < table_.size()))
     {
         id1++;
     }
 
-    // Find end index
+    // Find next index less than x2
     label id2 = table_.size() - 1;
     while ((table_[id2].first() > x2) && (id2 >= 1))
     {
         id2--;
     }
 
-    // Integrate table body
-    for (label i=id1; i<id2; i++)
+    if ((id1 - id2) == 1)
     {
-        sum +=
-            (table_[i].second() + table_[i+1].second())
-          * (table_[i+1].first() - table_[i].first());
+        // x1 and x2 lie within 1 interval
+        sum = 0.5*(value(x1) + value(x2))*(x2 - x1);
     }
-    sum *= 0.5;
+    else
+    {
+        //x1 and x2 cross multiple intervals
 
-    // Add table ends (partial segments)
-    if (id1 > 0)
-    {
-        sum += 0.5
-          * (value(x1) + table_[id1].second())
-          * (table_[id1].first() - x1);
-    }
-    if (id2 < table_.size() - 1)
-    {
-        sum += 0.5
-          * (table_[id2].second() + value(x2))
-          * (x2 - table_[id2].first());
-    }
+        // Integrate table body
+        for (label i=id1; i<id2; i++)
+        {
+            sum +=
+                (table_[i].second() + table_[i+1].second())
+              * (table_[i+1].first() - table_[i].first());
+        }
+        sum *= 0.5;
 
+        // Add table ends (partial segments)
+        if (id1 > 0)
+        {
+            sum += 0.5
+              * (value(x1) + table_[id1].second())
+              * (table_[id1].first() - x1);
+        }
+
+        if (id2 < table_.size() - 1)
+        {
+            sum += 0.5
+              * (table_[id2].second() + value(x2))
+              * (x2 - table_[id2].first());
+        }
+    }
     return sum;
 }
 
