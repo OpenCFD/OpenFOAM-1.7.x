@@ -18,37 +18,17 @@ dictionaryReplacement
 {
     boundary
     {
-        ".*"
+        minY
         {
             type            patch;
         }
-        heater_to_bottomAir
+        minZ
         {
-            offset          ( 0 0 0 );
-            sampleMode      nearestPatchFace;
-            sampleRegion    bottomAir;
-            samplePatch     bottomAir_to_heater;
+            type            patch;
         }
-        heater_to_leftSolid
+        maxZ
         {
-            offset          ( 0 0 0 );
-            sampleMode      nearestPatchFace;
-            sampleRegion    leftSolid;
-            samplePatch     leftSolid_to_heater;
-        }
-        heater_to_rightSolid
-        {
-            offset          ( 0 0 0 );
-            sampleMode      nearestPatchFace;
-            sampleRegion    rightSolid;
-            samplePatch     rightSolid_to_heater;
-        }
-        heater_to_topAir
-        {
-            offset          ( 0 0 0 );
-            sampleMode      nearestPatchFace;
-            sampleRegion    topAir;
-            samplePatch     topAir_to_heater;
+            type            patch;
         }
     }
 

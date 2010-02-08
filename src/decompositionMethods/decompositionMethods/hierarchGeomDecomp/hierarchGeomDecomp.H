@@ -80,6 +80,17 @@ class hierarchGeomDecomp
         //- Convert ordering string ("xyz") into list of components.
         void setDecompOrder();
 
+        //- Evaluates the weighted sizes for each sorted point.
+        static void calculateSortedWeightedSizes
+        (
+            const labelList& current,
+            const labelList& indices,
+            const scalarField& weights,
+            const label globalCurrentSize,
+
+            scalarField& sortedWeightedSizes
+        );
+
         //- Find index of t in list inbetween indices left and right
         static label findLower
         (
@@ -104,10 +115,39 @@ class hierarchGeomDecomp
             scalar& midValue            // value at mid
         );
 
+        //- Find midValue (at local index mid) such that the number of
+        //  elements between mid and leftIndex are (globally summed) the
+        //  wantedSize. Binary search.
+        static void findBinary
+        (
+            const label sizeTol,        // size difference considered acceptible
+            const List<scalar>& sortedWeightedSizes,
+            const List<scalar>&,
+            const label leftIndex,      // index of previous value
+            const scalar leftValue,     // value at leftIndex
+            const scalar maxValue,      // global max of values
+            const scalar wantedSize,    // wanted size
+            label& mid,                 // index where size of bin is wantedSize
+            scalar& midValue            // value at mid
+        );
+
         //- Recursively sort in x,y,z (or rather acc. to decompOrder_)
         void sortComponent
         (
             const label sizeTol,
+            const pointField&,
+            const labelList& slice,         // slice of points to decompose
+            const direction componentIndex, // index in decompOrder_
+            const label prevMult,           // multiplication factor
+            labelList& finalDecomp          // overall decomposition
+        );
+
+        //- Recursively sort in x,y,z (or rather acc. to decompOrder_)
+        //- using weighted points.
+        void sortComponent
+        (
+            const label sizeTol,
+            const scalarField& weights,
             const pointField&,
             const labelList& slice,         // slice of points to decompose
             const direction componentIndex, // index in decompOrder_
@@ -156,6 +196,14 @@ public:
 
         //- Return for every coordinate the wanted processor number. Use the
         //  mesh connectivity (if needed)
+        virtual labelList decompose
+        (
+            const pointField&,
+            const scalarField& weights
+        );
+
+        //- Without weights. Code for weighted decomposition is a bit complex
+        //  so kept separate for now.
         virtual labelList decompose(const pointField&);
 
         //- Return for every coordinate the wanted processor number. Explicitly
@@ -165,6 +213,16 @@ public:
         //    from 0 at processor0 and then incrementing all through the
         //    processors)
         //  - the connections are across coupled patches
+        virtual labelList decompose
+        (
+            const labelListList& globalCellCells,
+            const pointField& cc,
+            const scalarField& cWeights
+        )
+        {
+            return decompose(cc, cWeights);
+        }
+
         virtual labelList decompose
         (
             const labelListList& globalCellCells,

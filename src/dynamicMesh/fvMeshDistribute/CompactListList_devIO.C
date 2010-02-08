@@ -24,27 +24,43 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef expDirectionMixedFvPatchFields_H
-#define expDirectionMixedFvPatchFields_H
+#include "CompactListList_dev.H"
+#include "Istream.H"
 
-#include "expDirectionMixedFvPatchField.H"
-#include "fieldTypes.H"
+// * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
+template<class T, class Container>
+Foam::CompactListList_dev<T, Container>::CompactListList_dev(Istream& is)
 {
+    operator>>(is, *this);
+}
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-makePatchTypeFieldTypedefs(expDirectionMixed)
+// * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+template<class T, class Container>
+Foam::Istream& Foam::operator>>(Istream& is, CompactListList_dev<T, Container>& lst)
+{
+    is  >> lst.offsets_ >> lst.m_;
+    // Note: empty list gets output as two empty lists
+    if (lst.offsets_.size() == 0)
+    {
+        lst.size_ = 0;
+    }
+    else
+    {
+        lst.size_ = lst.offsets_.size()-1;
+    }
+    return is;
+}
 
-} // End namespace Foam
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+template<class T, class Container>
+Foam::Ostream& Foam::operator<<(Ostream& os, const CompactListList_dev<T, Container>& lst)
+{
+    os  << lst.offsets_ << lst.m_;
+    return os;
+}
 
-#endif
 
 // ************************************************************************* //

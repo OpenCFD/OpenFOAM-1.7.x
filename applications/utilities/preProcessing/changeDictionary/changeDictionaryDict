@@ -16,25 +16,29 @@ FoamFile
 
 dictionaryReplacement
 {
+    boundary
+    {
+        ".*"
+        {
+            type            directMappedPatch;
+        }
+    }
+
     T
     {
         internalField   uniform 300;
 
         boundaryField
         {
+            ".*"
+            {
+                type            zeroGradient;
+            }
+
             minY
             {
                 type            fixedValue;
                 value           uniform 500;
-            }
-
-            minZ
-            {
-                type            zeroGradient;
-            }
-            maxZ
-            {
-                type            zeroGradient;
             }
         }
     }
@@ -45,18 +49,11 @@ dictionaryReplacement
 
         boundaryField
         {
-            minY
+            ".*"
             {
                 type            zeroGradient;
             }
-            minZ
-            {
-                type            zeroGradient;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-            }
+
         }
     }
 
@@ -66,18 +63,11 @@ dictionaryReplacement
 
         boundaryField
         {
-            minY
+            ".*"
             {
                 type            zeroGradient;
             }
-            minZ
-            {
-                type            zeroGradient;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-            }
+
         }
     }
 
@@ -87,18 +77,11 @@ dictionaryReplacement
 
         boundaryField
         {
-            minY
+            ".*"
             {
                 type            zeroGradient;
             }
-            minZ
-            {
-                type            zeroGradient;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-            }
+
         }
     }
 }

@@ -24,9 +24,9 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "syncTools.H"
 #include "parMetisDecomp.H"
 #include "metisDecomp.H"
+#include "syncTools.H"
 #include "addToRunTimeSelectionTable.H"
 #include "floatScalar.H"
 #include "polyMesh.H"
@@ -132,6 +132,7 @@ Foam::label Foam::parMetisDecomp::decompose
             nSendCells[procI-1] = nSendCells[procI]-nLocalCells[procI]+1;
         }
     }
+
 
     // First receive (so increasing the sizes of all arrays)
 
@@ -370,15 +371,22 @@ Foam::parMetisDecomp::parMetisDecomp
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::labelList Foam::parMetisDecomp::decompose(const pointField& points)
+Foam::labelList Foam::parMetisDecomp::decompose
+(
+    const pointField& cc,
+    const scalarField& cWeights
+)
 {
-    if (points.size() != mesh_.nCells())
+    if (cc.size() != mesh_.nCells())
     {
-        FatalErrorIn("parMetisDecomp::decompose(const pointField&)")
-            << "Can use this decomposition method only for the whole mesh"
+        FatalErrorIn
+        (
+            "parMetisDecomp::decompose"
+            "(const pointField&, const scalarField&)"
+        )   << "Can use this decomposition method only for the whole mesh"
             << endl
             << "and supply one coordinate (cellCentre) for every cell." << endl
-            << "The number of coordinates " << points.size() << endl
+            << "The number of coordinates " << cc.size() << endl
             << "The number of cells in the mesh " << mesh_.nCells()
             << exit(FatalError);
     }
@@ -386,156 +394,24 @@ Foam::labelList Foam::parMetisDecomp::decompose(const pointField& points)
     // For running sequential ...
     if (Pstream::nProcs() <= 1)
     {
-        return metisDecomp(decompositionDict_, mesh_).decompose(points);
-    }
-
-    // Create global cell numbers
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    // Get number of cells on all processors
-    List<int> nLocalCells(Pstream::nProcs());
-    nLocalCells[Pstream::myProcNo()] = mesh_.nCells();
-    Pstream::gatherList(nLocalCells);
-    Pstream::scatterList(nLocalCells);
-
-    // Get cell offsets.
-    List<int> cellOffsets(Pstream::nProcs()+1);
-    int nGlobalCells = 0;
-    forAll(nLocalCells, procI)
-    {
-        cellOffsets[procI] = nGlobalCells;
-        nGlobalCells += nLocalCells[procI];
-    }
-    cellOffsets[Pstream::nProcs()] = nGlobalCells;
-
-    int myOffset = cellOffsets[Pstream::myProcNo()];
-
-
-    //
-    // Make Metis Distributed CSR (Compressed Storage Format) storage
-    //   adjncy      : contains cellCells (= edges in graph)
-    //   xadj(celli) : start of information in adjncy for celli
-    //
-
-
-
-    const labelList& faceOwner = mesh_.faceOwner();
-    const labelList& faceNeighbour = mesh_.faceNeighbour();
-    const polyBoundaryMesh& patches = mesh_.boundaryMesh();
-
-
-    // Get renumbered owner on other side of coupled faces
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    List<int> globalNeighbour(mesh_.nFaces()-mesh_.nInternalFaces());
-
-    forAll(patches, patchI)
-    {
-        const polyPatch& pp = patches[patchI];
-
-        if (pp.coupled())
-        {
-            label faceI = pp.start();
-            label bFaceI = pp.start() - mesh_.nInternalFaces();
-
-            forAll(pp, i)
-            {
-                globalNeighbour[bFaceI++] = faceOwner[faceI++] + myOffset;
-            }
-        }
-    }
-
-    // Get the cell on the other side of coupled patches
-    syncTools::swapBoundaryFaceList(mesh_, globalNeighbour, false);
-
-
-    // Count number of faces (internal + coupled)
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    // Number of faces per cell
-    List<int> nFacesPerCell(mesh_.nCells(), 0);
-
-    // Number of coupled faces
-    label nCoupledFaces = 0;
-
-    for (label faceI = 0; faceI < mesh_.nInternalFaces(); faceI++)
-    {
-        nFacesPerCell[faceOwner[faceI]]++;
-        nFacesPerCell[faceNeighbour[faceI]]++;
-    }
-    // Handle coupled faces
-    forAll(patches, patchI)
-    {
-        const polyPatch& pp = patches[patchI];
-
-        if (pp.coupled())
-        {
-            label faceI = pp.start();
-
-            forAll(pp, i)
-            {
-                nCoupledFaces++;
-                nFacesPerCell[faceOwner[faceI++]]++;
-            }
-        }
+        return metisDecomp(decompositionDict_, mesh_).decompose
+        (
+            cc,
+            cWeights
+        );
     }
 
 
-    // Fill in xadj
-    // ~~~~~~~~~~~~
-
-    Field<int> xadj(mesh_.nCells()+1, -1);
-
-    int freeAdj = 0;
-
-    for (label cellI = 0; cellI < mesh_.nCells(); cellI++)
-    {
-        xadj[cellI] = freeAdj;
-
-        freeAdj += nFacesPerCell[cellI];
-    }
-    xadj[mesh_.nCells()] = freeAdj;
-
-
-
-    // Fill in adjncy
-    // ~~~~~~~~~~~~~~
-
-    Field<int> adjncy(2*mesh_.nInternalFaces() + nCoupledFaces, -1);
-
-    nFacesPerCell = 0;
-
-    // For internal faces is just offsetted owner and neighbour
-    for (label faceI = 0; faceI < mesh_.nInternalFaces(); faceI++)
-    {
-        label own = faceOwner[faceI];
-        label nei = faceNeighbour[faceI];
-
-        adjncy[xadj[own] + nFacesPerCell[own]++] = nei + myOffset;
-        adjncy[xadj[nei] + nFacesPerCell[nei]++] = own + myOffset;
-    }
-    // For boundary faces is offsetted coupled neighbour
-    forAll(patches, patchI)
-    {
-        const polyPatch& pp = patches[patchI];
-
-        if (pp.coupled())
-        {
-            label faceI = pp.start();
-            label bFaceI = pp.start()-mesh_.nInternalFaces();
-
-            forAll(pp, i)
-            {
-                label own = faceOwner[faceI];
-                adjncy[xadj[own] + nFacesPerCell[own]++] =
-                    globalNeighbour[bFaceI];
-
-                faceI++;
-                bFaceI++;
-            }
-        }
-    }
-
+    // Connections
+    Field<int> adjncy;
+    // Offsets into adjncy
+    Field<int> xadj;
+    calcMetisDistributedCSR
+    (
+        mesh_,
+        adjncy,
+        xadj
+    );
 
 
     // decomposition options. 0 = use defaults
@@ -549,6 +425,41 @@ Foam::labelList Foam::parMetisDecomp::decompose(const pointField& points)
 
     // face weights (so on the edges of the dual)
     Field<int> faceWeights;
+
+
+    // Check for externally provided cellweights and if so initialise weights
+    scalar minWeights = gMin(cWeights);
+    if (cWeights.size() > 0)
+    {
+        if (minWeights <= 0)
+        {
+            WarningIn
+            (
+                "metisDecomp::decompose"
+                "(const pointField&, const scalarField&)"
+            )   << "Illegal minimum weight " << minWeights
+                << endl;
+        }
+
+        if (cWeights.size() != mesh_.nCells())
+        {
+            FatalErrorIn
+            (
+                "metisDecomp::decompose"
+                "(const pointField&, const scalarField&)"
+            )   << "Number of cell weights " << cWeights.size()
+                << " does not equal number of cells " << mesh_.nCells()
+                << exit(FatalError);
+        }
+
+        // Convert to integers.
+        cellWeights.setSize(cWeights.size());
+        forAll(cellWeights, i)
+        {
+            cellWeights[i] = int(cWeights[i]/minWeights);
+        }
+    }
+
 
     // Check for user supplied weights and decomp options
     if (decompositionDict_.found("metisCoeffs"))
@@ -577,8 +488,11 @@ Foam::labelList Foam::parMetisDecomp::decompose(const pointField& points)
 
             if (cellWeights.size() != mesh_.nCells())
             {
-                FatalErrorIn("parMetisDecomp::decompose(const pointField&)")
-                    << "Number of cell weights " << cellWeights.size()
+                FatalErrorIn
+                (
+                    "parMetisDecomp::decompose"
+                    "(const pointField&, const scalarField&)"
+                )   << "Number of cell weights " << cellWeights.size()
                     << " read from " << cellIOWeights.objectPath()
                     << " does not equal number of cells " << mesh_.nCells()
                     << exit(FatalError);
@@ -604,30 +518,35 @@ Foam::labelList Foam::parMetisDecomp::decompose(const pointField& points)
 
             if (weights.size() != mesh_.nFaces())
             {
-                FatalErrorIn("parMetisDecomp::decompose(const pointField&)")
-                    << "Number of face weights " << weights.size()
+                FatalErrorIn
+                (
+                    "parMetisDecomp::decompose"
+                    "(const pointField&, const scalarField&)"
+                )   << "Number of face weights " << weights.size()
                     << " does not equal number of internal and boundary faces "
                     << mesh_.nFaces()
                     << exit(FatalError);
             }
 
-            faceWeights.setSize(2*mesh_.nInternalFaces()+nCoupledFaces);
+            faceWeights.setSize(adjncy.size());
 
             // Assume symmetric weights. Keep same ordering as adjncy.
-            nFacesPerCell = 0;
+            List<int> nFacesPerCell(mesh_.nCells(), 0);
 
             // Handle internal faces
             for (label faceI = 0; faceI < mesh_.nInternalFaces(); faceI++)
             {
                 label w = weights[faceI];
 
-                label own = faceOwner[faceI];
-                label nei = faceNeighbour[faceI];
+                label own = mesh_.faceOwner()[faceI];
+                label nei = mesh_.faceNeighbour()[faceI];
 
                 faceWeights[xadj[own] + nFacesPerCell[own]++] = w;
                 faceWeights[xadj[nei] + nFacesPerCell[nei]++] = w;
             }
             // Coupled boundary faces
+            const polyBoundaryMesh& patches = mesh_.boundaryMesh();
+
             forAll(patches, patchI)
             {
                 const polyPatch& pp = patches[patchI];
@@ -639,8 +558,8 @@ Foam::labelList Foam::parMetisDecomp::decompose(const pointField& points)
                     forAll(pp, i)
                     {
                         label w = weights[faceI];
-                        label own = faceOwner[faceI];
-                        adjncy[xadj[own] + nFacesPerCell[own]++] = w;
+                        label own = mesh_.faceOwner()[faceI];
+                        faceWeights[xadj[own] + nFacesPerCell[own]++] = w;
                         faceI++;
                     }
                 }
@@ -654,8 +573,11 @@ Foam::labelList Foam::parMetisDecomp::decompose(const pointField& points)
 
             if (options.size() != 3)
             {
-                FatalErrorIn("parMetisDecomp::decompose(const pointField&)")
-                    << "Number of options " << options.size()
+                FatalErrorIn
+                (
+                    "parMetisDecomp::decompose"
+                    "(const pointField&, const scalarField&)"
+                )   << "Number of options " << options.size()
                     << " should be three." << exit(FatalError);
             }
         }
@@ -668,7 +590,7 @@ Foam::labelList Foam::parMetisDecomp::decompose(const pointField& points)
     (
         xadj,
         adjncy,
-        points,
+        cc,
         cellWeights,
         faceWeights,
         options,
@@ -689,7 +611,8 @@ Foam::labelList Foam::parMetisDecomp::decompose(const pointField& points)
 Foam::labelList Foam::parMetisDecomp::decompose
 (
     const labelList& cellToRegion,
-    const pointField& regionPoints
+    const pointField& regionPoints,
+    const scalarField& regionWeights
 )
 {
     const labelList& faceOwner = mesh_.faceOwner();
@@ -798,7 +721,15 @@ Foam::labelList Foam::parMetisDecomp::decompose
         }
     }
 
-    labelList regionDecomp(decompose(globalRegionRegions, regionPoints));
+    labelList regionDecomp
+    (
+        decompose
+        (
+            globalRegionRegions,
+            regionPoints,
+            regionWeights
+        )
+    );
 
     // Rework back into decomposition for original mesh_
     labelList cellDistribution(cellToRegion.size());
@@ -814,24 +745,26 @@ Foam::labelList Foam::parMetisDecomp::decompose
 Foam::labelList Foam::parMetisDecomp::decompose
 (
     const labelListList& globalCellCells,
-    const pointField& cellCentres
+    const pointField& cellCentres,
+    const scalarField& cWeights
 )
 {
     if (cellCentres.size() != globalCellCells.size())
     {
         FatalErrorIn
         (
-            "parMetisDecomp::decompose(const labelListList&, const pointField&)"
+            "parMetisDecomp::decompose(const labelListList&"
+            ", const pointField&, const scalarField&)"
         )   << "Inconsistent number of cells (" << globalCellCells.size()
             << ") and number of cell centres (" << cellCentres.size()
-            << ")." << exit(FatalError);
+            << ") or weights (" << cWeights.size() << ")." << exit(FatalError);
     }
 
     // For running sequential ...
     if (Pstream::nProcs() <= 1)
     {
         return metisDecomp(decompositionDict_, mesh_)
-            .decompose(globalCellCells, cellCentres);
+            .decompose(globalCellCells, cellCentres, cWeights);
     }
 
 
@@ -855,106 +788,46 @@ Foam::labelList Foam::parMetisDecomp::decompose
     // face weights (so on the edges of the dual)
     Field<int> faceWeights;
 
+
+    // Check for externally provided cellweights and if so initialise weights
+    scalar minWeights = gMin(cWeights);
+    if (cWeights.size() > 0)
+    {
+        if (minWeights <= 0)
+        {
+            WarningIn
+            (
+                "parMetisDecomp::decompose(const labelListList&"
+                ", const pointField&, const scalarField&)"
+            )   << "Illegal minimum weight " << minWeights
+                << endl;
+        }
+
+        if (cWeights.size() != globalCellCells.size())
+        {
+            FatalErrorIn
+            (
+                "parMetisDecomp::decompose(const labelListList&"
+                ", const pointField&, const scalarField&)"
+            )   << "Number of cell weights " << cWeights.size()
+                << " does not equal number of cells " << globalCellCells.size()
+                << exit(FatalError);
+        }
+
+        // Convert to integers.
+        cellWeights.setSize(cWeights.size());
+        forAll(cellWeights, i)
+        {
+            cellWeights[i] = int(cWeights[i]/minWeights);
+        }
+    }
+
+
     // Check for user supplied weights and decomp options
     if (decompositionDict_.found("metisCoeffs"))
     {
         const dictionary& metisCoeffs =
             decompositionDict_.subDict("metisCoeffs");
-        word weightsFile;
-
-        if (metisCoeffs.readIfPresent("cellWeightsFile", weightsFile))
-        {
-            Info<< "parMetisDecomp : Using cell-based weights read from "
-                << weightsFile << endl;
-
-            labelIOField cellIOWeights
-            (
-                IOobject
-                (
-                    weightsFile,
-                    mesh_.time().timeName(),
-                    mesh_,
-                    IOobject::MUST_READ,
-                    IOobject::AUTO_WRITE
-                )
-            );
-            cellWeights.transfer(cellIOWeights);
-
-            if (cellWeights.size() != cellCentres.size())
-            {
-                FatalErrorIn
-                (
-                    "parMetisDecomp::decompose"
-                    "(const labelListList&, const pointField&)"
-                )   << "Number of cell weights " << cellWeights.size()
-                    << " read from " << cellIOWeights.objectPath()
-                    << " does not equal number of cells " << cellCentres.size()
-                    << exit(FatalError);
-            }
-        }
-
-        //- faceWeights disabled. Only makes sense for cellCells from mesh.
-        //if (metisCoeffs.readIfPresent("faceWeightsFile", weightsFile))
-        //{
-        //    Info<< "parMetisDecomp : Using face-based weights read from "
-        //        << weightsFile << endl;
-        //
-        //    labelIOField weights
-        //    (
-        //        IOobject
-        //        (
-        //            weightsFile,
-        //            mesh_.time().timeName(),
-        //            mesh_,
-        //            IOobject::MUST_READ,
-        //            IOobject::AUTO_WRITE
-        //        )
-        //    );
-        //
-        //    if (weights.size() != mesh_.nFaces())
-        //    {
-        //        FatalErrorIn("parMetisDecomp::decompose(const pointField&)")
-        //            << "Number of face weights " << weights.size()
-        //            << " does not equal number of internal and boundary faces "
-        //            << mesh_.nFaces()
-        //            << exit(FatalError);
-        //    }
-        //
-        //    faceWeights.setSize(2*mesh_.nInternalFaces()+nCoupledFaces);
-        //
-        //    // Assume symmetric weights. Keep same ordering as adjncy.
-        //    nFacesPerCell = 0;
-        //
-        //    // Handle internal faces
-        //    for (label faceI = 0; faceI < mesh_.nInternalFaces(); faceI++)
-        //    {
-        //        label w = weights[faceI];
-        //
-        //        label own = faceOwner[faceI];
-        //        label nei = faceNeighbour[faceI];
-        //
-        //        faceWeights[xadj[own] + nFacesPerCell[own]++] = w;
-        //        faceWeights[xadj[nei] + nFacesPerCell[nei]++] = w;
-        //    }
-        //    // Coupled boundary faces
-        //    forAll(patches, patchI)
-        //    {
-        //        const polyPatch& pp = patches[patchI];
-        //
-        //        if (pp.coupled())
-        //        {
-        //            label faceI = pp.start();
-        //
-        //            forAll(pp, i)
-        //            {
-        //                label w = weights[faceI];
-        //                label own = faceOwner[faceI];
-        //                adjncy[xadj[own] + nFacesPerCell[own]++] = w;
-        //                faceI++;
-        //            }
-        //        }
-        //    }
-        //}
 
         if (metisCoeffs.readIfPresent("options", options))
         {
@@ -965,8 +838,8 @@ Foam::labelList Foam::parMetisDecomp::decompose
             {
                 FatalErrorIn
                 (
-                    "parMetisDecomp::decompose"
-                    "(const labelListList&, const pointField&)"
+                    "parMetisDecomp::decompose(const labelListList&"
+                    ", const pointField&, const scalarField&)"
                 )   << "Number of options " << options.size()
                     << " should be three." << exit(FatalError);
             }
@@ -995,6 +868,148 @@ Foam::labelList Foam::parMetisDecomp::decompose
         decomp[i] = finalDecomp[i];
     }
     return decomp;
+}
+
+
+void Foam::parMetisDecomp::calcMetisDistributedCSR
+(
+    const polyMesh& mesh,
+    List<int>& adjncy,
+    List<int>& xadj
+)
+{
+    // Create global cell numbers
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    globalIndex globalCells(mesh.nCells());
+
+
+    //
+    // Make Metis Distributed CSR (Compressed Storage Format) storage
+    //   adjncy      : contains cellCells (= edges in graph)
+    //   xadj(celli) : start of information in adjncy for celli
+    //
+
+
+    const labelList& faceOwner = mesh.faceOwner();
+    const labelList& faceNeighbour = mesh.faceNeighbour();
+    const polyBoundaryMesh& patches = mesh.boundaryMesh();
+
+
+    // Get renumbered owner on other side of coupled faces
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    List<int> globalNeighbour(mesh.nFaces()-mesh.nInternalFaces());
+
+    forAll(patches, patchI)
+    {
+        const polyPatch& pp = patches[patchI];
+
+        if (pp.coupled())
+        {
+            label faceI = pp.start();
+            label bFaceI = pp.start() - mesh.nInternalFaces();
+
+            forAll(pp, i)
+            {
+                globalNeighbour[bFaceI++] = globalCells.toGlobal
+                (
+                    faceOwner[faceI++]
+                );
+            }
+        }
+    }
+
+    // Get the cell on the other side of coupled patches
+    syncTools::swapBoundaryFaceList(mesh, globalNeighbour, false);
+
+
+    // Count number of faces (internal + coupled)
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    // Number of faces per cell
+    List<int> nFacesPerCell(mesh.nCells(), 0);
+
+    // Number of coupled faces
+    label nCoupledFaces = 0;
+
+    for (label faceI = 0; faceI < mesh.nInternalFaces(); faceI++)
+    {
+        nFacesPerCell[faceOwner[faceI]]++;
+        nFacesPerCell[faceNeighbour[faceI]]++;
+    }
+    // Handle coupled faces
+    forAll(patches, patchI)
+    {
+        const polyPatch& pp = patches[patchI];
+
+        if (pp.coupled())
+        {
+            label faceI = pp.start();
+
+            forAll(pp, i)
+            {
+                nCoupledFaces++;
+                nFacesPerCell[faceOwner[faceI++]]++;
+            }
+        }
+    }
+
+
+    // Fill in xadj
+    // ~~~~~~~~~~~~
+
+    xadj.setSize(mesh.nCells()+1);
+
+    int freeAdj = 0;
+
+    for (label cellI = 0; cellI < mesh.nCells(); cellI++)
+    {
+        xadj[cellI] = freeAdj;
+
+        freeAdj += nFacesPerCell[cellI];
+    }
+    xadj[mesh.nCells()] = freeAdj;
+
+
+
+    // Fill in adjncy
+    // ~~~~~~~~~~~~~~
+
+    adjncy.setSize(2*mesh.nInternalFaces() + nCoupledFaces);
+
+    nFacesPerCell = 0;
+
+    // For internal faces is just offsetted owner and neighbour
+    for (label faceI = 0; faceI < mesh.nInternalFaces(); faceI++)
+    {
+        label own = faceOwner[faceI];
+        label nei = faceNeighbour[faceI];
+
+        adjncy[xadj[own] + nFacesPerCell[own]++] = globalCells.toGlobal(nei);
+        adjncy[xadj[nei] + nFacesPerCell[nei]++] = globalCells.toGlobal(own);
+    }
+    // For boundary faces is offsetted coupled neighbour
+    forAll(patches, patchI)
+    {
+        const polyPatch& pp = patches[patchI];
+
+        if (pp.coupled())
+        {
+            label faceI = pp.start();
+            label bFaceI = pp.start()-mesh.nInternalFaces();
+
+            forAll(pp, i)
+            {
+                label own = faceOwner[faceI];
+                adjncy[xadj[own] + nFacesPerCell[own]++] =
+                    globalNeighbour[bFaceI];
+
+                faceI++;
+                bFaceI++;
+            }
+        }
+    }
 }
 
 

@@ -338,7 +338,7 @@ Foam::refinementSurfaces::refinementSurfaces
                 {
                     if (regionsDict.found(regionNames[regionI]))
                     {
-                        // Get the dictionary for region 
+                        // Get the dictionary for region
                         const dictionary& regionDict = regionsDict.subDict
                         (
                             regionNames[regionI]
@@ -496,23 +496,63 @@ Foam::labelList Foam::refinementSurfaces::getClosedNamedSurfaces() const
 }
 
 
-// Count number of triangles per surface region
-Foam::labelList Foam::refinementSurfaces::countRegions(const triSurface& s)
-{
-    const geometricSurfacePatchList& regions = s.patches();
+// // Count number of triangles per surface region
+// Foam::labelList Foam::refinementSurfaces::countRegions(const triSurface& s)
+// {
+//     const geometricSurfacePatchList& regions = s.patches();
+// 
+//     labelList nTris(regions.size(), 0);
+// 
+//     forAll(s, triI)
+//     {
+//         nTris[s[triI].region()]++;
+//     }
+//     return nTris;
+// }
 
-    labelList nTris(regions.size(), 0);
 
-    forAll(s, triI)
-    {
-        nTris[s[triI].region()]++;
-    }
-    return nTris;
-}
+// // Pre-calculate the refinement level for every element
+// void Foam::refinementSurfaces::wantedRefinementLevel
+// (
+//     const shellSurfaces& shells,
+//     const label surfI,
+//     const List<pointIndexHit>& info,    // Indices
+//     const pointField& ctrs,             // Representative coordinate
+//     labelList& minLevelField
+// ) const
+// {
+//     const searchableSurface& geom = allGeometry_[surfaces_[surfI]];
+// 
+//     // Get per element the region
+//     labelList region;
+//     geom.getRegion(info, region);
+// 
+//     // Initialise fields to region wise minLevel
+//     minLevelField.setSize(ctrs.size());
+//     minLevelField = -1;
+// 
+//     forAll(minLevelField, i)
+//     {
+//         if (info[i].hit())
+//         {
+//             minLevelField[i] = minLevel(surfI, region[i]);
+//         }
+//     }
+// 
+//     // Find out if triangle inside shell with higher level
+//     // What level does shell want to refine fc to?
+//     labelList shellLevel;
+//     shells.findHigherLevel(ctrs, minLevelField, shellLevel);
+// 
+//     forAll(minLevelField, i)
+//     {
+//         minLevelField[i] = max(minLevelField[i], shellLevel[i]);
+//     }
+// }
 
 
 // Precalculate the refinement level for every element of the searchable
-// surface. This is currently hardcoded for triSurfaceMesh only.
+// surface.
 void Foam::refinementSurfaces::setMinLevelFields
 (
     const shellSurfaces& shells
@@ -522,58 +562,55 @@ void Foam::refinementSurfaces::setMinLevelFields
     {
         const searchableSurface& geom = allGeometry_[surfaces_[surfI]];
 
-        if (isA<triSurfaceMesh>(geom))
+        // Precalculation only makes sense if there are different regions
+        // (so different refinement levels possible) and there are some
+        // elements. Possibly should have 'enough' elements to have fine
+        // enough resolution but for now just make sure we don't catch e.g.
+        // searchableBox (size=6)
+        if (geom.regions().size() > 1 && geom.globalSize() > 10)
         {
-            const triSurfaceMesh& triMesh = refCast<const triSurfaceMesh>(geom);
+            // Representative local coordinates
+            const pointField ctrs = geom.coordinates();
 
-            autoPtr<triSurfaceLabelField> minLevelFieldPtr
-            (
-                new triSurfaceLabelField
-                (
-                    IOobject
-                    (
-                        "values",
-                        triMesh.objectRegistry::time().timeName(),  // instance
-                        "triSurface",                               // local
-                        triMesh,
-                        IOobject::NO_READ,
-                        IOobject::AUTO_WRITE
-                    ),
-                    triMesh,
-                    dimless
-                )
-            );
-            triSurfaceLabelField& minLevelField = minLevelFieldPtr();
-
-            const triSurface& s = static_cast<const triSurface&>(triMesh);
-
-            // Initialise fields to region wise minLevel
-            forAll(s, triI)
+            labelList minLevelField(ctrs.size(), -1);
             {
-                minLevelField[triI] = minLevel(surfI, s[triI].region());
+                // Get the element index in a roundabout way. Problem is e.g.
+                // distributed surface where local indices differ from global
+                // ones (needed for getRegion call)
+                List<pointIndexHit> info;
+                geom.findNearest
+                (
+                    ctrs,
+                    scalarField(ctrs.size(), sqr(GREAT)),
+                    info
+                );
+
+                // Get per element the region
+                labelList region;
+                geom.getRegion(info, region);
+
+                // From the region get the surface-wise refinement level
+                forAll(minLevelField, i)
+                {
+                    if (info[i].hit())
+                    {
+                        minLevelField[i] = minLevel(surfI, region[i]);
+                    }
+                }
             }
 
             // Find out if triangle inside shell with higher level
-            pointField fc(s.size());
-            forAll(s, triI)
-            {
-                fc[triI] = s[triI].centre(s.points());
-            }
             // What level does shell want to refine fc to?
             labelList shellLevel;
-            shells.findHigherLevel(fc, minLevelField, shellLevel);
+            shells.findHigherLevel(ctrs, minLevelField, shellLevel);
 
-            forAll(minLevelField, triI)
+            forAll(minLevelField, i)
             {
-                minLevelField[triI] = max
-                (
-                    minLevelField[triI],
-                    shellLevel[triI]
-                );
+                minLevelField[i] = max(minLevelField[i], shellLevel[i]);
             }
 
-            // Store field on triMesh
-            minLevelFieldPtr.ptr()->store();
+            // Store minLevelField on surface
+            const_cast<searchableSurface&>(geom).setField(minLevelField);
         }
     }
 }
@@ -601,44 +638,88 @@ void Foam::refinementSurfaces::findHigherIntersection
         return;
     }
 
+    if (surfaces_.size() == 1)
+    {
+        // Optimisation: single segmented surface. No need to duplicate
+        // point storage.
+
+        label surfI = 0;
+
+        const searchableSurface& geom = allGeometry_[surfaces_[surfI]];
+
+        // Do intersection test
+        List<pointIndexHit> intersectionInfo(start.size());
+        geom.findLineAny(start, end, intersectionInfo);
+
+        // See if a cached level field available
+        labelList minLevelField;
+        geom.getField(intersectionInfo, minLevelField);
+        bool haveLevelField =
+        (
+            returnReduce(minLevelField.size(), sumOp<label>())
+          > 0
+        );
+
+        if (!haveLevelField && geom.regions().size() == 1)
+        {
+            minLevelField = labelList
+            (
+                intersectionInfo.size(),
+                minLevel(surfI, 0)
+            );
+            haveLevelField = true;
+        }
+
+        if (haveLevelField)
+        {
+            forAll(intersectionInfo, i)
+            {
+                if
+                (
+                    intersectionInfo[i].hit()
+                 && minLevelField[i] > currentLevel[i]
+                )
+                {
+                    surfaces[i] = surfI;    // index of surface
+                    surfaceLevel[i] = minLevelField[i];
+                }
+            }
+            return;
+        }
+    }
+
+
+
     // Work arrays
-    labelList hitMap(identity(start.size()));
     pointField p0(start);
     pointField p1(end);
-    List<pointIndexHit> hitInfo(start.size());
+    labelList intersectionToPoint(identity(start.size()));
+    List<pointIndexHit> intersectionInfo(start.size());
 
     forAll(surfaces_, surfI)
     {
         const searchableSurface& geom = allGeometry_[surfaces_[surfI]];
 
-        geom.findLineAny(p0, p1, hitInfo);
+        // Do intersection test
+        geom.findLineAny(p0, p1, intersectionInfo);
 
+        // See if a cached level field available
         labelList minLevelField;
-        if (isA<triSurfaceMesh>(geom))
-        {
-            const triSurfaceMesh& triMesh = refCast<const triSurfaceMesh>(geom);
-            triMesh.getField
-            (
-                //"minLevel",
-                hitInfo,
-                minLevelField
-            );
-        }
+        geom.getField(intersectionInfo, minLevelField);
 
-
-        // Copy all hits into arguments, continue with misses
-        label newI = 0;
-        forAll(hitInfo, hitI)
+        // Copy all hits into arguments, In-place compact misses.
+        label missI = 0;
+        forAll(intersectionInfo, i)
         {
             // Get the minLevel for the point
             label minLocalLevel = -1;
 
-            if (hitInfo[hitI].hit())
+            if (intersectionInfo[i].hit())
             {
                 // Check if minLevelField for this surface.
                 if (minLevelField.size())
                 {
-                    minLocalLevel = minLevelField[hitI];
+                    minLocalLevel = minLevelField[i];
                 }
                 else
                 {
@@ -648,36 +729,35 @@ void Foam::refinementSurfaces::findHigherIntersection
                 }
             }
 
-            label pointI = hitMap[hitI];
+
+            label pointI = intersectionToPoint[i];
 
             if (minLocalLevel > currentLevel[pointI])
             {
+                // Mark point for refinement
                 surfaces[pointI] = surfI;
                 surfaceLevel[pointI] = minLocalLevel;
             }
             else
             {
-                if (hitI != newI)
-                {
-                    hitMap[newI] = hitMap[hitI];
-                    p0[newI] = p0[hitI];
-                    p1[newI] = p1[hitI];
-                }
-                newI++;
+                p0[missI] = start[pointI];
+                p1[missI] = end[pointI];
+                intersectionToPoint[missI] = pointI;
+                missI++;
             }
         }
 
         // All done? Note that this decision should be synchronised
-        if (returnReduce(newI, sumOp<label>()) == 0)
+        if (returnReduce(missI, sumOp<label>()) == 0)
         {
             break;
         }
 
-        // Trim and continue
-        hitMap.setSize(newI);
-        p0.setSize(newI);
-        p1.setSize(newI);
-        hitInfo.setSize(newI);
+        // Trim misses
+        p0.setSize(missI);
+        p1.setSize(missI);
+        intersectionToPoint.setSize(missI);
+        intersectionInfo.setSize(missI);
     }
 }
 

@@ -10,7 +10,7 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      autoHexMeshDict;
+    object      snappyHexMeshDict;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -71,10 +71,10 @@ castellatedMeshControls
     // Refinement parameters
     // ~~~~~~~~~~~~~~~~~~~~~
 
-    // While refining maximum number of cells per processor. This is basically
-    // the number of cells that fit on a processor. If you choose this too small
-    // it will do just more refinement iterations to obtain a similar mesh.
-    maxLocalCells 1000000;
+    // If local number of cells is >= maxLocalCells on any processor
+    // switches from from refinement followed by balancing
+    // (current method) to (weighted) balancing before refinement.
+    maxLocalCells 100000;
 
     // Overall cell limit (approximately). Refinement will stop immediately
     // upon reaching this number so a refinement level might not complete.
@@ -88,6 +88,13 @@ castellatedMeshControls
     // are selected for refinement. Note: it will at least do one iteration
     // (unless the number of cells to refine is 0)
     minRefinementCells 0;
+
+    // Allow a certain level of imbalance during refining
+    // (since balancing is quite expensive)
+    // Expressed as fraction of perfect balance (= overall number of cells /
+    // nProcs). 0=balance always.
+    maxLoadUnbalance 0.10;
+
 
     // Number of buffer layers between different levels.
     // 1 means normal 2:1 refinement restriction, larger means slower
@@ -184,6 +191,12 @@ castellatedMeshControls
     // NOTE: This point should never be on a face, always inside a cell, even
     // after refinement.
     locationInMesh (5 0.28 0.43);
+
+
+    // Whether any faceZones (as specified in the refinementSurfaces)
+    // are only on the boundary of corresponding cellZones or also allow
+    // free-standing zone faces
+    allowFreeStandingZoneFaces true;
 }
 
 

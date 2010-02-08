@@ -54,6 +54,7 @@ License
 #include "Random.H"
 #include "searchableSurfaces.H"
 #include "treeBoundBox.H"
+#include "zeroGradientFvPatchFields.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -552,13 +553,16 @@ void Foam::meshRefinement::calcLocalRegions
     const globalIndex& globalCells,
     const labelList& globalRegion,
     const Map<label>& coupledRegionToMaster,
+    const scalarField& cellWeights,
 
     Map<label>& globalToLocalRegion,
-    pointField& localPoints
+    pointField& localPoints,
+    scalarField& localWeights
 ) const
 {
     globalToLocalRegion.resize(globalRegion.size());
     DynamicList<point> localCc(globalRegion.size()/2);
+    DynamicList<scalar> localWts(globalRegion.size()/2);
 
     forAll(globalRegion, cellI)
     {
@@ -573,6 +577,7 @@ void Foam::meshRefinement::calcLocalRegions
                 // I am master. Allocate region for me.
                 globalToLocalRegion.insert(globalRegion[cellI], localCc.size());
                 localCc.append(mesh_.cellCentres()[cellI]);
+                localWts.append(cellWeights[cellI]);
             }
         }
         else
@@ -581,11 +586,13 @@ void Foam::meshRefinement::calcLocalRegions
             if (globalToLocalRegion.insert(globalRegion[cellI], localCc.size()))
             {
                 localCc.append(mesh_.cellCentres()[cellI]);
+                localWts.append(cellWeights[cellI]);
             }
         }
     }
 
     localPoints.transfer(localCc);
+    localWeights.transfer(localWts);
 
     if (localPoints.size() != globalToLocalRegion.size())
     {
@@ -924,6 +931,7 @@ Foam::label Foam::meshRefinement::countHits() const
 // Determine distribution to move connected regions onto one processor.
 Foam::labelList Foam::meshRefinement::decomposeCombineRegions
 (
+    const scalarField& cellWeights,
     const boolList& blockedFace,
     const List<labelPair>& explicitConnections,
     decompositionMethod& decomposer
@@ -965,14 +973,17 @@ Foam::labelList Foam::meshRefinement::decomposeCombineRegions
 
     Map<label> globalToLocalRegion;
     pointField localPoints;
+    scalarField localWeights;
     calcLocalRegions
     (
         globalCells,
         globalRegion,
         coupledRegionToMaster,
+        cellWeights,
 
         globalToLocalRegion,
-        localPoints
+        localPoints,
+        localWeights
     );
 
 
@@ -984,7 +995,7 @@ Foam::labelList Foam::meshRefinement::decomposeCombineRegions
 
     if (isA<geomDecomp>(decomposer))
     {
-        regionDistribution = decomposer.decompose(localPoints);
+        regionDistribution = decomposer.decompose(localPoints, localWeights);
     }
     else
     {
@@ -998,7 +1009,12 @@ Foam::labelList Foam::meshRefinement::decomposeCombineRegions
             regionRegions
         );
 
-        regionDistribution = decomposer.decompose(regionRegions, localPoints);
+        regionDistribution = decomposer.decompose
+        (
+            regionRegions,
+            localPoints,
+            localWeights
+        );
     }
 
 
@@ -1058,6 +1074,7 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::meshRefinement::balance
 (
     const bool keepZoneFaces,
     const bool keepBaffles,
+    const scalarField& cellWeights,
     decompositionMethod& decomposer,
     fvMeshDistribute& distributor
 )
@@ -1163,6 +1180,7 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::meshRefinement::balance
 
                 distribution = decomposeCombineRegions
                 (
+                    cellWeights,
                     blockedFace,
                     couples,
                     decomposer
@@ -1182,13 +1200,21 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::meshRefinement::balance
             else
             {
                 // Normal decomposition
-                distribution = decomposer.decompose(mesh_.cellCentres());
+                distribution = decomposer.decompose
+                (
+                    mesh_.cellCentres(),
+                    cellWeights
+                );
             }
         }
         else
         {
             // Normal decomposition
-            distribution = decomposer.decompose(mesh_.cellCentres());
+            distribution = decomposer.decompose
+            (
+                mesh_.cellCentres(),
+                cellWeights
+            );
         }
 
         if (debug)
@@ -1249,7 +1275,7 @@ Foam::labelList Foam::meshRefinement::intersectedPoints() const
     const faceList& faces = mesh_.faces();
 
     // Mark all points on faces that will become baffles
-    PackedBoolList isBoundaryPoint(mesh_.nPoints(), 0u);
+    PackedBoolList isBoundaryPoint(mesh_.nPoints());
     label nBoundaryPoints = 0;
 
     forAll(surfaceIndex_, faceI)
@@ -1683,7 +1709,7 @@ Foam::label Foam::meshRefinement::addPatch
 
 Foam::label Foam::meshRefinement::addMeshedPatch
 (
-    const word& name,   
+    const word& name,
     const word& type
 )
 {
@@ -2103,7 +2129,8 @@ void Foam::meshRefinement::dumpRefinementLevel() const
             false
         ),
         mesh_,
-        dimensionedScalar("zero", dimless, 0)
+        dimensionedScalar("zero", dimless, 0),
+        zeroGradientFvPatchScalarField::typeName
     );
 
     const labelList& cellLevel = meshCutter_.cellLevel();

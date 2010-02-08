@@ -218,8 +218,8 @@ public:
                 const shellSurfaces& shells
             );
 
-            //- Helper: count number of triangles per region
-            static labelList countRegions(const triSurface&);
+            ////- Helper: count number of triangles per region
+            //static labelList countRegions(const triSurface&);
 
 
         // Searching
@@ -291,7 +291,7 @@ public:
             (
                 const labelList& surfacesToTest,
                 const pointField& samples,
-                const  scalarField& nearestDistSqr,
+                const scalarField& nearestDistSqr,
                 labelList& hitSurface,
                 labelList& hitRegion
             ) const;

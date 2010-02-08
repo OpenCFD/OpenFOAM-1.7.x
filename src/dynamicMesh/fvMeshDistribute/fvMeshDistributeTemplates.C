@@ -25,8 +25,132 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "mapPolyMesh.H"
+#include "PstreamCombineReduceOps.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
+
+//- combineReduce operator for lists. Used for counting.
+class listEq
+{
+
+public:
+
+    template<class T>
+    void operator()(T& x, const T& y) const
+    {
+        forAll(y, i)
+        {
+            if (y[i].size())
+            {
+                x[i] = y[i];
+            }
+        }
+    }
+};
+
+
+template <class Container, class T>
+void Foam::fvMeshDistribute::exchange
+(
+    const List<Container >& sendBufs,
+    List<Container >& recvBufs,
+    labelListList& sizes
+)
+{
+    if (Pstream::parRun())
+    {
+        if (!contiguous<T>())
+        {
+            FatalErrorIn
+            (
+                "Pstream::exchange(..)"
+            )   << "Continuous data only." << Foam::abort(FatalError);
+        }
+
+        if (sendBufs.size() != Pstream::nProcs())
+        {
+            FatalErrorIn
+            (
+                "Pstream::exchange(..)"
+            )   << "Size of list:" << sendBufs.size()
+                << " does not equal the number of processors:"
+                << Pstream::nProcs()
+                << Foam::abort(FatalError);
+        }
+
+        sizes.setSize(Pstream::nProcs());
+        labelList& nsTransPs = sizes[Pstream::myProcNo()];
+        nsTransPs.setSize(Pstream::nProcs());
+
+        forAll(sendBufs, procI)
+        {
+            nsTransPs[procI] = sendBufs[procI].size();
+        }
+
+        Foam::combineReduce(sizes, listEq());
+
+
+        // Set up receives
+        // ~~~~~~~~~~~~~~~
+
+        recvBufs.setSize(sendBufs.size());
+        forAll(sizes, procI)
+        {
+            label nRecv = sizes[procI][Pstream::myProcNo()];
+
+            if (procI != Pstream::myProcNo() && nRecv > 0)
+            {
+                recvBufs[procI].setSize(nRecv);
+                IPstream::read
+                (
+                    Pstream::nonBlocking,
+                    procI,
+                    reinterpret_cast<char*>(recvBufs[procI].begin()),
+                    nRecv*sizeof(T)
+                );
+            }
+        }
+
+
+        // Set up sends
+        // ~~~~~~~~~~~~
+
+        forAll(sendBufs, procI)
+        {
+            if (procI != Pstream::myProcNo() && sendBufs[procI].size() > 0)
+            {
+                if
+                (
+                   !OPstream::write
+                    (
+                        Pstream::nonBlocking,
+                        procI,
+                        reinterpret_cast<const char*>(sendBufs[procI].begin()),
+                        sendBufs[procI].size()*sizeof(T)
+                    )
+                )
+                {
+                    FatalErrorIn("Pstream::exchange(..)")
+                        << "Cannot send outgoing message. "
+                        << "to:" << procI << " nBytes:"
+                        << label(sendBufs[procI].size()*sizeof(T))
+                        << Foam::abort(FatalError);
+                }
+            }
+        }
+
+
+        // Wait for all to finish
+        // ~~~~~~~~~~~~~~~~~~~~~~
+
+        IPstream::waitRequests();
+        OPstream::waitRequests();
+    }
+
+    // Do myself
+    recvBufs[Pstream::myProcNo()] = sendBufs[Pstream::myProcNo()];
+}
+
 
 template<class GeoField>
 void Foam::fvMeshDistribute::printFieldInfo(const fvMesh& mesh)
@@ -184,7 +308,7 @@ void Foam::fvMeshDistribute::mapBoundaryFields
 
     if (flds.size() != oldBflds.size())
     {
-        FatalErrorIn("fvMeshDistribute::mapBoundaryFields") << "problem"
+        FatalErrorIn("fvMeshDistribute::mapBoundaryFields(..)") << "problem"
             << abort(FatalError);
     }
 
@@ -273,19 +397,40 @@ void Foam::fvMeshDistribute::initPatchFields
 
 
 // Send fields. Note order supplied so we can receive in exactly the same order.
+// Note that field gets written as entry in dictionary so we
+// can construct from subdictionary.
+// (since otherwise the reading as-a-dictionary mixes up entries from
+// consecutive fields)
+// The dictionary constructed is:
+//  volScalarField
+//  {
+//      p {internalField ..; boundaryField ..;}
+//      k {internalField ..; boundaryField ..;}
+//  }
+//  volVectorField
+//  {
+//      U {internalField ...  }
+//  }
+
+// volVectorField {U {internalField ..; boundaryField ..;}}
+// 
 template<class GeoField>
 void Foam::fvMeshDistribute::sendFields
 (
     const label domain,
     const wordList& fieldNames,
-    const fvMeshSubset& subsetter
+    const fvMeshSubset& subsetter,
+    OSstream& toNbr
 )
 {
+    toNbr << GeoField::typeName << token::NL << token::BEGIN_BLOCK << token::NL;
     forAll(fieldNames, i)
     {
-        //Pout<< "Subsetting field " << fieldNames[i]
-        //    << " for domain:" << domain
-        //    << endl;
+        if (debug)
+        {
+            Pout<< "Subsetting field " << fieldNames[i]
+                << " for domain:" << domain << endl;
+        }
 
         // Send all fieldNames. This has to be exactly the same set as is
         // being received!
@@ -294,10 +439,12 @@ void Foam::fvMeshDistribute::sendFields
 
         tmp<GeoField> tsubfld = subsetter.interpolate(fld);
 
-        // Send
-        OPstream toNbr(Pstream::blocking, domain);
-        toNbr << tsubfld();
+        toNbr
+            << fieldNames[i] << token::NL << token::BEGIN_BLOCK
+            << tsubfld
+            << token::NL << token::END_BLOCK << token::NL;
     }
+    toNbr << token::END_BLOCK << token::NL;
 }
 
 
@@ -308,18 +455,25 @@ void Foam::fvMeshDistribute::receiveFields
     const label domain,
     const wordList& fieldNames,
     fvMesh& mesh,
-    PtrList<GeoField>& fields
+    PtrList<GeoField>& fields,
+    const dictionary& fieldDicts
 )
 {
+    if (debug)
+    {
+        Pout<< "Receiving fields " << fieldNames
+            << " from domain:" << domain << endl;
+    }
+
     fields.setSize(fieldNames.size());
 
     forAll(fieldNames, i)
     {
-        //Pout<< "Receiving field " << fieldNames[i]
-        //    << " from domain:" << domain
-        //    << endl;
-
-        IPstream fromNbr(Pstream::blocking, domain);
+        if (debug)
+        {
+            Pout<< "Constructing field " << fieldNames[i]
+                << " from domain:" << domain << endl;
+        }
 
         fields.set
         (
@@ -335,7 +489,7 @@ void Foam::fvMeshDistribute::receiveFields
                     IOobject::AUTO_WRITE
                 ),
                 mesh,
-                fromNbr
+                fieldDicts.subDict(fieldNames[i])
             )
         );
     }

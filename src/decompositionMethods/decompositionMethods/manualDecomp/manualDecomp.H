@@ -99,7 +99,11 @@ public:
 
         //- Return for every coordinate the wanted processor number. Use the
         //  mesh connectivity (if needed)
-        virtual labelList decompose(const pointField&);
+        virtual labelList decompose
+        (
+            const pointField& points,
+            const scalarField& pointWeights
+        );
 
         //- Return for every coordinate the wanted processor number. Explicitly
         //  provided connectivity - does not use mesh_.
@@ -111,10 +115,11 @@ public:
         virtual labelList decompose
         (
             const labelListList& globalCellCells,
-            const pointField& cc
+            const pointField& cc,
+            const scalarField& cWeights
         )
         {
-            return decompose(cc);
+            return decompose(cc, cWeights);
         }
 };
 

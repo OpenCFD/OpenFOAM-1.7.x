@@ -60,6 +60,7 @@ Foam::label Foam::metisDecomp::decompose
 (
     const List<int>& adjncy,
     const List<int>& xadj,
+    const scalarField& cWeights,
 
     List<int>& finalDecomp
 )
@@ -71,6 +72,8 @@ Foam::label Foam::metisDecomp::decompose
     // recursive: multi-level recursive bisection (default)
     // k-way: multi-level k-way
     word method("k-way");
+
+    int numCells = xadj.size()-1;
 
     // decomposition options. 0 = use defaults
     List<int> options(5, 0);
@@ -84,6 +87,40 @@ Foam::label Foam::metisDecomp::decompose
 
     // face weights (so on the edges of the dual)
     List<int> faceWeights;
+
+
+    // Check for externally provided cellweights and if so initialise weights
+    scalar minWeights = gMin(cWeights);
+    if (cWeights.size() > 0)
+    {
+        if (minWeights <= 0)
+        {
+            WarningIn
+            (
+                "metisDecomp::decompose"
+                "(const pointField&, const scalarField&)"
+            )   << "Illegal minimum weight " << minWeights
+                << endl;
+        }
+
+        if (cWeights.size() != numCells)
+        {
+            FatalErrorIn
+            (
+                "metisDecomp::decompose"
+                "(const pointField&, const scalarField&)"
+            )   << "Number of cell weights " << cWeights.size()
+                << " does not equal number of cells " << numCells
+                << exit(FatalError);
+        }
+        // Convert to integers.
+        cellWeights.setSize(cWeights.size());
+        forAll(cellWeights, i)
+        {
+            cellWeights[i] = int(cWeights[i]/minWeights);
+        }
+    }
+
 
     // Check for user supplied weights and decomp options
     if (decompositionDict_.found("metisCoeffs"))
@@ -161,52 +198,8 @@ Foam::label Foam::metisDecomp::decompose
                     << exit(FatalError);
             }
         }
-
-        //- faceWeights disabled. Only makes sense for cellCells from mesh.
-        //if (metisCoeffs.readIfPresent("faceWeightsFile", weightsFile))
-        //{
-        //    Info<< "metisDecomp : Using face-based weights." << endl;
-        //
-        //    IOList<int> weights
-        //    (
-        //        IOobject
-        //        (
-        //            weightsFile,
-        //            mesh_.time().timeName(),
-        //            mesh_,
-        //            IOobject::MUST_READ,
-        //            IOobject::AUTO_WRITE
-        //        )
-        //    );
-        //
-        //    if (weights.size() != adjncy.size()/2)
-        //    {
-        //        FatalErrorIn("metisDecomp::decompose(const pointField&)")
-        //            << "Number of face weights " << weights.size()
-        //            << " does not equal number of internal faces "
-        //            << adjncy.size()/2
-        //            << exit(FatalError);
-        //    }
-        //
-        //    // Assume symmetric weights. Keep same ordering as adjncy.
-        //    faceWeights.setSize(adjncy.size());
-        //
-        //    labelList nFacesPerCell(mesh_.nCells(), 0);
-        //
-        //    for (label faceI = 0; faceI < mesh_.nInternalFaces(); faceI++)
-        //    {
-        //        label w = weights[faceI];
-        //
-        //        label own = mesh_.faceOwner()[faceI];
-        //        label nei = mesh_.faceNeighbour()[faceI];
-        //
-        //        faceWeights[xadj[own] + nFacesPerCell[own]++] = w;
-        //        faceWeights[xadj[nei] + nFacesPerCell[nei]++] = w;
-        //    }
-        //}
     }
 
-    int numCells = xadj.size()-1;
     int nProcs = nProcessors_;
 
     // output: cell -> processor addressing
@@ -327,12 +320,18 @@ Foam::metisDecomp::metisDecomp
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::labelList Foam::metisDecomp::decompose(const pointField& points)
+Foam::labelList Foam::metisDecomp::decompose
+(
+    const pointField& points,
+    const scalarField& pointWeights
+)
 {
     if (points.size() != mesh_.nCells())
     {
-        FatalErrorIn("metisDecomp::decompose(const pointField&)")
-            << "Can use this decomposition method only for the whole mesh"
+        FatalErrorIn
+        (
+            "metisDecomp::decompose(const pointField&,const scalarField&)"
+        )   << "Can use this decomposition method only for the whole mesh"
             << endl
             << "and supply one coordinate (cellCentre) for every cell." << endl
             << "The number of coordinates " << points.size() << endl
@@ -340,19 +339,49 @@ Foam::labelList Foam::metisDecomp::decompose(const pointField& points)
             << exit(FatalError);
     }
 
+    List<int> adjncy;
+    List<int> xadj;
+    calcMetisCSR
+    (
+        mesh_,
+        adjncy,
+        xadj
+    );
+
+    // Decompose using default weights
+    List<int> finalDecomp;
+    decompose(adjncy, xadj, pointWeights, finalDecomp);
+
+    // Copy back to labelList
+    labelList decomp(finalDecomp.size());
+    forAll(decomp, i)
+    {
+        decomp[i] = finalDecomp[i];
+    }
+    return decomp;
+}
+
+
+void Foam::metisDecomp::calcMetisCSR
+(
+    const polyMesh& mesh,
+    List<int>& adjncy,
+    List<int>& xadj
+)
+{
     // Make Metis CSR (Compressed Storage Format) storage
     //   adjncy      : contains neighbours (= edges in graph)
     //   xadj(celli) : start of information in adjncy for celli
 
-    List<int> xadj(mesh_.nCells()+1);
+    xadj.setSize(mesh.nCells()+1);
 
     // Initialise the number of internal faces of the cells to twice the
     // number of internal faces
-    label nInternalFaces = 2*mesh_.nInternalFaces();
+    label nInternalFaces = 2*mesh.nInternalFaces();
 
     // Check the boundary for coupled patches and add to the number of
     // internal faces
-    const polyBoundaryMesh& pbm = mesh_.boundaryMesh();
+    const polyBoundaryMesh& pbm = mesh.boundaryMesh();
 
     forAll(pbm, patchi)
     {
@@ -364,17 +393,17 @@ Foam::labelList Foam::metisDecomp::decompose(const pointField& points)
 
     // Create the adjncy array the size of the total number of internal and
     // coupled faces
-    List<int> adjncy(nInternalFaces);
+    adjncy.setSize(nInternalFaces);
 
     // Fill in xadj
     // ~~~~~~~~~~~~
     label freeAdj = 0;
 
-    for (label cellI = 0; cellI < mesh_.nCells(); cellI++)
+    for (label cellI = 0; cellI < mesh.nCells(); cellI++)
     {
         xadj[cellI] = freeAdj;
 
-        const labelList& cFaces = mesh_.cells()[cellI];
+        const labelList& cFaces = mesh.cells()[cellI];
 
         forAll(cFaces, i)
         {
@@ -382,7 +411,7 @@ Foam::labelList Foam::metisDecomp::decompose(const pointField& points)
 
             if
             (
-                mesh_.isInternalFace(faceI)
+                mesh.isInternalFace(faceI)
              || isA<cyclicPolyPatch>(pbm[pbm.whichPatch(faceI)])
             )
             {
@@ -390,19 +419,19 @@ Foam::labelList Foam::metisDecomp::decompose(const pointField& points)
             }
         }
     }
-    xadj[mesh_.nCells()] = freeAdj;
+    xadj[mesh.nCells()] = freeAdj;
 
 
     // Fill in adjncy
     // ~~~~~~~~~~~~~~
 
-    labelList nFacesPerCell(mesh_.nCells(), 0);
+    labelList nFacesPerCell(mesh.nCells(), 0);
 
     // Internal faces
-    for (label faceI = 0; faceI < mesh_.nInternalFaces(); faceI++)
+    for (label faceI = 0; faceI < mesh.nInternalFaces(); faceI++)
     {
-        label own = mesh_.faceOwner()[faceI];
-        label nei = mesh_.faceNeighbour()[faceI];
+        label own = mesh.faceOwner()[faceI];
+        label nei = mesh.faceNeighbour()[faceI];
 
         adjncy[xadj[own] + nFacesPerCell[own]++] = nei;
         adjncy[xadj[nei] + nFacesPerCell[nei]++] = own;
@@ -427,18 +456,6 @@ Foam::labelList Foam::metisDecomp::decompose(const pointField& points)
             }
         }
     }
-
-    // Decompose using default weights
-    List<int> finalDecomp;
-    decompose(adjncy, xadj, finalDecomp);
-
-    // Copy back to labelList
-    labelList decomp(finalDecomp.size());
-    forAll(decomp, i)
-    {
-        decomp[i] = finalDecomp[i];
-    }
-    return decomp;
 }
 
 
@@ -487,14 +504,16 @@ void Foam::metisDecomp::calcMetisCSR
 Foam::labelList Foam::metisDecomp::decompose
 (
     const labelList& agglom,
-    const pointField& agglomPoints
+    const pointField& agglomPoints,
+    const scalarField& agglomWeights
 )
 {
     if (agglom.size() != mesh_.nCells())
     {
         FatalErrorIn
         (
-            "parMetisDecomp::decompose(const labelList&, const pointField&)"
+            "metisDecomp::decompose"
+            "(const labelList&, const pointField&, const scalarField&)"
         )   << "Size of cell-to-coarse map " << agglom.size()
             << " differs from number of cells in mesh " << mesh_.nCells()
             << exit(FatalError);
@@ -521,7 +540,7 @@ Foam::labelList Foam::metisDecomp::decompose
 
     // Decompose using default weights
     List<int> finalDecomp;
-    decompose(adjncy, xadj, finalDecomp);
+    decompose(adjncy, xadj, agglomWeights, finalDecomp);
 
 
     // Rework back into decomposition for original mesh_
@@ -539,14 +558,16 @@ Foam::labelList Foam::metisDecomp::decompose
 Foam::labelList Foam::metisDecomp::decompose
 (
     const labelListList& globalCellCells,
-    const pointField& cellCentres
+    const pointField& cellCentres,
+    const scalarField& cellWeights
 )
 {
     if (cellCentres.size() != globalCellCells.size())
     {
         FatalErrorIn
         (
-            "metisDecomp::decompose(const pointField&, const labelListList&)"
+            "metisDecomp::decompose"
+            "(const pointField&, const labelListList&, const scalarField&)"
         )   << "Inconsistent number of cells (" << globalCellCells.size()
             << ") and number of cell centres (" << cellCentres.size()
             << ")." << exit(FatalError);
@@ -564,7 +585,7 @@ Foam::labelList Foam::metisDecomp::decompose
 
     // Decompose using default weights
     List<int> finalDecomp;
-    decompose(adjncy, xadj, finalDecomp);
+    decompose(adjncy, xadj, cellWeights, finalDecomp);
 
     // Copy back to labelList
     labelList decomp(finalDecomp.size());

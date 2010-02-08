@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -45,16 +45,20 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class AverageIOField Declaration
+                        Class AverageIOField Declaration
 \*---------------------------------------------------------------------------*/
 
 template<class Type>
 class AverageIOField
 :
     public regIOobject,
-    public pTraits<Type>,
     public Field<Type>
 {
+    // Private data
+
+        //- The average of the field
+        Type average_;
+
 
 public:
 
@@ -87,19 +91,17 @@ public:
 
     // Member functions
 
-        const pTraits<Type>& average() const
+        const Type& average() const
         {
-            return static_cast<const pTraits<Type>&>(*this);
+            return average_;
         }
 
-        bool writeData(Ostream& os) const
+        Type& average()
         {
-            os  << static_cast<const Type&>(*this)
-                << token::NL
-                << static_cast<const Field<Type>&>(*this);
-
-            return os.good();
+            return average_;
         }
+
+        bool writeData(Ostream& os) const;
 };
 
 

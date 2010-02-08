@@ -653,12 +653,33 @@ Foam::Time& Foam::Time::operator++()
 
     deltaT0_ = deltaTSave_;
     deltaTSave_ = deltaT_;
+
+    const word oldTimeName = dimensionedScalar::name();
+
     setTime(value() + deltaT_, timeIndex_ + 1);
 
     // If the time is very close to zero reset to zero
     if (mag(value()) < 10*SMALL*deltaT_)
     {
         setTime(0.0, timeIndex_);
+    }
+
+    // Check that new time representation differs from old one
+    if (dimensionedScalar::name() == oldTimeName)
+    {
+        int oldPrecision = precision_;
+        do
+        {
+            precision_++;
+            setTime(value(), timeIndex());
+        }
+        while (precision_ < 100 && dimensionedScalar::name() == oldTimeName);
+
+        WarningIn("Time::operator++()")
+            << "Increased the timePrecision from " << oldPrecision
+            << " to " << precision_
+            << " to distinguish between timeNames at time " << value()
+            << endl;
     }
 
     switch (writeControl_)

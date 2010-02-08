@@ -43,7 +43,16 @@ Foam::refinementParameters::refinementParameters
     minRefineCells_(readLabel(dict.lookup("minimumRefine"))),
     curvature_(readScalar(dict.lookup("curvature"))),
     nBufferLayers_(readLabel(dict.lookup("nBufferLayers"))),
-    keepPoints_(dict.lookup("keepPoints"))
+    keepPoints_(dict.lookup("keepPoints")),
+    allowFreeStandingZoneFaces_
+    (
+        dict.lookupOrDefault<Switch>
+        (
+            "allowFreeStandingZoneFaces",
+            true
+        )
+    ),
+    maxLoadUnbalance_(dict.lookupOrDefault<scalar>("maxLoadUnbalance",0))
 {}
 
 
@@ -53,7 +62,16 @@ Foam::refinementParameters::refinementParameters(const dictionary& dict)
     maxLocalCells_(readLabel(dict.lookup("maxLocalCells"))),
     minRefineCells_(readLabel(dict.lookup("minRefinementCells"))),
     nBufferLayers_(readLabel(dict.lookup("nCellsBetweenLevels"))),
-    keepPoints_(pointField(1, dict.lookup("locationInMesh")))
+    keepPoints_(pointField(1, dict.lookup("locationInMesh"))),
+    allowFreeStandingZoneFaces_
+    (
+        dict.lookupOrDefault<Switch>
+        (
+            "allowFreeStandingZoneFaces",
+            true
+        )
+    ),
+    maxLoadUnbalance_(dict.lookupOrDefault<scalar>("maxLoadUnbalance",0))
 {
     scalar featAngle(readScalar(dict.lookup("resolveFeatureAngle")));
 

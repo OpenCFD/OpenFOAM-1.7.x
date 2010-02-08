@@ -319,13 +319,15 @@ void Foam::solidWallMixedTemperatureCoupledFvPatchScalarField::updateCoeffs()
         if (normalGradient()[i] < 0.0)
         {
             this->refValue()[i] = operator[](i);
-            this->refGrad()[i] = 0.0;   // not used
+            this->refGrad()[i] = 0.0;   // not used by me
             this->valueFraction()[i] = 1.0;
             nFixed++;
         }
         else
         {
-            this->refValue()[i] = 0.0;  // not used
+            // Fixed gradient. Make sure to have valid refValue (even though
+            // I am not using it - other boundary conditions might)
+            this->refValue()[i] = operator[](i);
             this->refGrad()[i] = normalGradient()[i];
             this->valueFraction()[i] = 0.0;
         }

@@ -52,6 +52,15 @@ class simpleGeomDecomp
 
         void assignToProcessorGroup(labelList& processorGroup, const label);
 
+        void assignToProcessorGroup
+        (
+            labelList& processorGroup,
+            const label nProcGroup,
+            const labelList& indices,
+            const scalarField& weights,
+            const scalar summedWeights
+        );
+
         //- Disallow default bitwise copy construct and assignment
         void operator=(const simpleGeomDecomp&);
         simpleGeomDecomp(const simpleGeomDecomp&);
@@ -86,21 +95,31 @@ public:
 
         virtual bool parallelAware() const
         {
-            // simple decomp does not attempt to do anything across proc
+            // simpleDecomp does not attempt to do anything across proc
             // boundaries
             return false;
         }
 
-        virtual labelList decompose(const pointField&);
+        virtual labelList decompose
+        (
+            const pointField& points
+        );
+
+        virtual labelList decompose
+        (
+            const pointField& points,
+            const scalarField& pointWeights
+        );
 
         //- Explicitly provided connectivity
         virtual labelList decompose
         (
             const labelListList& globalCellCells,
-            const pointField& cc
+            const pointField& cc,
+            const scalarField& cWeights
         )
         {
-            return decompose(cc);
+            return decompose(cc, cWeights);
         }
 };
 

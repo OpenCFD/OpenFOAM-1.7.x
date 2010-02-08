@@ -28,14 +28,14 @@ License
 #include "meshRefinement.H"
 #include "fvMesh.H"
 #include "Time.H"
-#include "boundBox.H"
-#include "mapDistributePolyMesh.H"
 #include "cellSet.H"
 #include "syncTools.H"
 #include "refinementParameters.H"
 #include "featureEdgeMesh.H"
 #include "refinementSurfaces.H"
 #include "shellSurfaces.H"
+#include "mapDistributePolyMesh.H"
+#include "mathematicalConstants.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -205,13 +205,36 @@ Foam::label Foam::autoRefineDriver::featureEdgeRefine
                 const_cast<Time&>(mesh.time())++;
             }
 
-            meshRefiner_.refineAndBalance
+
+            if
             (
-                "feature refinement iteration " + name(iter),
-                decomposer_,
-                distributor_,
-                cellsToRefine
-            );
+                returnReduce
+                (
+                    (mesh.nCells() >= refineParams.maxLocalCells()),
+                    orOp<bool>()
+                )
+            )
+            {
+                meshRefiner_.balanceAndRefine
+                (
+                    "feature refinement iteration " + name(iter),
+                    decomposer_,
+                    distributor_,
+                    cellsToRefine,
+                    refineParams.maxLoadUnbalance()
+                );
+            }
+            else
+            {
+                meshRefiner_.refineAndBalance
+                (
+                    "feature refinement iteration " + name(iter),
+                    decomposer_,
+                    distributor_,
+                    cellsToRefine,
+                    refineParams.maxLoadUnbalance()
+                );
+            }
         }
     }
     return iter;
@@ -305,13 +328,36 @@ Foam::label Foam::autoRefineDriver::surfaceOnlyRefine
             const_cast<Time&>(mesh.time())++;
         }
 
-        meshRefiner_.refineAndBalance
+
+        if
         (
-            "surface refinement iteration " + name(iter),
-            decomposer_,
-            distributor_,
-            cellsToRefine
-        );
+            returnReduce
+            (
+                (mesh.nCells() >= refineParams.maxLocalCells()),
+                orOp<bool>()
+            )
+        )
+        {
+            meshRefiner_.balanceAndRefine
+            (
+                "surface refinement iteration " + name(iter),
+                decomposer_,
+                distributor_,
+                cellsToRefine,
+                refineParams.maxLoadUnbalance()
+            );
+        }
+        else
+        {
+            meshRefiner_.refineAndBalance
+            (
+                "surface refinement iteration " + name(iter),
+                decomposer_,
+                distributor_,
+                cellsToRefine,
+                refineParams.maxLoadUnbalance()
+            );
+        }
     }
     return iter;
 }
@@ -487,13 +533,35 @@ Foam::label Foam::autoRefineDriver::shellRefine
             const_cast<Time&>(mesh.time())++;
         }
 
-        meshRefiner_.refineAndBalance
+        if
         (
-            "shell refinement iteration " + name(iter),
-            decomposer_,
-            distributor_,
-            cellsToRefine
-        );
+            returnReduce
+            (
+                (mesh.nCells() >= refineParams.maxLocalCells()),
+                orOp<bool>()
+            )
+        )
+        {
+            meshRefiner_.balanceAndRefine
+            (
+                "shell refinement iteration " + name(iter),
+                decomposer_,
+                distributor_,
+                cellsToRefine,
+                refineParams.maxLoadUnbalance()
+            );
+        }
+        else
+        {
+            meshRefiner_.refineAndBalance
+            (
+                "shell refinement iteration " + name(iter),
+                decomposer_,
+                distributor_,
+                cellsToRefine,
+                refineParams.maxLoadUnbalance()
+            );
+        }
     }
     meshRefiner_.userFaceData().clear();
 
@@ -557,7 +625,11 @@ void Foam::autoRefineDriver::zonify
             const_cast<Time&>(mesh.time())++;
         }
 
-        meshRefiner_.zonify(refineParams.keepPoints()[0]);
+        meshRefiner_.zonify
+        (
+            refineParams.keepPoints()[0],
+            refineParams.allowFreeStandingZoneFaces()
+        );
 
         if (debug)
         {
@@ -776,11 +848,14 @@ void Foam::autoRefineDriver::doRefine
             const_cast<Time&>(mesh.time())++;
         }
 
-        // Do final balancing. Keep zoned faces on one processor.
+        // Do final balancing. Keep zoned faces on one processor since the
+        // snap phase will convert them to baffles and this only works for
+        // internal faces.
         meshRefiner_.balance
         (
             true,
             false,
+            scalarField(mesh.nCells(), 1), // dummy weights
             decomposer_,
             distributor_
         );

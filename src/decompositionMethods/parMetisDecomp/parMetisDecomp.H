@@ -112,16 +112,25 @@ public:
 
         //- Return for every coordinate the wanted processor number. Use the
         //  mesh connectivity (if needed)
-        virtual labelList decompose(const pointField&);
+        //  Weights get normalised so the minimum value is 1 before truncation
+        //  to an integer so the weights should be multiples of the minimum
+        //  value. The overall sum of weights might otherwise overflow.
+        virtual labelList decompose
+        (
+            const pointField& points,
+            const scalarField& pointWeights
+        );
 
         //- Return for every coordinate the wanted processor number. Gets
         //  passed agglomeration map (from fine to coarse cells) and coarse cell
         //  location. Can be overridden by decomposers that provide this
         //  functionality natively.
+        //  See note on weights above.
         virtual labelList decompose
         (
-            const labelList& agglom,
-            const pointField&
+            const labelList& cellToRegion,
+            const pointField& regionPoints,
+            const scalarField& regionWeights
         );
 
         //- Return for every coordinate the wanted processor number. Explicitly
@@ -131,10 +140,20 @@ public:
         //    from 0 at processor0 and then incrementing all through the
         //    processors)
         //  - the connections are across coupled patches
+        //  See note on weights above.
         virtual labelList decompose
         (
             const labelListList& globalCellCells,
-            const pointField& cc
+            const pointField& cc,
+            const scalarField& cWeights
+        );
+
+        //- Helper to convert mesh connectivity into distributed CSR
+        static void calcMetisDistributedCSR
+        (
+            const polyMesh&,
+            List<int>& adjncy,
+            List<int>& xadj
         );
 };
 

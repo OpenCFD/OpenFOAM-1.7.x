@@ -84,7 +84,7 @@ public:
         :
             Particle<ParticleType>(cloud, position, celli)
         {}
-            
+
 
         //- Construct from Istream
         ExactParticle

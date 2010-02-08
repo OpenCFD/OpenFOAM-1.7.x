@@ -150,19 +150,36 @@ public:
 
         //- Return for every coordinate the wanted processor number. Use the
         //  mesh connectivity (if needed)
-        virtual labelList decompose(const pointField&) = 0;
+        virtual labelList decompose
+        (
+            const pointField& points,
+            const scalarField& pointWeights
+        ) = 0;
+
+        //- Like decompose but with uniform weights on the points
+        virtual labelList decompose(const pointField&);
+
 
         //- Return for every coordinate the wanted processor number. Gets
         //  passed agglomeration map (from fine to coarse cells) and coarse cell
         //  location. Can be overridden by decomposers that provide this
         //  functionality natively. Coarse cells are local to the processor
         //  (if in parallel). If you want to have coarse cells spanning
-        //  processors use the next function below instead.
+        //  processors use the globalCellCells instead.
+        virtual labelList decompose
+        (
+            const labelList& cellToRegion,
+            const pointField& regionPoints,
+            const scalarField& regionWeights
+        );
+
+        //- Like decompose but with uniform weights on the regions
         virtual labelList decompose
         (
             const labelList& cellToRegion,
             const pointField& regionPoints
         );
+
 
         //- Return for every coordinate the wanted processor number. Explicitly
         //  provided connectivity - does not use mesh_.
@@ -174,8 +191,16 @@ public:
         virtual labelList decompose
         (
             const labelListList& globalCellCells,
-            const pointField& cc
+            const pointField& cc,
+            const scalarField& cWeights
         ) = 0;
+
+        //- Like decompose but with uniform weights on the cells
+        virtual labelList decompose
+        (
+            const labelListList& globalCellCells,
+            const pointField& cc
+        );
 
 };
 

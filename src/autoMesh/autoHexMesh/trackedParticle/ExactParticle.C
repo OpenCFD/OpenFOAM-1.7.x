@@ -39,7 +39,7 @@ Foam::label Foam::ExactParticle<ParticleType>::track
     this->facei_ = -1;
 
     // Tracks to endPosition or stop on boundary
-    while(!this->onBoundary() && this->stepFraction_ < 1.0 - SMALL)
+    while (!this->onBoundary() && this->stepFraction_ < 1.0 - SMALL)
     {
         this->stepFraction_ +=
             trackToFace(endPosition, td)

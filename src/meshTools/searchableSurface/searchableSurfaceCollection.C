@@ -681,19 +681,22 @@ void Foam::searchableSurfaceCollection::getField
         List<List<label> > infoMap;
         sortHits(info, surfInfo, infoMap);
 
-        values.setSize(info.size());
-        //?Misses do not get set? values = 0;
-
         // Do surface tests
         forAll(surfInfo, surfI)
         {
             labelList surfValues;
             subGeom_[surfI].getField(surfInfo[surfI], surfValues);
 
-            const labelList& map = infoMap[surfI];
-            forAll(map, i)
+            if (surfValues.size())
             {
-                values[map[i]] = surfValues[i];
+                // Size values only when we have a surface that supports it.
+                values.setSize(info.size());
+
+                const labelList& map = infoMap[surfI];
+                forAll(map, i)
+                {
+                    values[map[i]] = surfValues[i];
+                }
             }
         }
     }

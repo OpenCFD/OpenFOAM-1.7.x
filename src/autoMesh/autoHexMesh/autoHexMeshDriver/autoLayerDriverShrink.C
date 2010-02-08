@@ -35,9 +35,6 @@ Description
 #include "pointData.H"
 #include "PointEdgeWave.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 // Calculate inverse sum of edge weights (currently always 1.0)
@@ -94,7 +91,7 @@ void Foam::autoLayerDriver::smoothField
     const PackedBoolList& isMasterEdge,
     const labelList& meshEdges,
     const scalarField& fieldMin,
-    const label& nSmoothDisp,
+    const label nSmoothDisp,
     scalarField& field
 ) const
 {
@@ -240,7 +237,7 @@ void Foam::autoLayerDriver::smoothNormals
     const edgeList& edges = mesh.edges();
 
     // Points that do not change.
-    PackedBoolList isFixedPoint(mesh.nPoints(), 0);
+    PackedBoolList isFixedPoint(mesh.nPoints());
 
     // Internal points that are fixed
     forAll(fixedPoints, i)
@@ -468,7 +465,7 @@ void Foam::autoLayerDriver::findIsolatedRegions
     // Keep count of number of points unextruded
     label nPointCounter = 0;
 
-    while(true)
+    while (true)
     {
         // Stop layer growth where mesh wraps around edge with a
         // large feature angle
