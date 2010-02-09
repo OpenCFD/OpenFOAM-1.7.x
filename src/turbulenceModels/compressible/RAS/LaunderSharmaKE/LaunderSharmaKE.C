@@ -168,10 +168,10 @@ LaunderSharmaKE::LaunderSharmaKE
             "mut",
             runTime_.timeName(),
             mesh_,
-            IOobject::MUST_READ,
+            IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        rho_*Cmu_*fMu()*sqr(k_)/(epsilon_ + epsilonSmall_)
+        autoCreateLowReMut("mut", mesh_)
     ),
 
     alphat_
@@ -187,6 +187,9 @@ LaunderSharmaKE::LaunderSharmaKE
         autoCreateAlphat("alphat", mesh_)
     )
 {
+    mut_ = rho_*Cmu_*fMu()*sqr(k_)/(epsilon_ + epsilonSmall_);
+    mut_.correctBoundaryConditions();
+
     alphat_ = mut_/Prt_;
     alphat_.correctBoundaryConditions();
 

@@ -28,6 +28,8 @@ License
 #include "wallFvPatch.H"
 #include "addToRunTimeSelectionTable.H"
 
+#include "backwardsCompatibilityWallFunctions.H"
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
@@ -167,11 +169,22 @@ LienLeschzinerLowRe::LienLeschzinerLowRe
 
     nut_
     (
-        Cmu_*(scalar(1) - exp(-Am_*yStar_))
-       /(scalar(1) - exp(-Aepsilon_*yStar_) + SMALL)*sqr(k_)
-       /(epsilon_ + epsilonSmall_)
+        IOobject
+        (
+            "epsilon",
+            runTime_.timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        autoCreateLowReNut("nut", mesh_)
     )
 {
+    nut_ = Cmu_*(scalar(1) - exp(-Am_*yStar_))
+       /(scalar(1) - exp(-Aepsilon_*yStar_) + SMALL)*sqr(k_)
+       /(epsilon_ + epsilonSmall_);
+    nut_.correctBoundaryConditions();
+
     printCoeffs();
 }
 

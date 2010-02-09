@@ -28,6 +28,7 @@ License
 
 #include "calculatedFvPatchField.H"
 #include "nutWallFunctionFvPatchScalarField.H"
+#include "nutLowReWallFunctionFvPatchScalarField.H"
 #include "epsilonWallFunctionFvPatchScalarField.H"
 #include "kqRWallFunctionFvPatchField.H"
 #include "omegaWallFunctionFvPatchScalarField.H"
@@ -76,6 +77,76 @@ tmp<volScalarField> autoCreateNut
             {
                 nutBoundaryTypes[patchI] =
                     RASModels::nutWallFunctionFvPatchScalarField::typeName;
+            }
+            else
+            {
+                nutBoundaryTypes[patchI] =
+                    calculatedFvPatchField<scalar>::typeName;
+            }
+        }
+
+        tmp<volScalarField> nut
+        (
+            new volScalarField
+            (
+                IOobject
+                (
+                    fieldName,
+                    mesh.time().timeName(),
+                    mesh,
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE,
+                    false
+                ),
+                mesh,
+                dimensionedScalar("zero", dimArea/dimTime, 0.0),
+                nutBoundaryTypes
+            )
+        );
+
+        Info<< "    Writing new " << fieldName << endl;
+        nut().write();
+
+        return nut;
+    }
+}
+
+
+tmp<volScalarField> autoCreateLowReNut
+(
+    const word& fieldName,
+    const fvMesh& mesh
+)
+{
+    IOobject nutHeader
+    (
+        fieldName,
+        mesh.time().timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::NO_WRITE,
+        false
+    );
+
+    if (nutHeader.headerOk())
+    {
+        return tmp<volScalarField>(new volScalarField(nutHeader, mesh));
+    }
+    else
+    {
+        Info<< "--> Creating " << fieldName
+            << " to employ run-time selectable wall functions" << endl;
+
+        const fvBoundaryMesh& bm = mesh.boundary();
+
+        wordList nutBoundaryTypes(bm.size());
+
+        forAll(bm, patchI)
+        {
+            if (isA<wallFvPatch>(bm[patchI]))
+            {
+                nutBoundaryTypes[patchI] =
+                    RASModels::nutLowReWallFunctionFvPatchScalarField::typeName;
             }
             else
             {

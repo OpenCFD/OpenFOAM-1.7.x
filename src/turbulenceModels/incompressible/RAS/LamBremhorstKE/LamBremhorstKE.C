@@ -127,8 +127,22 @@ LamBremhorstKE::LamBremhorstKE
        *(scalar(1) + 20.5/(Rt_ + SMALL))
     ),
 
-    nut_(Cmu_*fMu_*sqr(k_)/(epsilon_ + epsilonSmall_))
+    nut_
+    (
+        IOobject
+        (
+            "nut",
+            runTime_.timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        autoCreateLowReNut("nut", mesh_)
+    )
 {
+    nut_ = Cmu_*fMu_*sqr(k_)/(epsilon_ + epsilonSmall_);
+    nut_.correctBoundaryConditions();
+
     printCoeffs();
 }
 

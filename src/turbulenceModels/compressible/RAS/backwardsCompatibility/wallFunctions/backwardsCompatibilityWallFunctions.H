@@ -53,6 +53,13 @@ namespace compressible
         const fvMesh& mesh
     );
 
+    //- mut for Low-Reynolds number models
+    tmp<volScalarField> autoCreateLowReMut
+    (
+        const word& fieldName,
+        const fvMesh& mesh
+    );
+
     //- alphat
     tmp<volScalarField> autoCreateAlphat
     (

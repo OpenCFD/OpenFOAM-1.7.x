@@ -53,6 +53,13 @@ namespace incompressible
         const fvMesh& mesh
     );
 
+    //- nut for Low-Reynolds number models
+    tmp<volScalarField> autoCreateLowReNut
+    (
+        const word& fieldName,
+        const fvMesh& mesh
+    );
+
     //- epsilon
     tmp<volScalarField> autoCreateEpsilon
     (

@@ -29,6 +29,7 @@ License
 #include "calculatedFvPatchField.H"
 #include "alphatWallFunctionFvPatchScalarField.H"
 #include "mutWallFunctionFvPatchScalarField.H"
+#include "mutLowReWallFunctionFvPatchScalarField.H"
 #include "epsilonWallFunctionFvPatchScalarField.H"
 #include "kqRWallFunctionFvPatchField.H"
 #include "omegaWallFunctionFvPatchScalarField.H"
@@ -147,6 +148,76 @@ tmp<volScalarField> autoCreateMut
             {
                 mutBoundaryTypes[patchI] =
                     RASModels::mutWallFunctionFvPatchScalarField::typeName;
+            }
+            else
+            {
+                mutBoundaryTypes[patchI] =
+                    calculatedFvPatchField<scalar>::typeName;
+            }
+        }
+
+        tmp<volScalarField> mut
+        (
+            new volScalarField
+            (
+                IOobject
+                (
+                    fieldName,
+                    mesh.time().timeName(),
+                    mesh,
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE,
+                    false
+                ),
+                mesh,
+                dimensionedScalar("zero", dimDensity*dimArea/dimTime, 0.0),
+                mutBoundaryTypes
+            )
+        );
+
+        Info<< "    Writing new " << fieldName << endl;
+        mut().write();
+
+        return mut;
+    }
+}
+
+
+tmp<volScalarField> autoCreateLowReMut
+(
+    const word& fieldName,
+    const fvMesh& mesh
+)
+{
+    IOobject mutHeader
+    (
+        fieldName,
+        mesh.time().timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::NO_WRITE,
+        false
+    );
+
+    if (mutHeader.headerOk())
+    {
+        return tmp<volScalarField>(new volScalarField(mutHeader, mesh));
+    }
+    else
+    {
+        Info<< "--> Creating " << fieldName
+            << " to employ run-time selectable wall functions" << endl;
+
+        const fvBoundaryMesh& bm = mesh.boundary();
+
+        wordList mutBoundaryTypes(bm.size());
+
+        forAll(bm, patchI)
+        {
+            if (isA<wallFvPatch>(bm[patchI]))
+            {
+                mutBoundaryTypes[patchI] =
+                    RASModels::mutLowReWallFunctionFvPatchScalarField::typeName;
             }
             else
             {

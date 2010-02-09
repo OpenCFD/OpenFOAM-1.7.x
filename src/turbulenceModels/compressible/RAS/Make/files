@@ -22,6 +22,7 @@ $(mutWallFunctions)/mutRoughWallFunction/mutRoughWallFunctionFvPatchScalarField.
 $(mutWallFunctions)/mutSpalartAllmarasWallFunction/mutSpalartAllmarasWallFunctionFvPatchScalarField.C
 $(mutWallFunctions)/mutSpalartAllmarasStandardWallFunction/mutSpalartAllmarasStandardWallFunctionFvPatchScalarField.C
 $(mutWallFunctions)/mutSpalartAllmarasStandardRoughWallFunction/mutSpalartAllmarasStandardRoughWallFunctionFvPatchScalarField.C
+$(mutWallFunctions)/mutLowReWallFunction/mutLowReWallFunctionFvPatchScalarField.C
 
 epsilonWallFunctions = $(wallFunctions)/epsilonWallFunctions
 $(epsilonWallFunctions)/epsilonWallFunction/epsilonWallFunctionFvPatchScalarField.C

@@ -28,6 +28,8 @@ License
 #include "wallFvPatch.H"
 #include "addToRunTimeSelectionTable.H"
 
+#include "backwardsCompatibilityWallFunctions.H"
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
@@ -233,20 +235,16 @@ LienCubicKELowRe::LienCubicKELowRe
 
     nut_
     (
-        Cmu_
-       *(
-            scalar(1) - exp(-Am_*yStar_))
-           /(scalar(1) - exp(-Aepsilon_*yStar_) + SMALL
-        )
-       *sqr(k_)/(epsilon_ + epsilonSmall_)
-        // cubic term C5, implicit part
-      + max
+        IOobject
         (
-            C5viscosity_,
-            dimensionedScalar("0", C5viscosity_.dimensions(), 0.0)
-        )
+            "nut",
+            runTime_.timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        autoCreateLowReNut("nut", mesh_)
     ),
-    // turbulent viscosity, with implicit part of C5
 
     nonlinearStress_
     (
@@ -282,6 +280,21 @@ LienCubicKELowRe::LienCubicKELowRe
         )
     )
 {
+    nut_ = Cmu_
+       *(
+            scalar(1) - exp(-Am_*yStar_))
+           /(scalar(1) - exp(-Aepsilon_*yStar_) + SMALL
+        )
+       *sqr(k_)/(epsilon_ + epsilonSmall_)
+        // cubic term C5, implicit part
+      + max
+        (
+            C5viscosity_,
+            dimensionedScalar("0", C5viscosity_.dimensions(), 0.0)
+        );
+
+    nut_.correctBoundaryConditions();
+
     printCoeffs();
 }
 
