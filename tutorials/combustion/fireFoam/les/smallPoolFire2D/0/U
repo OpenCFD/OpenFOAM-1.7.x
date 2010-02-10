@@ -24,13 +24,15 @@ boundaryField
     outlet
     {
 
-        type            pressureInletOutletVelocity;
+        type            inletOutlet;
+        inletValue      uniform (0 0 0);
         value           uniform (0 0 0);
 
     }
     sides
     {
         type            pressureInletOutletVelocity;
+        outletValue     uniform (0 0 0);
         value           uniform (0 0 0);
     }
     base

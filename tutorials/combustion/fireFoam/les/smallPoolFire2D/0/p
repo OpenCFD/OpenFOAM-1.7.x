@@ -23,34 +23,27 @@ boundaryField
 {
     outlet
     {
-        type           uniformDensityHydrostaticPressure;
-        rho            1.2;
-        pRefValue      101325;
-        pRefPoint      (0 0 0);
-        value          uniform 101325;
+        type            buoyantPressure;
+        value           uniform 101325;
     }
 
     sides
     {
-        type           uniformDensityHydrostaticPressure;
-        rho            1.2;
-        pRefValue      101325;
-        pRefPoint      (0 0 0);
-        value          uniform 101325;
+        type            uniformDensityHydrostaticPressure;
+        rho             1.2;
+        pRefValue       101325;
+        pRefPoint       (0 0 0);
+        value           $internalField;
     }
     base
     {
-        type            buoyantPressure;//fixedFluxPressure;
-        value           uniform 101325;
-        U               "U";
-        rho             "rho";
-        phi             "phi";
-        adjoint         false;
+        type            buoyantPressure;
+        value           $internalField;
     }
     inlet
     {
-        type            zeroGradient;
-        value           uniform 101325;
+        type            buoyantPressure;
+        value           $internalField;
     }
     frontBack
     {

@@ -5,7 +5,7 @@
 
 runApplication blockMesh
 runApplication setSet -batch makeFaceSet.setSet
-createPatch -overwrite
+runApplication createPatch -overwrite
 
 # Run
 runApplication fireFoam
