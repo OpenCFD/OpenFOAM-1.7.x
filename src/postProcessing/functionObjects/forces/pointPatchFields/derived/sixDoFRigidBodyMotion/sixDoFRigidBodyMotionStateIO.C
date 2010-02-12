@@ -33,15 +33,15 @@ void Foam::sixDoFRigidBodyMotionState::write(Ostream& os) const
 {
     os.writeKeyword("centreOfMass")
         << centreOfMass_ << token::END_STATEMENT << nl;
-    os.writeKeyword("Q")
+    os.writeKeyword("orientation")
         << Q_ << token::END_STATEMENT << nl;
-    os.writeKeyword("v")
+    os.writeKeyword("velocity")
         << v_ << token::END_STATEMENT << nl;
-    os.writeKeyword("a")
+    os.writeKeyword("acceleration")
         << a_ << token::END_STATEMENT << nl;
-    os.writeKeyword("pi")
+    os.writeKeyword("angularMomentum")
         << pi_ << token::END_STATEMENT << nl;
-    os.writeKeyword("tau")
+    os.writeKeyword("torque")
         << tau_ << token::END_STATEMENT << nl;
 }
 

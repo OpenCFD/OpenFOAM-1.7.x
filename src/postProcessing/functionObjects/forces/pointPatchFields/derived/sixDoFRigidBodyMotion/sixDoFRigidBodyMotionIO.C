@@ -33,12 +33,79 @@ void Foam::sixDoFRigidBodyMotion::write(Ostream& os) const
 {
     motionState_.write(os);
 
-    os.writeKeyword("refCentreOfMass")
-        << refCentreOfMass_ << token::END_STATEMENT << nl;
+    os.writeKeyword("initialCentreOfMass")
+        << initialCentreOfMass_ << token::END_STATEMENT << nl;
+    os.writeKeyword("initialOrientation")
+        << initialQ_ << token::END_STATEMENT << nl;
     os.writeKeyword("momentOfInertia")
         << momentOfInertia_ << token::END_STATEMENT << nl;
     os.writeKeyword("mass")
         << mass_ << token::END_STATEMENT << nl;
+    os.writeKeyword("report")
+        << report_ << token::END_STATEMENT << nl;
+
+    if (!restraints_.empty())
+    {
+        os  << indent << "restraints" << nl
+            << indent << token::BEGIN_BLOCK << incrIndent << nl;
+
+        forAll(restraints_, rI)
+        {
+            word restraintType = restraints_[rI].type();
+
+            os  << indent << restraintNames_[rI] << nl
+                << indent << token::BEGIN_BLOCK << incrIndent << endl;
+
+            os.writeKeyword("sixDoFRigidBodyMotionRestraint")
+                << restraintType << token::END_STATEMENT << nl;
+
+            os.writeKeyword(word(restraintType + "Coeffs")) << nl;
+
+            os  << indent << token::BEGIN_BLOCK << nl << incrIndent;
+
+            restraints_[rI].write(os);
+
+            os << decrIndent << indent << token::END_BLOCK << nl;
+
+            os  << decrIndent << indent << token::END_BLOCK << endl;
+        }
+
+        os  << decrIndent << indent << token::END_BLOCK << nl;
+    }
+
+    if (!constraints_.empty())
+    {
+        os  << indent << "constraints" << nl
+            << indent << token::BEGIN_BLOCK << incrIndent << nl;
+
+        os.writeKeyword("maxIterations")
+            << maxConstraintIterations_ << token::END_STATEMENT << nl;
+
+        forAll(constraints_, rI)
+        {
+            word constraintType = constraints_[rI].type();
+
+            os  << indent << constraintNames_[rI] << nl
+                << indent << token::BEGIN_BLOCK << incrIndent << endl;
+
+            os.writeKeyword("sixDoFRigidBodyMotionConstraint")
+                << constraintType << token::END_STATEMENT << nl;
+
+            constraints_[rI].sixDoFRigidBodyMotionConstraint::write(os);
+
+            os.writeKeyword(word(constraintType + "Coeffs")) << nl;
+
+            os  << indent << token::BEGIN_BLOCK << nl << incrIndent;
+
+            constraints_[rI].write(os);
+
+            os << decrIndent << indent << token::END_BLOCK << nl;
+
+            os  << decrIndent << indent << token::END_BLOCK << endl;
+        }
+
+        os  << decrIndent << indent << token::END_BLOCK << nl;
+    }
 }
 
 
@@ -47,7 +114,8 @@ void Foam::sixDoFRigidBodyMotion::write(Ostream& os) const
 Foam::Istream& Foam::operator>>(Istream& is, sixDoFRigidBodyMotion& sDoFRBM)
 {
     is  >> sDoFRBM.motionState_
-        >> sDoFRBM.refCentreOfMass_
+        >> sDoFRBM.initialCentreOfMass_
+        >> sDoFRBM.initialQ_
         >> sDoFRBM.momentOfInertia_
         >> sDoFRBM.mass_;
 
@@ -69,9 +137,10 @@ Foam::Ostream& Foam::operator<<
 )
 {
     os  << sDoFRBM.motionState()
-        << token::SPACE << sDoFRBM.refCentreOfMass()
+        << token::SPACE << sDoFRBM.initialCentreOfMass()
+        << token::SPACE << sDoFRBM.initialQ()
         << token::SPACE << sDoFRBM.momentOfInertia()
-        << token::SPACE << sDoFRBM.mass() ;
+        << token::SPACE << sDoFRBM.mass();
 
     // Check state of Ostream
     os.check

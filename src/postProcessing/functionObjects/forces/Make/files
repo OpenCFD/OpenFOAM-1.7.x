@@ -4,10 +4,33 @@ forces/forcesFunctionObject.C
 forceCoeffs/forceCoeffs.C
 forceCoeffs/forceCoeffsFunctionObject.C
 
+sDoFRBM = pointPatchFields/derived/sixDoFRigidBodyMotion
+
+$(sDoFRBM)/sixDoFRigidBodyMotion.C
+$(sDoFRBM)/sixDoFRigidBodyMotionIO.C
+$(sDoFRBM)/sixDoFRigidBodyMotionState.C
+$(sDoFRBM)/sixDoFRigidBodyMotionStateIO.C
+
+sDoFRBMR = $(sDoFRBM)/sixDoFRigidBodyMotionRestraint
+
+$(sDoFRBMR)/sixDoFRigidBodyMotionRestraint/sixDoFRigidBodyMotionRestraint.C
+$(sDoFRBMR)/sixDoFRigidBodyMotionRestraint/newSixDoFRigidBodyMotionRestraint.C
+$(sDoFRBMR)/linearAxialAngularSpring/linearAxialAngularSpring.C
+$(sDoFRBMR)/linearSpring/linearSpring.C
+$(sDoFRBMR)/sphericalAngularSpring/sphericalAngularSpring.C
+$(sDoFRBMR)/tabulatedAxialAngularSpring/tabulatedAxialAngularSpring.C
+
+sDoFRBMC = $(sDoFRBM)/sixDoFRigidBodyMotionConstraint
+
+$(sDoFRBMC)/sixDoFRigidBodyMotionConstraint/sixDoFRigidBodyMotionConstraint.C
+$(sDoFRBMC)/sixDoFRigidBodyMotionConstraint/newSixDoFRigidBodyMotionConstraint.C
+$(sDoFRBMC)/fixedAxis/fixedAxis.C
+$(sDoFRBMC)/fixedLine/fixedLine.C
+$(sDoFRBMC)/fixedOrientation/fixedOrientation.C
+$(sDoFRBMC)/fixedPlane/fixedPlane.C
+$(sDoFRBMC)/fixedPoint/fixedPoint.C
+
 pointPatchFields/derived/sixDoFRigidBodyDisplacement/sixDoFRigidBodyDisplacementPointPatchVectorField.C
-pointPatchFields/derived/sixDoFRigidBodyDisplacement/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion.C
-pointPatchFields/derived/sixDoFRigidBodyDisplacement/sixDoFRigidBodyMotion/sixDoFRigidBodyMotionIO.C
-pointPatchFields/derived/sixDoFRigidBodyDisplacement/sixDoFRigidBodyMotion/sixDoFRigidBodyMotionState.C
-pointPatchFields/derived/sixDoFRigidBodyDisplacement/sixDoFRigidBodyMotion/sixDoFRigidBodyMotionStateIO.C
+pointPatchFields/derived/uncoupledSixDoFRigidBodyDisplacement/uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField.C
 
 LIB = $(FOAM_LIBBIN)/libforces

@@ -160,6 +160,9 @@ protected:
         //- If the forces file has not been created create it
         void makeFile();
 
+        //- Output file header information
+        virtual void writeFileHeader();
+
         //- Return the effective viscous stress (laminar + turbulent).
         tmp<volSymmTensorField> devRhoReff() const;
 
@@ -175,9 +178,6 @@ protected:
 
         //- Disallow default bitwise assignment
         void operator=(const forces&);
-
-        //- Output file header information
-        virtual void writeFileHeader();
 
 
 public:

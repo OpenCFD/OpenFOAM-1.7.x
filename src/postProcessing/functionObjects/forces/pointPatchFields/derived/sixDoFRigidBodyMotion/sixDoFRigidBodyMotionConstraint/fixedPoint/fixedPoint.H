@@ -23,121 +23,103 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::forceCoeffs
+    Foam::sixDoFRigidBodyMotionConstraints::fixedPoint
 
 Description
-    Derived from the forces function object, creates a specialisation to
-    calculate lift and drag forces.
+    sixDoFRigidBodyMotionConstraint.  Point fixed in space.
 
 SourceFiles
-    forceCoeffs.C
-    IOforceCoeffs.H
+    fixedPoint.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef forceCoeffs_H
-#define forceCoeffs_H
+#ifndef fixedPoint_H
+#define fixedPoint_H
 
-#include "forces.H"
+#include "sixDoFRigidBodyMotionConstraint.H"
+#include "point.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
+namespace sixDoFRigidBodyMotionConstraints
+{
+
 /*---------------------------------------------------------------------------*\
-                        Class forceCoeffs Declaration
+                           Class fixedPoint Declaration
 \*---------------------------------------------------------------------------*/
 
-class forceCoeffs
+class fixedPoint
 :
-    public forces
+    public sixDoFRigidBodyMotionConstraint
 {
     // Private data
 
-        // Force coefficient geometry
-
-            //- Lift
-            vector liftDir_;
-
-            //- Drag
-            vector  dragDir_;
-
-            //- Pitch
-            vector pitchAxis_;
-
-
-        // Free-stream conditions
-
-            //- Velocity magnitude
-            scalar magUInf_;
-
-
-        // Reference scales
-
-            //- Length
-            scalar lRef_;
-
-            //- Area
-            scalar Aref_;
-
-
-    // Private member functions
-
-        //- Disallow default bitwise copy construct
-        forceCoeffs(const forceCoeffs&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const forceCoeffs&);
-
-
-protected:
-
-    //- Output file header information
-    virtual void writeFileHeader();
+        //- Point which is rigidly attached to the body and constrains
+        //  it so that this point remains fixed.  This serves as the
+        //  reference point for displacements as well as the target
+        //  position.
+        point fixedPoint_;
 
 
 public:
 
     //- Runtime type information
-    TypeName("forceCoeffs");
+    TypeName("fixedPoint");
 
 
     // Constructors
 
-        //- Construct for given objectRegistry and dictionary.
-        //  Allow the possibility to load fields from files
-        forceCoeffs
+        //- Construct from components
+        fixedPoint
         (
-            const word& name,
-            const objectRegistry&,
-            const dictionary&,
-            const bool loadFromFiles = false
+            const dictionary& sDoFRBMCDict
         );
 
+        //- Construct and return a clone
+        virtual autoPtr<sixDoFRigidBodyMotionConstraint> clone() const
+        {
+            return autoPtr<sixDoFRigidBodyMotionConstraint>
+            (
+                new fixedPoint(*this)
+            );
+        }
 
-    //- Destructor
-    virtual ~forceCoeffs();
+
+    // Destructor
+
+        virtual ~fixedPoint();
 
 
     // Member Functions
 
-        //- Read the forces data
-        virtual void read(const dictionary&);
+        //- Calculate the constraint position, force and moment.
+        //  Global reference frame vectors.  Returns boolean stating
+        //  whether the constraint been converged to tolerance.
+        virtual bool constrain
+        (
+            const sixDoFRigidBodyMotion& motion,
+            const vector& existingConstraintForce,
+            const vector& existingConstraintMoment,
+            scalar deltaT,
+            vector& constraintPosition,
+            vector& constraintForceIncrement,
+            vector& constraintMomentIncrement
+        ) const;
 
-        //- Execute, currently does nothing
-        virtual void execute();
+        //- Update properties from given dictionary
+        virtual bool read(const dictionary& sDoFRBMCCoeff);
 
-        //- Execute at the final time-loop, currently does nothing
-        virtual void end();
-
-        //- Write the forces
-        virtual void write();
+        //- Write
+        virtual void write(Ostream&) const;
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace solidBodyMotionFunctions
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

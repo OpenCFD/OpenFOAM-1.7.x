@@ -23,121 +23,98 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::forceCoeffs
+    Foam::sixDoFRigidBodyMotionConstraints::fixedOrientation
 
 Description
-    Derived from the forces function object, creates a specialisation to
-    calculate lift and drag forces.
+    sixDoFRigidBodyMotionConstraint.  Orientation of body fixed global
+    space. Only valid where the predicted deviation from alignment is
+    < 90 degrees.
 
 SourceFiles
-    forceCoeffs.C
-    IOforceCoeffs.H
+    fixedOrientation.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef forceCoeffs_H
-#define forceCoeffs_H
+#ifndef fixedOrientation_H
+#define fixedOrientation_H
 
-#include "forces.H"
+#include "sixDoFRigidBodyMotionConstraint.H"
+#include "point.H"
+#include "tensor.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
+namespace sixDoFRigidBodyMotionConstraints
+{
+
 /*---------------------------------------------------------------------------*\
-                        Class forceCoeffs Declaration
+                       Class fixedOrientation Declaration
 \*---------------------------------------------------------------------------*/
 
-class forceCoeffs
+class fixedOrientation
 :
-    public forces
+    public sixDoFRigidBodyMotionConstraint
 {
-    // Private data
-
-        // Force coefficient geometry
-
-            //- Lift
-            vector liftDir_;
-
-            //- Drag
-            vector  dragDir_;
-
-            //- Pitch
-            vector pitchAxis_;
-
-
-        // Free-stream conditions
-
-            //- Velocity magnitude
-            scalar magUInf_;
-
-
-        // Reference scales
-
-            //- Length
-            scalar lRef_;
-
-            //- Area
-            scalar Aref_;
-
-
-    // Private member functions
-
-        //- Disallow default bitwise copy construct
-        forceCoeffs(const forceCoeffs&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const forceCoeffs&);
-
-
-protected:
-
-    //- Output file header information
-    virtual void writeFileHeader();
-
 
 public:
 
     //- Runtime type information
-    TypeName("forceCoeffs");
+    TypeName("fixedOrientation");
 
 
     // Constructors
 
-        //- Construct for given objectRegistry and dictionary.
-        //  Allow the possibility to load fields from files
-        forceCoeffs
+        //- Construct from components
+        fixedOrientation
         (
-            const word& name,
-            const objectRegistry&,
-            const dictionary&,
-            const bool loadFromFiles = false
+            const dictionary& sDoFRBMCDict
         );
 
+        //- Construct and return a clone
+        virtual autoPtr<sixDoFRigidBodyMotionConstraint> clone() const
+        {
+            return autoPtr<sixDoFRigidBodyMotionConstraint>
+            (
+                new fixedOrientation(*this)
+            );
+        }
 
-    //- Destructor
-    virtual ~forceCoeffs();
+
+    // Destructor
+
+        virtual ~fixedOrientation();
 
 
     // Member Functions
 
-        //- Read the forces data
-        virtual void read(const dictionary&);
+        //- Calculate the constraint position, force and moment.
+        //  Global reference frame vectors.  Returns boolean stating
+        //  whether the constraint been converged to tolerance.
+        virtual bool constrain
+        (
+            const sixDoFRigidBodyMotion& motion,
+            const vector& existingConstraintForce,
+            const vector& existingConstraintMoment,
+            scalar deltaT,
+            vector& constraintPosition,
+            vector& constraintForceIncrement,
+            vector& constraintMomentIncrement
+        ) const;
 
-        //- Execute, currently does nothing
-        virtual void execute();
+        //- Update properties from given dictionary
+        virtual bool read(const dictionary& sDoFRBMCCoeff);
 
-        //- Execute at the final time-loop, currently does nothing
-        virtual void end();
-
-        //- Write the forces
-        virtual void write();
+        //- Write
+        virtual void write(Ostream&) const;
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace solidBodyMotionFunctions
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

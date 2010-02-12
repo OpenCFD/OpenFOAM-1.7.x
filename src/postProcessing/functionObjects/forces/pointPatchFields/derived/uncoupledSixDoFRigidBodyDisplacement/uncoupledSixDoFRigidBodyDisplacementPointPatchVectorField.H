@@ -23,18 +23,18 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::sixDoFRigidBodyDisplacementPointPatchVectorField
+    Foam::uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
 
 Description
-    Foam::sixDoFRigidBodyDisplacementPointPatchVectorField
+    Foam::uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
 
 SourceFiles
-    sixDoFRigidBodyDisplacementPointPatchVectorField.C
+    uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef sixDoFRigidBodyDisplacementPointPatchVectorField_H
-#define sixDoFRigidBodyDisplacementPointPatchVectorField_H
+#ifndef uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField_H
+#define uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField_H
 
 #include "fixedValuePointPatchField.H"
 #include "sixDoFRigidBodyMotion.H"
@@ -45,10 +45,10 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-        Class sixDoFRigidBodyDisplacementPointPatchVectorField Declaration
+  Class uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField Declaration
 \*---------------------------------------------------------------------------*/
 
-class sixDoFRigidBodyDisplacementPointPatchVectorField
+class uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
 :
     public fixedValuePointPatchField<vector>
 {
@@ -57,31 +57,32 @@ class sixDoFRigidBodyDisplacementPointPatchVectorField
         //- Six dof motion object
         sixDoFRigidBodyMotion motion_;
 
-        //- Initial positions of points on the patch
-        pointField initialPoints_;
+        //- Reference positions of points on the patch
+        pointField p0_;
 
         //- Reference density required by the forces object for
-        //  incompressible calculations
+        //  incompressible calculations.  Retained here to give
+        //  dictionary compatibility with other sixDoF patches.
         scalar rhoInf_;
 
 
 public:
 
     //- Runtime type information
-    TypeName("sixDoFRigidBodyDisplacement");
+    TypeName("uncoupledSixDoFRigidBodyDisplacement");
 
 
     // Constructors
 
         //- Construct from patch and internal field
-        sixDoFRigidBodyDisplacementPointPatchVectorField
+        uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
         (
             const pointPatch&,
             const DimensionedField<vector, pointMesh>&
         );
 
         //- Construct from patch, internal field and dictionary
-        sixDoFRigidBodyDisplacementPointPatchVectorField
+        uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
         (
             const pointPatch&,
             const DimensionedField<vector, pointMesh>&,
@@ -89,9 +90,9 @@ public:
         );
 
         //- Construct by mapping given patchField<vector> onto a new patch
-        sixDoFRigidBodyDisplacementPointPatchVectorField
+        uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
         (
-            const sixDoFRigidBodyDisplacementPointPatchVectorField&,
+            const uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField&,
             const pointPatch&,
             const DimensionedField<vector, pointMesh>&,
             const pointPatchFieldMapper&
@@ -102,7 +103,7 @@ public:
         {
             return autoPtr<pointPatchField<vector> >
             (
-                new sixDoFRigidBodyDisplacementPointPatchVectorField
+                new uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
                 (
                     *this
                 )
@@ -110,9 +111,9 @@ public:
         }
 
         //- Construct as copy setting internal field reference
-        sixDoFRigidBodyDisplacementPointPatchVectorField
+        uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
         (
-            const sixDoFRigidBodyDisplacementPointPatchVectorField&,
+            const uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField&,
             const DimensionedField<vector, pointMesh>&
         );
 
@@ -124,7 +125,7 @@ public:
         {
             return autoPtr<pointPatchField<vector> >
             (
-                new sixDoFRigidBodyDisplacementPointPatchVectorField
+                new uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
                 (
                     *this,
                     iF
@@ -134,22 +135,6 @@ public:
 
 
     // Member functions
-
-        // Mapping functions
-
-            //- Map (and resize as needed) from self given a mapping object
-            virtual void autoMap
-            (
-                const pointPatchFieldMapper&
-            );
-
-            //- Reverse map the given pointPatchField onto this pointPatchField
-            virtual void rmap
-            (
-                const pointPatchField<vector>&,
-                const labelList&
-            );
-
 
         // Evaluation functions
 

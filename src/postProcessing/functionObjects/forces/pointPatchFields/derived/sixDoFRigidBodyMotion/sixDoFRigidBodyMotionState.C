@@ -64,11 +64,11 @@ Foam::sixDoFRigidBodyMotionState::sixDoFRigidBodyMotionState
 )
 :
     centreOfMass_(dict.lookup("centreOfMass")),
-    Q_(dict.lookupOrDefault("Q", tensor(I))),
-    v_(dict.lookupOrDefault("v", vector::zero)),
-    a_(dict.lookupOrDefault("a", vector::zero)),
-    pi_(dict.lookupOrDefault("pi", vector::zero)),
-    tau_(dict.lookupOrDefault("tau", vector::zero))
+    Q_(dict.lookupOrDefault("orientation", tensor(I))),
+    v_(dict.lookupOrDefault("velocity", vector::zero)),
+    a_(dict.lookupOrDefault("acceleration", vector::zero)),
+    pi_(dict.lookupOrDefault("angularMomentum", vector::zero)),
+    tau_(dict.lookupOrDefault("torque", vector::zero))
 {}
 
 

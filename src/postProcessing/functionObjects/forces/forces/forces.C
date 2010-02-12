@@ -190,7 +190,7 @@ Foam::forces::forces
     directForceDensity_(false),
     fDName_(""),
     rhoRef_(VGREAT),
-    pRef_(0.0),
+    pRef_(0),
     CofR_(vector::zero),
     forcesFilePtr_(NULL)
 {
@@ -283,8 +283,7 @@ void Foam::forces::read(const dictionary& dict)
                     Info<< " or " << rhoName_;
                 }
 
-                Info<< " in database." << nl
-                    << "    De-activating forces."
+                Info<< " in database." << nl << "    De-activating forces."
                     << endl;
             }
 
@@ -293,7 +292,7 @@ void Foam::forces::read(const dictionary& dict)
 
             // Reference pressure, 0 by default
             pRef_ = dict.lookupOrDefault<scalar>("pRef", 0.0);
-       }
+        }
 
         // Centre of rotation for moment calculations
         CofR_ = dict.lookup("CofR");

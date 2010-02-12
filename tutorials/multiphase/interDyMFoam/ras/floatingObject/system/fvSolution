@@ -18,7 +18,7 @@ FoamFile
 solvers
 {
     cellDisplacement
-      {
+    {
         solver          GAMG;
         tolerance       1e-08;
         relTol          0;
@@ -27,7 +27,7 @@ solvers
         nCellsInCoarsestLevel 10;
         agglomerator    faceAreaPair;
         mergeLevels     1;
-      }
+    }
 
     pcorr
     {
@@ -117,7 +117,7 @@ PISO
     nAlphaCorr      1;
     nAlphaSubCycles 1;
     cAlpha          1.5;
-    correctPhi      no;
+    correctPhi      yes;
 }
 
 relaxationFactors

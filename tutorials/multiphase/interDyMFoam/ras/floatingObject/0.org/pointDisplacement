@@ -35,14 +35,10 @@ boundaryField
     {
         type            sixDoFRigidBodyDisplacement;
         centreOfMass    (0.5 0.5 0.5);
-        momentOfInertia (0.08622222 0.8622222 0.144);
+        momentOfInertia (0.08622222 0.08622222 0.144);
         mass            9.6;
         rhoInf          1;
-        Q               (1 0 0 0 1 0 0 0 1);
-        v               (0 0 0);
-        a               (0 0 0);
-        pi              (0 0 0);
-        tau             (0 0 0);
+        report          on;
         value           uniform (0 0 0);
     }
 }

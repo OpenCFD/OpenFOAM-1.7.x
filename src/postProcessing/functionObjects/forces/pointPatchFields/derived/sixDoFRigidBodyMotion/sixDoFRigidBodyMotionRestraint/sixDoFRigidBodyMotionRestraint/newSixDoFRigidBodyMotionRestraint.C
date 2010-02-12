@@ -22,33 +22,44 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Typedef
-    Foam::forcesFunctionObject
-
-Description
-    FunctionObject wrapper around forces to allow them to be created via the
-    functions entry within controlDict.
-
-SourceFiles
-    forcesFunctionObject.C
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef forcesFunctionObject_H
-#define forcesFunctionObject_H
+#include "sixDoFRigidBodyMotionRestraint.H"
 
-#include "forces.H"
-#include "OutputFilterFunctionObject.H"
+// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
+Foam::autoPtr<Foam::sixDoFRigidBodyMotionRestraint>
+Foam::sixDoFRigidBodyMotionRestraint::New(const dictionary& sDoFRBMRDict)
 {
-    typedef OutputFilterFunctionObject<forces> forcesFunctionObject;
+    word sixDoFRigidBodyMotionRestraintTypeName =
+        sDoFRBMRDict.lookup("sixDoFRigidBodyMotionRestraint");
+
+    // Info<< "Selecting sixDoFRigidBodyMotionRestraint function "
+    //     << sixDoFRigidBodyMotionRestraintTypeName << endl;
+
+    dictionaryConstructorTable::iterator cstrIter =
+    dictionaryConstructorTablePtr_->find
+    (
+        sixDoFRigidBodyMotionRestraintTypeName
+    );
+
+    if (cstrIter == dictionaryConstructorTablePtr_->end())
+    {
+        FatalErrorIn
+        (
+            "sixDoFRigidBodyMotionRestraint::New"
+            "("
+                "const dictionary& sDoFRBMRDict"
+            ")"
+        )   << "Unknown sixDoFRigidBodyMotionRestraint type "
+            << sixDoFRigidBodyMotionRestraintTypeName << endl << endl
+            << "Valid  sixDoFRigidBodyMotionRestraints are : " << endl
+            << dictionaryConstructorTablePtr_->toc()
+            << exit(FatalError);
+    }
+
+    return autoPtr<sixDoFRigidBodyMotionRestraint>(cstrIter()(sDoFRBMRDict));
 }
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#endif
 
 // ************************************************************************* //

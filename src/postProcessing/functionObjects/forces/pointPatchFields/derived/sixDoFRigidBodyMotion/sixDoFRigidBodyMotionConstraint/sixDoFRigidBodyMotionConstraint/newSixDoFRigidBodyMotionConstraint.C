@@ -22,33 +22,44 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Typedef
-    Foam::forcesFunctionObject
-
-Description
-    FunctionObject wrapper around forces to allow them to be created via the
-    functions entry within controlDict.
-
-SourceFiles
-    forcesFunctionObject.C
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef forcesFunctionObject_H
-#define forcesFunctionObject_H
+#include "sixDoFRigidBodyMotionConstraint.H"
 
-#include "forces.H"
-#include "OutputFilterFunctionObject.H"
+// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
+Foam::autoPtr<Foam::sixDoFRigidBodyMotionConstraint>
+Foam::sixDoFRigidBodyMotionConstraint::New(const dictionary& sDoFRBMCDict)
 {
-    typedef OutputFilterFunctionObject<forces> forcesFunctionObject;
+    word sixDoFRigidBodyMotionConstraintTypeName =
+        sDoFRBMCDict.lookup("sixDoFRigidBodyMotionConstraint");
+
+    // Info<< "Selecting sixDoFRigidBodyMotionConstraint function "
+    //     << sixDoFRigidBodyMotionConstraintTypeName << endl;
+
+    dictionaryConstructorTable::iterator cstrIter =
+    dictionaryConstructorTablePtr_->find
+    (
+        sixDoFRigidBodyMotionConstraintTypeName
+    );
+
+    if (cstrIter == dictionaryConstructorTablePtr_->end())
+    {
+        FatalErrorIn
+        (
+            "sixDoFRigidBodyMotionConstraint::New"
+            "("
+                "const dictionary& sDoFRBMCDict"
+            ")"
+        )   << "Unknown sixDoFRigidBodyMotionConstraint type "
+            << sixDoFRigidBodyMotionConstraintTypeName << endl << endl
+            << "Valid  sixDoFRigidBodyMotionConstraints are : " << endl
+            << dictionaryConstructorTablePtr_->toc()
+            << exit(FatalError);
+    }
+
+    return autoPtr<sixDoFRigidBodyMotionConstraint>(cstrIter()(sDoFRBMCDict));
 }
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#endif
 
 // ************************************************************************* //

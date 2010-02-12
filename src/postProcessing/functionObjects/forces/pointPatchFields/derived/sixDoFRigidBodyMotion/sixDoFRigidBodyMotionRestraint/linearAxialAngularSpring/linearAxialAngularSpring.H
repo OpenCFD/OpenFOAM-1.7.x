@@ -23,121 +23,106 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::forceCoeffs
+    Foam::sixDoFRigidBodyMotionRestraints::linearAxialAngularSpring
 
 Description
-    Derived from the forces function object, creates a specialisation to
-    calculate lift and drag forces.
+    sixDoFRigidBodyMotionRestraints model.  Linear axial angular spring.
 
 SourceFiles
-    forceCoeffs.C
-    IOforceCoeffs.H
+    linearAxialAngularSpring.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef forceCoeffs_H
-#define forceCoeffs_H
+#ifndef linearAxialAngularSpring_H
+#define linearAxialAngularSpring_H
 
-#include "forces.H"
+#include "sixDoFRigidBodyMotionRestraint.H"
+#include "point.H"
+#include "tensor.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
+namespace sixDoFRigidBodyMotionRestraints
+{
+
 /*---------------------------------------------------------------------------*\
-                        Class forceCoeffs Declaration
+                   Class linearAxialAngularSpring Declaration
 \*---------------------------------------------------------------------------*/
 
-class forceCoeffs
+class linearAxialAngularSpring
 :
-    public forces
+    public sixDoFRigidBodyMotionRestraint
 {
     // Private data
 
-        // Force coefficient geometry
+        //- Reference orientation where there is no moment
+        tensor refQ_;
 
-            //- Lift
-            vector liftDir_;
+        //- Global unit axis around which the motion is sprung
+        vector axis_;
 
-            //- Drag
-            vector  dragDir_;
+        //- Spring stiffness coefficient (Nm/rad)
+        scalar stiffness_;
 
-            //- Pitch
-            vector pitchAxis_;
-
-
-        // Free-stream conditions
-
-            //- Velocity magnitude
-            scalar magUInf_;
-
-
-        // Reference scales
-
-            //- Length
-            scalar lRef_;
-
-            //- Area
-            scalar Aref_;
-
-
-    // Private member functions
-
-        //- Disallow default bitwise copy construct
-        forceCoeffs(const forceCoeffs&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const forceCoeffs&);
-
-
-protected:
-
-    //- Output file header information
-    virtual void writeFileHeader();
+        //- Damping coefficient (Nms/rad)
+        scalar damping_;
 
 
 public:
 
     //- Runtime type information
-    TypeName("forceCoeffs");
+    TypeName("linearAxialAngularSpring");
 
 
     // Constructors
 
-        //- Construct for given objectRegistry and dictionary.
-        //  Allow the possibility to load fields from files
-        forceCoeffs
+        //- Construct from components
+        linearAxialAngularSpring
         (
-            const word& name,
-            const objectRegistry&,
-            const dictionary&,
-            const bool loadFromFiles = false
+            const dictionary& sDoFRBMRDict
         );
 
+        //- Construct and return a clone
+        virtual autoPtr<sixDoFRigidBodyMotionRestraint> clone() const
+        {
+            return autoPtr<sixDoFRigidBodyMotionRestraint>
+            (
+                new linearAxialAngularSpring(*this)
+            );
+        }
 
-    //- Destructor
-    virtual ~forceCoeffs();
+
+    // Destructor
+
+        virtual ~linearAxialAngularSpring();
 
 
     // Member Functions
 
-        //- Read the forces data
-        virtual void read(const dictionary&);
+        //- Calculate the restraint position, force and moment.
+        //  Global reference frame vectors.
+        virtual void restrain
+        (
+            const sixDoFRigidBodyMotion& motion,
+            vector& restraintPosition,
+            vector& restraintForce,
+            vector& restraintMoment
+        ) const;
 
-        //- Execute, currently does nothing
-        virtual void execute();
+        //- Update properties from given dictionary
+        virtual bool read(const dictionary& sDoFRBMRCoeff);
 
-        //- Execute at the final time-loop, currently does nothing
-        virtual void end();
-
-        //- Write the forces
-        virtual void write();
+        //- Write
+        virtual void write(Ostream&) const;
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace solidBodyMotionFunctions
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
