@@ -11,16 +11,24 @@ FoamFile
     format      ascii;
     class       dictionary;
     location    "constant";
-    object      scalarListList;
+    object      energySourcesProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-// (x y z) (u v w) d rho mDot T cp (Y0..Y2) (Yg0..YgN) (Yl0..YlN) (Ys0..YsN)
-(
-    (0.1 0.32 0.0) (0.5  0.25 0.0) 0.001 1000 0.2 300 4200 (0 1 0) () (1) ()
-    (0.1 0.44 0.0) (0.5  0.10 0.0) 0.001 1000 0.2 300 4200 (0 1 0) () (1) ()
-    (0.1 0.56 0.0) (0.5 -0.10 0.0) 0.001 1000 0.2 300 4200 (0 1 0) () (1) ()
-    (0.1 0.68 0.0) (0.5 -0.25 0.0) 0.001 1000 0.2 300 4200 (0 1 0) () (1) ()
-);
 
+(
+    source1
+    {
+        active          true;
+        timeStart       0.2;
+        duration        2.0;
+        selectionMode   points;
+        volumeMode      absolute;
+        fieldData       10;
+        points
+        (
+            (2.75 0.5 0)
+        );
+    }
+);
 
 // ************************************************************************* //

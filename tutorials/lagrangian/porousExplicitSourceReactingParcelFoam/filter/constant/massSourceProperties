@@ -11,24 +11,28 @@ FoamFile
     format      ascii;
     class       dictionary;
     location    "constant";
-    object      pointMassSourcesProperties;
+    object      massSourcesProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-active          true;
-
-pointSources
 (
     source1
     {
-        timeStart   0.2;
-        duration    2.0;
-        location    (2.75 0.5 0);
+        active          true;
+        timeStart       0.2;
+        duration        2.0;
+        selectionMode   points;
+        volumeMode      absolute;
         fieldData
         (
-            (H2O     0.01)
+            (H2O 1e-4) // kg/s
+        );
+        points
+        (
+            (2.75 0.5 0)
         );
     }
 );
+
 
 // ************************************************************************* //

@@ -15,7 +15,9 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-InjectionModel  ReactingLookupTableInjection;
+active          true;
+
+InjectionModel  ReactingMultiphaseLookupTableInjection;
 
 DragModel       SphereDrag;
 
@@ -25,11 +27,15 @@ PatchInteractionModel LocalInteraction;
 
 HeatTransferModel RanzMarshall;
 
-CompositionModel SinglePhaseMixture;
+CompositionModel SingleMixtureFraction;
 
 PhaseChangeModel LiquidEvaporation;
 
 PostProcessingModel PatchPostProcessing;
+
+DevolatilisationModel none;
+
+SurfaceReactionModel none;
 
 radiation       off;
 
@@ -50,8 +56,11 @@ constantProperties
     cp0             cp0 [ 0 2 -2 -1 0 ] 4100;
     epsilon0        epsilon0 [ 0 0 0 0 0 ] 1;
     f0              f0 [ 0 0 0 0 0 ] 0.5;
+    Pr              Pr [ 0 0 0 0 0 ] 0.7;
     Tvap            Tvap [ 0 0 0 1 0 ] 273;
     Tbp             Tvap [ 0 0 0 1 0 ] 373;
+    LDevol          LDevol [ 0 0 0 0 0 ] 0;
+    hRetentionCoeff hRetentionCoeff [ 0 0 0 0 0 ] 1;
     constantVolume  false;
 }
 
@@ -80,9 +89,9 @@ particleForces
 
 ManualInjectionCoeffs
 {
-    massTotal       massTotal [ 1 0 0 0 0 ] 1e-2;
+    massTotal       massTotal [ 1 0 0 0 0 ] 1e-3;
     parcelBasisType mass;
-    SOI             0;
+    SOI             0.5;
     positionsFile   "reactingCloud1Positions";
     U0              ( 0 0 0 );
     parcelPDF
@@ -96,7 +105,7 @@ ManualInjectionCoeffs
     }
 }
 
-ReactingLookupTableInjectionCoeffs
+ReactingMultiphaseLookupTableInjectionCoeffs
 {
     massTotal       massTotal [ 1 0 0 0 0 ] 1e-2;
     parcelBasisType mass;
@@ -106,11 +115,9 @@ ReactingLookupTableInjectionCoeffs
     parcelsPerSecond 250;
 }
 
-
 StandardWallInteractionCoeffs
 {
-    e               e [ 0 0 0 0 0 ] 1;
-    mu              mu [ 0 0 0 0 0 ] 0;
+    type            rebound;
 }
 
 LocalInteractionCoeffs
@@ -119,35 +126,45 @@ LocalInteractionCoeffs
     (
         walls
         {
-            e       1;
-            mu      0;
+            type    rebound;
         }
         cycLeft
         {
-            e       1;
-            mu      0;
+            type    rebound;
         }
     );
 }
 
 RanzMarshallCoeffs
 {
-    Pr              Pr [ 0 0 0 0 0 ] 0.7;
+    // thermal shielding
+    BirdCorrection  true;
 }
 
-SinglePhaseMixtureCoeffs
+SingleMixtureFractionCoeffs
 {
     phases
     (
+        gas
+        {
+        }
         liquid
         {
-            H2O     1;
+            H2O 1;
+        }
+        solid
+        {
         }
     );
+    YGasTot0        0;
+    YLiquidTot0     1;
+    YSolidTot0      0;
 }
 
 LiquidEvaporationCoeffs
 {
+    enthalpyTransfer enthalpyDifference;
+
     activeLiquids
     (
         H2O

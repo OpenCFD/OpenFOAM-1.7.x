@@ -17,108 +17,50 @@ FoamFile
 
 solvers
 {
-    rho
+    "(rho|G)"
     {
         solver          PCG;
         preconditioner  DIC;
         tolerance       1e-05;
         relTol          0;
-    };
-    U
+    }
+
+    "(U|hs|k|epsilon)"
     {
         solver          PBiCG;
         preconditioner  DILU;
         tolerance       1e-05;
         relTol          0;
-    };
+    }
+
     p
     {
-	solver           GAMG;
-        tolerance        0;
-        relTol           0.1;
-
-        smoother         GaussSeidel;
-        nPreSweeps       0;
-        nPostSweeps      2;
-
+        solver          GAMG;
+        tolerance       0;
+        relTol          0.1;
+        smoother        GaussSeidel;
+        nPreSweeps      0;
+        nPostSweeps     2;
         cacheAgglomeration true;
-
         nCellsInCoarsestLevel 10;
-        agglomerator     faceAreaPair;
-        mergeLevels      1;
-    };
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+    }
+
     pFinal
     {
-        solver           GAMG;
-        tolerance        1e-6;
-        relTol           0;
+        $p;
+        tolerance       1e-06;
+        relTol          0;
+    }
 
-        smoother         GaussSeidel;
-        nPreSweeps       0;
-        nPostSweeps      2;
-
-        cacheAgglomeration true;
-
-        nCellsInCoarsestLevel 10;
-        agglomerator     faceAreaPair;
-        mergeLevels      1;
-    };
-    G
-    {
-        solver          PCG;
-        preconditioner  DIC;
-        tolerance       1e-05;
-        relTol          0;
-    };
-    Yi
+    "(Yi|O2|N2|H2O)"
     {
         solver          PBiCG;
         preconditioner  DILU;
         tolerance       1e-06;
         relTol          0;
-    };
-    O2
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    };
-    N2
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    };
-    H2O
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    };
-    h
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-05;
-        relTol          0;
-    };
-    k
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-05;
-        relTol          0;
-    };
-    epsilon
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-05;
-        relTol          0;
-    };
+    }
 }
 
 PISO
@@ -128,7 +70,6 @@ PISO
     nCorrectors     2;
     nNonOrthogonalCorrectors 0;
     momentumPredictor yes;
-//    nUCorrectors    2;
 }
 
 additional
@@ -140,14 +81,7 @@ additional
 
 relaxationFactors
 {
-/*
-    U               1;
-    k               1;
-    kepsilon        1;
-    h               1;
-    rho             1;
-    p               1;
-*/
 }
+
 
 // ************************************************************************* //
