@@ -1,5 +1,5 @@
 Info<< "\nConstructing coal cloud" << endl;
-CoalCloud<gasThermoPhysics> coalParcels
+thermoCoalCloud coalParcels
 (
     "coalCloud1",
     rho,

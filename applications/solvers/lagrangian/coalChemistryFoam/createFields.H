@@ -6,25 +6,33 @@
     );
     psiChemistryModel& chemistry = pChemistry();
 
-    hCombustionThermo& thermo = chemistry.thermo();
+    hsCombustionThermo& thermo = chemistry.thermo();
 
     basicMultiComponentMixture& composition = thermo.composition();
     PtrList<volScalarField>& Y = composition.Y();
 
     word inertSpecie(thermo.lookup("inertSpecie"));
 
+    if (!composition.contains(inertSpecie))
+    {
+        FatalErrorIn(args.executable())
+            << "Specified inert specie '" << inertSpecie << "' not found in "
+            << "species list. Available species:" << composition.species()
+            << exit(FatalError);
+    }
+
     volScalarField& p = thermo.p();
-    volScalarField& h = thermo.h();
+    volScalarField& hs = thermo.hs();
     const volScalarField& T = thermo.T();
     const volScalarField& psi = thermo.psi();
 
     multivariateSurfaceInterpolationScheme<scalar>::fieldTable fields;
 
-    forAll (Y, i)
+    forAll(Y, i)
     {
         fields.add(Y[i]);
     }
-    fields.add(h);
+    fields.add(hs);
 
     volScalarField rho
     (
@@ -119,10 +127,25 @@
         fvc::DDt(surfaceScalarField("phiU", phi/fvc::interpolate(rho)), p)
     );
 
-    Info<< "\nConstructing explicit enthalpy cell source" << endl;
-    timeActivatedExplicitCellSource enthalpySource
+    Info<< "\nConstructing explicit enthalpy source" << endl;
+    scalarTimeActivatedExplicitSourceList enthalpySource
     (
-        "enthalpySource",
+        "energy",
         mesh,
-        h.dimensions()*phi.dimensions()/mesh.V().dimensions()
+        dimEnergy/dimTime/dimVolume,
+        "hs"
+    );
+
+    DimensionedField<scalar, volMesh> chemistrySh
+    (
+        IOobject
+        (
+            "chemistry::Sh",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("chemistrySh", dimEnergy/dimTime/dimVolume, 0.0)
     );

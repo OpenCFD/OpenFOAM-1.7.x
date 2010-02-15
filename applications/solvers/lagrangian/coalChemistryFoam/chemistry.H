@@ -1,5 +1,5 @@
 {
-    Info << "Solving chemistry" << endl;
+    Info<< "Solving chemistry" << endl;
 
     chemistry.solve
     (
@@ -22,4 +22,6 @@
     {
         kappa = 1.0;
     }
+
+    chemistrySh = kappa*chemistry.Sh()();
 }
