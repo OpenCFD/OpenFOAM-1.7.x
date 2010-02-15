@@ -15,6 +15,8 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+active          true;
+
 InjectionModel  ManualInjection;
 
 DragModel       SphereDrag;
@@ -54,6 +56,7 @@ constantProperties
     cp0             cp0 [ 0 2 -2 -1 0 ] 4187;
     epsilon0        epsilon0 [ 0 0 0 0 0 ] 1;
     f0              f0 [ 0 0 0 0 0 ] 0.5;
+    Pr              Pr [ 0 0 0 0 0 ] 0.7;
     Tvap            Tvap [ 0 0 0 1 0 ] 400;
     Tbp             Tvap [ 0 0 0 1 0 ] 400;
     LDevol          LDevol [ 0 0 0 0 0 ] 0;
@@ -106,13 +109,15 @@ ManualInjectionCoeffs
 
 StandardWallInteractionCoeffs
 {
-    e               e [ 0 0 0 0 0 ] 1;
-    mu              mu [ 0 0 0 0 0 ] 0;
+    type            rebound;
+    e               1; // optional
+    mu              0; // optional
 }
 
 RanzMarshallCoeffs
 {
-    Pr              Pr [ 0 0 0 0 0 ] 0.7;
+    // thermal shielding
+    BirdCorrection  true;
 }
 
 SingleMixtureFractionCoeffs
@@ -142,6 +147,8 @@ SingleMixtureFractionCoeffs
 
 LiquidEvaporationCoeffs
 {
+    enthalpyTransfer enthalpyDifference;
+
     activeLiquids
     (
         H2O

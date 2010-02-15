@@ -11,29 +11,21 @@ FoamFile
     format      ascii;
     class       dictionary;
     location    "constant";
-    object      enthalpySourceProperties;
+    object      energySourcesProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-active          yes;
-
-cellSource      sphereToCell;
-
-volumeType      absolute;
-
-timeStart       0.15;
-
-duration        0.1;
-
-onValue         10000;
-
-offValue        0;
-
-sphereToCellCoeffs
-{
-    centre          ( 0.125 0.375 0.05 );
-    radius          0.005;
-}
-
+(
+    source1
+    {
+        active          true;
+        timeStart       0.15;
+        duration        0.1;
+        selectionMode   cellSet;
+        volumeMode      absolute;
+        fieldData       10000;
+        cellSet         ignitionCells;
+    }
+);
 
 // ************************************************************************* //
