@@ -194,7 +194,8 @@ public:
             const basicMultiComponentMixture& composition,
             const PtrList<gasThermoPhysics>& gasProperties,
             const dictionary& thermophysicalProperties,
-            const dimensionedVector& g
+            const dimensionedVector& g,
+            bool readFields = true
         );
 
 
@@ -339,12 +340,6 @@ public:
 
             //- Return Ambient Temperature
             void calculateAmbientTemperature();
-
-
-    // I/O
-
-            //- Write fields
-            virtual void writeFields() const;
 };
 
 

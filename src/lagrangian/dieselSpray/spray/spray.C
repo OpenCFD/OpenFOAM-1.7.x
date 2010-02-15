@@ -59,7 +59,8 @@ Foam::spray::spray
     const basicMultiComponentMixture& composition,
     const PtrList<gasThermoPhysics>& gasProperties,
     const dictionary&,
-    const dimensionedVector& g
+    const dimensionedVector& g,
+    bool readFields
 )
 :
     Cloud<parcel>(U.mesh(), false), // suppress className checking on positions
@@ -345,7 +346,10 @@ Foam::spray::spray
         }
     }
 
-    parcel::readFields(*this);
+    if (readFields)
+    {
+        parcel::readFields(*this);
+    }
 }
 
 
@@ -353,14 +357,6 @@ Foam::spray::spray
 
 Foam::spray::~spray()
 {}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-void Foam::spray::writeFields() const
-{
-    parcel::writeFields(*this);
-}
 
 
 // ************************************************************************* //

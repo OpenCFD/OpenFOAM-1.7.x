@@ -106,6 +106,8 @@ void Foam::parcel::readFields
         return;
     }
 
+    Particle<parcel>::readFields(c);
+
     IOField<scalar> d(c.fieldIOobject("d", IOobject::MUST_READ));
     c.checkFieldIOobject(c, d);
 
