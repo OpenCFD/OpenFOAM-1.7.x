@@ -8,7 +8,7 @@
 FoamFile
 {
     version     2.0;
-    format      binary;
+    format      ascii;
     class       dictionary;
     location    "system";
     object      fvSolution;
@@ -17,22 +17,6 @@ FoamFile
 
 solvers
 {
-    rho
-    {
-        solver          PCG;
-        preconditioner  DIC;
-        tolerance       1e-06;
-        relTol          0;
-    }
-
-    U
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    }
-
     p
     {
         solver          PCG;
@@ -41,31 +25,13 @@ solvers
         relTol          0;
     }
 
-    Yi
+    rho
     {
-        solver          PBiCG;
-        preconditioner  DILU;
+        $p;
         tolerance       1e-06;
-        relTol          0;
     }
 
-    h
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    }
-
-    k
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    }
-
-    epsilon
+    "(U|Yi|hs|k|epsilon)"
     {
         solver          PBiCG;
         preconditioner  DILU;
