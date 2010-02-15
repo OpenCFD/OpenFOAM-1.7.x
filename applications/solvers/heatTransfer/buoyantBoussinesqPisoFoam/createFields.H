@@ -42,14 +42,14 @@
         mesh
     );
 
-#   include "createPhi.H"
+    #include "createPhi.H"
 
-#   include "readTransportProperties.H"
+    #include "readTransportProperties.H"
 
     Info<< "Creating turbulence model\n" << endl;
-    autoPtr<incompressible::RASModel> turbulence
+    autoPtr<incompressible::turbulenceModel> turbulence
     (
-        incompressible::RASModel::New(U, phi, laminarTransport)
+        incompressible::turbulenceModel::New(U, phi, laminarTransport)
     );
 
     label pRefCell = 0;

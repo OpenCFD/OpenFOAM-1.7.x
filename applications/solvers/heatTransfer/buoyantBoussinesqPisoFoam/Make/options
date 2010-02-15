@@ -1,8 +1,7 @@
 EXE_INC = \
     -I../buoyantBoussinesqSimpleFoam \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
-    -I$(LIB_SRC)/turbulenceModels \
-    -I$(LIB_SRC)/turbulenceModels/incompressible/RAS/lnInclude \
+    -I$(LIB_SRC)/turbulenceModels/incompressible/turbulenceModel \
     -I$(LIB_SRC)/transportModels \
     -I$(LIB_SRC)/transportModels/incompressible/singlePhaseTransportModel
 
@@ -10,4 +9,5 @@ EXE_LIBS = \
     -lfiniteVolume \
     -lmeshTools \
     -lincompressibleRASModels \
+    -lincompressibleLESModels \
     -lincompressibleTransportModels
