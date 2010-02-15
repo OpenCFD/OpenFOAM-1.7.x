@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,131 +25,21 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "timeActivatedExplicitSource.H"
-#include "volFields.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-template<>
-const char* Foam::NamedEnum
-<
-    Foam::timeActivatedExplicitSource::volumeType,
-    2
->::names[] =
+namespace Foam
 {
-    "specific",
-    "absolute"
-};
-
-const Foam::NamedEnum<Foam::timeActivatedExplicitSource::volumeType, 2>
-Foam::timeActivatedExplicitSource::volumeTypeNames_;
-
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-Foam::timeActivatedExplicitSource::timeActivatedExplicitSource
-(
-    const word& name,
-    const fvMesh& mesh,
-    const dimensionSet& dims
-)
-:
-    IOdictionary
+    defineTemplateTypeNameAndDebug
     (
-        IOobject
-        (
-            name + "Properties",
-            mesh.time().constant(),
-            mesh,
-            IOobject::MUST_READ,
-            IOobject::NO_WRITE
-        )
-    ),
-    mesh_(mesh),
-    runTime_(mesh.time()),
-    name_(name),
-    active_(lookup("active")),
-    dimensions_(dims),
-    volumeType_(volumeTypeNames_.read(lookup("volumeType"))),
-    timeStart_(readScalar(lookup("timeStart"))),
-    duration_(readScalar(lookup("duration")))
-{}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-const Foam::fvMesh& Foam::timeActivatedExplicitSource::mesh() const
-{
-    return mesh_;
+        IOPtrList<scalarTimeActivatedExplicitSource>,
+        0
+    );
+    defineTemplateTypeNameAndDebug
+    (
+        IOPtrList<vectorTimeActivatedExplicitSource>,
+         0
+    );
 }
-
-
-const Foam::Time& Foam::timeActivatedExplicitSource::runTime() const
-{
-    return runTime_;
-}
-
-
-const Foam::word& Foam::timeActivatedExplicitSource::name() const
-{
-    return name_;
-}
-
-
-const Foam::Switch& Foam::timeActivatedExplicitSource::active() const
-{
-    return active_;
-}
-
-
-const Foam::dimensionSet& Foam::timeActivatedExplicitSource::dimensions() const
-{
-    return dimensions_;
-}
-
-
-const Foam::timeActivatedExplicitSource::volumeType&
-Foam::timeActivatedExplicitSource::volume() const
-{
-    return volumeType_;
-}
-
-
-Foam::scalar Foam::timeActivatedExplicitSource::timeStart() const
-{
-    return timeStart_;
-}
-
-
-Foam::scalar Foam::timeActivatedExplicitSource::duration() const
-{
-    return duration_;
-}
-
-
-bool Foam::timeActivatedExplicitSource::read()
-{
-    if (regIOobject::read())
-    {
-        lookup("active") >> active_;
-        if (active_)
-        {
-            volumeType_ = volumeTypeNames_.read(lookup("volumeType"));
-            lookup("timeStart") >> duration_;
-            lookup("duration") >> duration_;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    else
-    {
-        return false;
-    }
-}
-
-
-
 
 // ************************************************************************* //

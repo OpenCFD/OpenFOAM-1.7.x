@@ -342,10 +342,5 @@ $(SRF)/derivedFvPatchFields/SRFVelocityFvPatchVectorField/SRFVelocityFvPatchVect
 fieldSources = $(general)/fieldSources
 $(fieldSources)/pressureGradientExplicitSource/pressureGradientExplicitSource.C
 $(fieldSources)/timeActivatedExplicitSource/timeActivatedExplicitSource.C
-$(fieldSources)/timeActivatedExplicitCellSource/timeActivatedExplicitCellSource.C
-
-$(fieldSources)/timeActivatedExplicitMulticomponentPointSource/timeActivatedExplicitMulticomponentPointSource.C
-$(fieldSources)/timeActivatedExplicitMulticomponentPointSource/pointSourceProperties/pointSourceProperties.C
-$(fieldSources)/timeActivatedExplicitMulticomponentPointSource/pointSourceProperties/pointSourcePropertiesIO.C
 
 LIB = $(FOAM_LIBBIN)/libfiniteVolume
