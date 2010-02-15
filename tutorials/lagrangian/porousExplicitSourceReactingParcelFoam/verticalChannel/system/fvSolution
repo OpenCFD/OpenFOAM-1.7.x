@@ -1,0 +1,91 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    p
+    {
+        solver           GAMG;
+        tolerance        0;
+        relTol           0.01;
+
+        smoother         DICGaussSeidel;
+        nPreSweeps       0;
+        nPostSweeps      2;
+
+        cacheAgglomeration true;
+
+        nCellsInCoarsestLevel 10;
+        agglomerator     faceAreaPair;
+        mergeLevels      1;
+
+        maxIter          50;
+    };
+    pFinal
+    {
+        $p
+        tolerance        1e-6;
+        relTol           0;
+    };
+    "(rho|G)"
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        maxIter         200;
+        tolerance       1e-06;
+        relTol          0;
+    };
+    "(Yi|hs)"
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        maxIter         200;
+        tolerance       1e-06;
+        relTol          0;
+    };
+    "(U|k|omega)"
+    {
+        solver          smoothSolver;
+        smoother        GaussSeidel;
+        maxIter         200;
+        tolerance       1e-06;
+        relTol          0;
+    };
+}
+
+PISO
+{
+    nCorrectors     3;
+    nNonOrthogonalCorrectors 0;
+    momentumPredictor yes;
+}
+
+SIMPLE
+{
+    // used for potentialFoam initialisation
+    nNonOrthogonalCorrectors 10;
+}
+
+additional
+{
+    dpdt            false;
+    eWork           true;
+    hWork           true;
+}
+
+
+// ************************************************************************* //
