@@ -24,6 +24,8 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+#include "mathematicalConstants.H"
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template <class ParcelType>
@@ -380,6 +382,20 @@ inline Foam::scalar
 Foam::KinematicParcel<ParcelType>::areaS(const scalar d) const
 {
     return mathematicalConstant::pi*d*d;
+}
+
+
+template <class ParcelType>
+inline Foam::scalar
+Foam::KinematicParcel<ParcelType>::Re
+(
+    const vector& U,
+    const scalar d,
+    const scalar rhoc,
+    const scalar muc
+) const
+{
+    return rhoc*mag(U - Uc_)*d/muc;
 }
 
 

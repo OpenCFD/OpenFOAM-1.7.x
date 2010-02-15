@@ -26,6 +26,80 @@ License
 
 #include "PatchInteractionModel.H"
 
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+template<class CloudType>
+Foam::wordList Foam::PatchInteractionModel<CloudType>::interactionTypeNames_
+(
+    IStringStream
+    (
+        "(rebound stick escape)"
+    )()
+);
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+template<class CloudType>
+Foam::word Foam::PatchInteractionModel<CloudType>::interactionTypeToWord
+(
+    const interactionType& itEnum
+)
+{
+    switch (itEnum)
+    {
+        case itRebound:
+        {
+            return "rebound";
+            break;
+        }
+        case itStick:
+        {
+            return "stick";
+            break;
+        }
+        case itEscape:
+        {
+            return "escape";
+            break;
+        }
+        default:
+        {
+            return "other";
+        }
+    }
+#ifdef __ICC
+    // Prevent Icc complaining about missing return statement.
+    return word::null;
+#endif
+}
+
+
+template<class CloudType>
+typename Foam::PatchInteractionModel<CloudType>::interactionType
+Foam::PatchInteractionModel<CloudType>::wordToInteractionType
+(
+    const word& itWord
+)
+{
+    if (itWord == "rebound")
+    {
+        return itRebound;
+    }
+    else if (itWord == "stick")
+    {
+        return itStick;
+    }
+    else if (itWord == "escape")
+    {
+        return itEscape;
+    }
+    else
+    {
+        return itOther;
+    }
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class CloudType>

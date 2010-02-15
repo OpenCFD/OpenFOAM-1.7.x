@@ -26,7 +26,8 @@ Class
     Foam::particleForces
 
 Description
-    Particle forces
+    Provides a mechanism to calculate particle forces
+    Note: forces are force per unit mass (accelerations)
 
 SourceFiles
     particleForces.C

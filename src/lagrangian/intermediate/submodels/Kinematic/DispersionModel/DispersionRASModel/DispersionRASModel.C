@@ -95,11 +95,13 @@ void Foam::DispersionRASModel<CloudType>::cacheFields(const bool store)
         if (ownK_ && kPtr_)
         {
             delete kPtr_;
+            kPtr_ = NULL;
             ownK_ = false;
         }
         if (ownEpsilon_ && epsilonPtr_)
         {
             delete epsilonPtr_;
+            epsilonPtr_ = NULL;
             ownEpsilon_ = false;
         }
     }

@@ -108,14 +108,8 @@ protected:
 
         // Sources
 
-            //- Sensible enthalpy transfer
+            //- Sensible enthalpy transfer [J/kg]
             DimensionedField<scalar, volMesh> hsTrans_;
-
-            //- Chemical enthalpy transfer
-            // - If solving for total enthalpy, the carrier phase enthalpy will
-            //   receive the full enthalpy of reaction via creation of reaction
-            //   products
-            DimensionedField<scalar, volMesh> hcTrans_;
 
 
     // Protected member functions
@@ -124,6 +118,9 @@ protected:
 
             //- Pre-evolve
             void preEvolve();
+
+            //- Evolve the cloud
+            void evolveCloud();
 
             //- Post-evolve
             void postEvolve();
@@ -140,7 +137,8 @@ public:
             const volScalarField& rho,
             const volVectorField& U,
             const dimensionedVector& g,
-            basicThermo& thermo
+            basicThermo& thermo,
+            bool readFields = true
         );
 
 
@@ -190,19 +188,10 @@ public:
 
                 // Enthalpy
 
-                    //- Return reference to sensible enthalpy source
+                    //- Sensible enthalpy transfer [J/kg]
                     inline DimensionedField<scalar, volMesh>& hsTrans();
 
-                    //- Return tmp total sensible enthalpy source term
-                    inline tmp<DimensionedField<scalar, volMesh> > Shs() const;
-
-                    //- Return reference to chemical enthalpy source
-                    inline DimensionedField<scalar, volMesh>& hcTrans();
-
-                    //- Return tmp chemical enthalpy source term
-                    inline tmp<DimensionedField<scalar, volMesh> > Shc() const;
-
-                    //- Return tmp total enthalpy source term
+                    //- Return enthalpy source [J/kg/m3/s]
                     inline tmp<DimensionedField<scalar, volMesh> > Sh() const;
 
 

@@ -70,7 +70,7 @@ Foam::scalar Foam::NoSurfaceReaction<CloudType>::calculate
     const scalarField&,
     const scalarField&,
     const scalarField&,
-    const scalarField&,
+    const scalar,
     scalarField&,
     scalarField&,
     scalarField&,

@@ -65,8 +65,8 @@ class PatchPostProcessing
         //- List of patch names
         wordList patchNames_;
 
-        //- List of parcel data per patch
-        List<DynamicList<autoPtr<parcelType> > > patchData_;
+        //- List of output data per patch
+        List<DynamicList<string> > patchData_;
 
         //- Mapping from local to global patch ids
         labelList patchIds_;

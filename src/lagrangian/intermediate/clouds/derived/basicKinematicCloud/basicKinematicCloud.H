@@ -43,56 +43,8 @@ SourceFiles
 
 namespace Foam
 {
-
-/*---------------------------------------------------------------------------*\
-                      Class basicKinematicCloud Declaration
-\*---------------------------------------------------------------------------*/
-
-class basicKinematicCloud
-:
-    public KinematicCloud<basicKinematicParcel>
-{
-    // Private member functions
-
-        //- Disallow default bitwise copy construct
-        basicKinematicCloud(const basicKinematicCloud&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const basicKinematicCloud&);
-
-
-public:
-
-    //- Runtime type information
-    TypeName("basicKinematicCloud");
-
-
-    // Constructors
-
-        //- Construct from components
-        basicKinematicCloud
-        (
-            const word& cloudName,
-            const volScalarField& rho,
-            const volVectorField& U,
-            const volScalarField& mu,
-            const dimensionedVector& g
-        );
-
-
-    //- Destructor
-    ~basicKinematicCloud();
-
-
-    // Member functions
-
-        //- Write fields
-        virtual void writeFields() const;
-};
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
+    typedef KinematicCloud<basicKinematicParcel> basicKinematicCloud;
+}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

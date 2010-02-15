@@ -73,7 +73,7 @@ License
         ThermoCloud,                                                          \
         ParcelType,                                                           \
         ThermoType                                                            \
-    );                                                                        \
+    );
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

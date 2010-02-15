@@ -66,19 +66,14 @@ const Foam::dictionary& Foam::DragModel<CloudType>::dict() const
 template<class CloudType>
 Foam::scalar Foam::DragModel<CloudType>::utc
 (
-    const vector& Ur,
+    const scalar Re,
     const scalar d,
-    const scalar rhoc,
     const scalar mu
 ) const
 {
-    const scalar magUr = mag(Ur);
-
-    const scalar Re = rhoc*magUr*d/(mu + ROOTVSMALL);
-
     const scalar Cd = this->Cd(Re);
 
-    return Cd*rhoc*magUr/8.0;
+    return Cd*Re/d*mu/8.0;
 }
 
 

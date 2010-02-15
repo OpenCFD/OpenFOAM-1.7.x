@@ -25,6 +25,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ManualInjection.H"
+#include "mathematicalConstants.H"
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 

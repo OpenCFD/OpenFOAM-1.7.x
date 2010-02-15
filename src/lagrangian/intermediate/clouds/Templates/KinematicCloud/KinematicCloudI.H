@@ -59,6 +59,13 @@ Foam::KinematicCloud<ParcelType>::constProps() const
 
 
 template<class ParcelType>
+inline const Foam::Switch Foam::KinematicCloud<ParcelType>::active() const
+{
+    return active_;
+}
+
+
+template<class ParcelType>
 inline const Foam::Switch Foam::KinematicCloud<ParcelType>::coupled() const
 {
     return coupled_;

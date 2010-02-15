@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,15 +24,54 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "createReactingCloudTypes.H"
-#include "BasicReactingMultiphaseCloud.H"
+#include "thermoParcelInjectionData.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
+Foam::thermoParcelInjectionData::thermoParcelInjectionData(Istream& is)
+:
+    kinematicParcelInjectionData(is)
 {
-    createReactingCloudType(BasicReactingMultiphaseCloud);
-};
+    is.check("reading T");
+    is >> T_;
+
+    is.check("reading cp");
+    is >> cp_;
+
+    is.check("thermoParcelInjectionData(Istream& is)");
+}
+
+
+// * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
+
+Foam::Ostream& Foam::operator<<
+(
+    Ostream& os,
+    const thermoParcelInjectionData& data
+)
+{
+    os << static_cast<const kinematicParcelInjectionData&>(data);
+
+    os << data.T_ << data.cp_;
+
+    return os;
+}
+
+
+Foam::Istream& Foam::operator>>(Istream& is, thermoParcelInjectionData& data)
+{
+    is >> static_cast<kinematicParcelInjectionData&>(data);
+
+    is.check("reading T");
+    is >> data.T_;
+
+    is.check("reading cp");
+    is >> data.cp_;
+
+    is.check("operator(Istream&, thermoParcelInjectionData&)");
+
+    return is;
+}
 
 
 // ************************************************************************* //

@@ -18,13 +18,6 @@ $(BASECLOUDS)/reactingCloud/reactingCloud.C
 $(BASECLOUDS)/reactingMultiphaseCloud/reactingMultiphaseCloud.C
 
 
-/* Cloud container/injection mechanisms */
-$(DERIVEDCLOUDS)/basicKinematicCloud/basicKinematicCloud.C
-$(DERIVEDCLOUDS)/basicThermoCloud/basicThermoCloud.C
-$(DERIVEDCLOUDS)/BasicReactingCloud/defineBasicReactingCloud.C
-$(DERIVEDCLOUDS)/BasicReactingMultiphaseCloud/defineBasicReactingMultiphaseCloud.C
-
-
 /* kinematic parcel sub-models */
 KINEMATICPARCEL=$(DERIVEDPARCELS)/basicKinematicParcel
 $(KINEMATICPARCEL)/basicKinematicParcel.C
@@ -52,8 +45,31 @@ $(REACTINGMPPARCEL)/makeBasicReactingMultiphaseParcelSubmodels.C
 
 
 /* bolt-on models */
-submodels/addOns/radiation/absorptionEmission/cloudAbsorptionEmission/cloudAbsorptionEmission.C
-submodels/addOns/radiation/scatter/cloudScatter/cloudScatter.C
+RADIATION=submodels/addOns/radiation
+$(RADIATION)/absorptionEmission/cloudAbsorptionEmission/cloudAbsorptionEmission.C
+$(RADIATION)/scatter/cloudScatter/cloudScatter.C
+
+submodels/Kinematic/PatchInteractionModel/LocalInteraction/patchInteractionData.C
+
+KINEMATICINJECTION=submodels/Kinematic/InjectionModel
+$(KINEMATICINJECTION)/KinematicLookupTableInjection/kinematicParcelInjectionData.C
+$(KINEMATICINJECTION)/KinematicLookupTableInjection/kinematicParcelInjectionDataIO.C
+$(KINEMATICINJECTION)/KinematicLookupTableInjection/kinematicParcelInjectionDataIOList.C
+
+THERMOINJECTION=submodels/Thermodynamic/InjectionModel
+$(THERMOINJECTION)/ThermoLookupTableInjection/thermoParcelInjectionData.C
+$(THERMOINJECTION)/ThermoLookupTableInjection/thermoParcelInjectionDataIO.C
+$(THERMOINJECTION)/ThermoLookupTableInjection/thermoParcelInjectionDataIOList.C
+
+REACTINGINJECTION=submodels/Reacting/InjectionModel
+$(REACTINGINJECTION)/ReactingLookupTableInjection/reactingParcelInjectionData.C
+$(REACTINGINJECTION)/ReactingLookupTableInjection/reactingParcelInjectionDataIO.C
+$(REACTINGINJECTION)/ReactingLookupTableInjection/reactingParcelInjectionDataIOList.C
+
+REACTINGMPINJECTION=submodels/ReactingMultiphase/InjectionModel
+$(REACTINGMPINJECTION)/ReactingMultiphaseLookupTableInjection/reactingMultiphaseParcelInjectionData.C
+$(REACTINGMPINJECTION)/ReactingMultiphaseLookupTableInjection/reactingMultiphaseParcelInjectionDataIO.C
+$(REACTINGMPINJECTION)/ReactingMultiphaseLookupTableInjection/reactingMultiphaseParcelInjectionDataIOList.C
 
 
 /* data entries */

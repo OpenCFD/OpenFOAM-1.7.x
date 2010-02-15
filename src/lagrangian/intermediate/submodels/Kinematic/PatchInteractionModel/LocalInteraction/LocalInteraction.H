@@ -34,7 +34,7 @@ Description
 #define LocalInteraction_H
 
 #include "PatchInteractionModel.H"
-#include "dictionaryEntry.H"
+#include "patchInteractionData.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,78 +49,6 @@ class LocalInteraction
 :
     public PatchInteractionModel<CloudType>
 {
-    class patchInteractionData
-    {
-        // Private data
-
-            //- Patch name
-            word patchName_;
-
-            //- Elasticity coefficient
-            scalar e_;
-
-            //- Restitution coefficient
-            scalar mu_;
-
-
-    public:
-
-        //- Construct null
-        patchInteractionData()
-        :
-            patchName_("unknownPatch"),
-            e_(0.0),
-            mu_(0.0)
-        {}
-
-        //- Construct from dictionary
-        patchInteractionData(const dictionary& dict);
-
-        // Member functions
-
-            // Access
-
-                //- Return const access to the patch name
-                const word& patchName() const
-                {
-                    return patchName_;
-                }
-
-                //- Return const access to the elasticity coefficient
-                scalar e() const
-                {
-                    return e_;
-                }
-
-                //- Return const access to the restitution coefficient
-                scalar mu() const
-                {
-                    return mu_;
-                }
-
-
-            // I-O
-
-                //- Istream operator
-                friend Istream& operator>>(Istream& is, patchInteractionData& pid)
-                {
-                    is.check
-                    (
-                        "Istream& operator>>"
-                        "(Istream&, patchInteractionData&)"
-                    );
-
-                    const dictionaryEntry entry(dictionary::null, is);
-
-                    pid.patchName_ = entry.keyword();
-                    entry.lookup("e") >> pid.e_;
-                    entry.lookup("mu") >> pid.mu_;
-
-                    return is;
-                }
-    };
-
-
     // Private data
 
         //- List of participating patches
@@ -164,6 +92,7 @@ public:
         (
             const polyPatch& pp,
             const label faceId,
+            bool& keepParticle,
             vector& U
         ) const;
 };

@@ -411,6 +411,130 @@ Foam::scalar Foam::CompositionModel<CloudType>::H
 
 
 template<class CloudType>
+Foam::scalar Foam::CompositionModel<CloudType>::Hs
+(
+    const label phaseI,
+    const scalarField& Y,
+    const scalar p,
+    const scalar T
+) const
+{
+    const phaseProperties& props = phaseProps_[phaseI];
+    scalar HsMixture = 0.0;
+    switch (props.phase())
+    {
+        case phaseProperties::GAS:
+        {
+            forAll(Y, i)
+            {
+                label gid = props.globalIds()[i];
+                HsMixture += Y[i]*mcCarrierThermo_.speciesData()[gid].Hs(T);
+            }
+            break;
+        }
+        case phaseProperties::LIQUID:
+        {
+            forAll(Y, i)
+            {
+                label gid = props.globalIds()[i];
+                HsMixture +=
+                    Y[i]
+                   *(
+                       this->liquids().properties()[gid].h(p, T)
+                     - this->liquids().properties()[gid].h(p, 298.25)
+                    );
+            }
+            break;
+        }
+        case phaseProperties::SOLID:
+        {
+            forAll(Y, i)
+            {
+                label gid = props.globalIds()[i];
+                HsMixture += Y[i]*this->solids().properties()[gid].cp()*T;
+            }
+            break;
+        }
+        default:
+        {
+            FatalErrorIn
+            (
+                "Foam::scalar Foam::CompositionModel<CloudType>::Hs"
+                "("
+                "    const label, "
+                "    const scalarField&, "
+                "    const scalar, "
+                "    const scalar"
+                ") const"
+            )   << "Unknown phase enumeration" << nl << abort(FatalError);
+        }
+    }
+
+    return HsMixture;
+}
+
+
+template<class CloudType>
+Foam::scalar Foam::CompositionModel<CloudType>::Hc
+(
+    const label phaseI,
+    const scalarField& Y,
+    const scalar p,
+    const scalar T
+) const
+{
+    const phaseProperties& props = phaseProps_[phaseI];
+    scalar HcMixture = 0.0;
+    switch (props.phase())
+    {
+        case phaseProperties::GAS:
+        {
+            forAll(Y, i)
+            {
+                label gid = props.globalIds()[i];
+                HcMixture += Y[i]*mcCarrierThermo_.speciesData()[gid].Hc();
+            }
+            break;
+        }
+        case phaseProperties::LIQUID:
+        {
+            forAll(Y, i)
+            {
+                label gid = props.globalIds()[i];
+                HcMixture +=
+                    Y[i]*this->liquids().properties()[gid].h(p, 298.15);
+            }
+            break;
+        }
+        case phaseProperties::SOLID:
+        {
+            forAll(Y, i)
+            {
+                label gid = props.globalIds()[i];
+                HcMixture += Y[i]*this->solids().properties()[gid].Hf();
+            }
+            break;
+        }
+        default:
+        {
+            FatalErrorIn
+            (
+                "Foam::scalar Foam::CompositionModel<CloudType>::Hc"
+                "("
+                "    const label, "
+                "    const scalarField&, "
+                "    const scalar, "
+                "    const scalar"
+                ") const"
+            )   << "Unknown phase enumeration" << nl << abort(FatalError);
+        }
+    }
+
+    return HcMixture;
+}
+
+
+template<class CloudType>
 Foam::scalar Foam::CompositionModel<CloudType>::cp
 (
     const label phaseI,

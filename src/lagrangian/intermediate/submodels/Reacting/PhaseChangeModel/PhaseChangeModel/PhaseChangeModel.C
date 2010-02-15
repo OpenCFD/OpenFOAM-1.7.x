@@ -26,6 +26,48 @@ License
 
 #include "PhaseChangeModel.H"
 
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+template<class CloudType>
+const Foam::wordList Foam::PhaseChangeModel<CloudType>::
+enthalpyTransferTypeNames
+(
+    IStringStream
+    (
+        "("
+            "latentHeat "
+            "enthalpyDifference"
+        ")"
+    )()
+);
+
+
+// * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * * //
+
+template<class CloudType>
+typename Foam::PhaseChangeModel<CloudType>::enthalpyTransferType
+Foam::PhaseChangeModel<CloudType>::wordToEnthalpyTransfer(const word& etName)
+const
+{
+    forAll(enthalpyTransferTypeNames, i)
+    {
+        if (etName == enthalpyTransferTypeNames[i])
+        {
+            return enthalpyTransferType(i);
+        }
+    }
+
+    FatalErrorIn
+    (
+        "PhaseChangeModel<CloudType>::enthalpyTransferType"
+        "PhaseChangeModel<CloudType>::wordToEnthalpyTransfer(const word&) const"
+    )   << "Unknown enthalpyType " << etName << ". Valid selections are:" << nl
+        << enthalpyTransferTypeNames << exit(FatalError);
+
+    return enthalpyTransferType(0);
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class CloudType>
@@ -36,7 +78,8 @@ Foam::PhaseChangeModel<CloudType>::PhaseChangeModel
 :
     dict_(dictionary::null),
     owner_(owner),
-    coeffDict_(dictionary::null)
+    coeffDict_(dictionary::null),
+    enthalpyTransfer_(etLatentHeat)
 {}
 
 
@@ -50,7 +93,11 @@ Foam::PhaseChangeModel<CloudType>::PhaseChangeModel
 :
     dict_(dict),
     owner_(owner),
-    coeffDict_(dict.subDict(type + "Coeffs"))
+    coeffDict_(dict.subDict(type + "Coeffs")),
+    enthalpyTransfer_
+    (
+        wordToEnthalpyTransfer(coeffDict_.lookup("enthalpyTransfer"))
+    )
 {}
 
 
@@ -80,6 +127,14 @@ template<class CloudType>
 const Foam::dictionary& Foam::PhaseChangeModel<CloudType>::coeffDict() const
 {
     return coeffDict_;
+}
+
+
+template<class CloudType>
+const typename Foam::PhaseChangeModel<CloudType>::enthalpyTransferType&
+Foam::PhaseChangeModel<CloudType>::enthalpyTransfer() const
+{
+    return enthalpyTransfer_;
 }
 
 

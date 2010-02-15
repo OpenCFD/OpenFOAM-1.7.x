@@ -38,6 +38,7 @@ License
 #include "ManualInjection.H"
 #include "NoInjection.H"
 #include "PatchInjection.H"
+#include "ReactingMultiphaseLookupTableInjection.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -108,6 +109,13 @@ License
         ParcelType,                                                           \
         ThermoType                                                            \
     );                                                                        \
+    makeInjectionModelThermoType                                              \
+    (                                                                         \
+        ReactingMultiphaseLookupTableInjection,                               \
+        KinematicCloud,                                                       \
+        ParcelType,                                                           \
+        ThermoType                                                            \
+    );
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

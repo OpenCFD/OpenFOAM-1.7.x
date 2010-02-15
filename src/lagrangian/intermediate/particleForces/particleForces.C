@@ -127,6 +127,7 @@ void Foam::particleForces::cacheFields(const bool store)
         if (gradUPtr_)
         {
             delete gradUPtr_;
+            gradUPtr_ = NULL;
         }
     }
 }

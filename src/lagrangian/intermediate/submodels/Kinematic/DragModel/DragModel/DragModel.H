@@ -122,13 +122,7 @@ public:
 
         //- Return momentum transfer coefficient
         //  Drag force per unit particle surface area = utc(U - Up)
-        scalar utc
-        (
-            const vector& Ur,
-            const scalar d,
-            const scalar rhoc,
-            const scalar mu
-        ) const;
+        scalar utc(const scalar Re, const scalar d, const scalar mu) const;
 };
 
 

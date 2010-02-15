@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,44 +24,19 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "basicThermoCloud.H"
+#include "reactingParcelInjectionData.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
+inline const Foam::scalarList& Foam::reactingParcelInjectionData::Y() const
 {
-    defineTypeNameAndDebug(basicThermoCloud, 0);
-};
-
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-Foam::basicThermoCloud::basicThermoCloud
-(
-    const word& cloudName,
-    const volScalarField& rho,
-    const volVectorField& U,
-    const dimensionedVector& g,
-    basicThermo& thermo
-)
-:
-    ThermoCloud<basicThermoParcel>(cloudName, rho, U, g, thermo)
-{
-    basicThermoParcel::readFields(*this);
+    return Y_;
 }
 
 
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
-
-Foam::basicThermoCloud::~basicThermoCloud()
-{}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-void Foam::basicThermoCloud::writeFields() const
+inline Foam::scalarList& Foam::reactingParcelInjectionData::Y()
 {
-    basicThermoParcel::writeFields(*this);
+    return Y_;
 }
 
 

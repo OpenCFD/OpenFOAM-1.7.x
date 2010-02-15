@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,32 +22,16 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Description
-    Macros for defining parcel IOLists
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef makeParcelIOList_H
-#define makeParcelIOList_H
-
-#include "IOPtrList.H"
+#include "reactingParcelInjectionDataIOList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#define makeParcelIOList(ParcelType)                                          \
-                                                                              \
-    typedef IOPtrList<ParcelType> IOPtrList##ParcelType;                      \
-                                                                              \
-    defineTemplateTypeNameAndDebugWithName                                    \
-    (                                                                         \
-        IOPtrList##ParcelType,                                                \
-        "IOPtrList<"#ParcelType">",                                           \
-        0                                                                     \
-    );
+namespace Foam
+{
+    defineTemplateTypeNameAndDebug(IOList<reactingParcelInjectionData>, 0);
+}
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#endif
 
 // ************************************************************************* //
-

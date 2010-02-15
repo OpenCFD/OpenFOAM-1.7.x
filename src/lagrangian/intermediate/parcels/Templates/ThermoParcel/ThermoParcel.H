@@ -97,6 +97,9 @@ public:
             //- Particle scattering factor [] (radiation)
             const scalar f0_;
 
+            //- Default carrier Prandtl number []
+            const scalar Pr_;
+
 
     public:
 
@@ -124,6 +127,9 @@ public:
                 //- Return const access to the particle scattering factor []
                 //  Active for radiation only
                 inline scalar f0() const;
+
+                //- Return const access to the default carrier Prandtl number []
+                inline scalar Pr() const;
     };
 
 
@@ -217,11 +223,14 @@ protected:
             TrackData& td,
             const scalar dt,           // timestep
             const label cellI,         // owner cell
+            const scalar Re,           // Reynolds number
+            const scalar Pr,           // Prandtl number - surface
+            const scalar kappa,        // Thermal conductivity - surface
             const scalar d,            // diameter
-            const vector& U,           // velocity
             const scalar rho,          // density
             const scalar T,            // temperature
             const scalar cp,           // specific heat capacity
+            const scalar NCpW,         // Sum of N*Cp*W of emission species
             const scalar Sh,           // explicit particle enthalpy source
             scalar& dhsTrans           // sensible enthalpy transfer to carrier
         );
@@ -323,6 +332,20 @@ public:
                 const label cellI
             );
 
+            //- Calculate surface thermo properties
+            template<class TrackData>
+            void calcSurfaceValues
+            (
+                TrackData& td,
+                const label cellI,
+                const scalar T,
+                scalar& Ts,
+                scalar& rhos,
+                scalar& mus,
+                scalar& Pr,
+                scalar& kappa
+            ) const;
+
             //- Update parcel properties over the time interval
             template<class TrackData>
             void calc
@@ -336,10 +359,10 @@ public:
         // I-O
 
             //- Read
-            static void readFields(ThermoCloud<ParcelType>& c);
+            static void readFields(Cloud<ParcelType>& c);
 
             //- Write
-            static void writeFields(const ThermoCloud<ParcelType>& c);
+            static void writeFields(const Cloud<ParcelType>& c);
 
 
     // Ostream Operator

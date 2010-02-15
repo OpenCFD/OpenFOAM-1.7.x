@@ -26,6 +26,7 @@ License
 
 #include "FieldActivatedInjection.H"
 #include "volFields.H"
+#include "mathematicalConstants.H"
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
@@ -127,9 +128,7 @@ Foam::FieldActivatedInjection<CloudType>::FieldActivatedInjection
 
     // Determine total volume of particles to inject
     this->volumeTotal_ =
-         nParcelsPerInjector_
-        *sum(pow3(diameters_))
-        *mathematicalConstant::pi/6.0;
+        nParcelsPerInjector_*sum(pow3(diameters_))*mathematicalConstant::pi/6.0;
 
     // Set/cache the injector cells
     forAll(positions_, i)

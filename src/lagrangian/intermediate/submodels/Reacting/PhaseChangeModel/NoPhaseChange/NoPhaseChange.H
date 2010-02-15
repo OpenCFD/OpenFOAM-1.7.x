@@ -74,12 +74,12 @@ public:
         (
             const scalar dt,
             const label cellI,
+            const scalar Re,
             const scalar d,
+            const scalar nu,
             const scalar T,
+            const scalar Ts,
             const scalar pc,
-            const scalar Tc,
-            const scalar nuc,
-            const vector& Ur,
             scalarField& dMassPC
         ) const;
 };

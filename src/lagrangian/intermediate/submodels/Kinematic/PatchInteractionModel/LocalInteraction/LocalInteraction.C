@@ -26,7 +26,7 @@ License
 
 #include "LocalInteraction.H"
 
-// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
+// * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * * //
 
 template <class CloudType>
 Foam::label Foam::LocalInteraction<CloudType>::applyToPatch
@@ -46,7 +46,7 @@ Foam::label Foam::LocalInteraction<CloudType>::applyToPatch
 }
 
 
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 template <class CloudType>
 Foam::LocalInteraction<CloudType>::LocalInteraction
@@ -62,6 +62,7 @@ Foam::LocalInteraction<CloudType>::LocalInteraction
     const polyMesh& mesh = cloud.mesh();
     const polyBoundaryMesh& bMesh = mesh.boundaryMesh();
 
+    // check that user patches are valid region patches
     forAll(patchData_, patchI)
     {
         const word& patchName = patchData_[patchI].patchName();
@@ -70,7 +71,7 @@ Foam::LocalInteraction<CloudType>::LocalInteraction
         {
             FatalErrorIn("LocalInteraction(const dictionary&, CloudType&)")
                 << "Patch " << patchName << " not found. Available patches "
-                << "are: " << bMesh.names() << exit(FatalError);
+                << "are: " << bMesh.names() << nl << exit(FatalError);
         }
     }
 
@@ -95,6 +96,26 @@ Foam::LocalInteraction<CloudType>::LocalInteraction
             << "interaction. Please specify data for patches:" << nl
             << badWalls << nl << exit(FatalError);
     }
+
+    // check that interactions are valid/specified
+    forAll(patchData_, patchI)
+    {
+        const word& interactionTypeName =
+            patchData_[patchI].interactionTypeName();
+        const typename PatchInteractionModel<CloudType>::interactionType& it =
+            this->wordToInteractionType(interactionTypeName);
+
+        if (it == PatchInteractionModel<CloudType>::itOther)
+        {
+            const word& patchName = patchData_[patchI].patchName();
+            FatalErrorIn("LocalInteraction(const dictionary&, CloudType&)")
+                << "Unknown patch interaction type "
+                << interactionTypeName << " for patch " << patchName
+                << ". Valid selections are:"
+                << this->PatchInteractionModel<CloudType>::interactionTypeNames_
+                << nl << exit(FatalError);
+        }
+    }
 }
 
 
@@ -105,7 +126,7 @@ Foam::LocalInteraction<CloudType>::~LocalInteraction()
 {}
 
 
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
 template<class CloudType>
 bool Foam::LocalInteraction<CloudType>::active() const
@@ -119,6 +140,7 @@ bool Foam::LocalInteraction<CloudType>::correct
 (
     const polyPatch& pp,
     const label faceId,
+    bool& keepParticle,
     vector& U
 ) const
 {
@@ -126,18 +148,64 @@ bool Foam::LocalInteraction<CloudType>::correct
 
     if (patchI >= 0)
     {
-        vector nw = pp.faceAreas()[pp.whichFace(faceId)];
-        nw /= mag(nw);
+        typename PatchInteractionModel<CloudType>::interactionType it =
+            this->wordToInteractionType
+            (
+                patchData_[patchI].interactionTypeName()
+            );
 
-        scalar Un = U & nw;
-        vector Ut = U - Un*nw;
-
-        if (Un > 0)
+        switch (it)
         {
-            U -= (1.0 + patchData_[patchI].e())*Un*nw;
-        }
+            case PatchInteractionModel<CloudType>::itEscape:
+            {
+                keepParticle = false;
+                U = vector::zero;
+                break;
+            }
+            case PatchInteractionModel<CloudType>::itStick:
+            {
+                keepParticle = true;
+                U = vector::zero;
+                break;
+            }
+            case PatchInteractionModel<CloudType>::itRebound:
+            {
+                keepParticle = true;
 
-        U -= patchData_[patchI].mu()*Ut;
+                vector nw = pp.faceAreas()[pp.whichFace(faceId)];
+                nw /= mag(nw);
+
+                scalar Un = U & nw;
+                vector Ut = U - Un*nw;
+
+                if (Un > 0)
+                {
+                    U -= (1.0 + patchData_[patchI].e())*Un*nw;
+                }
+
+                U -= patchData_[patchI].mu()*Ut;
+
+                break;
+            }
+            default:
+            {
+                FatalErrorIn
+                (
+                    "bool LocalInteraction<CloudType>::correct"
+                    "("
+                        "const polyPatch&, "
+                        "const label, "
+                        "bool&, "
+                        "vector&"
+                    ") const"
+                )   << "Unknown interaction type "
+                    << patchData_[patchI].interactionTypeName()
+                    << "(" << it << ") for patch "
+                    << patchData_[patchI].patchName()
+                    << ". Valid selections are:" << this->interactionTypeNames_
+                    << endl << abort(FatalError);
+            }
+        }
 
         return true;
     }

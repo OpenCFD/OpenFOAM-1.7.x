@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,26 +22,28 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+Class
+
+Description
+
+SourceFiles
+    reactingMultiphaseParcelInjectionDataIOList.C
+
 \*---------------------------------------------------------------------------*/
 
-#ifndef createReactingCloudTypes_H
-#define createReactingCloudTypes_H
+#ifndef reactingMultiphaseParcelInjectionDataIOList_H
+#define reactingMultiphaseParcelInjectionDataIOList_H
 
-#include "thermoPhysicsTypes.H"
+#include "IOList.H"
+#include "reactingMultiphaseParcelInjectionData.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#define createReactingCloudType(CloudType)                                    \
-                                                                              \
-    createReactingCloudThermoType(CloudType, constGasThermoPhysics);          \
-    createReactingCloudThermoType(CloudType, gasThermoPhysics);               \
-    createReactingCloudThermoType(CloudType, icoPoly8ThermoPhysics);
-
-
-#define createReactingCloudThermoType(CloudType, ThermoType)                  \
-                                                                              \
-    defineTemplateTypeNameAndDebug(CloudType<ThermoType>, 0);
-
+namespace Foam
+{
+    typedef IOList<reactingMultiphaseParcelInjectionData>
+        reactingMultiphaseParcelInjectionDataIOList;
+}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

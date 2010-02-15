@@ -136,6 +136,9 @@ public:
 
     public:
 
+        typedef ReactingCloud<ParcelType> cloudType;
+
+
         // Constructors
 
             //- Construct from components
@@ -195,16 +198,20 @@ protected:
             TrackData& td,
             const scalar dt,           // timestep
             const label cellI,         // owner cell
+            const scalar Re,           // Reynolds number
+            const scalar Ts,           // Surface temperature
+            const scalar nus,          // Surface kinematic viscosity
             const scalar d,            // diameter
             const scalar T,            // temperature
-            const vector& U,           // velocity
             const scalar mass,         // mass
             const label idPhase,       // id of phase involved in phase change
             const scalar YPhase,       // total mass fraction
             const scalarField& YComponents, // component mass fractions
             scalarField& dMassPC,      // mass transfer - local to particle
             scalar& Sh,                // explicit particle enthalpy source
-            scalar& dhsTrans           // sensible enthalpy transfer to carrier
+            scalar& N,                 // flux of species emitted from particle
+            scalar& NCpW,              // sum of N*Cp*W of emission species
+            scalarField& Cs            // carrier conc. of emission species
         );
 
         //- Update mass fraction
@@ -316,6 +323,20 @@ public:
                 const label cellI
             );
 
+            //- Correct surface values due to emitted species
+            template<class TrackData>
+            void correctSurfaceValues
+            (
+                TrackData& td,
+                const label cellI,
+                const scalar T,
+                const scalarField& Cs,
+                scalar& rhos,
+                scalar& mus,
+                scalar& Pr,
+                scalar& kappa
+            );
+
             //- Update parcel properties over the time interval
             template<class TrackData>
             void calc
@@ -329,10 +350,10 @@ public:
         // I-O
 
             //- Read
-            static void readFields(ReactingCloud<ParcelType>& c);
+            static void readFields(Cloud<ParcelType>& c);
 
             //- Write
-            static void writeFields(const ReactingCloud<ParcelType>& c);
+            static void writeFields(const Cloud<ParcelType>& c);
 
 
     // Ostream Operator

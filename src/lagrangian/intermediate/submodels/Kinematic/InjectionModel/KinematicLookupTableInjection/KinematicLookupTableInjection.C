@@ -27,11 +27,6 @@ License
 #include "KinematicLookupTableInjection.H"
 #include "scalarIOList.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-template<class CloudType>
-Foam::label Foam::KinematicLookupTableInjection<CloudType>::INPUT_FILE_COLS = 9;
-
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 template<class CloudType>
@@ -62,9 +57,9 @@ Foam::scalar Foam::KinematicLookupTableInjection<CloudType>::volumeToInject
     scalar volume = 0.0;
     if ((time0 >= 0.0) && (time0 < duration_))
     {
-        forAll(mDot_, injectorI)
+        forAll(injectors_, i)
         {
-            volume += mDot_[injectorI]/rho_[injectorI]*(time1 - time0);
+            volume += injectors_[i].mDot()/injectors_[i].rho()*(time1 - time0);
         }
     }
 
@@ -88,14 +83,7 @@ Foam::KinematicLookupTableInjection<CloudType>::KinematicLookupTableInjection
     (
         readScalar(this->coeffDict().lookup("parcelsPerSecond"))
     ),
-    x_(0),
-    U_(0),
-    d_(0),
-    rho_(0),
-    mDot_(0),
-    injectorCells_(0)
-{
-    scalarListIOList injectorData
+    injectors_
     (
         IOobject
         (
@@ -105,55 +93,21 @@ Foam::KinematicLookupTableInjection<CloudType>::KinematicLookupTableInjection
             IOobject::MUST_READ,
             IOobject::NO_WRITE
         )
-    );
-
-    x_.setSize(injectorData.size());
-    U_.setSize(injectorData.size());
-    d_.setSize(injectorData.size());
-    rho_.setSize(injectorData.size());
-    mDot_.setSize(injectorData.size());
-
-    // Populate lists
-    forAll(injectorData, injectorI)
-    {
-        if (injectorData[injectorI].size() != INPUT_FILE_COLS)
-        {
-            FatalErrorIn
-            (
-                "KinematicLookupTableInjection"
-                "("
-                    "const dictionary&,"
-                    "CloudType& owner"
-                ")"
-            )   << "Incorrect number of entries in injector specification "
-                << "- found " << injectorData[injectorI].size()
-                << ", expected " << INPUT_FILE_COLS << ":" << nl
-                << "    x0 x1 x2 u0 u1 u2 d rho mDot " << nl
-                << exit(FatalError);
-        }
-        x_[injectorI].component(0) = injectorData[injectorI][0];
-        x_[injectorI].component(1) = injectorData[injectorI][1];
-        x_[injectorI].component(2) = injectorData[injectorI][2];
-        U_[injectorI].component(0) = injectorData[injectorI][3];
-        U_[injectorI].component(1) = injectorData[injectorI][4];
-        U_[injectorI].component(2) = injectorData[injectorI][5];
-        d_[injectorI] = injectorData[injectorI][6];
-        rho_[injectorI] = injectorData[injectorI][7];
-        mDot_[injectorI] = injectorData[injectorI][8];
-    }
-
+    ),
+    injectorCells_(0)
+{
     // Set/cache the injector cells
-    injectorCells_.setSize(injectorData.size());
-    forAll(x_, injectorI)
+    injectorCells_.setSize(injectors_.size());
+    forAll(injectors_, i)
     {
-        this->findCellAtPosition(injectorCells_[injectorI], x_[injectorI]);
+        this->findCellAtPosition(injectorCells_[i], injectors_[i].x());
     }
 
     // Determine volume of particles to inject
     this->volumeTotal_ = 0.0;
-    forAll(mDot_, injectorI)
+    forAll(injectors_, i)
     {
-        this->volumeTotal_ += mDot_[injectorI]/rho_[injectorI];
+        this->volumeTotal_ += injectors_[i].mDot()/injectors_[i].rho();
     }
     this->volumeTotal_ *= duration_;
 }
@@ -194,7 +148,7 @@ void Foam::KinematicLookupTableInjection<CloudType>::setPositionAndCell
 {
     label injectorI = parcelI*injectorCells_.size()/nParcels;
 
-    position = x_[injectorI];
+    position = injectors_[injectorI].x();
     cellOwner = injectorCells_[injectorI];
 }
 
@@ -211,13 +165,13 @@ void Foam::KinematicLookupTableInjection<CloudType>::setProperties
     label injectorI = parcelI*injectorCells_.size()/nParcels;
 
     // set particle velocity
-    parcel.U() = U_[injectorI];
+    parcel.U() = injectors_[injectorI].U();
 
     // set particle diameter
-    parcel.d() = d_[injectorI];
+    parcel.d() = injectors_[injectorI].d();
 
     // set particle density
-    parcel.rho() = rho_[injectorI];
+    parcel.rho() = injectors_[injectorI].rho();
 }
 
 

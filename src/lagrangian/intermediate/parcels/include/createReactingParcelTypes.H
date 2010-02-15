@@ -27,7 +27,6 @@ License
 #ifndef createReactingParcelTypes_H
 #define createReactingParcelTypes_H
 
-#include "makeParcelIOList.H"
 #include "thermoPhysicsTypes.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -42,8 +41,6 @@ License
 #define createReactingParcelThermoType(ParcelType, ThermoType)                \
                                                                               \
     typedef ParcelType<ThermoType> ParcelType##ThermoType;                    \
-                                                                              \
-    makeParcelIOList(ParcelType##ThermoType);                                 \
                                                                               \
     defineTemplateTypeNameAndDebug(ParcelType##ThermoType, 0);                \
     defineTemplateTypeNameAndDebug(Particle<ParcelType##ThermoType>, 0);      \

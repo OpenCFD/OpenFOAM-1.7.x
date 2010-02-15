@@ -25,6 +25,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ThermoParcel.H"
+#include "radiationConstants.H"
 
 // * * * * * * * * * * *  Protected Member Functions * * * * * * * * * * * * //
 
@@ -79,6 +80,33 @@ void Foam::ThermoParcel<ParcelType>::cellValueSourceCorrection
 
 template<class ParcelType>
 template<class TrackData>
+void Foam::ThermoParcel<ParcelType>::calcSurfaceValues
+(
+    TrackData& td,
+    const label cellI,
+    const scalar T,
+    scalar& Ts,
+    scalar& rhos,
+    scalar& mus,
+    scalar& Pr,
+    scalar& kappa
+) const
+{
+    // Surface temperature using two thirds rule
+    Ts = (2.0*T + Tc_)/3.0;
+
+    // Assuming thermo props vary linearly with T for small dT
+    scalar factor = td.TInterp().interpolate(this->position(), cellI)/Ts;
+    rhos = this->rhoc_*factor;
+    mus = td.muInterp().interpolate(this->position(), cellI)/factor;
+
+    Pr = td.constProps().Pr();
+    kappa = cpc_*mus/Pr;
+}
+
+
+template<class ParcelType>
+template<class TrackData>
 void Foam::ThermoParcel<ParcelType>::calc
 (
     TrackData& td,
@@ -96,6 +124,19 @@ void Foam::ThermoParcel<ParcelType>::calc
     const scalar cp0 = this->cp_;
     const scalar mass0 = this->mass();
 
+
+    // Calc surface values
+    // ~~~~~~~~~~~~~~~~~~~
+    scalar Ts, rhos, mus, Pr, kappa;
+    calcSurfaceValues(td, cellI, T0, Ts, rhos, mus, Pr, kappa);
+
+    // Reynolds number
+    scalar Re = this->Re(U0, d0, rhos, mus);
+
+
+    // Sources
+    // ~~~~~~~
+
     // Explicit momentum source for particle
     vector Su = vector::zero;
 
@@ -108,19 +149,39 @@ void Foam::ThermoParcel<ParcelType>::calc
     // Sensible enthalpy transfer from the particle to the carrier phase
     scalar dhsTrans = 0.0;
 
+
     // Heat transfer
     // ~~~~~~~~~~~~~
 
+    // Sum Ni*Cpi*Wi of emission species
+    scalar NCpW = 0.0;
+
     // Calculate new particle velocity
     scalar T1 =
-        calcHeatTransfer(td, dt, cellI, d0, U0, rho0, T0, cp0, Sh, dhsTrans);
+        calcHeatTransfer
+        (
+            td,
+            dt,
+            cellI,
+            Re,
+            Pr,
+            kappa,
+            d0,
+            rho0,
+            T0,
+            cp0,
+            NCpW,
+            Sh,
+            dhsTrans
+        );
 
 
     // Motion
     // ~~~~~~
 
     // Calculate new particle velocity
-    vector U1 = calcVelocity(td, dt, cellI, d0, U0, rho0, mass0, Su, dUTrans);
+    vector U1 =
+        calcVelocity(td, dt, cellI, Re, mus, d0, U0, rho0, mass0, Su, dUTrans);
 
 
     //  Accumulate carrier phase source terms
@@ -148,11 +209,14 @@ Foam::scalar Foam::ThermoParcel<ParcelType>::calcHeatTransfer
     TrackData& td,
     const scalar dt,
     const label cellI,
+    const scalar Re,
+    const scalar Pr,
+    const scalar kappa,
     const scalar d,
-    const vector& U,
     const scalar rho,
     const scalar T,
     const scalar cp,
+    const scalar NCpW,
     const scalar Sh,
     scalar& dhsTrans
 )
@@ -163,56 +227,38 @@ Foam::scalar Foam::ThermoParcel<ParcelType>::calcHeatTransfer
     }
 
     // Calc heat transfer coefficient
-    scalar htc = td.cloud().heatTransfer().h
-    (
-        d,
-        U - this->Uc_,
-        this->rhoc_,
-        rho,
-        cpc_,
-        cp,
-        this->muc_
-    );
-
-    const scalar As = this->areaS(d);
+    scalar htc = td.cloud().heatTransfer().htc(d, Re, Pr, kappa, NCpW);
 
     if (mag(htc) < ROOTVSMALL && !td.cloud().radiation())
     {
-        return  T + dt*Sh/(this->volume(d)*rho*cp);
+        return max(T + dt*Sh/(this->volume(d)*rho*cp), td.constProps().TMin());
     }
 
-    scalar ap;
-    scalar bp;
-
+    const scalar As = this->areaS(d);
+    scalar ap = Tc_ + Sh/As/htc;
+    scalar bp = 6.0*(Sh/As + htc*(Tc_ - T));
     if (td.cloud().radiation())
     {
         const scalarField& G =
             td.cloud().mesh().objectRegistry::lookupObject<volScalarField>("G");
+        const scalar Gc = G[cellI];
         const scalar sigma = radiation::sigmaSB.value();
         const scalar epsilon = td.constProps().epsilon0();
 
-        ap =
-            (Sh/As + htc*Tc_ + epsilon*G[cellI]/4.0)
-           /(htc + epsilon*sigma*pow3(T));
-
-        bp =
-            6.0
-           *(Sh/As + htc*(Tc_ - T) + epsilon*(G[cellI]/4.0 - sigma*pow4(T)))
-           /(rho*d*cp*(ap - T));
+        ap = (ap + epsilon*Gc/(4.0*htc))/(1.0 + epsilon*sigma*pow3(T)/htc);
+        bp += 6.0*(epsilon*(Gc/4.0 - sigma*pow4(T)));
     }
-    else
-    {
-        ap = Tc_ + Sh/As/htc;
-        bp = 6.0*(Sh/As + htc*(Tc_ - T))/(rho*d*cp*(ap - T));
-    }
+    bp /= rho*d*cp*(ap - T);
 
     // Integrate to find the new parcel temperature
     IntegrationScheme<scalar>::integrationResult Tres =
         td.cloud().TIntegrator().integrate(T, dt, ap, bp);
 
-    dhsTrans += dt*htc*As*(Tres.average() - Tc_);
+    scalar Tnew = max(Tres.value(), td.constProps().TMin());
 
-    return Tres.value();
+    dhsTrans += dt*htc*As*(0.5*(T + Tnew) - Tc_);
+
+    return Tnew;
 }
 
 

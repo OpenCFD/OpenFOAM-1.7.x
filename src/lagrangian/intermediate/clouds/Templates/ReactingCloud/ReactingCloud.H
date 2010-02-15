@@ -137,6 +137,9 @@ protected:
             //- Pre-evolve
             void preEvolve();
 
+            //- Evolve the cloud
+            void evolveCloud();
+
             //- Post-evolve
             void postEvolve();
 
@@ -152,7 +155,8 @@ public:
             const volScalarField& rho,
             const volVectorField& U,
             const dimensionedVector& g,
-            basicThermo& thermo
+            basicThermo& thermo,
+            bool readFields = true
         );
 
 

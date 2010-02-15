@@ -51,7 +51,7 @@ License
         RanzMarshall,                                                         \
         ThermoCloud,                                                          \
         ParcelType                                                            \
-    );                                                                        \
+    );
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

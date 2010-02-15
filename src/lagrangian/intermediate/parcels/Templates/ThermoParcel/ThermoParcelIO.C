@@ -79,10 +79,7 @@ Foam::ThermoParcel<ParcelType>::ThermoParcel
 
 
 template<class ParcelType>
-void Foam::ThermoParcel<ParcelType>::readFields
-(
-    ThermoCloud<ParcelType>& c
-)
+void Foam::ThermoParcel<ParcelType>::readFields(Cloud<ParcelType>& c)
 {
     if (!c.size())
     {
@@ -111,10 +108,7 @@ void Foam::ThermoParcel<ParcelType>::readFields
 
 
 template<class ParcelType>
-void Foam::ThermoParcel<ParcelType>::writeFields
-(
-    const ThermoCloud<ParcelType>& c
-)
+void Foam::ThermoParcel<ParcelType>::writeFields(const Cloud<ParcelType>& c)
 {
     KinematicParcel<ParcelType>::writeFields(c);
 

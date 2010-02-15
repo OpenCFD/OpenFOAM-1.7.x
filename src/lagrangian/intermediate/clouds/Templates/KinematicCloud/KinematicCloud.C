@@ -34,6 +34,76 @@ License
 #include "PatchInteractionModel.H"
 #include "PostProcessingModel.H"
 
+// * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
+
+template<class ParcelType>
+void Foam::KinematicCloud<ParcelType>::preEvolve()
+{
+    this->dispersion().cacheFields(true);
+    forces_.cacheFields(true);
+}
+
+
+template<class ParcelType>
+void Foam::KinematicCloud<ParcelType>::evolveCloud()
+{
+    autoPtr<interpolation<scalar> > rhoInterpolator =
+        interpolation<scalar>::New
+        (
+            interpolationSchemes_,
+            rho_
+        );
+
+    autoPtr<interpolation<vector> > UInterpolator =
+        interpolation<vector>::New
+        (
+            interpolationSchemes_,
+            U_
+        );
+
+    autoPtr<interpolation<scalar> > muInterpolator =
+        interpolation<scalar>::New
+        (
+            interpolationSchemes_,
+            mu_
+        );
+
+    typename ParcelType::trackData td
+    (
+        *this,
+        constProps_,
+        rhoInterpolator(),
+        UInterpolator(),
+        muInterpolator(),
+        g_.value()
+    );
+
+    this->injection().inject(td);
+
+    if (coupled_)
+    {
+        resetSourceTerms();
+    }
+
+    Cloud<ParcelType>::move(td);
+}
+
+
+template<class ParcelType>
+void Foam::KinematicCloud<ParcelType>::postEvolve()
+{
+    if (debug)
+    {
+        this->writePositions();
+    }
+
+    this->dispersion().cacheFields(false);
+    forces_.cacheFields(false);
+
+    this->postProcessing().post();
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class ParcelType>
@@ -43,7 +113,8 @@ Foam::KinematicCloud<ParcelType>::KinematicCloud
     const volScalarField& rho,
     const volVectorField& U,
     const volScalarField& mu,
-    const dimensionedVector& g
+    const dimensionedVector& g,
+    bool readFields
 )
 :
     Cloud<ParcelType>(rho.mesh(), cloudName, false),
@@ -61,6 +132,7 @@ Foam::KinematicCloud<ParcelType>::KinematicCloud
         )
     ),
     constProps_(particleProperties_),
+    active_(particleProperties_.lookup("active")),
     parcelTypeId_(readLabel(particleProperties_.lookup("parcelTypeId"))),
     coupled_(particleProperties_.lookup("coupled")),
     cellValueSourceCorrection_
@@ -136,7 +208,12 @@ Foam::KinematicCloud<ParcelType>::KinematicCloud
         mesh_,
         dimensionedVector("zero", dimMass*dimVelocity, vector::zero)
     )
-{}
+{
+    if (readFields)
+    {
+        ParcelType::readFields(*this);
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -161,7 +238,7 @@ void Foam::KinematicCloud<ParcelType>::checkParcelProperties
         parcel.rho() = constProps_.rho0();
     }
 
-    scalar carrierDt = this->db().time().deltaT().value();
+    scalar carrierDt = this->db().time().deltaTValue();
     parcel.stepFraction() = (carrierDt - lagrangianDt)/carrierDt;
 }
 
@@ -174,74 +251,19 @@ void Foam::KinematicCloud<ParcelType>::resetSourceTerms()
 
 
 template<class ParcelType>
-void Foam::KinematicCloud<ParcelType>::preEvolve()
-{
-    this->dispersion().cacheFields(true);
-    forces_.cacheFields(true);
-}
-
-
-template<class ParcelType>
-void Foam::KinematicCloud<ParcelType>::postEvolve()
-{
-    if (debug)
-    {
-        this->writePositions();
-    }
-
-    this->dispersion().cacheFields(false);
-    forces_.cacheFields(false);
-
-    this->postProcessing().post();
-}
-
-
-template<class ParcelType>
 void Foam::KinematicCloud<ParcelType>::evolve()
 {
-    preEvolve();
-
-    autoPtr<interpolation<scalar> > rhoInterpolator =
-        interpolation<scalar>::New
-        (
-            interpolationSchemes_,
-            rho_
-        );
-
-    autoPtr<interpolation<vector> > UInterpolator =
-        interpolation<vector>::New
-        (
-            interpolationSchemes_,
-            U_
-        );
-
-    autoPtr<interpolation<scalar> > muInterpolator =
-        interpolation<scalar>::New
-        (
-            interpolationSchemes_,
-            mu_
-        );
-
-    typename ParcelType::trackData td
-    (
-        *this,
-        constProps_,
-        rhoInterpolator(),
-        UInterpolator(),
-        muInterpolator(),
-        g_.value()
-    );
-
-    this->injection().inject(td);
-
-    if (coupled_)
+    if (active_)
     {
-        resetSourceTerms();
+        preEvolve();
+
+        evolveCloud();
+
+        postEvolve();
+
+        info();
+        Info<< endl;
     }
-
-    Cloud<ParcelType>::move(td);
-
-    postEvolve();
 }
 
 
@@ -250,11 +272,9 @@ void Foam::KinematicCloud<ParcelType>::info() const
 {
     Info<< "Cloud: " << this->name() << nl
         << "    Total number of parcels added   = "
-        << returnReduce(this->injection().parcelsAddedTotal(), sumOp<label>())
-            << nl
+        << this->injection().parcelsAddedTotal() << nl
         << "    Total mass introduced           = "
-        << returnReduce(this->injection().massInjected(), sumOp<scalar>())
-            << nl
+        << this->injection().massInjected() << nl
         << "    Current number of parcels       = "
         << returnReduce(this->size(), sumOp<label>()) << nl
         << "    Current mass in system          = "

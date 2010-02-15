@@ -30,7 +30,10 @@ Description
     an injection site.
 
     (
-        (x y z u v w d rho mDot)
+        (x y z) (u v w) d rho mDot   // injector 1
+        (x y z) (u v w) d rho mDot   // injector 2
+        ...
+        (x y z) (u v w) d rho mDot   // injector N
     );
 
     where:
@@ -49,7 +52,7 @@ SourceFiles
 #define KinematicLookupTableInjection_H
 
 #include "InjectionModel.H"
-#include "pdf.H"
+#include "kinematicParcelInjectionDataIOList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -76,26 +79,11 @@ class KinematicLookupTableInjection
         //- Number of parcels per injector - common to all injection sources
         const label nParcelsPerSecond_;
 
-        //- List of parcel position per injector / [m]
-        List<point> x_;
-
-        //- List of parcel velocity per injector / [m]
-        List<vector> U_;
-
-        //- List of parcel diameter per injector / [m]
-        List<scalar> d_;
-
-        //- List of parcel fluid density pre injector / [kg/m3]
-        List<scalar> rho_;
-
-        //- List of parcel injection mass flow per injector / [kg/s]
-        List<scalar> mDot_;
+        //- List of injectors
+        kinematicParcelInjectionDataIOList injectors_;
 
         //- List of injector cells per injector
         List<label> injectorCells_;
-
-        //- Number of columns expected in input file
-        static label INPUT_FILE_COLS;
 
 
 protected:

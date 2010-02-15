@@ -88,15 +88,15 @@ Foam::ReactingParcel<ParcelType>::ReactingParcel
 
 
 template<class ParcelType>
-void Foam::ReactingParcel<ParcelType>::readFields
-(
-    ReactingCloud<ParcelType>& c
-)
+void Foam::ReactingParcel<ParcelType>::readFields(Cloud<ParcelType>& cIn)
 {
-    if (!c.size())
+    if (!cIn.size())
     {
         return;
     }
+
+    ReactingCloud<ParcelType>& c =
+        dynamic_cast<ReactingCloud<ParcelType>&>(cIn);
 
     ThermoParcel<ParcelType>::readFields(c);
 
@@ -152,12 +152,15 @@ void Foam::ReactingParcel<ParcelType>::readFields
 template<class ParcelType>
 void Foam::ReactingParcel<ParcelType>::writeFields
 (
-    const ReactingCloud<ParcelType>& c
+    const Cloud<ParcelType>& cIn
 )
 {
+    const ReactingCloud<ParcelType>& c =
+        dynamic_cast<const ReactingCloud<ParcelType>&>(cIn);
+
     ThermoParcel<ParcelType>::writeFields(c);
 
-    const label np =  c.size();
+    const label np = c.size();
 
     if (np > 0)
     {

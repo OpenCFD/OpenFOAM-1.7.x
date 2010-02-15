@@ -226,8 +226,26 @@ public:
 
         // Evaluation
 
-            //- Return enthalpy for the phase phaseI
+            //- Return total enthalpy for the phase phaseI
             virtual scalar H
+            (
+                const label phaseI,
+                const scalarField& Y,
+                const scalar p,
+                const scalar T
+            ) const;
+
+            //- Return sensible enthalpy for the phase phaseI
+            virtual scalar Hs
+            (
+                const label phaseI,
+                const scalarField& Y,
+                const scalar p,
+                const scalar T
+            ) const;
+
+            //- Return chemical enthalpy for the phase phaseI
+            virtual scalar Hc
             (
                 const label phaseI,
                 const scalarField& Y,

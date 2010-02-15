@@ -25,7 +25,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "KinematicParcel.H"
-#include "dimensionedConstants.H"
 
 // * * * * * * * * * * *  Protected Member Functions * * * * * * * * * * * * //
 
@@ -102,6 +101,12 @@ void Foam::KinematicParcel<ParcelType>::calc
     const scalar rho0 = rho_;
     const scalar mass0 = mass();
 
+    // Reynolds number
+    const scalar Re = this->Re(U0, d0, rhoc_, muc_);
+
+
+    // Sources
+    //~~~~~~~~
 
     // Explicit momentum source for particle
     vector Su = vector::zero;
@@ -114,7 +119,8 @@ void Foam::KinematicParcel<ParcelType>::calc
     // ~~~~~~
 
     // Calculate new particle velocity
-    vector U1 = calcVelocity(td, dt, cellI, d0, U0, rho0, mass0, Su, dUTrans);
+    vector U1 =
+        calcVelocity(td, dt, cellI, Re, muc_, d0, U0, rho0, mass0, Su, dUTrans);
 
 
     // Accumulate carrier phase source terms
@@ -139,6 +145,8 @@ const Foam::vector Foam::KinematicParcel<ParcelType>::calcVelocity
     TrackData& td,
     const scalar dt,
     const label cellI,
+    const scalar Re,
+    const scalar mu,
     const scalar d,
     const vector& U,
     const scalar rho,
@@ -150,8 +158,7 @@ const Foam::vector Foam::KinematicParcel<ParcelType>::calcVelocity
     const polyMesh& mesh = this->cloud().pMesh();
 
     // Momentum transfer coefficient
-    const scalar utc =
-        td.cloud().drag().utc(U - Uc_, d, rhoc_, muc_) + ROOTVSMALL;
+    const scalar utc = td.cloud().drag().utc(Re, d, mu) + ROOTVSMALL;
 
     // Momentum source due to particle forces
     const vector FCoupled =
@@ -219,7 +226,7 @@ bool Foam::KinematicParcel<ParcelType>::move(TrackData& td)
     const polyMesh& mesh = td.cloud().pMesh();
     const polyBoundaryMesh& pbMesh = mesh.boundaryMesh();
 
-    const scalar deltaT = mesh.time().deltaT().value();
+    const scalar deltaT = mesh.time().deltaTValue();
     scalar tEnd = (1.0 - p.stepFraction())*deltaT;
     const scalar dtMax = tEnd;
 
@@ -279,7 +286,13 @@ bool Foam::KinematicParcel<ParcelType>::hitPatch
     ParcelType& p = static_cast<ParcelType&>(*this);
     td.cloud().postProcessing().postPatch(p, patchI);
 
-    return td.cloud().patchInteraction().correct(pp, this->face(), U_);
+    return td.cloud().patchInteraction().correct
+    (
+        pp,
+        this->face(),
+        td.keepParticle,
+        U_
+    );
 }
 
 

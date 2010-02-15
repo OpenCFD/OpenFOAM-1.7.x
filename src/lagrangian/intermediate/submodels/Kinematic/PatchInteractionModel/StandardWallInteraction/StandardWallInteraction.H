@@ -26,7 +26,19 @@ Class
     Foam::StandardWallInteraction
 
 Description
-    Wall interaction based on restitution and elasticity coefficients
+    Wall interaction model. Three choices:
+    - rebound - optionally specify elasticity and resitution coefficients
+    - stick   - particles assigined zero velocity
+    - escape  - remove particle from the domain
+
+    Example usage:
+
+        StandardWallInteractionCoeffs
+        {
+            type        rebound; // stick, escape
+            e           1;       // optional - elasticity coeff
+            mu          0;       // optional - restitution coeff
+        }
 
 \*---------------------------------------------------------------------------*/
 
@@ -40,7 +52,7 @@ Description
 namespace Foam
 {
 /*---------------------------------------------------------------------------*\
-                      Class StandardWallInteraction Declaration
+                   Class StandardWallInteraction Declaration
 \*---------------------------------------------------------------------------*/
 
 template<class CloudType>
@@ -48,13 +60,19 @@ class StandardWallInteraction
 :
     public PatchInteractionModel<CloudType>
 {
-    // Private data
+protected:
 
-        //- Elasticity
-        const scalar e_;
+    // Protected data
+
+        //- Interaction type
+        typename PatchInteractionModel<CloudType>::interactionType
+            interactionType_;
+
+        //- Elasticity coefficient
+        scalar e_;
 
         //- Restitution coefficient
-        const scalar mu_;
+        scalar mu_;
 
 
 public:
@@ -84,6 +102,7 @@ public:
         (
             const polyPatch& pp,
             const label faceId,
+            bool& keepParticle,
             vector& U
         ) const;
 };

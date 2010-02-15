@@ -94,13 +94,16 @@ Foam::ReactingMultiphaseParcel<ParcelType>::ReactingMultiphaseParcel
 template<class ParcelType>
 void Foam::ReactingMultiphaseParcel<ParcelType>::readFields
 (
-    ReactingMultiphaseCloud<ParcelType>& c
+    Cloud<ParcelType>& cIn
 )
 {
-    if (!c.size())
+    if (!cIn.size())
     {
         return;
     }
+
+    ReactingMultiphaseCloud<ParcelType>& c =
+        dynamic_cast<ReactingMultiphaseCloud<ParcelType>&>(cIn);
 
     ReactingParcel<ParcelType>::readFields(c);
 
@@ -185,9 +188,12 @@ void Foam::ReactingMultiphaseParcel<ParcelType>::readFields
 template<class ParcelType>
 void Foam::ReactingMultiphaseParcel<ParcelType>::writeFields
 (
-    const ReactingMultiphaseCloud<ParcelType>& c
+    const Cloud<ParcelType>& cIn
 )
 {
+    const ReactingMultiphaseCloud<ParcelType>& c =
+        dynamic_cast<const ReactingMultiphaseCloud<ParcelType>&>(cIn);
+
     ReactingParcel<ParcelType>::writeFields(c);
 
     label np =  c.size();

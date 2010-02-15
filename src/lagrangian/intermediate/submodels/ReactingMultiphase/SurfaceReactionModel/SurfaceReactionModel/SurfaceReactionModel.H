@@ -146,7 +146,7 @@ public:
             const scalarField& YLiquid,
             const scalarField& YSolid,
             const scalarField& YMixture,
-            const scalarField& dMassVolatile,
+            const scalar N,
             scalarField& dMassGas,
             scalarField& dMassLiquid,
             scalarField& dMassSolid,

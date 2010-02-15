@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,49 +22,31 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+Class
+
+Description
+
+SourceFiles
+    reactingParcelInjectionDataIOList.C
+
 \*---------------------------------------------------------------------------*/
 
-#include "BasicReactingCloud.H"
+#ifndef reactingParcelInjectionDataIOList_H
+#define reactingParcelInjectionDataIOList_H
 
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+#include "IOList.H"
+#include "reactingParcelInjectionData.H"
 
-template<class ThermoType>
-Foam::BasicReactingCloud<ThermoType>::BasicReactingCloud
-(
-    const word& cloudName,
-    const volScalarField& rho,
-    const volVectorField& U,
-    const dimensionedVector& g,
-    basicThermo& thermo
-)
-:
-    ReactingCloud<BasicReactingParcel<ThermoType> >
-    (
-        cloudName,
-        rho,
-        U,
-        g,
-        thermo
-    )
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
 {
-    BasicReactingParcel<ThermoType>::readFields(*this);
+    typedef IOList<reactingParcelInjectionData>
+        reactingParcelInjectionDataIOList;
 }
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
-
-template<class ThermoType>
-Foam::BasicReactingCloud<ThermoType>::~BasicReactingCloud()
-{}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-template<class ThermoType>
-void Foam::BasicReactingCloud<ThermoType>::writeFields() const
-{
-    BasicReactingParcel<ThermoType>::writeFields(*this);
-}
-
+#endif
 
 // ************************************************************************* //

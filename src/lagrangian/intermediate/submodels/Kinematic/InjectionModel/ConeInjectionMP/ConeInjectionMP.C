@@ -26,6 +26,7 @@ License
 
 #include "ConeInjectionMP.H"
 #include "DataEntry.H"
+#include "mathematicalConstants.H"
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
@@ -256,8 +257,7 @@ void Foam::ConeInjectionMP<CloudType>::setProperties
     coneAngle *= deg2Rad;
     scalar alpha = sin(coneAngle);
     scalar dcorr = cos(coneAngle);
-    scalar beta =
-        2.0*mathematicalConstant::pi*this->owner().rndGen().scalar01();
+    scalar beta = mathematicalConstant::twoPi*this->owner().rndGen().scalar01();
 
     vector normal = alpha*(tanVec1_[i]*cos(beta) + tanVec2_[i]*sin(beta));
     vector dirVec = dcorr*axes_[i];

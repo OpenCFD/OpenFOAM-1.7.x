@@ -26,6 +26,7 @@ License
 
 #include "LiquidEvaporation.H"
 #include "specie.H"
+#include "mathematicalConstants.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
@@ -37,15 +38,14 @@ Foam::scalarField Foam::LiquidEvaporation<CloudType>::calcXc
 {
     scalarField Xc(this->owner().mcCarrierThermo().Y().size());
 
-    scalar Winv = 0.0;
     forAll(Xc, i)
     {
-        scalar Y = this->owner().mcCarrierThermo().Y()[i][cellI];
-        Winv += Y/this->owner().mcCarrierThermo().speciesData()[i].W();
-        Xc[i] = Y/this->owner().mcCarrierThermo().speciesData()[i].W();
+        Xc[i] =
+            this->owner().mcCarrierThermo().Y()[i][cellI]
+           /this->owner().mcCarrierThermo().speciesData()[i].W();
     }
 
-    return Xc/Winv;
+    return Xc/sum(Xc);
 }
 
 
@@ -56,7 +56,7 @@ Foam::scalar Foam::LiquidEvaporation<CloudType>::Sh
     const scalar Sc
 ) const
 {
-    return 2.0 + 0.6*Foam::sqrt(Re)*pow(Sc, 0.333);
+    return 2.0 + 0.6*Foam::sqrt(Re)*cbrt(Sc);
 }
 
 
@@ -135,12 +135,12 @@ void Foam::LiquidEvaporation<CloudType>::calculate
 (
     const scalar dt,
     const label cellI,
+    const scalar Re,
     const scalar d,
+    const scalar nu,
     const scalar T,
+    const scalar Ts,
     const scalar pc,
-    const scalar Tc,
-    const scalar nuc,
-    const vector& Ur,
     scalarField& dMassPC
 ) const
 {
@@ -150,29 +150,25 @@ void Foam::LiquidEvaporation<CloudType>::calculate
     // droplet surface area
     scalar A = mathematicalConstant::pi*sqr(d);
 
-    // Reynolds number
-    scalar Re = mag(Ur)*d/(nuc + ROOTVSMALL);
-
-    // film temperature evaluated using the 2/3 rule
-    scalar Tf = (2.0*T + Tc)/3.0;
-
     // calculate mass transfer of each specie in liquid
     forAll(activeLiquids_, i)
     {
         label gid = liqToCarrierMap_[i];
         label lid = liqToLiqMap_[i];
 
-        // vapour diffusivity at film temperature and cell pressure [m2/s]
-        scalar Dab = liquids_->properties()[lid].D(pc, Tf);
+        // vapour diffusivity [m2/s]
+        scalar Dab = liquids_->properties()[lid].D(pc, Ts);
 
-        // saturation pressure for species i at film temperature and cell
-        // pressure [pa] - carrier phase pressure assumed equal to the liquid
-        // vapour pressure close to the surface
-        // - limited to pc if pSat > pc
-        scalar pSat = min(liquids_->properties()[lid].pv(pc, Tf), pc);
+        // saturation pressure for species i [pa]
+        // - carrier phase pressure assumed equal to the liquid vapour pressure
+        //   close to the surface
+        // NOTE: if pSat > pc then particle is superheated
+        // calculated evaporation rate will be greater than that of a particle
+        // at boiling point, but this is not a boiling model
+        scalar pSat = liquids_->properties()[lid].pv(pc, T);
 
         // Schmidt number
-        scalar Sc = nuc/(Dab + ROOTVSMALL);
+        scalar Sc = nu/(Dab + ROOTVSMALL);
 
         // Sherwood number
         scalar Sh = this->Sh(Re, Sc);
@@ -180,11 +176,11 @@ void Foam::LiquidEvaporation<CloudType>::calculate
         // mass transfer coefficient [m/s]
         scalar kc = Sh*Dab/(d + ROOTVSMALL);
 
-        // vapour concentration at droplet surface at film temperature [kmol/m3]
-        scalar Cs = pSat/(specie::RR*Tf);
+        // vapour concentration at droplet surface [kmol/m3] at film temperature
+        scalar Cs = pSat/(specie::RR*Ts);
 
-        // vapour concentration in bulk gas at film temperature [kmol/m3]
-        scalar Cinf = Xc[gid]*pc/(specie::RR*Tf);
+        // vapour concentration in bulk gas [kmol/m3] at film temperature
+        scalar Cinf = Xc[gid]*pc/(specie::RR*Ts);
 
         // molar flux of vapour [kmol/m2/s]
         scalar Ni = max(kc*(Cs - Cinf), 0.0);

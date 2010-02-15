@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,44 +24,65 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "basicKinematicCloud.H"
+#include "kinematicParcelInjectionData.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
+Foam::kinematicParcelInjectionData::kinematicParcelInjectionData(Istream& is)
 {
-    defineTypeNameAndDebug(basicKinematicCloud, 0);
-};
+    is.check("reading (Px Py Pz)");
+    is >> x_;
 
+    is.check("reading (Ux Uy Uz)");
+    is >> U_;
 
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+    is.check("reading d");
+    is >> d_;
 
-Foam::basicKinematicCloud::basicKinematicCloud
-(
-    const word& cloudName,
-    const volScalarField& rho,
-    const volVectorField& U,
-    const volScalarField& mu,
-    const dimensionedVector& g
-)
-:
-    KinematicCloud<basicKinematicParcel>(cloudName, rho, U, mu, g)
-{
-    basicKinematicParcel::readFields(*this);
+    is.check("reading rho");
+    is >> rho_;
+
+    is.check("reading mDot");
+    is >> mDot_;
+
+    is.check("kinematicParcelInjectionData(Istream& is)");
 }
 
 
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
 
-Foam::basicKinematicCloud::~basicKinematicCloud()
-{}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-void Foam::basicKinematicCloud::writeFields() const
+Foam::Ostream& Foam::operator<<
+(
+    Ostream& os,
+    const kinematicParcelInjectionData& data
+)
 {
-    basicKinematicParcel::writeFields(*this);
+    os << data.x_ << data.U_ << data.d_ << data.rho_ << data.mDot_;
+
+    return os;
+}
+
+
+Foam::Istream& Foam::operator>>(Istream& is, kinematicParcelInjectionData& data)
+{
+    is.check("reading (Px Py Pz)");
+    is >> data.x_;
+
+    is.check("reading (Ux Uy Uz)");
+    is >> data.U_;
+
+    is.check("reading d");
+    is >> data.d_;
+
+    is.check("reading rho");
+    is >> data.rho_;
+
+    is.check("reading mDot");
+    is >> data.mDot_;
+
+    is.check("operator(Istream&, kinematicParcelInjectionData&)");
+
+    return is;
 }
 
 

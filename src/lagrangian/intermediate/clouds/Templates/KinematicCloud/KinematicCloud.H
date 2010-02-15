@@ -109,6 +109,9 @@ protected:
         //- Parcel constant properties
         typename ParcelType::constantProperties constProps_;
 
+        //- Cloud active flag
+        const Switch active_;
+
         //- Parcel type id - used to flag the type of parcels issued by this
         //  cloud
         const label parcelTypeId_;
@@ -189,6 +192,9 @@ protected:
             //- Pre-evolve
             void preEvolve();
 
+            //- Evolve the cloud
+            void evolveCloud();
+
             //- Post-evolve
             void postEvolve();
 
@@ -204,7 +210,8 @@ public:
             const volScalarField& rho,
             const volVectorField& U,
             const volScalarField& mu,
-            const dimensionedVector& g
+            const dimensionedVector& g,
+            bool readFields = true
         );
 
 
@@ -222,9 +229,6 @@ public:
 
             // References to the mesh and databases
 
-                //- Return the parcel type id
-                inline label parcelTypeId() const;
-
                 //- Return refernce to the mesh
                 inline const fvMesh& mesh() const;
 
@@ -236,14 +240,22 @@ public:
                     constProps() const;
 
 
-            //- Return coupled flag
-            inline const Switch coupled() const;
+            // Cloud data
 
-            //- Return cell value correction flag
-            inline const Switch cellValueSourceCorrection() const;
+                //- Return the active flag
+                inline const Switch active() const;
 
-            //- Return refernce to the random object
-            inline Random& rndGen();
+                //- Return the parcel type id
+                inline label parcelTypeId() const;
+
+                //- Return coupled flag
+                inline const Switch coupled() const;
+
+                //- Return cell value correction flag
+                inline const Switch cellValueSourceCorrection() const;
+
+                //- Return refernce to the random object
+                inline Random& rndGen();
 
 
             // References to the carrier gas fields

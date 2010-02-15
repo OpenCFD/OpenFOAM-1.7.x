@@ -64,7 +64,7 @@ template<class Type>
 Type Foam::Table<Type>::value(const scalar x) const
 {
     // Return zero if out of bounds
-    if ((x > table_[table_.size()-1].first()) || (x < table_[0].first()))
+    if (x < table_[0].first() || x > table_[table_.size()-1].first())
     {
         return pTraits<Type>::zero;
     }
@@ -120,7 +120,7 @@ Type Foam::Table<Type>::integrate(const scalar x1, const scalar x2) const
     }
     else
     {
-        //x1 and x2 cross multiple intervals
+        // x1 and x2 cross multiple intervals
 
         // Integrate table body
         for (label i=id1; i<id2; i++)
@@ -138,7 +138,6 @@ Type Foam::Table<Type>::integrate(const scalar x1, const scalar x2) const
               * (value(x1) + table_[id1].second())
               * (table_[id1].first() - x1);
         }
-
         if (id2 < table_.size() - 1)
         {
             sum += 0.5
@@ -146,6 +145,7 @@ Type Foam::Table<Type>::integrate(const scalar x1, const scalar x2) const
               * (x2 - table_[id2].first());
         }
     }
+
     return sum;
 }
 

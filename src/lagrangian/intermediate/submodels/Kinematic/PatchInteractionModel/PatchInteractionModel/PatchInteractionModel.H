@@ -40,6 +40,7 @@ SourceFiles
 #include "IOdictionary.H"
 #include "autoPtr.H"
 #include "runTimeSelectionTables.H"
+#include "polyPatch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -53,6 +54,24 @@ namespace Foam
 template<class CloudType>
 class PatchInteractionModel
 {
+public:
+
+    // Public enumerations
+
+        // Interaction types
+        enum interactionType
+        {
+            itRebound,
+            itStick,
+            itEscape,
+            itOther
+        };
+
+        static wordList interactionTypeNames_;
+
+
+private:
+
     // Private data
 
         //- The cloud dictionary
@@ -121,6 +140,12 @@ public:
 
     // Member Functions
 
+        //- Convert interaction result to word
+        static word interactionTypeToWord(const interactionType& itEnum);
+
+        //- Convert word to interaction result
+        static interactionType wordToInteractionType(const word& itWord);
+
         //- Flag to indicate whether model activates patch interaction model
         virtual bool active() const = 0;
 
@@ -130,6 +155,7 @@ public:
         (
             const polyPatch& pp,
             const label faceId,
+            bool& keepParticle,
             vector& U
         ) const = 0;
 };

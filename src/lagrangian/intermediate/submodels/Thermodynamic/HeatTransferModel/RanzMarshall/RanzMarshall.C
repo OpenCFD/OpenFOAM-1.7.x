@@ -35,8 +35,7 @@ Foam::RanzMarshall<CloudType>::RanzMarshall
     CloudType& cloud
 )
 :
-    HeatTransferModel<CloudType>(dict, cloud, typeName),
-    Pr_(dimensionedScalar(this->coeffDict().lookup("Pr")).value())
+    HeatTransferModel<CloudType>(dict, cloud, typeName)
 {}
 
 
@@ -63,14 +62,7 @@ Foam::scalar Foam::RanzMarshall<CloudType>::Nu
     const scalar Pr
 ) const
 {
-    return 2.0 + 0.6*pow(Re, 0.5)*pow(Pr, 0.333);
-}
-
-
-template <class CloudType>
-Foam::scalar Foam::RanzMarshall<CloudType>::Pr() const
-{
-    return Pr_;
+    return 2.0 + 0.6*sqrt(Re)*cbrt(Pr);
 }
 
 

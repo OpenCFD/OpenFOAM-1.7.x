@@ -38,73 +38,21 @@ SourceFiles
 
 #include "ReactingCloud.H"
 #include "BasicReactingParcel.H"
+#include "thermoPhysicsTypes.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
+    typedef ReactingCloud<BasicReactingParcel<constGasThermoPhysics> >
+        constThermoReactingCloud;
 
-// Forward declaration of classes
-template<class ThermoType>
-class BasicReactingCloud;
+    typedef ReactingCloud<BasicReactingParcel<gasThermoPhysics> >
+        thermoReactingCloud;
 
-/*---------------------------------------------------------------------------*\
-                        Class BasicReactingCloud Declaration
-\*---------------------------------------------------------------------------*/
-
-template<class ThermoType>
-class BasicReactingCloud
-:
-    public ReactingCloud<BasicReactingParcel<ThermoType> >
-{
-    // Private Member Functions
-
-        //- Disallow default bitwise copy construct
-        BasicReactingCloud(const BasicReactingCloud&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const BasicReactingCloud&);
-
-
-public:
-
-    //- Runtime type information
-    TypeName("BasicReactingCloud");
-
-
-    // Constructors
-
-        //- Construct given carrier gas fields
-        BasicReactingCloud
-        (
-            const word& cloudName,
-            const volScalarField& rho,
-            const volVectorField& U,
-            const dimensionedVector& g,
-            basicThermo& thermo
-        );
-
-
-    //- Destructor
-    ~BasicReactingCloud();
-
-
-    // Member Functions
-
-        //- Write fields
-        virtual void writeFields() const;
-};
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#ifdef NoRepository
-    #include "BasicReactingCloud.C"
-#endif
+    typedef ReactingCloud<BasicReactingParcel<icoPoly8ThermoPhysics> >
+        icoPoly8ThermoReactingCloud;
+}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

@@ -36,9 +36,45 @@ Foam::StandardWallInteraction<CloudType>::StandardWallInteraction
 )
 :
     PatchInteractionModel<CloudType>(dict, cloud, typeName),
-    e_(dimensionedScalar(this->coeffDict().lookup("e")).value()),
-    mu_(dimensionedScalar(this->coeffDict().lookup("mu")).value())
-{}
+    interactionType_
+    (
+        this->wordToInteractionType(this->coeffDict().lookup("type"))
+    ),
+    e_(0.0),
+    mu_(0.0)
+{
+    switch (interactionType_)
+    {
+        case PatchInteractionModel<CloudType>::itOther:
+        {
+            word interactionTypeName(this->coeffDict().lookup("type"));
+
+            FatalErrorIn
+            (
+                "StandardWallInteraction<CloudType>::StandardWallInteraction"
+                "("
+                    "const dictionary&, "
+                    "CloudType& cloud"
+                ")"
+            )   << "Unknown interaction result type "
+                << interactionTypeName
+                << ". Valid selections are:" << this->interactionTypeNames_
+                << endl << exit(FatalError);
+
+            break;
+        }
+        case PatchInteractionModel<CloudType>::itRebound:
+        {
+            e_ = this->coeffDict().lookupOrDefault("e", 1.0);
+            mu_ = this->coeffDict().lookupOrDefault("mu", 0.0);
+            break;
+        }
+        default:
+        {
+            // do nothing
+        }
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -62,23 +98,62 @@ bool Foam::StandardWallInteraction<CloudType>::correct
 (
     const polyPatch& pp,
     const label faceId,
+    bool& keepParticle,
     vector& U
 ) const
 {
     if (isA<wallPolyPatch>(pp))
     {
-        vector nw = pp.faceAreas()[pp.whichFace(faceId)];
-        nw /= mag(nw);
-
-        scalar Un = U & nw;
-        vector Ut = U - Un*nw;
-
-        if (Un > 0)
+        switch (interactionType_)
         {
-            U -= (1.0 + e_)*Un*nw;
-        }
+            case PatchInteractionModel<CloudType>::itEscape:
+            {
+                keepParticle = false;
+                U = vector::zero;
+                break;
+            }
+            case PatchInteractionModel<CloudType>::itStick:
+            {
+                keepParticle = true;
+                U = vector::zero;
+                break;
+            }
+            case PatchInteractionModel<CloudType>::itRebound:
+            {
+                keepParticle = true;
 
-        U -= mu_*Ut;
+                vector nw = pp.faceAreas()[pp.whichFace(faceId)];
+                nw /= mag(nw);
+
+                scalar Un = U & nw;
+                vector Ut = U - Un*nw;
+
+                if (Un > 0)
+                {
+                    U -= (1.0 + e_)*Un*nw;
+                }
+
+                U -= mu_*Ut;
+
+                break;
+            }
+            default:
+            {
+                FatalErrorIn
+                (
+                    "bool StandardWallInteraction<CloudType>::correct"
+                    "("
+                        "const polyPatch&, "
+                        "const label, "
+                        "bool&, "
+                        "vector&"
+                    ") const"
+                )   << "Unknown interaction type "
+                    << this->interactionTypeToWord(interactionType_)
+                    << "(" << interactionType_ << ")" << endl
+                    << abort(FatalError);
+            }
+        }
 
         return true;
     }

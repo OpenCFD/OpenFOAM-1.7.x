@@ -40,7 +40,7 @@ Foam::string Foam::KinematicParcel<ParcelType>::propHeader =
   + " (Ux Uy Uz)"
   + " rho"
   + " tTurb"
-  + " UTurb";
+  + " (UTurbx UTurby UTurbz)";
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -103,15 +103,14 @@ Foam::KinematicParcel<ParcelType>::KinematicParcel
 
 
 template<class ParcelType>
-void Foam::KinematicParcel<ParcelType>::readFields
-(
-    KinematicCloud<ParcelType>& c
-)
+void Foam::KinematicParcel<ParcelType>::readFields(Cloud<ParcelType>& c)
 {
     if (!c.size())
     {
         return;
     }
+
+    Particle<ParcelType>::readFields(c);
 
     IOField<label> typeId(c.fieldIOobject("typeId", IOobject::MUST_READ));
     c.checkFieldIOobject(c, typeId);
@@ -153,10 +152,7 @@ void Foam::KinematicParcel<ParcelType>::readFields
 
 
 template<class ParcelType>
-void Foam::KinematicParcel<ParcelType>::writeFields
-(
-    const KinematicCloud<ParcelType>& c
-)
+void Foam::KinematicParcel<ParcelType>::writeFields(const Cloud<ParcelType>& c)
 {
     Particle<ParcelType>::writeFields(c);
 

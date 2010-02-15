@@ -29,6 +29,89 @@ License
 #include "DevolatilisationModel.H"
 #include "SurfaceReactionModel.H"
 
+// * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
+
+template<class ParcelType>
+void Foam::ReactingMultiphaseCloud<ParcelType>::preEvolve()
+{
+    ReactingCloud<ParcelType>::preEvolve();
+}
+
+
+template<class ParcelType>
+void Foam::ReactingMultiphaseCloud<ParcelType>::evolveCloud()
+{
+    const volScalarField& T = this->carrierThermo().T();
+    const volScalarField cp = this->carrierThermo().Cp();
+    const volScalarField& p = this->carrierThermo().p();
+
+    autoPtr<interpolation<scalar> > rhoInterp = interpolation<scalar>::New
+    (
+        this->interpolationSchemes(),
+        this->rho()
+    );
+
+    autoPtr<interpolation<vector> > UInterp = interpolation<vector>::New
+    (
+        this->interpolationSchemes(),
+        this->U()
+    );
+
+    autoPtr<interpolation<scalar> > muInterp = interpolation<scalar>::New
+    (
+        this->interpolationSchemes(),
+        this->mu()
+    );
+
+    autoPtr<interpolation<scalar> > TInterp = interpolation<scalar>::New
+    (
+        this->interpolationSchemes(),
+        T
+    );
+
+    autoPtr<interpolation<scalar> > cpInterp = interpolation<scalar>::New
+    (
+        this->interpolationSchemes(),
+        cp
+    );
+
+    autoPtr<interpolation<scalar> > pInterp = interpolation<scalar>::New
+    (
+        this->interpolationSchemes(),
+        p
+    );
+
+    typename ParcelType::trackData td
+    (
+        *this,
+        constProps_,
+        rhoInterp(),
+        UInterp(),
+        muInterp(),
+        TInterp(),
+        cpInterp(),
+        pInterp(),
+        this->g().value()
+    );
+
+    this->injection().inject(td);
+
+    if (this->coupled())
+    {
+        resetSourceTerms();
+    }
+
+    Cloud<ParcelType>::move(td);
+}
+
+
+template<class ParcelType>
+void Foam::ReactingMultiphaseCloud<ParcelType>::postEvolve()
+{
+    ReactingCloud<ParcelType>::postEvolve();
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class ParcelType>
@@ -38,10 +121,11 @@ Foam::ReactingMultiphaseCloud<ParcelType>::ReactingMultiphaseCloud
     const volScalarField& rho,
     const volVectorField& U,
     const dimensionedVector& g,
-    basicThermo& thermo
+    basicThermo& thermo,
+    bool readFields
 )
 :
-    ReactingCloud<ParcelType>(cloudName, rho, U, g, thermo),
+    ReactingCloud<ParcelType>(cloudName, rho, U, g, thermo, false),
     reactingMultiphaseCloud(),
     constProps_(this->particleProperties()),
     devolatilisationModel_
@@ -61,7 +145,12 @@ Foam::ReactingMultiphaseCloud<ParcelType>::ReactingMultiphaseCloud
         )
     ),
     dMassDevolatilisation_(0.0)
-{}
+{
+    if (readFields)
+    {
+        ParcelType::readFields(*this);
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -130,87 +219,19 @@ void Foam::ReactingMultiphaseCloud<ParcelType>::resetSourceTerms()
 
 
 template<class ParcelType>
-void Foam::ReactingMultiphaseCloud<ParcelType>::preEvolve()
-{
-    ReactingCloud<ParcelType>::preEvolve();
-}
-
-
-template<class ParcelType>
-void Foam::ReactingMultiphaseCloud<ParcelType>::postEvolve()
-{
-    ReactingCloud<ParcelType>::postEvolve();
-}
-
-
-template<class ParcelType>
 void Foam::ReactingMultiphaseCloud<ParcelType>::evolve()
 {
-    preEvolve();
-
-    const volScalarField& T = this->carrierThermo().T();
-    const volScalarField cp = this->carrierThermo().Cp();
-    const volScalarField& p = this->carrierThermo().p();
-
-    autoPtr<interpolation<scalar> > rhoInterp = interpolation<scalar>::New
-    (
-        this->interpolationSchemes(),
-        this->rho()
-    );
-
-    autoPtr<interpolation<vector> > UInterp = interpolation<vector>::New
-    (
-        this->interpolationSchemes(),
-        this->U()
-    );
-
-    autoPtr<interpolation<scalar> > muInterp = interpolation<scalar>::New
-    (
-        this->interpolationSchemes(),
-        this->mu()
-    );
-
-    autoPtr<interpolation<scalar> > TInterp = interpolation<scalar>::New
-    (
-        this->interpolationSchemes(),
-        T
-    );
-
-    autoPtr<interpolation<scalar> > cpInterp = interpolation<scalar>::New
-    (
-        this->interpolationSchemes(),
-        cp
-    );
-
-    autoPtr<interpolation<scalar> > pInterp = interpolation<scalar>::New
-    (
-        this->interpolationSchemes(),
-        p
-    );
-
-    typename ParcelType::trackData td
-    (
-        *this,
-        constProps_,
-        rhoInterp(),
-        UInterp(),
-        muInterp(),
-        TInterp(),
-        cpInterp(),
-        pInterp(),
-        this->g().value()
-    );
-
-    this->injection().inject(td);
-
-    if (this->coupled())
+    if (this->active())
     {
-        resetSourceTerms();
+        preEvolve();
+
+        evolveCloud();
+
+        postEvolve();
+
+        info();
+        Info<< endl;
     }
-
-    Cloud<ParcelType>::move(td);
-
-    postEvolve();
 }
 
 

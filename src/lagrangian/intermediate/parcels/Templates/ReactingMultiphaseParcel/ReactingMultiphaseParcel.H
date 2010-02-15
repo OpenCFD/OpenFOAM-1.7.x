@@ -227,6 +227,8 @@ protected:
         (
             TrackData& td,
             const scalar dt,           // timestep
+            const scalar Ts,           // Surface temperature
+            const scalar d,            // diameter
             const scalar T,            // temperature
             const scalar mass,         // mass
             const scalar mass0,        // mass (initial on injection)
@@ -236,7 +238,9 @@ protected:
             bool& canCombust,          // 'can combust' flag
             scalarField& dMassDV,      // mass transfer - local to particle
             scalar& Sh,                // explicit particle enthalpy source
-            scalar& dhsTrans           // sensible enthalpy transfer to carrier
+            scalar& N,                 // flux of species emitted from particle
+            scalar& NCpW,              // sum of N*Cp*W of emission species
+            scalarField& Cs            // carrier conc. of emission species
         ) const;
 
         //- Calculate surface reactions
@@ -250,7 +254,7 @@ protected:
             const scalar T,            // temperature
             const scalar mass,         // mass
             const bool canCombust,     // 'can combust' flag
-            const scalarField& dMassVolatile, // mass transfer of volatiles
+            const scalar N,            // flux of species emitted from particle
             const scalarField& YMix,   // mixture mass fractions
             const scalarField& YGas,   // gas-phase mass fractions
             const scalarField& YLiquid,// liquid-phase mass fractions
@@ -394,13 +398,10 @@ public:
         // I-O
 
             //- Read
-            static void readFields(ReactingMultiphaseCloud<ParcelType>& c);
+            static void readFields(Cloud<ParcelType>& c);
 
             //- Write
-            static void writeFields
-            (
-                const ReactingMultiphaseCloud<ParcelType>& c
-            );
+            static void writeFields(const Cloud<ParcelType>& c);
 
 
     // Ostream Operator

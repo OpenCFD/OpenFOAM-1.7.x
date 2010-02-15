@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,47 +24,44 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "BasicReactingMultiphaseCloud.H"
+#include "reactingMultiphaseParcelInjectionData.H"
+
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+namespace Foam
+{
+    defineTypeNameAndDebug(reactingMultiphaseParcelInjectionData, 0);
+}
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class ThermoType>
-Foam::BasicReactingMultiphaseCloud<ThermoType>::BasicReactingMultiphaseCloud
-(
-    const word& cloudName,
-    const volScalarField& rho,
-    const volVectorField& U,
-    const dimensionedVector& g,
-    basicThermo& thermo
-)
+Foam::reactingMultiphaseParcelInjectionData::
+reactingMultiphaseParcelInjectionData()
 :
-    ReactingMultiphaseCloud<BasicReactingMultiphaseParcel<ThermoType> >
-    (
-        cloudName,
-        rho,
-        U,
-        g,
-        thermo
-    )
-{
-    BasicReactingMultiphaseParcel<ThermoType>::readFields(*this);
-}
-
-
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
-
-template<class ThermoType>
-Foam::BasicReactingMultiphaseCloud<ThermoType>::~BasicReactingMultiphaseCloud()
+    reactingParcelInjectionData(),
+    YGas_(),
+    YLiquid_(),
+    YSolid_()
 {}
 
 
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+Foam::reactingMultiphaseParcelInjectionData::
+reactingMultiphaseParcelInjectionData
+(
+    const dictionary& dict
+)
+:
+    reactingParcelInjectionData(dict),
+    YGas_(dict.lookup("YGas")),
+    YLiquid_(dict.lookup("YLiquid")),
+    YSolid_(dict.lookup("YSolid"))
+{}
 
-template<class ThermoType>
-void Foam::BasicReactingMultiphaseCloud<ThermoType>::writeFields() const
-{
-    BasicReactingMultiphaseParcel<ThermoType>::writeFields(*this);
-}
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::reactingMultiphaseParcelInjectionData::
+~reactingMultiphaseParcelInjectionData()
+{}
 
 
 // ************************************************************************* //

@@ -188,7 +188,11 @@ protected:
         );
 
         //- Post injection checks
-        virtual void postInjectCheck(const label parcelsAdded);
+        virtual void postInjectCheck
+        (
+            const label parcelsAdded,
+            const scalar massAdded
+        );
 
 
 public:

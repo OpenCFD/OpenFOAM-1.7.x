@@ -49,7 +49,6 @@ SourceFiles
 #include "autoPtr.H"
 #include "interpolationCellPoint.H"
 #include "contiguous.H"
-#include "mathematicalConstants.H"
 
 #include "KinematicCloud.H"
 
@@ -239,6 +238,8 @@ protected:
             TrackData& td,
             const scalar dt,           // timestep
             const label cellI,         // owner cell
+            const scalar Re,           // Reynolds number
+            const scalar mu,           // local carrier viscosity
             const scalar d,            // diameter
             const vector& U,           // velocity
             const scalar rho,          // density
@@ -388,6 +389,15 @@ public:
             //- Surface area for given diameter
             inline scalar areaS(const scalar d) const;
 
+            //- Reynolds number
+            inline scalar Re
+            (
+                const vector& U,        // particle velocity
+                const scalar d,         // particle diameter
+                const scalar rhoc,      // carrier density
+                const scalar muc        // carrier dynamic viscosity
+            ) const;
+
 
         // Main calculation loop
 
@@ -510,10 +520,10 @@ public:
         // I-O
 
             //- Read
-            static void readFields(KinematicCloud<ParcelType>& c);
+            static void readFields(Cloud<ParcelType>& c);
 
             //- Write
-            static void writeFields(const KinematicCloud<ParcelType>& c);
+            static void writeFields(const Cloud<ParcelType>& c);
 
 
     // Ostream Operator
