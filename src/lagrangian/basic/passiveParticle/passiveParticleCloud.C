@@ -43,12 +43,16 @@ defineTemplateTypeNameAndDebug(Cloud<passiveParticle>, 0);
 Foam::passiveParticleCloud::passiveParticleCloud
 (
     const polyMesh& mesh,
-    const word& cloudName
+    const word& cloudName,
+    bool readFields
 )
 :
     Cloud<passiveParticle>(mesh, cloudName, false)
 {
-    readFields();
+    if (readFields)
+    {
+        passiveParticle::readFields(*this);
+    }
 }
 
 
@@ -61,20 +65,6 @@ Foam::passiveParticleCloud::passiveParticleCloud
 :
     Cloud<passiveParticle>(mesh, cloudName, particles)
 {}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-void Foam::passiveParticleCloud::readFields()
-{
-    passiveParticle::readFields(*this);
-}
-
-
-void Foam::passiveParticleCloud::writeFields() const
-{
-    passiveParticle::writeFields(*this);
-}
 
 
 // ************************************************************************* //

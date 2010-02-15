@@ -87,6 +87,12 @@ class Cloud
         //- Initialise cloud on IO constructor
         void initCloud(const bool checkClass);
 
+        //- Read cloud properties dictionary
+        void readCloudUniformProperties();
+
+        //- Write cloud properties dictionary
+        void writeCloudUniformProperties() const;
+
 
 public:
 
@@ -102,6 +108,12 @@ public:
 
     //-Runtime type information
     TypeName("Cloud");
+
+
+    // Static data
+
+        //- Name of cloud properties dictionary
+        static word cloudPropertiesName;
 
 
     // Constructors

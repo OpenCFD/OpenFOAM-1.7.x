@@ -60,10 +60,6 @@ Foam::Particle<ParticleType>::Particle
         {
             is >> origProc_ >> origId_;
         }
-        else
-        {
-            origId_ = cloud_.getNewParticleID();
-        }
     }
     else
     {
@@ -91,7 +87,6 @@ Foam::Particle<ParticleType>::Particle
               + sizeof(facei_)
               + sizeof(stepFraction_)
             );
-            origId_ = cloud_.getNewParticleID();
         }
     }
 

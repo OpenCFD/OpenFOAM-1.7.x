@@ -45,7 +45,7 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class indexedParticleCloud Declaration
+                    Class indexedParticleCloud Declaration
 \*---------------------------------------------------------------------------*/
 
 class indexedParticleCloud
@@ -69,14 +69,9 @@ public:
         indexedParticleCloud
         (
             const polyMesh&,
-            const word& cloudName = "defaultCloud"
+            const word& cloudName = "defaultCloud",
+            bool readFields = true
         );
-
-
-    // Member Functions
-
-        //- Write fields
-        virtual void writeFields() const;
 };
 
 

@@ -45,7 +45,7 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class passiveParticleCloud Declaration
+                   Class passiveParticleCloud Declaration
 \*---------------------------------------------------------------------------*/
 
 class passiveParticleCloud
@@ -72,7 +72,8 @@ public:
         passiveParticleCloud
         (
             const polyMesh&,
-            const word& cloudName = "defaultCloud"
+            const word& cloudName = "defaultCloud",
+            bool readFields = true
         );
 
         //- Construct from mesh, cloud name, and a list of particles
@@ -82,15 +83,6 @@ public:
             const word& cloudName,
             const IDLList<passiveParticle>& particles
         );
-
-
-    // Member Functions
-
-        //- Read fields
-        virtual void readFields();
-
-        //- Write fields
-        virtual void writeFields() const;
 };
 
 

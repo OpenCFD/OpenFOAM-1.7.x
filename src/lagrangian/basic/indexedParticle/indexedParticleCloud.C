@@ -45,20 +45,17 @@ defineTemplateTypeNameAndDebug(Cloud<indexedParticle>, 0);
 Foam::indexedParticleCloud::indexedParticleCloud
 (
     const polyMesh& mesh,
-    const word& cloudName
+    const word& cloudName,
+    bool readFields
 )
 :
     Cloud<indexedParticle>(mesh, cloudName, false)
 {
-    indexedParticle::readFields(*this);
+    if (readFields)
+    {
+        indexedParticle::readFields(*this);
+    }
 }
 
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-void Foam::indexedParticleCloud::writeFields() const
-{
-    indexedParticle::writeFields(*this);
-}
 
 // ************************************************************************* //

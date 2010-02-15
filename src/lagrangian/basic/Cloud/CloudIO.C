@@ -29,11 +29,85 @@ License
 #include "Time.H"
 #include "IOPosition.H"
 
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+template<class ParticleType>
+Foam::word Foam::Cloud<ParticleType>::cloudPropertiesName("cloudProperties");
+
+
 // * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * * //
+
+template<class ParticleType>
+void Foam::Cloud<ParticleType>::readCloudUniformProperties()
+{
+    IOobject uniformPropsDictHeader
+    (
+        cloudPropertiesName,
+        time().timeName(),
+        "uniform"/cloud::prefix/name(),
+        db(),
+        IOobject::MUST_READ,
+        IOobject::NO_WRITE,
+        false
+    );
+
+    if (uniformPropsDictHeader.headerOk())
+    {
+        const IOdictionary uniformPropsDict(uniformPropsDictHeader);
+
+        word procName("processor" + Foam::name(Pstream::myProcNo()));
+        if (uniformPropsDict.found(procName))
+        {
+            uniformPropsDict.subDict(procName).lookup("particleCount")
+                >> particleCount_;
+        }
+    }
+    else
+    {
+        particleCount_ = 0;
+    }
+}
+
+
+template<class ParticleType>
+void Foam::Cloud<ParticleType>::writeCloudUniformProperties() const
+{
+    IOdictionary uniformPropsDict
+    (
+        IOobject
+        (
+            cloudPropertiesName,
+            time().timeName(),
+            "uniform"/cloud::prefix/name(),
+            db(),
+            IOobject::NO_READ,
+            IOobject::NO_WRITE,
+            false
+        )
+    );
+
+    labelList np(Pstream::nProcs(), 0);
+    np[Pstream::myProcNo()] = particleCount_;
+
+    Pstream::listCombineGather(np, maxEqOp<label>());
+    Pstream::listCombineScatter(np);
+
+    forAll(np, i)
+    {
+        word procName("processor" + Foam::name(i));
+        uniformPropsDict.add(procName, dictionary());
+        uniformPropsDict.subDict(procName).add("particleCount", np[i]);
+    }
+
+    uniformPropsDict.regIOobject::write();
+}
+
 
 template<class ParticleType>
 void Foam::Cloud<ParticleType>::initCloud(const bool checkClass)
 {
+    readCloudUniformProperties();
+
     IOPosition<ParticleType> ioP(*this);
 
     if (ioP.headerOk())
@@ -139,7 +213,13 @@ void Foam::Cloud<ParticleType>::readFields()
 
 template<class ParticleType>
 void Foam::Cloud<ParticleType>::writeFields() const
-{}
+{
+    if (this->size())
+    {
+        const ParticleType& p = *this->first();
+        ParticleType::writeFields(p.cloud());
+    }
+}
 
 
 template<class ParticleType>
@@ -150,6 +230,8 @@ bool Foam::Cloud<ParticleType>::writeObject
     IOstream::compressionType cmp
 ) const
 {
+    writeCloudUniformProperties();
+
     if (this->size())
     {
         writeFields();

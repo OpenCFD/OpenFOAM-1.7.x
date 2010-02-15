@@ -26,70 +26,6 @@ License
 
 #include "IOPosition.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-template<class ParticleType>
-Foam::word Foam::IOPosition<ParticleType>::particlePropertiesName
-(
-    "particleProperties"
-);
-
-
-// * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * * * //
-
-template<class ParticleType>
-void Foam::IOPosition<ParticleType>::readParticleProperties()
-{
-    IOobject propsDictHeader
-    (
-        particlePropertiesName,
-        cloud_.db().time().timeName(),
-        "uniform"/cloud::prefix/cloud_.name(),
-        cloud_.db(),
-        IOobject::MUST_READ,
-        IOobject::NO_WRITE,
-        false
-    );
-
-    if (propsDictHeader.headerOk())
-    {
-        const IOdictionary propsDict(propsDictHeader);
-
-        word procName("processor" + Foam::name(Pstream::myProcNo()));
-        if (propsDict.found(procName))
-        {
-            propsDict.subDict(procName).lookup("particleCount")
-                >> cloud_.particleCount_;
-        }
-    }
-}
-
-
-template<class ParticleType>
-void Foam::IOPosition<ParticleType>::writeParticleProperties() const
-{
-    IOdictionary propsDict
-    (
-        IOobject
-        (
-            particlePropertiesName,
-            cloud_.db().time().timeName(),
-            "uniform"/cloud::prefix/cloud_.name(),
-            cloud_.db(),
-            IOobject::NO_READ,
-            IOobject::NO_WRITE,
-            false
-        )
-    );
-
-    word procName("processor" + Foam::name(Pstream::myProcNo()));
-    propsDict.add(procName, dictionary());
-    propsDict.subDict(procName).add("particleCount", cloud_.particleCount_);
-
-    propsDict.regIOobject::write();
-}
-
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class ParticleType>
@@ -132,9 +68,6 @@ bool Foam::IOPosition<ParticleType>::write() const
 template<class ParticleType>
 bool Foam::IOPosition<ParticleType>::writeData(Ostream& os) const
 {
-    // Write global cloud data
-    writeParticleProperties();
-
     os<< cloud_.size() << nl << token::BEGIN_LIST << nl;
 
     forAllConstIter(typename Cloud<ParticleType>, cloud_, iter)
@@ -161,9 +94,6 @@ void Foam::IOPosition<ParticleType>::readData
     bool checkClass
 )
 {
-    // Read global cloud data. Resets count on cloud.
-    readParticleProperties();
-
     Istream& is = readStream(checkClass ? typeName : "");
 
     token firstToken(is);

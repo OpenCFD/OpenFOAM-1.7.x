@@ -59,15 +59,6 @@ class IOPosition
         const Cloud<ParticleType>& cloud_;
 
 
-    // Private member functions
-
-        //- Read particle properties dictionary
-        void readParticleProperties();
-
-        //- Write particle properties dictionary
-        void writeParticleProperties() const;
-
-
 public:
 
     // Static data
@@ -77,9 +68,6 @@ public:
         {
             return cloud_.type();
         }
-
-        //- Name of particle properties dictionary
-        static word particlePropertiesName;
 
 
     // Constructors
