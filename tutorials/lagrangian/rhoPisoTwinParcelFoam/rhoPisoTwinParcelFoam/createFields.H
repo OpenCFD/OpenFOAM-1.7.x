@@ -7,7 +7,7 @@
     basicPsiThermo& thermo = pThermo();
 
     volScalarField& p = thermo.p();
-    volScalarField& h = thermo.h();
+    volScalarField& hs = thermo.hs();
     const volScalarField& psi = thermo.psi();
 
     volScalarField rho

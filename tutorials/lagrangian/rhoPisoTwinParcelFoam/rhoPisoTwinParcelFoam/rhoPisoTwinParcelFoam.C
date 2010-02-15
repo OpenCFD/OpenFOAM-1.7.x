@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
             // --- PISO loop
             for (int corr=1; corr<=nCorr; corr++)
             {
-                #include "hEqn.H"
+                #include "hsEqn.H"
                 #include "pEqn.H"
             }
         }
