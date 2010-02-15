@@ -37,7 +37,6 @@ Description
 #include "BasicReactingCloud.H"
 #include "psiChemistryModel.H"
 #include "chemistrySolver.H"
-#include "thermoPhysicsTypes.H"
 #include "radiationModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -75,8 +74,6 @@ int main(int argc, char *argv[])
 
         parcels.evolve();
 
-        parcels.info();
-
         #include "chemistry.H"
         #include "rhoEqn.H"
 
@@ -89,12 +86,9 @@ int main(int argc, char *argv[])
             // --- PISO loop
             for (int corr=1; corr<=nCorr; corr++)
             {
-                #include "hEqn.H"
+                #include "hsEqn.H"
                 #include "pEqn.H"
             }
-
-            Info<< "T gas min/max   = " << min(T).value() << ", "
-                << max(T).value() << endl;
         }
 
         turbulence->correct();

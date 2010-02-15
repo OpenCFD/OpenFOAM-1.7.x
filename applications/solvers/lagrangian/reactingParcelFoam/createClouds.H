@@ -1,5 +1,5 @@
 Info<< "\nConstructing reacting cloud" << endl;
-BasicReactingCloud<gasThermoPhysics> parcels
+thermoReactingCloud parcels
 (
     "reactingCloud1",
     rho,
