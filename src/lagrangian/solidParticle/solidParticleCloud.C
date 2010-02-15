@@ -42,7 +42,8 @@ namespace Foam
 Foam::solidParticleCloud::solidParticleCloud
 (
     const fvMesh& mesh,
-    const word& cloudName
+    const word& cloudName,
+    bool readFields
 )
 :
     Cloud<solidParticle>(mesh, cloudName, false),
@@ -62,7 +63,10 @@ Foam::solidParticleCloud::solidParticleCloud
     e_(dimensionedScalar(particleProperties_.lookup("e")).value()),
     mu_(dimensionedScalar(particleProperties_.lookup("mu")).value())
 {
-    solidParticle::readFields(*this);
+    if (readFields)
+    {
+        solidParticle::readFields(*this);
+    }
 }
 
 
@@ -81,12 +85,6 @@ void Foam::solidParticleCloud::move(const dimensionedVector& g)
     solidParticle::trackData td(*this, rhoInterp, UInterp, nuInterp, g.value());
 
     Cloud<solidParticle>::move(td);
-}
-
-
-void Foam::solidParticleCloud::writeFields() const
-{
-    solidParticle::writeFields(*this);
 }
 
 

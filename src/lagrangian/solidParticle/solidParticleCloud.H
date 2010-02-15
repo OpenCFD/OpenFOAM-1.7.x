@@ -86,7 +86,8 @@ public:
         solidParticleCloud
         (
             const fvMesh&,
-            const word& cloudName = "defaultCloud"
+            const word& cloudName = "defaultCloud",
+            bool readFields = true
         );
 
 
@@ -106,12 +107,6 @@ public:
             //- Move the particles under the influence of the given
             //  gravitational acceleration
             void move(const dimensionedVector& g);
-
-
-        // Write
-
-            //- Write fields
-            virtual void writeFields() const;
 };
 
 
