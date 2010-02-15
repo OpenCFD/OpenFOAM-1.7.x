@@ -6,11 +6,13 @@ basicThermo/basicThermo.C
 psiThermo/basicPsiThermo/basicPsiThermo.C
 psiThermo/basicPsiThermo/newBasicPsiThermo.C
 psiThermo/hPsiThermo/hPsiThermos.C
+psiThermo/hsPsiThermo/hsPsiThermos.C
 psiThermo/ePsiThermo/ePsiThermos.C
 
 rhoThermo/basicRhoThermo/basicRhoThermo.C
 rhoThermo/basicRhoThermo/newBasicRhoThermo.C
 rhoThermo/hRhoThermo/hRhoThermos.C
+rhoThermo/hsRhoThermo/hsRhoThermos.C
 
 derivedFvPatchFields/fixedEnthalpy/fixedEnthalpyFvPatchScalarField.C
 derivedFvPatchFields/gradientEnthalpy/gradientEnthalpyFvPatchScalarField.C
