@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    Info << "\nStarting time loop\n" << endl;
+    Info<< "\nStarting time loop\n" << endl;
 
     while (runTime.run())
     {
@@ -71,11 +71,11 @@ int main(int argc, char *argv[])
         runTime++;
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
-        Info << "Evolving Spray" << endl;
+        Info<< "Evolving Spray" << endl;
 
         dieselSpray.evolve();
 
-        Info << "Solving chemistry" << endl;
+        Info<< "Solving chemistry" << endl;
 
         chemistry.solve
         (
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
         for (label ocorr=1; ocorr <= nOuterCorr; ocorr++)
         {
             #include "YEqn.H"
-            #include "hEqn.H"
+            #include "hsEqn.H"
 
             // --- PISO loop
             for (int corr=1; corr<=nCorr; corr++)
