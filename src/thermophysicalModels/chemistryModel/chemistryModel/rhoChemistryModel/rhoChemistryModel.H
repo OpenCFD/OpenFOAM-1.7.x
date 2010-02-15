@@ -41,7 +41,7 @@ SourceFiles
 #include "basicChemistryModel.H"
 #include "autoPtr.H"
 #include "runTimeSelectionTables.H"
-#include "hReactionThermo.H"
+#include "hsReactionThermo.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -73,7 +73,7 @@ protected:
     // Protected data
 
         //- Thermo package
-        autoPtr<hReactionThermo> thermo_;
+        autoPtr<hsReactionThermo> thermo_;
 
 
 public:
@@ -114,10 +114,10 @@ public:
     // Member Functions
 
         //- Return access to the thermo package
-        inline hReactionThermo& thermo();
+        inline hsReactionThermo& thermo();
 
         //- Return const access to the thermo package
-        inline const hReactionThermo& thermo() const;
+        inline const hsReactionThermo& thermo() const;
 };
 
 
