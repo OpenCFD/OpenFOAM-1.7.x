@@ -1,7 +1,5 @@
 EXE_INC = \
     -I./combustionModels/lnInclude \
-    -I./sensibleEnthalpyCombustionThermophysicalModels/basic/lnInclude \
-    -I./sensibleEnthalpyCombustionThermophysicalModels/reactionThermo/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/reactionThermo/lnInclude \
@@ -11,8 +9,6 @@ EXE_INC = \
 
 
 EXE_LIBS = \
-    -lbasicSensibleEnthalpyThermophysicalModels \
-    -lreactionSensibleEnthalpyThermophysicalModels \
     -lcombustionModels \
     -lspecie \
     -lreactionThermophysicalModels \

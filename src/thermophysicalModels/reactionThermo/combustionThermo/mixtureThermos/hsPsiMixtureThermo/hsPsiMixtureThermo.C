@@ -205,15 +205,15 @@ Foam::hsPsiMixtureThermo<MixtureType>::hs
     const labelList& cells
 ) const
 {
-    tmp<scalarField> th(new scalarField(T.size()));
-    scalarField& hs = th();
+    tmp<scalarField> ths(new scalarField(T.size()));
+    scalarField& hs = ths();
 
     forAll(T, celli)
     {
         hs[celli] = this->cellMixture(cells[celli]).Hs(T[celli]);
     }
 
-    return th;
+    return ths;
 }
 
 
@@ -225,15 +225,15 @@ Foam::hsPsiMixtureThermo<MixtureType>::hs
     const label patchi
 ) const
 {
-    tmp<scalarField> th(new scalarField(T.size()));
-    scalarField& hs = th();
+    tmp<scalarField> ths(new scalarField(T.size()));
+    scalarField& hs = ths();
 
     forAll(T, facei)
     {
         hs[facei] = this->patchFaceMixture(patchi, facei).Hs(T[facei]);
     }
 
-    return th;
+    return ths;
 }
 
 
@@ -277,7 +277,7 @@ Foam::hsPsiMixtureThermo<MixtureType>::Cp() const
                 IOobject::NO_WRITE
             ),
             mesh,
-            dimensionSet(0, 2, -2, -1, 0)
+            dimEnergy/dimMass/dimTemperature
         )
     );
 

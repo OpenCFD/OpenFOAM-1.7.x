@@ -128,9 +128,6 @@ public:
             }
 
 
-        //- Chemical enthalpy [J/kg]
-        virtual tmp<volScalarField> hc() const = 0;
-
         //- Update properties
         virtual void correct() = 0;
 };

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,21 +23,19 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 InClass
-    Foam::hsCombustionThermo
-
-Description
+    Foam::hReactionThermo
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef makeHsCombustionThermo_H
-#define makeHsCombustionThermo_H
+#ifndef makeReactionThermo_H
+#define makeReactionThermo_H
 
 #include "addToRunTimeSelectionTable.H"
-#include "basicSensiblePsiThermo.H"
+#include "basicRhoThermo.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#define makeHsCombustionThermo(CThermo,MixtureThermo,Mixture,Transport,Thermo,EqnOfState) \
+#define makeHsReactionThermo(CThermo,MixtureThermo,Mixture,Transport,Thermo,EqnOfState)\
                                                                               \
 typedef MixtureThermo                                                         \
     <Mixture<Transport<specieThermo<Thermo<EqnOfState> > > > >                \
@@ -53,7 +51,7 @@ defineTemplateTypeNameAndDebugWithName                                        \
                                                                               \
 addToRunTimeSelectionTable                                                    \
 (                                                                             \
-    basicSensiblePsiThermo,                                                   \
+    basicRhoThermo,                                                           \
     MixtureThermo##Mixture##Transport##Thermo##EqnOfState,                    \
     fvMesh                                                                    \
 );                                                                            \
@@ -66,7 +64,7 @@ addToRunTimeSelectionTable                                                    \
 )
 
 
-#define makeHsCombustionMixtureThermo(CThermo,MixtureThermo,Mixture,ThermoPhys) \
+#define makeHsReactionMixtureThermo(CThermo,MixtureThermo,Mixture,ThermoPhys) \
                                                                               \
 typedef MixtureThermo<Mixture<ThermoPhys> >                                   \
     MixtureThermo##Mixture##ThermoPhys;                                       \
@@ -80,7 +78,7 @@ defineTemplateTypeNameAndDebugWithName                                        \
                                                                               \
 addToRunTimeSelectionTable                                                    \
 (                                                                             \
-    basicSensiblePsiThermo,                                                   \
+    basicRhoThermo,                                                           \
     MixtureThermo##Mixture##ThermoPhys,                                       \
     fvMesh                                                                    \
 );                                                                            \

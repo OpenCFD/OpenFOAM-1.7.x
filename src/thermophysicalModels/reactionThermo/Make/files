@@ -8,6 +8,10 @@ combustionThermo/hCombustionThermo/hCombustionThermo.C
 combustionThermo/hCombustionThermo/newhCombustionThermo.C
 combustionThermo/hCombustionThermo/hCombustionThermos.C
 
+combustionThermo/hsCombustionThermo/hsCombustionThermo.C
+combustionThermo/hsCombustionThermo/newhsCombustionThermo.C
+combustionThermo/hsCombustionThermo/hsCombustionThermos.C
+
 combustionThermo/hhuCombustionThermo/hhuCombustionThermo.C
 combustionThermo/hhuCombustionThermo/newhhuCombustionThermo.C
 combustionThermo/hhuCombustionThermo/hhuCombustionThermos.C
@@ -16,6 +20,9 @@ reactionThermo/hReactionThermo/hReactionThermo.C
 reactionThermo/hReactionThermo/newhReactionThermo.C
 reactionThermo/hReactionThermo/hReactionThermos.C
 
+reactionThermo/hsReactionThermo/hsReactionThermo.C
+reactionThermo/hsReactionThermo/newhsReactionThermo.C
+reactionThermo/hsReactionThermo/hsReactionThermos.C
 
 derivedFvPatchFields/fixedUnburntEnthalpy/fixedUnburntEnthalpyFvPatchScalarField.C
 derivedFvPatchFields/gradientUnburntEnthalpy/gradientUnburntEnthalpyFvPatchScalarField.C

@@ -24,52 +24,44 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "basicSensiblePsiThermo.H"
+#include "hsCombustionThermo.H"
+#include "fvMesh.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-Foam::autoPtr<Foam::basicSensiblePsiThermo> Foam::basicSensiblePsiThermo::New
-(
-    const fvMesh& mesh
-)
+namespace Foam
 {
-    word thermoTypeName;
-
-    // Enclose the creation of the thermophysicalProperties to ensure it is
-    // deleted before the turbulenceModel is created otherwise the dictionary
-    // is entered in the database twice
-    {
-        IOdictionary thermoDict
-        (
-            IOobject
-            (
-                "thermophysicalProperties",
-                mesh.time().constant(),
-                mesh,
-                IOobject::MUST_READ,
-                IOobject::NO_WRITE
-            )
-        );
-
-        thermoDict.lookup("thermoType") >> thermoTypeName;
-    }
-
-    Info<< "Selecting thermodynamics package " << thermoTypeName << endl;
-
-    fvMeshConstructorTable::iterator cstrIter =
-        fvMeshConstructorTablePtr_->find(thermoTypeName);
-
-    if (cstrIter == fvMeshConstructorTablePtr_->end())
-    {
-        FatalErrorIn("basicSensiblePsiThermo::New(const fvMesh&)")
-            << "Unknown basicSensiblePsiThermo type " << thermoTypeName << nl << nl
-            << "Valid basicSensiblePsiThermo types are:" << nl
-            << fvMeshConstructorTablePtr_->toc() << nl
-            << exit(FatalError);
-    }
-
-    return autoPtr<basicSensiblePsiThermo>(cstrIter()(mesh));
+    defineTypeNameAndDebug(hsCombustionThermo, 0);
+    defineRunTimeSelectionTable(hsCombustionThermo, fvMesh);
 }
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::hsCombustionThermo::hsCombustionThermo(const fvMesh& mesh)
+:
+    basicPsiThermo(mesh),
+
+    hs_
+    (
+        IOobject
+        (
+            "hs",
+            mesh.time().timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimEnergy/dimMass,
+        this->hBoundaryTypes()
+    )
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::hsCombustionThermo::~hsCombustionThermo()
+{}
 
 
 // ************************************************************************* //

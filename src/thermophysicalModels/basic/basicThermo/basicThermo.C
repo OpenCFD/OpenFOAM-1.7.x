@@ -343,6 +343,13 @@ Foam::tmp<Foam::scalarField> Foam::basicThermo::hs
 }
 
 
+Foam::tmp<Foam::volScalarField> Foam::basicThermo::hc() const
+{
+    notImplemented("basicThermo::hc()");
+    return volScalarField::null();
+}
+
+
 Foam::volScalarField& Foam::basicThermo::e()
 {
     notImplemented("basicThermo::e()");

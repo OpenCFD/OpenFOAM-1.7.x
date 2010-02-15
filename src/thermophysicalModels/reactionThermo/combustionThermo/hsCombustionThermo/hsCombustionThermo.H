@@ -26,7 +26,7 @@ Class
     Foam::hsCombustionThermo
 
 Description
-    Foam::hsCombustionThermo
+    Sensible enthalpy variant of combustionThermo
 
 SourceFiles
     hsCombustionThermo.C
@@ -36,7 +36,7 @@ SourceFiles
 #ifndef hsCombustionThermo_H
 #define hsCombustionThermo_H
 
-#include "basicSensiblePsiThermo.H"
+#include "basicPsiThermo.H"
 #include "basicMultiComponentMixture.H"
 #include "autoPtr.H"
 #include "runTimeSelectionTables.H"
@@ -52,14 +52,14 @@ namespace Foam
 
 class hsCombustionThermo
 :
-    public basicSensiblePsiThermo
+    public basicPsiThermo
 {
 
 protected:
 
     // Protected data
 
-        //- sensible enthalpy field
+        //- Sensible enthalpy field
         volScalarField hs_;
 
 
@@ -127,8 +127,6 @@ public:
                 return hs_;
             }
 
-        //- Chemical enthalpy [J/kg]
-        virtual tmp<volScalarField> hc() const = 0;
 
         //- Update properties
         virtual void correct() = 0;

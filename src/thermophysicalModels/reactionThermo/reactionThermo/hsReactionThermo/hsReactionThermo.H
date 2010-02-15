@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,21 +23,22 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::basicSensiblePsiThermo
+    Foam::hsReactionThermo
 
 Description
-    Basic thermodynamic properties based on compressibility
+    Sensible enthalpy variant for reactionThermo
 
 SourceFiles
-    basicSensiblePsiThermo.C
-    newBasicSensiblePsiThermo.C
+    hReactionThermo.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef basicSensiblePsiThermo_H
-#define basicSensiblePsiThermo_H
+#ifndef hsReactionThermo_H
+#define hsReactionThermo_H
 
-#include "basicThermo.H"
+#include "basicRhoThermo.H"
+#include "basicMultiComponentMixture.H"
+#include "autoPtr.H"
 #include "runTimeSelectionTables.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -46,60 +47,89 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                        Class basicSensiblePsiThermo Declaration
+                     Class hsReactionThermo Declaration
 \*---------------------------------------------------------------------------*/
 
-class basicSensiblePsiThermo
+class hsReactionThermo
 :
-    public basicThermo
+    public basicRhoThermo
 {
 
 protected:
 
-    // Protected member functions
+    // Protected data
 
-        //- Construct as copy (not implemented)
-        basicSensiblePsiThermo(const basicSensiblePsiThermo&);
+        //- Sensible enthalpy [J/kg]
+        volScalarField hs_;
 
 
 public:
 
     //- Runtime type information
-    TypeName("basicSensiblePsiThermo");
+    TypeName("hsReactionThermo");
 
 
-    //- Declare run-time constructor selection table
+    //- Declare run-time constructor selection tables
     declareRunTimeSelectionTable
     (
         autoPtr,
-        basicSensiblePsiThermo,
+        hsReactionThermo,
         fvMesh,
         (const fvMesh& mesh),
         (mesh)
     );
 
+
     // Constructors
 
-        //- Construct from mesh
-        basicSensiblePsiThermo(const fvMesh&);
+        //- Construct from dictionary and mesh
+        hsReactionThermo(const fvMesh&);
 
 
-    //- Selector
-    static autoPtr<basicSensiblePsiThermo> New(const fvMesh&);
+    // Selectors
+
+        //- Standard selection based on fvMesh
+        static autoPtr<hsReactionThermo> New(const fvMesh&);
+
+        //- Select and check that package contains 'thermoType'
+        static autoPtr<hsReactionThermo> NewType
+        (
+            const fvMesh&,
+            const word& thermoType
+        );
+
 
     //- Destructor
-    virtual ~basicSensiblePsiThermo();
+    virtual ~hsReactionThermo();
 
 
     // Member functions
 
-        // Fields derived from thermodynamic state variables
+        //- Return the composition of the multi-component mixture
+        virtual basicMultiComponentMixture& composition() = 0;
 
-            //- Density [kg/m^3] - uses current value of pressure
-            virtual tmp<volScalarField> rho() const
+        //- Return the composition of the multi-component mixture
+        virtual const basicMultiComponentMixture& composition() const = 0;
+
+
+        // Access to thermodynamic state variables
+
+            //- Sensible enthalpy [J/kg]
+            //  Non-const access allowed for transport equations
+            virtual volScalarField& hs()
             {
-                return p_*psi();
+                return hs_;
             }
+
+            //- Sensible enthalpy [J/kg]
+            virtual const volScalarField& hs() const
+            {
+                return hs_;
+            }
+
+
+        //- Update properties
+        virtual void correct() = 0;
 };
 
 

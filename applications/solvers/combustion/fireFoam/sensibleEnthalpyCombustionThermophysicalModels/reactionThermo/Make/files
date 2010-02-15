@@ -1,5 +1,0 @@
-combustionThermo/hsCombustionThermo/hsCombustionThermo.C
-combustionThermo/hsCombustionThermo/newhsCombustionThermo.C
-combustionThermo/hsCombustionThermo/hsCombustionThermos.C
-
-LIB = $(FOAM_LIBBIN)/libreactionSensibleEnthalpyThermophysicalModels

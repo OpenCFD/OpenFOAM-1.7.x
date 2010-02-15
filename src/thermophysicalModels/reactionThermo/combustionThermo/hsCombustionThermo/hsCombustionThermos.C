@@ -35,10 +35,15 @@ License
 #include "janafThermo.H"
 #include "specieThermo.H"
 
+#include "constTransport.H"
 #include "sutherlandTransport.H"
 
+#include "dieselMixture.H"
+#include "homogeneousMixture.H"
+#include "inhomogeneousMixture.H"
 #include "veryInhomogeneousMixture.H"
 
+#include "reactingMixture.H"
 #include "multiComponentMixture.H"
 
 #include "thermoPhysicsTypes.H"
@@ -50,6 +55,55 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+makeHsCombustionThermo
+(
+    hsCombustionThermo,
+    hsPsiMixtureThermo,
+    homogeneousMixture,
+    constTransport,
+    hConstThermo,
+    perfectGas
+);
+
+makeHsCombustionThermo
+(
+    hsCombustionThermo,
+    hsPsiMixtureThermo,
+    inhomogeneousMixture,
+    constTransport,
+    hConstThermo,
+    perfectGas
+);
+
+makeHsCombustionThermo
+(
+    hsCombustionThermo,
+    hsPsiMixtureThermo,
+    veryInhomogeneousMixture,
+    constTransport,
+    hConstThermo,
+    perfectGas
+);
+
+makeHsCombustionThermo
+(
+    hsCombustionThermo,
+    hsPsiMixtureThermo,
+    homogeneousMixture,
+    sutherlandTransport,
+    janafThermo,
+    perfectGas
+);
+
+makeHsCombustionThermo
+(
+    hsCombustionThermo,
+    hsPsiMixtureThermo,
+    inhomogeneousMixture,
+    sutherlandTransport,
+    janafThermo,
+    perfectGas
+);
 
 makeHsCombustionThermo
 (
@@ -59,6 +113,37 @@ makeHsCombustionThermo
     sutherlandTransport,
     janafThermo,
     perfectGas
+);
+
+makeHsCombustionThermo
+(
+    hsCombustionThermo,
+    hsPsiMixtureThermo,
+    dieselMixture,
+    sutherlandTransport,
+    janafThermo,
+    perfectGas
+);
+
+// Multi-component thermo
+
+makeHsCombustionMixtureThermo
+(
+    hsCombustionThermo,
+    hsPsiMixtureThermo,
+    multiComponentMixture,
+    gasThermoPhysics
+);
+
+
+// Multi-component reaction thermo
+
+makeHsCombustionMixtureThermo
+(
+    hsCombustionThermo,
+    hsPsiMixtureThermo,
+    reactingMixture,
+    gasThermoPhysics
 );
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

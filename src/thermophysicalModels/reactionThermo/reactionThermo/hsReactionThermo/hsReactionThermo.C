@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,22 +24,22 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "hsCombustionThermo.H"
+#include "hsReactionThermo.H"
 #include "fvMesh.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    defineTypeNameAndDebug(hsCombustionThermo, 0);
-    defineRunTimeSelectionTable(hsCombustionThermo, fvMesh);
+    defineTypeNameAndDebug(hsReactionThermo, 0);
+    defineRunTimeSelectionTable(hsReactionThermo, fvMesh);
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::hsCombustionThermo::hsCombustionThermo(const fvMesh& mesh)
+Foam::hsReactionThermo::hsReactionThermo(const fvMesh& mesh)
 :
-    basicSensiblePsiThermo(mesh),
+    basicRhoThermo(mesh),
 
     hs_
     (
@@ -52,7 +52,7 @@ Foam::hsCombustionThermo::hsCombustionThermo(const fvMesh& mesh)
             IOobject::NO_WRITE
         ),
         mesh,
-        dimensionSet(0, 2, -2, 0, 0),
+        dimEnergy/dimMass,
         this->hBoundaryTypes()
     )
 {}
@@ -60,7 +60,7 @@ Foam::hsCombustionThermo::hsCombustionThermo(const fvMesh& mesh)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::hsCombustionThermo::~hsCombustionThermo()
+Foam::hsReactionThermo::~hsReactionThermo()
 {}
 
 

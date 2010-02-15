@@ -145,17 +145,17 @@ public:
             //  Non-const access allowed for transport equations
             virtual volScalarField& h();
 
-            //- Enthalpy [J/kg]
+            //- Total enthalpy [J/kg]
             virtual const volScalarField& h() const;
 
-            //- Enthalpy for cell-set [J/kg]
+            //- Total enthalpy for cell-set [J/kg]
             virtual tmp<scalarField> h
             (
                 const scalarField& T,
                 const labelList& cells
             ) const;
 
-            //- Enthalpy for patch [J/kg]
+            //- Total enthalpy for patch [J/kg]
             virtual tmp<scalarField> h
             (
                 const scalarField& T,
@@ -166,22 +166,25 @@ public:
             //  Non-const access allowed for transport equations
             virtual volScalarField& hs();
 
-            //- Enthalpy [J/kg]
+            //- Sensible enthalpy [J/kg]
             virtual const volScalarField& hs() const;
 
-            //- Enthalpy for cell-set [J/kg]
+            //- Sensible enthalpy for cell-set [J/kg]
             virtual tmp<scalarField> hs
             (
                 const scalarField& T,
                 const labelList& cells
             ) const;
 
-            //- Enthalpy for patch [J/kg]
+            //- Sensible enthalpy for patch [J/kg]
             virtual tmp<scalarField> hs
             (
                 const scalarField& T,
                 const label patchi
             ) const;
+
+            //- Chemical enthalpy [J/kg]
+            virtual tmp<volScalarField> hc() const;
 
             //- Internal energy [J/kg]
             //  Non-const access allowed for transport equations
@@ -197,7 +200,7 @@ public:
                 const labelList& cells
             ) const;
 
-            //-Internal energy for patch [J/kg]
+            //- Internal energy for patch [J/kg]
             virtual tmp<scalarField> e
             (
                 const scalarField& T,
