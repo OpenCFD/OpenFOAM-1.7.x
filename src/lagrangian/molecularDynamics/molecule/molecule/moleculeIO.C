@@ -98,12 +98,14 @@ Foam::molecule::molecule
 }
 
 
-void Foam::molecule::readFields(moleculeCloud& mC)
+void Foam::molecule::readFields(Cloud<molecule>& mC)
 {
     if (!mC.size())
     {
         return;
     }
+
+    Particle<molecule>::readFields(mC);
 
     IOField<tensor> Q(mC.fieldIOobject("Q", IOobject::MUST_READ));
     mC.checkFieldIOobject(mC, Q);
@@ -150,7 +152,7 @@ void Foam::molecule::readFields(moleculeCloud& mC)
 }
 
 
-void Foam::molecule::writeFields(const moleculeCloud& mC)
+void Foam::molecule::writeFields(const Cloud<molecule>& mC)
 {
     Particle<molecule>::writeFields(mC);
 
@@ -241,9 +243,10 @@ void Foam::molecule::writeFields(const moleculeCloud& mC)
     orientation2.write();
     orientation3.write();
 
-    mC.writeXYZ
+    const moleculeCloud& m = dynamic_cast<const moleculeCloud&>(mC);
+    m.writeXYZ
     (
-        mC.mesh().time().timePath() + "/lagrangian" + "/moleculeCloud.xmol"
+        m.mesh().time().timePath() + "/lagrangian" + "/moleculeCloud.xmol"
     );
 }
 

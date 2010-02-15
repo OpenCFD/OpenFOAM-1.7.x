@@ -1063,7 +1063,8 @@ Foam::label Foam::moleculeCloud::nSites() const
 Foam::moleculeCloud::moleculeCloud
 (
     const polyMesh& mesh,
-    const potential& pot
+    const potential& pot,
+    bool readFields
 )
 :
     Cloud<molecule>(mesh, "moleculeCloud", false),
@@ -1074,7 +1075,10 @@ Foam::moleculeCloud::moleculeCloud
     constPropList_(),
     rndGen_(clock::getTime())
 {
-    molecule::readFields(*this);
+    if (readFields)
+    {
+        molecule::readFields(*this);
+    }
 
     buildConstProps();
 
@@ -1090,7 +1094,8 @@ Foam::moleculeCloud::moleculeCloud
 (
     const polyMesh& mesh,
     const potential& pot,
-    const IOdictionary& mdInitialiseDict
+    const IOdictionary& mdInitialiseDict,
+    bool readFields
 )
     :
     Cloud<molecule>(mesh, "moleculeCloud", false),
@@ -1100,7 +1105,10 @@ Foam::moleculeCloud::moleculeCloud
     constPropList_(),
     rndGen_(clock::getTime())
 {
-    molecule::readFields(*this);
+    if (readFields)
+    {
+        molecule::readFields(*this);
+    }
 
     clear();
 
@@ -1182,12 +1190,6 @@ void Foam::moleculeCloud::applyConstraintsAndThermostats
 
         mol().pi() *= temperatureCorrectionFactor;
     }
-}
-
-
-void Foam::moleculeCloud::writeFields() const
-{
-    molecule::writeFields(*this);
 }
 
 

@@ -382,9 +382,12 @@ public:
             int&
         );
 
-        static void readFields(moleculeCloud& mC);
 
-        static void writeFields(const moleculeCloud& mC);
+    // I-O
+
+        static void readFields(Cloud<molecule>& mC);
+
+        static void writeFields(const Cloud<molecule>& mC);
 
 
     // IOstream Operators

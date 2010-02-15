@@ -171,7 +171,8 @@ public:
         moleculeCloud
         (
             const polyMesh& mesh,
-            const potential& pot
+            const potential& pot,
+            bool readFields = true
         );
 
         //- Construct given mesh, potential and mdInitialiseDict
@@ -179,7 +180,8 @@ public:
         (
             const polyMesh& mesh,
             const potential& pot,
-            const IOdictionary& mdInitialiseDict
+            const IOdictionary& mdInitialiseDict,
+            bool readFields = true
         );
 
 
@@ -216,9 +218,6 @@ public:
 
 
     // Member Operators
-
-        //- Write fields
-        void writeFields() const;
 
         //- Write molecule sites in XYZ format
         void writeXYZ(const fileName& fName) const;
