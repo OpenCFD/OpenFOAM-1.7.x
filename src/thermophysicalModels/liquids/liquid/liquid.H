@@ -219,7 +219,7 @@ public:
             //- Liquid heat capacity [J/(kg K)]
             virtual scalar cp(scalar p, scalar T) const = 0;
 
-            //- Liquid h [J/kg]
+            //- Liquid enthalpy [J/kg] - reference to 298.15 K
             virtual scalar h(scalar p, scalar T) const = 0;
 
             //- Ideal gas heat capacity [J/(kg K)]
@@ -242,6 +242,9 @@ public:
 
             //- Vapour diffussivity [m2/s]
             virtual scalar D(scalar p, scalar T) const = 0;
+
+            //- Vapour diffussivity [m2/s] with specified binary pair
+            virtual scalar D(scalar p, scalar T, scalar Wb) const = 0;
 
 
     // I-O

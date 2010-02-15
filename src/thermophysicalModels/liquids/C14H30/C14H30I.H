@@ -102,4 +102,10 @@ inline Foam::scalar Foam::C14H30::D(scalar p, scalar T) const
 }
 
 
+inline Foam::scalar Foam::C14H30::D(scalar p, scalar T, scalar Wb) const
+{
+    return D_.f(p, T, Wb);
+}
+
+
 // ************************************************************************* //

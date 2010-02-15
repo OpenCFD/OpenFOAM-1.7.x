@@ -102,5 +102,11 @@ inline Foam::scalar Foam::CH4N2O::D(scalar p, scalar T) const
 }
 
 
+inline Foam::scalar Foam::CH4N2O::D(scalar p, scalar T, scalar Wb) const
+{
+    return D_.f(p, T, Wb);
+}
+
+
 // ************************************************************************* //
 

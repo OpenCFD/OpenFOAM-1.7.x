@@ -79,7 +79,7 @@ public:
             wf_(wf),
             wa_(wa),
             alpha_(sqrt(1/wf_ + 1/wa_)),
-            beta_(sqr((cbrt(a_) + cbrt(b_))))
+            beta_(sqr(cbrt(a_) + cbrt(b_)))
         {}
 
         //- Construct from Istream
@@ -101,6 +101,14 @@ public:
         scalar f(scalar p, scalar T) const
         {
             return 3.6059e-3*(pow(1.8*T, 1.75))*alpha_/(p*beta_);
+        }
+
+        //- API vapour mass diffusivity function using properties from
+        //  construction - with specified binary pair
+        scalar f(scalar p, scalar T, scalar  Wa) const
+        {
+            const scalar alphaBinary = sqrt(1/wf_ + 1/Wa);
+            return 3.6059e-3*(pow(1.8*T, 1.75))*alphaBinary/(p*beta_);
         }
 
         //- Write the function coefficients

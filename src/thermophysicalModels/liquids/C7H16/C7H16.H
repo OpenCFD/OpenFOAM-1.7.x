@@ -126,7 +126,7 @@ public:
         //- Liquid heat capacity [J/(kg K)]
         inline scalar cp(scalar p, scalar T) const;
 
-        //- Liquid Enthalpy [J/(kg)]
+        //- Liquid Enthalpy [J/kg]
         inline scalar h(scalar p, scalar T) const;
 
         //- Ideal gas heat capacity [J/(kg K)]
@@ -152,6 +152,9 @@ public:
 
         //- Vapour diffussivity [m2/s]
         inline scalar D(scalar p, scalar T) const;
+
+        //- Vapour diffussivity [m2/s] with specified binary pair
+        inline scalar D(scalar p, scalar T, scalar Wb) const;
 
 
     // I-O

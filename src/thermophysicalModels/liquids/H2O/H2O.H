@@ -152,6 +152,9 @@ public:
         //- Vapour diffussivity [m2/s]
         inline scalar D(scalar p, scalar T) const;
 
+        //- Vapour diffussivity [m2/s] with specified binary pair
+        inline scalar D(scalar p, scalar T, scalar Wb) const;
+
 
     // I-O
 

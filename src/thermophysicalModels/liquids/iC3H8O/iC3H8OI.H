@@ -102,5 +102,12 @@ inline Foam::scalar Foam::iC3H8O::D(scalar p, scalar T) const
 }
 
 
+inline Foam::scalar Foam::iC3H8O::D(scalar p, scalar T, scalar) const
+{
+    // Use 'standard' NSRDS D(p, T) function
+    return D(p, T);
+}
+
+
 // ************************************************************************* //
 
