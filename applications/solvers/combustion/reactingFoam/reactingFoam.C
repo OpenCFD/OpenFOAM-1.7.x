@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    Info << "\nStarting time loop\n" << endl;
+    Info<< "\nStarting time loop\n" << endl;
 
     while (runTime.run())
     {
@@ -68,14 +68,12 @@ int main(int argc, char *argv[])
 
         #include "chemistry.H"
         #include "rhoEqn.H"
-        #include "UEqn.H"
 
         for (label ocorr=1; ocorr <= nOuterCorr; ocorr++)
         {
+            #include "UEqn.H"
             #include "YEqn.H"
-
-            #define Db turbulence->alphaEff()
-            #include "hEqn.H"
+            #include "hsEqn.H"
 
             // --- PISO loop
             for (int corr=1; corr<=nCorr; corr++)
