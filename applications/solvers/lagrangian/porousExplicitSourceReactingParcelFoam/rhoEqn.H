@@ -37,7 +37,7 @@ Description
       + fvc::div(phi)
       ==
         parcels.Srho()
-      + pointMassSources.Su()
+      + massSource.SuTot()
     );
 
     rhoEqn.relax();

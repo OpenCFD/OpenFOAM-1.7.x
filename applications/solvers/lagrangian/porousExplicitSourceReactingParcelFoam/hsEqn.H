@@ -32,13 +32,15 @@
     {
         solve
         (
-            fvm::ddt(rho, h)
-          + mvConvection->fvmDiv(phi, h)
-          - fvm::laplacian(turbulence->alphaEff(), h)
+            fvm::ddt(rho, hs)
+          + mvConvection->fvmDiv(phi, hs)
+          - fvm::laplacian(turbulence->alphaEff(), hs)
          ==
             pWork()
           + parcels.Sh()
-          + radiation->Sh(thermo)
+          + radiation->Shs(thermo)
+          + energySource.Su()
+          + chemistrySh
         );
 
         thermo.correct();

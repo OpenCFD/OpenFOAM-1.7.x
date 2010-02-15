@@ -32,7 +32,7 @@
           - fvm::laplacian(rho*rAU, p)
         ==
             parcels.Srho()
-          + pointMassSources.Su()
+          + massSource.SuTot()
         );
 
         if (corr == nCorr-1 && nonOrth == nNonOrthCorr)

@@ -27,12 +27,13 @@ Application
 
 Description
     Transient PISO solver for compressible, laminar or turbulent flow with
-    reacting Lagrangian parcels for porous media, including explicit sources
+    reacting multiphase Lagrangian parcels for porous media, including explicit
+    sources for mass, momentum and energy
 
     The solver includes:
-    - reacting parcel cloud
+    - reacting multiphase parcel cloud
     - porous media
-    - point mass sources
+    - mass, momentum and energy sources
     - polynomial based, incompressible thermodynamics (f(T))
 
     Note: ddtPhiCorr not used here when porous zones are active
@@ -43,13 +44,12 @@ Description
 #include "fvCFD.H"
 #include "hReactionThermo.H"
 #include "turbulenceModel.H"
-#include "BasicReactingCloud.H"
+#include "BasicReactingMultiphaseCloud.H"
 #include "rhoChemistryModel.H"
 #include "chemistrySolver.H"
-#include "thermoPhysicsTypes.H"
 #include "radiationModel.H"
 #include "porousZones.H"
-#include "timeActivatedExplicitMulticomponentPointSource.H"
+#include "timeActivatedExplicitSource.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     #include "createFields.H"
     #include "createRadiationModel.H"
     #include "createClouds.H"
-    #include "createMulticomponentPointSources.H"
+    #include "createExplicitSources.H"
     #include "createPorousZones.H"
     #include "initContinuityErrs.H"
     #include "readTimeControls.H"
@@ -89,13 +89,11 @@ int main(int argc, char *argv[])
 
         parcels.evolve();
 
-        parcels.info();
-
         #include "chemistry.H"
         #include "rhoEqn.H"
         #include "UEqn.H"
         #include "YEqn.H"
-        #include "hEqn.H"
+        #include "hsEqn.H"
 
         // --- PISO loop
         for (int corr=0; corr<nCorr; corr++)

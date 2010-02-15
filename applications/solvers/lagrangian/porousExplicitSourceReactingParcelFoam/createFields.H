@@ -6,15 +6,23 @@
     );
     rhoChemistryModel& chemistry = pChemistry();
 
-    hReactionThermo& thermo = chemistry.thermo();
+    hsReactionThermo& thermo = chemistry.thermo();
 
     basicMultiComponentMixture& composition = thermo.composition();
     PtrList<volScalarField>& Y = composition.Y();
 
     word inertSpecie(thermo.lookup("inertSpecie"));
 
+    if (!composition.contains(inertSpecie))
+    {
+        FatalErrorIn(args.executable())
+            << "Specified inert specie '" << inertSpecie << "' not found in "
+            << "species list. Available species:" << composition.species()
+            << exit(FatalError);
+    }
+
     volScalarField& p = thermo.p();
-    volScalarField& h = thermo.h();
+    volScalarField& hs = thermo.hs();
     const volScalarField& T = thermo.T();
     const volScalarField& psi = thermo.psi();
 
@@ -76,8 +84,22 @@
     Info<< "Creating multi-variate interpolation scheme\n" << endl;
     multivariateSurfaceInterpolationScheme<scalar>::fieldTable fields;
 
-    forAll (Y, i)
+    forAll(Y, i)
     {
         fields.add(Y[i]);
     }
-    fields.add(h);
+    fields.add(hs);
+
+    DimensionedField<scalar, volMesh> chemistrySh
+    (
+        IOobject
+        (
+            "chemistry::Sh",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("chemistrySh", dimEnergy/dimTime/dimVolume, 0.0)
+    );

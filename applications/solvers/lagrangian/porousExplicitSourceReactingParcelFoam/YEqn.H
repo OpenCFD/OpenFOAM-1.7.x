@@ -15,7 +15,7 @@ tmp<fv::convectionScheme<scalar> > mvConvection
     label inertIndex = -1;
     volScalarField Yt = 0.0*Y[0];
 
-    for (label i=0; i<Y.size(); i++)
+    forAll(Y, i)
     {
         if (Y[i].name() != inertSpecie)
         {
@@ -28,7 +28,7 @@ tmp<fv::convectionScheme<scalar> > mvConvection
               ==
                 parcels.Srho(i)
               + kappa*chemistry.RR(i)().dimensionedInternalField()
-              + pointMassSources.Su(i),
+              + massSource.Su(i),
                 mesh.solver("Yi")
             );
 
