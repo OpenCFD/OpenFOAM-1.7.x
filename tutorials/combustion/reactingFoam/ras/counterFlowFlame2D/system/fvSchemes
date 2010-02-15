@@ -32,7 +32,7 @@ divSchemes
 
     div(phi,U)      Gauss limitedLinearV 1;
     div(phi,Yi_h)   Gauss limitedLinear01 1;
-    div(phi,h)      Gauss limitedLinear 1;
+    div(phi,hs)     Gauss limitedLinear 1;
     div(phiU,p)     Gauss limitedLinear 1;
     div(phid,p)     Gauss limitedLinear 1;
     div(phi,epsilon) Gauss limitedLinear 1;
@@ -48,7 +48,7 @@ laplacianSchemes
     laplacian(DkEff,k) Gauss linear uncorrected;
     laplacian(DepsilonEff,epsilon) Gauss linear uncorrected;
     laplacian((rho*(1|A(U))),p) Gauss linear uncorrected;
-    laplacian(alphaEff,h) Gauss linear uncorrected;
+    laplacian(alphaEff,hs) Gauss linear uncorrected;
 }
 
 interpolationSchemes
@@ -64,7 +64,7 @@ snGradSchemes
 fluxRequired
 {
     default         no;
-	p;
+    p;
 }
 
 
