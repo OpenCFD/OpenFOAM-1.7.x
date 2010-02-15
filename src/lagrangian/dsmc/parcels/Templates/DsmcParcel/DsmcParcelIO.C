@@ -74,12 +74,14 @@ Foam::DsmcParcel<ParcelType>::DsmcParcel
 
 
 template<class ParcelType>
-void Foam::DsmcParcel<ParcelType>::readFields(DsmcCloud<ParcelType>& c)
+void Foam::DsmcParcel<ParcelType>::readFields(Cloud<ParcelType>& c)
 {
     if (!c.size())
     {
         return;
     }
+
+    Particle<ParcelType>::readFields(c);
 
     IOField<vector> U(c.fieldIOobject("U", IOobject::MUST_READ));
     c.checkFieldIOobject(c, U);
@@ -104,7 +106,7 @@ void Foam::DsmcParcel<ParcelType>::readFields(DsmcCloud<ParcelType>& c)
 
 
 template<class ParcelType>
-void Foam::DsmcParcel<ParcelType>::writeFields(const DsmcCloud<ParcelType>& c)
+void Foam::DsmcParcel<ParcelType>::writeFields(const Cloud<ParcelType>& c)
 {
     Particle<ParcelType>::writeFields(c);
 

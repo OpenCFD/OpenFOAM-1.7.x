@@ -806,6 +806,11 @@ Foam::DsmcCloud<ParcelType>::DsmcCloud
     {
         collisionSelectionRemainder_[i] = rndGen_.scalar01();
     }
+
+    if (readFields)
+    {
+        ParcelType::readFields(*this);
+    }
 }
 
 

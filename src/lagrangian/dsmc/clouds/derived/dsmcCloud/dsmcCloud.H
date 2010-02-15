@@ -43,62 +43,8 @@ SourceFiles
 
 namespace Foam
 {
-
-/*---------------------------------------------------------------------------*\
-                          Class dsmcCloud Declaration
-\*---------------------------------------------------------------------------*/
-
-class dsmcCloud
-:
-    public DsmcCloud<dsmcParcel>
-{
-    // Private member functions
-
-        //- Disallow default bitwise copy construct
-        dsmcCloud(const dsmcCloud&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const dsmcCloud&);
-
-
-public:
-
-    //- Runtime type information
-    TypeName("dsmcCloud");
-
-
-    // Constructors
-
-        //- Construct given name and mesh, will read Parcels and fields from
-        //  file
-        dsmcCloud
-        (
-            const word& cloudName,
-            const fvMesh& mesh,
-            bool readFields = true
-        );
-
-        //- Construct given name, mesh and initialisation dictionary.
-        dsmcCloud
-        (
-            const word& cloudName,
-            const fvMesh& mesh,
-            const IOdictionary& dsmcInitialiseDict
-        );
-
-    //- Destructor
-    ~dsmcCloud();
-
-
-    // Member functions
-
-        //- Write fields
-        virtual void writeFields() const;
-};
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
+    typedef DsmcCloud<dsmcParcel> dsmcCloud;
+}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

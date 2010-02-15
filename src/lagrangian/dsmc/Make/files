@@ -4,9 +4,6 @@ parcels/derived/dsmcParcel/dsmcParcel.C
 /* Cloud base classes */
 clouds/baseClasses/DsmcBaseCloud/DsmcBaseCloud.C
 
-/* Clouds */
-clouds/derived/dsmcCloud/dsmcCloud.C
-
 /* submodels */
 parcels/derived/dsmcParcel/defineDsmcParcel.C
 parcels/derived/dsmcParcel/makeDsmcParcelBinaryCollisionModels.C
