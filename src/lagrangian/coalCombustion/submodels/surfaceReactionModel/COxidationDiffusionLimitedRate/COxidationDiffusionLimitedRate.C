@@ -25,6 +25,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "COxidationDiffusionLimitedRate.H"
+#include "mathematicalConstants.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -102,7 +103,7 @@ Foam::scalar Foam::COxidationDiffusionLimitedRate<CloudType>::calculate
     const scalarField& YLiquid,
     const scalarField& YSolid,
     const scalarField& YMixture,
-    const scalarField& dMassVolatile,
+    const scalar N,
     scalarField& dMassGas,
     scalarField& dMassLiquid,
     scalarField& dMassSolid,

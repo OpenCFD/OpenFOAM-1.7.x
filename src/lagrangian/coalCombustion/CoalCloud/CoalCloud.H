@@ -26,9 +26,7 @@ Class
     CoalCloud
 
 Description
-
-SourceFiles
-    CoalCloud.C
+    Coal cloud templated on the type of carrier phase thermodynamics
 
 \*---------------------------------------------------------------------------*/
 
@@ -37,69 +35,21 @@ SourceFiles
 
 #include "ReactingMultiphaseCloud.H"
 #include "CoalParcel.H"
+#include "thermoPhysicsTypes.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
+    typedef ReactingMultiphaseCloud<CoalParcel<constGasThermoPhysics> >
+        constThermoCoalCloud;
 
-/*---------------------------------------------------------------------------*\
-                          Class CoalCloud Declaration
-\*---------------------------------------------------------------------------*/
+    typedef ReactingMultiphaseCloud<CoalParcel<gasThermoPhysics> >
+        thermoCoalCloud;
 
-template<class ThermoType>
-class CoalCloud
-:
-    public ReactingMultiphaseCloud<CoalParcel<ThermoType> >
-{
-    // Private Member Functions
-
-        //- Disallow default bitwise copy construct
-        CoalCloud(const CoalCloud&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const CoalCloud&);
-
-
-public:
-
-    //-Runtime type information
-    TypeName("CoalCloud");
-
-
-    // Constructors
-
-        //- Construct given carrier gas fields
-        CoalCloud
-        (
-            const word& cloudName,
-            const volScalarField& rho,
-            const volVectorField& U,
-            const dimensionedVector& g,
-            basicThermo& thermo
-        );
-
-
-    //- Destructor
-    ~CoalCloud();
-
-
-    // Member Functions
-
-        //- Write fields
-        virtual void writeFields() const;
-};
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#ifdef NoRepository
-    #include "CoalCloud.C"
-#endif
+    typedef ReactingMultiphaseCloud<CoalParcel<icoPoly8ThermoPhysics> >
+        icoPoly8ThermoCoalCloud;
+}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

@@ -27,7 +27,6 @@ License
 #ifndef createCoalParcelTypes_H
 #define createCoalParcelTypes_H
 
-#include "makeParcelIOList.H"
 #include "thermoPhysicsTypes.H"
 #include "CoalCloud.H"
 
@@ -55,8 +54,6 @@ License
 #define createCoalParcelThermoType(ParcelType, ThermoType)                    \
                                                                               \
     typedef ParcelType<ThermoType> ParcelType##ThermoType;                    \
-                                                                              \
-    makeParcelIOList(ParcelType##ThermoType);                                 \
                                                                               \
     defineTemplateTypeNameAndDebug(ParcelType##ThermoType, 0);                \
     defineTemplateTypeNameAndDebug(Particle<ParcelType##ThermoType>, 0);      \
@@ -92,8 +89,7 @@ License
     (                                                                         \
         ReactingMultiphaseCloud<ParcelType##ThermoType>,                      \
         0                                                                     \
-    );                                                                        \
-    defineParcelTypeNameAndDebug(CoalCloud<ParcelType##ThermoType>, 0);
+    );
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

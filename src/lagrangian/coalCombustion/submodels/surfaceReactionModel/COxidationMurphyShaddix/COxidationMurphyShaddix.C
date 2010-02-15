@@ -25,6 +25,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "COxidationMurphyShaddix.H"
+#include "mathematicalConstants.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -106,7 +107,7 @@ Foam::scalar Foam::COxidationMurphyShaddix<CloudType>::calculate
     const scalarField& YLiquid,
     const scalarField& YSolid,
     const scalarField& YMixture,
-    const scalarField& dMassVolatile,
+    const scalar N,
     scalarField& dMassGas,
     scalarField& dMassLiquid,
     scalarField& dMassSolid,
@@ -142,9 +143,6 @@ Foam::scalar Foam::COxidationMurphyShaddix<CloudType>::calculate
     // Far field partial pressure O2 [Pa]
     const scalar ppO2 = rhoO2/WO2_*specie::RR*Tc;
 
-    // Molar emission rate of volatiles per unit surface area
-    const scalar qVol = sum(dMassVolatile)/(WVol_*Ap);
-
     // Total molar concentration of the carrier phase [kmol/m^3]
     const scalar C = pc/(specie::RR*Tc);
 
@@ -173,7 +171,7 @@ Foam::scalar Foam::COxidationMurphyShaddix<CloudType>::calculate
     while ((mag(qCs - qCsOld)/qCs > tolerance_) && (iter <= maxIters_))
     {
         qCsOld = qCs;
-        const scalar PO2Surface = ppO2*exp(-(qCs + qVol)*d/(2*C*D));
+        const scalar PO2Surface = ppO2*exp(-(qCs + N)*d/(2*C*D));
         qCs = A_*exp(-E_/(specie::RR*T))*pow(PO2Surface, n_);
         qCs = (100.0*qCs + iter*qCsOld)/(100.0 + iter);
         qCs = min(qCs, qCsLim);
