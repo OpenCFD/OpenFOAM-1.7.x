@@ -243,8 +243,7 @@ Foam::tmp<Foam::volScalarField> Foam::hsRhoThermo<MixtureType>::Cp() const
                 IOobject::NO_WRITE
             ),
             mesh,
-            dimEnergy/dimMass/dimTemperature,
-            this->T_.boundaryField().types()
+            dimEnergy/dimMass/dimTemperature
         )
     );
 

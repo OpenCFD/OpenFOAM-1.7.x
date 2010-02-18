@@ -246,8 +246,7 @@ Foam::tmp<Foam::volScalarField> Foam::ePsiThermo<MixtureType>::Cp() const
                 IOobject::NO_WRITE
             ),
             mesh,
-            dimensionSet(0, 2, -2, -1, 0),
-            this->T_.boundaryField().types()
+            dimensionSet(0, 2, -2, -1, 0)
         )
     );
 
