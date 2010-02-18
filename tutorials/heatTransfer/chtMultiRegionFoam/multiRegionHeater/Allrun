@@ -11,7 +11,7 @@ runApplication setSet -batch makeCellSets.setSet
 rm -f constant/polyMesh/sets/*_old
 
 runApplication setsToZones -noFlipMap
-runApplication splitMeshRegions -cellZones
+runApplication splitMeshRegions -cellZones -overwrite
 
 # remove fluid fields from solid regions (important for post-processing)
 for i in heater leftSolid rightSolid
