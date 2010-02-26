@@ -140,6 +140,25 @@ public:
             const scalarField& cWeights
         );
 
+
+        //- Helper to convert local connectivity (supplied as owner,neighbour)
+        //  into CSR (Metis,scotch) storage. Does cyclics but not processor
+        //  patches
+        static void calcCSR
+        (
+            const polyMesh& mesh,
+            List<int>& adjncy,
+            List<int>& xadj
+        );
+
+        //- Helper to convert connectivity (supplied as cellcells) into
+        //  CSR (Metis,scotch) storage
+        static void calcCSR
+        (
+            const labelListList& globalCellCells,
+            List<int>& adjncy,
+            List<int>& xadj
+        );
 };
 
 

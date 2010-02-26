@@ -137,24 +137,6 @@ public:
             const scalarField& cWeights
         );
 
-        //- Helper to convert connectivity (supplied as owner,neighbour) into
-        //  Metis storage
-        static void calcMetisCSR
-        (
-            const polyMesh& mesh,
-            List<int>& adjncy,
-            List<int>& xadj
-        );
-
-        //- Helper to convert connectivity (supplied as cellcells) into
-        //  Metis storage
-        static void calcMetisCSR
-        (
-            const labelListList& globalCellCells,
-            List<int>& adjncy,
-            List<int>& xadj
-        );
-
 };
 
 

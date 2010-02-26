@@ -26,6 +26,7 @@ License
 
 #include "parMetisDecomp.H"
 #include "metisDecomp.H"
+#include "scotchDecomp.H"
 #include "syncTools.H"
 #include "addToRunTimeSelectionTable.H"
 #include "floatScalar.H"
@@ -132,7 +133,6 @@ Foam::label Foam::parMetisDecomp::decompose
             nSendCells[procI-1] = nSendCells[procI]-nLocalCells[procI]+1;
         }
     }
-
 
     // First receive (so increasing the sizes of all arrays)
 
@@ -445,7 +445,7 @@ Foam::labelList Foam::parMetisDecomp::decompose
         {
             FatalErrorIn
             (
-                "metisDecomp::decompose"
+                "parMetisDecomp::decompose"
                 "(const pointField&, const scalarField&)"
             )   << "Number of cell weights " << cWeights.size()
                 << " does not equal number of cells " << mesh_.nCells()
@@ -774,7 +774,7 @@ Foam::labelList Foam::parMetisDecomp::decompose
     Field<int> adjncy;
     // Offsets into adjncy
     Field<int> xadj;
-    metisDecomp::calcMetisCSR(globalCellCells, adjncy, xadj);
+    scotchDecomp::calcCSR(globalCellCells, adjncy, xadj);
 
     // decomposition options. 0 = use defaults
     List<int> options(3, 0);

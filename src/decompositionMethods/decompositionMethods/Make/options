@@ -1,5 +1,6 @@
 EXE_INC = \
     -I$(WM_THIRD_PARTY_DIR)/scotch_5.1/src/libscotch/lnInclude \
+    -I/usr/include/scotch \
     -I$(WM_THIRD_PARTY_DIR)/metis-5.0pre2/include
 
 LIB_LIBS = \
