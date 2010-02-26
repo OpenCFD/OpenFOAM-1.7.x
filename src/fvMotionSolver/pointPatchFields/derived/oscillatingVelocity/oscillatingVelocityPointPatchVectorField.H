@@ -129,6 +129,22 @@ public:
 
     // Member functions
 
+        // Mapping functions
+
+            //- Map (and resize as needed) from self given a mapping object
+            virtual void autoMap
+            (
+                const pointPatchFieldMapper&
+            );
+
+            //- Reverse map the given pointPatchField onto this pointPatchField
+            virtual void rmap
+            (
+                const pointPatchField<vector>&,
+                const labelList&
+            );
+
+
         // Evaluation functions
 
             //- Update the coefficients associated with the patch field

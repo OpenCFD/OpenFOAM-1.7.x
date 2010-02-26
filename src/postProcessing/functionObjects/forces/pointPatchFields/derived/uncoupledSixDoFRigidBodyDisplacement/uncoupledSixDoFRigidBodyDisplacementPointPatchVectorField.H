@@ -57,8 +57,8 @@ class uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
         //- Six dof motion object
         sixDoFRigidBodyMotion motion_;
 
-        //- Reference positions of points on the patch
-        pointField p0_;
+        //- Initial positions of points on the patch
+        pointField initialPoints_;
 
         //- Reference density required by the forces object for
         //  incompressible calculations.  Retained here to give
@@ -135,6 +135,22 @@ public:
 
 
     // Member functions
+
+        // Mapping functions
+
+            //- Map (and resize as needed) from self given a mapping object
+            virtual void autoMap
+            (
+                const pointPatchFieldMapper&
+            );
+
+            //- Reverse map the given pointPatchField onto this pointPatchField
+            virtual void rmap
+            (
+                const pointPatchField<vector>&,
+                const labelList&
+            );
+
 
         // Evaluation functions
 
