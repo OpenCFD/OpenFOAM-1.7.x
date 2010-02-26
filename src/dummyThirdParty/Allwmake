@@ -1,0 +1,16 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+set -x
+
+wmake libso scotch
+
+wmake libso metis/metis
+wmake libso metis/GKlib
+
+wmake libso parmetis/parmetis
+wmake libso parmetis/metis-parmetis
+
+wmake libso MGridGen/MGridGen
+
+
+# ----------------------------------------------------------------- end-of-file

@@ -1,0 +1,3 @@
+dummyParMetis.C
+
+LIB = $(FOAM_LIBBIN)/dummy/libparmetis

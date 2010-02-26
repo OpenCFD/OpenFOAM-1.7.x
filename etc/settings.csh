@@ -71,6 +71,8 @@ set path=($WM_DIR $WM_PROJECT_DIR/bin $path)
 _foamAddPath $FOAM_APPBIN
 _foamAddPath $FOAM_SITE_APPBIN
 _foamAddPath $FOAM_USER_APPBIN
+ # Make sure to pick up dummy versions of external libraries last
+_foamAddLib  $FOAM_LIBBIN/dummy
 _foamAddLib  $FOAM_LIBBIN
 _foamAddLib  $FOAM_SITE_LIBBIN
 _foamAddLib  $FOAM_USER_LIBBIN
@@ -136,6 +138,30 @@ case OPENMPI:
 
     setenv FOAM_MPI_LIBBIN $FOAM_LIBBIN/$mpi_version
     unset mpi_version
+    breaksw
+
+case SYSTEMOPENMPI:
+
+    # This uses the installed openmpi. It needs mpicc installed!
+
+    set mpi_version=openmpi-system
+
+    # Set compilation flags here instead of in wmake/rules/../mplibSYSTEMOPENMPI
+    setenv PINC `mpicc --showme:compile` 
+    setenv PLIBS `mpicc --showme:link`
+    set libDir=`echo "$PLIBS" | sed -e 's/.*-L\([^ ]*\).*/\1/'`
+
+    if ($?FOAM_VERBOSE && $?prompt) then
+        echo "Using system installed MPI:"
+        echo "    compile flags : $PINC"
+        echo "    link flags    : $PLIBS"
+        echo "    libmpi dir    : $libDir"
+    endif
+
+    _foamAddLib $libDir
+
+    setenv FOAM_MPI_LIBBIN $FOAM_LIBBIN/$mpi_version
+    unset mpi_version libDir
     breaksw
 
 case MPICH:

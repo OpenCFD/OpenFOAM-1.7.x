@@ -85,6 +85,8 @@ export FOAM_RUN=$WM_PROJECT_USER_DIR/run
 export PATH=$WM_DIR:$WM_PROJECT_DIR/bin:$PATH
 
 _foamAddPath $FOAM_APPBIN $FOAM_SITE_APPBIN $FOAM_USER_APPBIN
+ # Make sure to pick up dummy versions of external libraries last
+_foamAddLib  $FOAM_LIBBIN/dummy
 _foamAddLib  $FOAM_LIBBIN $FOAM_SITE_LIBBIN $FOAM_USER_LIBBIN
 
 
@@ -155,6 +157,29 @@ OPENMPI)
 
     _foamAddPath $MPI_ARCH_PATH/bin
     _foamAddLib  $MPI_ARCH_PATH/lib
+
+    export FOAM_MPI_LIBBIN=$FOAM_LIBBIN/$mpi_version
+    unset mpi_version
+    ;;
+
+SYSTEMOPENMPI)
+    mpi_version=openmpi-system
+
+    # Set compilation flags here instead of in wmake/rules/../mplibSYSTEMOPENMPI
+    export PINC=`mpicc --showme:compile` 
+    export PLIBS=`mpicc --showme:link`
+    libDir=`echo "$PLIBS" | sed -e 's/.*-L\([^ ]*\).*/\1/'`
+
+    if [ "$FOAM_VERBOSE" -a "$PS1" ]
+    then
+        echo "Using system installed MPI:"
+        echo "    compile flags : $PINC"
+        echo "    link flags    : $PLIBS"
+        echo "    libmpi dir    : $libDir"
+    fi
+
+    _foamAddLib $libDir
+
 
     export FOAM_MPI_LIBBIN=$FOAM_LIBBIN/$mpi_version
     unset mpi_version
