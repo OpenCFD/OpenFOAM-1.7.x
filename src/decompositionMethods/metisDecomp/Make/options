@@ -1,0 +1,7 @@
+EXE_INC = \
+    -I$(WM_THIRD_PARTY_DIR)/metis-5.0pre2/include \
+    -I../decompositionMethods/lnInclude \
+    -I../scotchDecomp/lnInclude
+
+LIB_LIBS = \
+    -lmetis
