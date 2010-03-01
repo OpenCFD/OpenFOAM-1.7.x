@@ -4,7 +4,9 @@ EXE_INC = \
     $(PFLAGS) $(PINC) \
     -I$(WM_THIRD_PARTY_DIR)/ParMetis-3.1/ParMETISLib \
     -I$(WM_THIRD_PARTY_DIR)/ParMetis-3.1 \
-    -I../decompositionMethods/lnInclude
+    -I../decompositionMethods/lnInclude \
+    -I../metisDecomp/lnInclude \
+    -I../scotchDecomp/lnInclude
 
 LIB_LIBS = \
     -L$(FOAM_MPI_LIBBIN) \
