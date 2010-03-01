@@ -8,5 +8,4 @@ EXE_LIBS = \
     -lfiniteVolume \
     -ldecompositionMethods \
     -lmeshTools \
-    -ldynamicMesh \
-    -L$(FOAM_MPI_LIBBIN) -lparMetisDecompositionMethod
+    -ldynamicMesh

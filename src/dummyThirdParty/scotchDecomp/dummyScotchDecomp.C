@@ -110,13 +110,13 @@ License
 #include "Time.H"
 
 static const char* notImplementedMessage =
-"You are trying to use scotchDecomp but do not have the metisDecomp library "
-"loaded.\nThis message is from the dummy scotchDecomp stub library instead.\n"
+"You are trying to use scotch but do not have the scotchDecomp library loaded."
+"\nThis message is from the dummy scotchDecomp stub library instead.\n"
 "\n"
-"Normally the scotchDecomp library will be loaded through the LD_LIBRARY_PATH\n"
-"environment variable but you are picking up this dummy library from the\n"
-"$FOAM_LIBBIN/dummy directory. Please install scotchDecomp and make sure the\n"
-"libscotchDecomp.so is in your LD_LIBRARY_PATH.";
+"Please install scotch and make sure that libscotch.so is in your "
+"LD_LIBRARY_PATH.\n"
+"The scotchDecomp library can then be built in $FOAM_SRC/decompositionMethods/"
+"scotchDecomp\n";
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

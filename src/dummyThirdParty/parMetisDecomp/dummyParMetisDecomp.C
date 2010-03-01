@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,54 +24,64 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "metisDecomp.H"
+#include "parMetisDecomp.H"
 #include "addToRunTimeSelectionTable.H"
+#include "polyMesh.H"
 #include "Time.H"
 
-static const char* notImplementedMessage =
-"You are trying to use metis but do not have the metisDecomp library loaded."
-"\nThis message is from the dummy metisDecomp stub library instead.\n"
-"\n"
-"Please install metis and make sure that libmetis.so is in your "
-"LD_LIBRARY_PATH.\n"
-"The metisDecomp library can then be built in $FOAM_SRC/decompositionMethods/"
-"metisDecomp\n";
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    defineTypeNameAndDebug(metisDecomp, 0);
+    defineTypeNameAndDebug(parMetisDecomp, 0);
 
     addToRunTimeSelectionTable
     (
         decompositionMethod,
-        metisDecomp,
+        parMetisDecomp,
         dictionaryMesh
     );
 }
 
+static const char* notImplementedMessage =
+"You are trying to use parMetis but do not have the parMetisDecomp library "
+"loaded.\n"
+"This message is from the dummy parMetisDecomp stub library instead.\n"        
+"\n"                                                                           
+"Please install parMetis and make sure that libparMetis.so is in your "            
+"LD_LIBRARY_PATH.\n"                                                           
+"The parMetisDecomp library can then be built in $FOAM_SRC/decompositionMethods/"
+"parMetisDecomp\n";                                                              
+
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-Foam::label Foam::metisDecomp::decompose
+//- Does prevention of 0 cell domains and calls parmetis.
+Foam::label Foam::parMetisDecomp::decompose
 (
-    const List<int>& adjncy,
-    const List<int>& xadj,
-    const scalarField& cellWeights,
+    Field<int>& xadj,
+    Field<int>& adjncy,
+    const pointField& cellCentres,
+    Field<int>& cellWeights,
+    Field<int>& faceWeights,
+    const List<int>& options,
+
     List<int>& finalDecomp
 )
 {
     FatalErrorIn
     (
-        "labelList metisDecomp::decompose"
+        "label parMetisDecomp::decompose"
         "("
+            "Field<int>&, "
+            "Field<int>&, "
+            "const pointField&, "
+            "Field<int>&, "
+            "Field<int>&, "
             "const List<int>&, "
-            "const List<int>&, "
-            "const scalarField&, "
             "List<int>&"
         ")"
-    )   << notImplementedMessage << exit(FatalError);
+    )<< notImplementedMessage << exit(FatalError);
 
     return -1;
 }
@@ -79,7 +89,7 @@ Foam::label Foam::metisDecomp::decompose
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::metisDecomp::metisDecomp
+Foam::parMetisDecomp::parMetisDecomp
 (
     const dictionary& decompositionDict,
     const polyMesh& mesh
@@ -92,15 +102,15 @@ Foam::metisDecomp::metisDecomp
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::labelList Foam::metisDecomp::decompose
+Foam::labelList Foam::parMetisDecomp::decompose
 (
-    const pointField& points,
-    const scalarField& pointWeights
+    const pointField& cc,
+    const scalarField& cWeights
 )
 {
     FatalErrorIn
     (
-        "labelList metisDecomp::decompose"
+        "labelList parMetisDecomp::decompose"
         "("
             "const pointField&, "
             "const scalarField&"
@@ -111,16 +121,16 @@ Foam::labelList Foam::metisDecomp::decompose
 }
 
 
-Foam::labelList Foam::metisDecomp::decompose
+Foam::labelList Foam::parMetisDecomp::decompose
 (
-    const labelList& agglom,
-    const pointField& agglomPoints,
-    const scalarField& agglomWeights
+    const labelList& cellToRegion,
+    const pointField& regionPoints,
+    const scalarField& regionWeights
 )
 {
     FatalErrorIn
     (
-        "labelList metisDecomp::decompose"
+        "labelList parMetisDecomp::decompose"
         "("
             "const labelList&, "
             "const pointField&, "
@@ -132,16 +142,16 @@ Foam::labelList Foam::metisDecomp::decompose
 }
 
 
-Foam::labelList Foam::metisDecomp::decompose
+Foam::labelList Foam::parMetisDecomp::decompose
 (
     const labelListList& globalCellCells,
     const pointField& cellCentres,
-    const scalarField& cellWeights
+    const scalarField& cWeights
 )
 {
     FatalErrorIn
     (
-        "labelList metisDecomp::decompose"
+        "labelList parMetisDecomp::decompose"
         "("
             "const labelListList&, "
             "const pointField&, "
@@ -150,6 +160,25 @@ Foam::labelList Foam::metisDecomp::decompose
     )   << notImplementedMessage << exit(FatalError);
 
     return labelList();
+}
+
+
+void Foam::parMetisDecomp::calcMetisDistributedCSR
+(
+    const polyMesh& mesh,
+    List<int>& adjncy,
+    List<int>& xadj
+)
+{
+    FatalErrorIn
+    (
+        "void parMetisDecomp::calcMetisDistributedCSR"
+        "("
+            "const polyMesh&, "
+            "List<int>&, "
+            "List<int>&"
+        ")"
+    )   << notImplementedMessage << exit(FatalError);
 }
 
 

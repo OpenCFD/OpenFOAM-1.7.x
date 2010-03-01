@@ -4,4 +4,7 @@ EXE_INC = \
     -I../scotchDecomp/lnInclude
 
 LIB_LIBS = \
-    -lmetis
+    -L$(FOAM_LIBBIN)/dummy \
+    -lmetis \
+    -lGKlib
+
