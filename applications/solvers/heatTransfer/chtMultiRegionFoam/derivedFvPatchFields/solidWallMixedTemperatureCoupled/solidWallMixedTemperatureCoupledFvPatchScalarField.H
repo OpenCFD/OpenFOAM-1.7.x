@@ -28,10 +28,7 @@ Class
 Description
     Mixed boundary condition for temperature, to be used by the
     conjugate heat transfer solver.
-    If my temperature is T1, neighbour is T2:
-
-    T1 > T2: my side becomes fixedValue T2 bc, other side becomes fixedGradient.
-    
+    Both sides use a mix of zeroGradient and neighbourvalue.
 
     Example usage:
         myInterfacePatchName
@@ -47,12 +44,6 @@ Description
     Note: runs in parallel with arbitrary decomposition. Uses directMapped
     functionality to calculate exchange.
 
-    Note: lags interface data so both sides use same data.
-    - problem: schedule to calculate average would interfere
-    with standard processor swaps.
-    - so: updateCoeffs sets both to same Twall. Only need to do
-    this for last outer iteration but don't have access to this.
-
 SourceFiles
     solidWallMixedTemperatureCoupledFvPatchScalarField.C
 
@@ -61,9 +52,7 @@ SourceFiles
 #ifndef solidWallMixedTemperatureCoupledFvPatchScalarField_H
 #define solidWallMixedTemperatureCoupledFvPatchScalarField_H
 
-#include "fvPatchFields.H"
 #include "mixedFvPatchFields.H"
-#include "fvPatch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -85,15 +74,6 @@ class solidWallMixedTemperatureCoupledFvPatchScalarField
         
         //- Name of thermal conductivity field
         const word KName_;
-
-        bool fixesValue_;
-
-
-    // Private Member Functions
-
-        //- Am I or neighbour owner of interface
-        bool interfaceOwner(const polyMesh& nbrRegion) const;
-
 
 public:
 
@@ -165,14 +145,6 @@ public:
 
         //- Get corresponding K field
         const fvPatchScalarField& K() const;
-
-        //- Return true if this patch field fixes a value.
-        //  Needed to check if a level has to be specified while solving
-        //  Poissons equations.
-        virtual bool fixesValue() const
-        {
-            return fixesValue_;
-        }
 
         //- Update the coefficients associated with the patch field
         virtual void updateCoeffs();
