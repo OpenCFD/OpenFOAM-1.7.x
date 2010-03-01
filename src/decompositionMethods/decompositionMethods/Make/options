@@ -1,6 +1,7 @@
 EXE_INC =
 
 LIB_LIBS = \
+    -L$(FOAM_LIBBIN)/dummy \
     -lscotchDecomp \
     -lmetisDecomp \
     -lGKlib
