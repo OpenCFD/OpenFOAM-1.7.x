@@ -1,0 +1,5 @@
+EXE_INC = \
+    -I$(FOAM_SRC)/decompositionMethods/decompositionMethods/lnInclude \
+    -I$(FOAM_SRC)/decompositionMethods/parMetisDecomp/lnInclude
+
+LIB_LIBS =

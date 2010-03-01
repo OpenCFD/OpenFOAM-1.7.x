@@ -1,3 +1,0 @@
-dummymetis-parmetis.C
-
-LIB = $(FOAM_LIBBIN)/dummy/libmetis-parmetis

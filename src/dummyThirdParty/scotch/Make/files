@@ -1,3 +1,0 @@
-dummyScotch.C
-
-LIB = $(FOAM_LIBBIN)/dummy/libscotch

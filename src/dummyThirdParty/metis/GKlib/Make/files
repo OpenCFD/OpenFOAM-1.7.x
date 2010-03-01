@@ -1,3 +1,0 @@
-dummyGKlib.C
-
-LIB = $(FOAM_LIBBIN)/dummy/libGKlib
