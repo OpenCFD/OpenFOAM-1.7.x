@@ -2433,7 +2433,7 @@ Foam::pointIndexHit Foam::indexedOctree<Type>::findLineAny
 template <class Type>
 Foam::labelList Foam::indexedOctree<Type>::findBox
 (
-    const boundBox& searchBox
+    const treeBoundBox& searchBox
 ) const
 {
     // Storage for labels of shapes inside bb. Size estimate.

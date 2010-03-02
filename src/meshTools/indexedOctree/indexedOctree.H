@@ -547,7 +547,7 @@ public:
 
             //- Find (in no particular order) indices of all shapes inside or
             //  overlapping bounding box (i.e. all shapes not outside box)
-            labelList findBox(const boundBox& bb) const;
+            labelList findBox(const treeBoundBox& bb) const;
 
             //- Find deepest node (as parent+octant) containing point. Starts
             //  off from starting index in nodes_ (use 0 to start from top)
