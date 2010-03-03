@@ -49,8 +49,6 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
-#include "string.H"
-#include "Time.H"
 #include "fvCFD.H"
 #include "OSspecific.H"
 
