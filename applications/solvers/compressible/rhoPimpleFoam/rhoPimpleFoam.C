@@ -49,6 +49,8 @@ int main(int argc, char *argv[])
     #include "createFields.H"
     #include "initContinuityErrs.H"
 
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
     Info<< "\nStarting time loop\n" << endl;
 
     while (runTime.run())
@@ -67,6 +69,8 @@ int main(int argc, char *argv[])
             p.storePrevIter();
             rho.storePrevIter();
         }
+
+        #include "rhoEqn.H"
 
         // --- Pressure-velocity PIMPLE corrector loop
         for (int oCorr=0; oCorr<nOuterCorr; oCorr++)
