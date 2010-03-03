@@ -33,6 +33,7 @@ sampledSurface/sampledCuttingPlane/sampledCuttingPlane.C
 sampledSurface/sampledSurface/sampledSurface.C
 sampledSurface/sampledSurfaces/sampledSurfaces.C
 sampledSurface/sampledSurfacesFunctionObject/sampledSurfacesFunctionObject.C
+sampledSurface/sampledTriSurfaceMesh/sampledTriSurfaceMesh.C
 sampledSurface/thresholdCellFaces/thresholdCellFaces.C
 sampledSurface/thresholdCellFaces/sampledThresholdCellFaces.C
 
