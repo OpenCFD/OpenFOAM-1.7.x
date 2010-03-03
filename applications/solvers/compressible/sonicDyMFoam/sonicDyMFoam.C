@@ -46,11 +46,11 @@ int main(int argc, char *argv[])
     #include "createFields.H"
     #include "initContinuityErrs.H"
 
+    autoPtr<Foam::motionSolver> motionPtr = motionSolver::New(mesh);
+
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
     Info<< "\nStarting time loop\n" << endl;
-
-    autoPtr<Foam::motionSolver> motionPtr = motionSolver::New(mesh);
 
     while (runTime.loop())
     {

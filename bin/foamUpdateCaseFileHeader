@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#   \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -38,7 +38,7 @@ foamVersion=$WM_PROJECT_VERSION
 usage() {
     cat<<USAGE
 
-usage: ${0##*/} [OPTION] <file1> ... <fileN>
+Usage: ${0##*/} [OPTION] <file1> ... <fileN>
 
 options:
   -v VER  specifies the version to be written in the header
@@ -59,8 +59,8 @@ printHeader() {
 | =========                 |                                                 |
 | \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
 |  \\\\    /   O peration     | Version:  ${foamVersion}  |
-|   \\\\  /    A nd           |                                                 |
-|    \\\\/     M anipulation  |                                www.OpenFOAM.org |
+|   \\\\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\\\/     M anipulation  |                                                 |
 \\*---------------------------------------------------------------------------*/
 FoamFile
 {
