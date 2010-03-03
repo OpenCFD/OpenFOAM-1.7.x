@@ -21,6 +21,7 @@ LamBremhorstKE/LamBremhorstKE.C
 wallFunctions = derivedFvPatchFields/wallFunctions
 
 nutWallFunctions = $(wallFunctions)/nutWallFunctions
+$(nutWallFunctions)/nutkWallFunction/nutkWallFunctionFvPatchScalarField.C
 $(nutWallFunctions)/nutWallFunction/nutWallFunctionFvPatchScalarField.C
 $(nutWallFunctions)/nutRoughWallFunction/nutRoughWallFunctionFvPatchScalarField.C
 $(nutWallFunctions)/nutSpalartAllmarasWallFunction/nutSpalartAllmarasWallFunctionFvPatchScalarField.C
