@@ -2,11 +2,17 @@
 cd ${0%/*} || exit 1    # run from this directory
 set -x
 
-wmake libso decompositionMethods
+wmakeLnInclude decompositionMethods
+
+wmake libso scotchDecomp
+wmake libso metisDecomp
 
 if [ -d "$FOAM_MPI_LIBBIN" ]
 then
-    (WM_OPTIONS=${WM_OPTIONS}$WM_MPLIB; wmake libso parMetisDecomp)
+    WM_OPTIONS=${WM_OPTIONS}$WM_MPLIB
+    wmake libso parMetisDecomp
 fi
+
+wmake libso decompositionMethods
 
 # ----------------------------------------------------------------- end-of-file

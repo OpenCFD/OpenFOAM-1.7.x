@@ -65,9 +65,7 @@ SourceFiles
 #ifndef turbulentTemperatureCoupledBaffleMixedFvPatchScalarField_H
 #define turbulentTemperatureCoupledBaffleMixedFvPatchScalarField_H
 
-//#include "fvPatchFields.H"
 #include "mixedFvPatchFields.H"
-//#include "fvPatch.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -91,14 +89,6 @@ class turbulentTemperatureCoupledBaffleMixedFvPatchScalarField
 
         //- Name of thermal conductivity field
         const word KName_;
-
-        bool fixesValue_;
-
-
-    // Private Member Functions
-
-        //- Am I or neighbour owner of interface
-        bool interfaceOwner(const polyMesh&, const polyPatch&) const;
 
 
 public:
@@ -175,14 +165,6 @@ public:
 
         //- Get corresponding K field
         tmp<scalarField> K() const;
-
-        //- Return true if this patch field fixes a value.
-        //  Needed to check if a level has to be specified while solving
-        //  Poissons equations.
-        virtual bool fixesValue() const
-        {
-            return fixesValue_;
-        }
 
         //- Update the coefficients associated with the patch field
         virtual void updateCoeffs();

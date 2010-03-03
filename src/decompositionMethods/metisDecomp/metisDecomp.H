@@ -23,18 +23,18 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::scotchDecomp
+    Foam::metisDecomp
 
 Description
-    Scotch domain decomposition
+    Metis domain decomposition
 
 SourceFiles
-    scotchDecomp.C
+    metisDecomp.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef scotchDecomp_H
-#define scotchDecomp_H
+#ifndef metisDecomp_H
+#define metisDecomp_H
 
 #include "decompositionMethod.H"
 
@@ -42,10 +42,10 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class scotchDecomp Declaration
+                           Class metisDecomp Declaration
 \*---------------------------------------------------------------------------*/
 
-class scotchDecomp
+class metisDecomp
 :
     public decompositionMethod
 {
@@ -56,32 +56,29 @@ class scotchDecomp
 
     // Private Member Functions
 
-        //- Check and print error message
-        static void check(const int, const char*);
-
         label decompose
         (
             const List<int>& adjncy,
             const List<int>& xadj,
-            const scalarField& cWeights,
+            const scalarField& cellWeights,
             List<int>& finalDecomp
         );
 
         //- Disallow default bitwise copy construct and assignment
-        void operator=(const scotchDecomp&);
-        scotchDecomp(const scotchDecomp&);
+        void operator=(const metisDecomp&);
+        metisDecomp(const metisDecomp&);
 
 
 public:
 
     //- Runtime type information
-    TypeName("scotch");
+    TypeName("metis");
 
 
     // Constructors
 
         //- Construct given the decomposition dictionary and mesh
-        scotchDecomp
+        metisDecomp
         (
             const dictionary& decompositionDict,
             const polyMesh& mesh
@@ -90,7 +87,7 @@ public:
 
     // Destructor
 
-        virtual ~scotchDecomp()
+        virtual ~metisDecomp()
         {}
 
 

@@ -23,18 +23,18 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::metisDecomp
+    Foam::scotchDecomp
 
 Description
-    Metis domain decomposition
+    Scotch domain decomposition
 
 SourceFiles
-    metisDecomp.C
+    scotchDecomp.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef metisDecomp_H
-#define metisDecomp_H
+#ifndef scotchDecomp_H
+#define scotchDecomp_H
 
 #include "decompositionMethod.H"
 
@@ -42,10 +42,10 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class metisDecomp Declaration
+                           Class scotchDecomp Declaration
 \*---------------------------------------------------------------------------*/
 
-class metisDecomp
+class scotchDecomp
 :
     public decompositionMethod
 {
@@ -56,29 +56,32 @@ class metisDecomp
 
     // Private Member Functions
 
+        //- Check and print error message
+        static void check(const int, const char*);
+
         label decompose
         (
             const List<int>& adjncy,
             const List<int>& xadj,
-            const scalarField& cellWeights,
+            const scalarField& cWeights,
             List<int>& finalDecomp
         );
 
         //- Disallow default bitwise copy construct and assignment
-        void operator=(const metisDecomp&);
-        metisDecomp(const metisDecomp&);
+        void operator=(const scotchDecomp&);
+        scotchDecomp(const scotchDecomp&);
 
 
 public:
 
     //- Runtime type information
-    TypeName("metis");
+    TypeName("scotch");
 
 
     // Constructors
 
         //- Construct given the decomposition dictionary and mesh
-        metisDecomp
+        scotchDecomp
         (
             const dictionary& decompositionDict,
             const polyMesh& mesh
@@ -87,7 +90,7 @@ public:
 
     // Destructor
 
-        virtual ~metisDecomp()
+        virtual ~scotchDecomp()
         {}
 
 
@@ -137,9 +140,11 @@ public:
             const scalarField& cWeights
         );
 
-        //- Helper to convert connectivity (supplied as owner,neighbour) into
-        //  Metis storage
-        static void calcMetisCSR
+
+        //- Helper to convert local connectivity (supplied as owner,neighbour)
+        //  into CSR (Metis,scotch) storage. Does cyclics but not processor
+        //  patches
+        static void calcCSR
         (
             const polyMesh& mesh,
             List<int>& adjncy,
@@ -147,14 +152,13 @@ public:
         );
 
         //- Helper to convert connectivity (supplied as cellcells) into
-        //  Metis storage
-        static void calcMetisCSR
+        //  CSR (Metis,scotch) storage
+        static void calcCSR
         (
             const labelListList& globalCellCells,
             List<int>& adjncy,
             List<int>& xadj
         );
-
 };
 
 

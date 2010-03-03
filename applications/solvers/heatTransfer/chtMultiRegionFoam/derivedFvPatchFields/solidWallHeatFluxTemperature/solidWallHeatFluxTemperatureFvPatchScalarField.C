@@ -38,7 +38,7 @@ solidWallHeatFluxTemperatureFvPatchScalarField
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    fixedValueFvPatchScalarField(p, iF),
+    fixedGradientFvPatchScalarField(p, iF),
     q_(p.size(), 0.0),
     KName_("undefined-K")
 {}
@@ -53,7 +53,7 @@ solidWallHeatFluxTemperatureFvPatchScalarField
     const fvPatchFieldMapper& mapper
 )
 :
-    fixedValueFvPatchScalarField(ptf, p, iF, mapper),
+    fixedGradientFvPatchScalarField(ptf, p, iF, mapper),
     q_(ptf.q_, mapper),
     KName_(ptf.KName_)
 {}
@@ -67,7 +67,7 @@ solidWallHeatFluxTemperatureFvPatchScalarField
     const dictionary& dict
 )
 :
-    fixedValueFvPatchScalarField(p, iF, dict),
+    fixedGradientFvPatchScalarField(p, iF, dict),
     q_("q", dict, p.size()),
     KName_(dict.lookup("K"))
 {}
@@ -79,7 +79,7 @@ solidWallHeatFluxTemperatureFvPatchScalarField
     const solidWallHeatFluxTemperatureFvPatchScalarField& tppsf
 )
 :
-    fixedValueFvPatchScalarField(tppsf),
+    fixedGradientFvPatchScalarField(tppsf),
     q_(tppsf.q_),
     KName_(tppsf.KName_)
 {}
@@ -92,7 +92,7 @@ solidWallHeatFluxTemperatureFvPatchScalarField
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    fixedValueFvPatchScalarField(tppsf, iF),
+    fixedGradientFvPatchScalarField(tppsf, iF),
     q_(tppsf.q_),
     KName_(tppsf.KName_)
 {}
@@ -105,7 +105,7 @@ void Foam::solidWallHeatFluxTemperatureFvPatchScalarField::autoMap
     const fvPatchFieldMapper& m
 )
 {
-    fixedValueFvPatchScalarField::autoMap(m);
+    fixedGradientFvPatchScalarField::autoMap(m);
     q_.autoMap(m);
 }
 
@@ -116,7 +116,7 @@ void Foam::solidWallHeatFluxTemperatureFvPatchScalarField::rmap
     const labelList& addr
 )
 {
-    fixedValueFvPatchScalarField::rmap(ptf, addr);
+    fixedGradientFvPatchScalarField::rmap(ptf, addr);
 
     const solidWallHeatFluxTemperatureFvPatchScalarField& hfptf =
         refCast<const solidWallHeatFluxTemperatureFvPatchScalarField>(ptf);
@@ -132,14 +132,14 @@ void Foam::solidWallHeatFluxTemperatureFvPatchScalarField::updateCoeffs()
         return;
     }
 
-    const scalarField& Kw =
-        patch().lookupPatchField<volScalarField, scalar>(KName_);
+    const scalarField& Kw = patch().lookupPatchField<volScalarField, scalar>
+    (
+        KName_
+    );
 
-    const fvPatchScalarField& Tw = *this;
+    gradient() = q_/Kw;
 
-    operator==(q_/(patch().deltaCoeffs()*Kw) + Tw.patchInternalField());
-
-    fixedValueFvPatchScalarField::updateCoeffs();
+    fixedGradientFvPatchScalarField::updateCoeffs();
 }
 
 
@@ -148,9 +148,10 @@ void Foam::solidWallHeatFluxTemperatureFvPatchScalarField::write
     Ostream& os
 ) const
 {
-    fixedValueFvPatchScalarField::write(os);
+    fixedGradientFvPatchScalarField::write(os);
     q_.writeEntry("q", os);
     os.writeKeyword("K") << KName_ << token::END_STATEMENT << nl;
+    this->writeEntry("value", os);
 }
 
 

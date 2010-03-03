@@ -22,40 +22,87 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-    Default strategy:
-        Strat=b
-        {
-            job=t,
-            map=t,
-            poli=S,
-            sep=
-            (
-                m
+    From scotch forum:
+ 	
+    By: Francois PELLEGRINI RE: Graph mapping 'strategy' string [ reply ]  
+    2008-08-22 10:09 Strategy handling in Scotch is a bit tricky. In order
+    not to be confused, you must have a clear view of how they are built.
+    Here are some rules:
+
+    1- Strategies are made up of "methods" which are combined by means of
+    "operators".
+
+    2- A method is of the form "m{param=value,param=value,...}", where "m"
+    is a single character (this is your first error: "f" is a method name,
+    not a parameter name).
+
+    3- There exist different sort of strategies : bipartitioning strategies,
+    mapping strategies, ordering strategies, which cannot be mixed. For
+    instance, you cannot build a bipartitioning strategy and feed it to a
+    mapping method (this is your second error).
+
+    To use the "mapCompute" routine, you must create a mapping strategy, not
+    a bipartitioning one, and so use stratGraphMap() and not
+    stratGraphBipart(). Your mapping strategy should however be based on the
+    "recursive bipartitioning" method ("b"). For instance, a simple (and
+    hence not very efficient) mapping strategy can be :
+
+    "b{sep=f}"
+
+    which computes mappings with the recursive bipartitioning method "b",
+    this latter using the Fiduccia-Mattheyses method "f" to compute its
+    separators.
+
+    If you want an exact partition (see your previous post), try
+    "b{sep=fx}".
+
+    However, these strategies are not the most efficient, as they do not
+    make use of the multi-level framework.
+
+    To use the multi-level framework, try for instance:
+
+    "b{sep=m{vert=100,low=h,asc=f}x}"
+
+    The current default mapping strategy in Scotch can be seen by using the
+    "-vs" option of program gmap. It is, to date:
+
+    b
+    {
+        job=t,
+        map=t,
+        poli=S,
+        sep=
+        (
+            m
+            {
+                asc=b
                 {
-                    asc=b
-                    {
-                        bnd=d{pass=40,dif=1,rem=1}f{move=80,pass=-1,bal=0.005},
-                        org=f{move=80,pass=-1,bal=0.005},width=3
-                    },
-                    low=h{pass=10}f{move=80,pass=-1,bal=0.0005},
-                    type=h,
-                    vert=80,
-                    rat=0.8
-                }
-              | m
+                    bnd=d{pass=40,dif=1,rem=1}f{move=80,pass=-1,bal=0.005},
+                    org=f{move=80,pass=-1,bal=0.005},
+                    width=3
+                },
+                low=h{pass=10}f{move=80,pass=-1,bal=0.0005},
+                type=h,
+                vert=80,
+                rat=0.8
+            }
+          | m
+            {
+                asc=b
                 {
-                    asc=b
-                    {
-                        bnd=d{pass=40,dif=1,rem=1}f{move=80,pass=-1,bal=0.005},
-                        org=f{move=80,pass=-1,bal=0.005},
-                        width=3},
-                        low=h{pass=10}f{move=80,pass=-1,bal=0.0005},
-                        type=h,
-                        vert=80,
-                        rat=0.8
-                }
-            )
-        }
+                    bnd=d{pass=40,dif=1,rem=1}f{move=80,pass=-1,bal=0.005},
+                    org=f{move=80,pass=-1,bal=0.005},
+                    width=3
+                },
+                low=h{pass=10}f{move=80,pass=-1,bal=0.0005},
+                type=h,
+                vert=80,
+                rat=0.8
+            }
+        )
+    }
+
+
 \*---------------------------------------------------------------------------*/
 
 #include "scotchDecomp.H"
@@ -64,13 +111,9 @@ License
 #include "Time.H"
 #include "cyclicPolyPatch.H"
 #include "OFstream.H"
-#include "metisDecomp.H"
 
 extern "C"
 {
-#define OMPI_SKIP_MPICXX
-#include "module.h"
-#include "common.h"
 #include "scotch.h"
 }
 
@@ -404,12 +447,7 @@ Foam::labelList Foam::scotchDecomp::decompose
     //   xadj(celli) : start of information in adjncy for celli
     List<int> adjncy;
     List<int> xadj;
-    metisDecomp::calcMetisCSR
-    (
-        mesh_,
-        adjncy,
-        xadj
-    );
+    calcCSR(mesh_, adjncy, xadj);
 
     // Decompose using default weights
     List<int> finalDecomp;
@@ -458,7 +496,7 @@ Foam::labelList Foam::scotchDecomp::decompose
             cellCells
         );
 
-        metisDecomp::calcMetisCSR(cellCells, adjncy, xadj);
+        calcCSR(cellCells, adjncy, xadj);
     }
 
     // Decompose using weights
@@ -502,7 +540,7 @@ Foam::labelList Foam::scotchDecomp::decompose
 
     List<int> adjncy;
     List<int> xadj;
-    metisDecomp::calcMetisCSR(globalCellCells, adjncy, xadj);
+    calcCSR(globalCellCells, adjncy, xadj);
 
     // Decompose using weights
     List<int> finalDecomp;
@@ -516,6 +554,146 @@ Foam::labelList Foam::scotchDecomp::decompose
     }
     return decomp;
 }
+
+
+void Foam::scotchDecomp::calcCSR
+(
+    const polyMesh& mesh,
+    List<int>& adjncy,
+    List<int>& xadj
+)
+{
+    // Make Metis CSR (Compressed Storage Format) storage
+    //   adjncy      : contains neighbours (= edges in graph)
+    //   xadj(celli) : start of information in adjncy for celli
+
+    xadj.setSize(mesh.nCells()+1);
+
+    // Initialise the number of internal faces of the cells to twice the
+    // number of internal faces
+    label nInternalFaces = 2*mesh.nInternalFaces();
+
+    // Check the boundary for coupled patches and add to the number of
+    // internal faces
+    const polyBoundaryMesh& pbm = mesh.boundaryMesh();
+
+    forAll(pbm, patchi)
+    {
+        if (isA<cyclicPolyPatch>(pbm[patchi]))
+        {
+            nInternalFaces += pbm[patchi].size();
+        }
+    }
+
+    // Create the adjncy array the size of the total number of internal and
+    // coupled faces
+    adjncy.setSize(nInternalFaces);
+
+    // Fill in xadj
+    // ~~~~~~~~~~~~
+    label freeAdj = 0;
+
+    for (label cellI = 0; cellI < mesh.nCells(); cellI++)
+    {
+        xadj[cellI] = freeAdj;
+
+        const labelList& cFaces = mesh.cells()[cellI];
+
+        forAll(cFaces, i)
+        {
+            label faceI = cFaces[i];
+
+            if
+            (
+                mesh.isInternalFace(faceI)
+             || isA<cyclicPolyPatch>(pbm[pbm.whichPatch(faceI)])
+            )
+            {
+                freeAdj++;
+            }
+        }
+    }
+    xadj[mesh.nCells()] = freeAdj;
+
+
+    // Fill in adjncy
+    // ~~~~~~~~~~~~~~
+
+    labelList nFacesPerCell(mesh.nCells(), 0);
+
+    // Internal faces
+    for (label faceI = 0; faceI < mesh.nInternalFaces(); faceI++)
+    {
+        label own = mesh.faceOwner()[faceI];
+        label nei = mesh.faceNeighbour()[faceI];
+
+        adjncy[xadj[own] + nFacesPerCell[own]++] = nei;
+        adjncy[xadj[nei] + nFacesPerCell[nei]++] = own;
+    }
+
+    // Coupled faces. Only cyclics done.
+    forAll(pbm, patchi)
+    {
+        if (isA<cyclicPolyPatch>(pbm[patchi]))
+        {
+            const unallocLabelList& faceCells = pbm[patchi].faceCells();
+
+            label sizeby2 = faceCells.size()/2;
+
+            for (label facei=0; facei<sizeby2; facei++)
+            {
+                label own = faceCells[facei];
+                label nei = faceCells[facei + sizeby2];
+
+                adjncy[xadj[own] + nFacesPerCell[own]++] = nei;
+                adjncy[xadj[nei] + nFacesPerCell[nei]++] = own;
+            }
+        }
+    }
+}
+
+
+// From cell-cell connections to Metis format (like CompactListList)
+void Foam::scotchDecomp::calcCSR
+(
+    const labelListList& cellCells,
+    List<int>& adjncy,
+    List<int>& xadj
+)
+{
+    // Count number of internal faces
+    label nConnections = 0;
+
+    forAll(cellCells, coarseI)
+    {
+        nConnections += cellCells[coarseI].size();
+    }
+
+    // Create the adjncy array as twice the size of the total number of
+    // internal faces
+    adjncy.setSize(nConnections);
+
+    xadj.setSize(cellCells.size()+1);
+
+
+    // Fill in xadj
+    // ~~~~~~~~~~~~
+    label freeAdj = 0;
+
+    forAll(cellCells, coarseI)
+    {
+        xadj[coarseI] = freeAdj;
+
+        const labelList& cCells = cellCells[coarseI];
+
+        forAll(cCells, i)
+        {
+            adjncy[freeAdj++] = cCells[i];
+        }
+    }
+    xadj[cellCells.size()] = freeAdj;
+}
+
 
 
 // ************************************************************************* //

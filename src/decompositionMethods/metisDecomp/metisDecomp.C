@@ -27,9 +27,8 @@ License
 #include "metisDecomp.H"
 #include "addToRunTimeSelectionTable.H"
 #include "floatScalar.H"
-#include "IFstream.H"
 #include "Time.H"
-#include "cyclicPolyPatch.H"
+#include "scotchDecomp.H"
 
 extern "C"
 {
@@ -341,7 +340,7 @@ Foam::labelList Foam::metisDecomp::decompose
 
     List<int> adjncy;
     List<int> xadj;
-    calcMetisCSR
+    scotchDecomp::calcCSR
     (
         mesh_,
         adjncy,
@@ -359,145 +358,6 @@ Foam::labelList Foam::metisDecomp::decompose
         decomp[i] = finalDecomp[i];
     }
     return decomp;
-}
-
-
-void Foam::metisDecomp::calcMetisCSR
-(
-    const polyMesh& mesh,
-    List<int>& adjncy,
-    List<int>& xadj
-)
-{
-    // Make Metis CSR (Compressed Storage Format) storage
-    //   adjncy      : contains neighbours (= edges in graph)
-    //   xadj(celli) : start of information in adjncy for celli
-
-    xadj.setSize(mesh.nCells()+1);
-
-    // Initialise the number of internal faces of the cells to twice the
-    // number of internal faces
-    label nInternalFaces = 2*mesh.nInternalFaces();
-
-    // Check the boundary for coupled patches and add to the number of
-    // internal faces
-    const polyBoundaryMesh& pbm = mesh.boundaryMesh();
-
-    forAll(pbm, patchi)
-    {
-        if (isA<cyclicPolyPatch>(pbm[patchi]))
-        {
-            nInternalFaces += pbm[patchi].size();
-        }
-    }
-
-    // Create the adjncy array the size of the total number of internal and
-    // coupled faces
-    adjncy.setSize(nInternalFaces);
-
-    // Fill in xadj
-    // ~~~~~~~~~~~~
-    label freeAdj = 0;
-
-    for (label cellI = 0; cellI < mesh.nCells(); cellI++)
-    {
-        xadj[cellI] = freeAdj;
-
-        const labelList& cFaces = mesh.cells()[cellI];
-
-        forAll(cFaces, i)
-        {
-            label faceI = cFaces[i];
-
-            if
-            (
-                mesh.isInternalFace(faceI)
-             || isA<cyclicPolyPatch>(pbm[pbm.whichPatch(faceI)])
-            )
-            {
-                freeAdj++;
-            }
-        }
-    }
-    xadj[mesh.nCells()] = freeAdj;
-
-
-    // Fill in adjncy
-    // ~~~~~~~~~~~~~~
-
-    labelList nFacesPerCell(mesh.nCells(), 0);
-
-    // Internal faces
-    for (label faceI = 0; faceI < mesh.nInternalFaces(); faceI++)
-    {
-        label own = mesh.faceOwner()[faceI];
-        label nei = mesh.faceNeighbour()[faceI];
-
-        adjncy[xadj[own] + nFacesPerCell[own]++] = nei;
-        adjncy[xadj[nei] + nFacesPerCell[nei]++] = own;
-    }
-
-    // Coupled faces. Only cyclics done.
-    forAll(pbm, patchi)
-    {
-        if (isA<cyclicPolyPatch>(pbm[patchi]))
-        {
-            const unallocLabelList& faceCells = pbm[patchi].faceCells();
-
-            label sizeby2 = faceCells.size()/2;
-
-            for (label facei=0; facei<sizeby2; facei++)
-            {
-                label own = faceCells[facei];
-                label nei = faceCells[facei + sizeby2];
-
-                adjncy[xadj[own] + nFacesPerCell[own]++] = nei;
-                adjncy[xadj[nei] + nFacesPerCell[nei]++] = own;
-            }
-        }
-    }
-}
-
-
-// From cell-cell connections to Metis format (like CompactListList)
-void Foam::metisDecomp::calcMetisCSR
-(
-    const labelListList& cellCells,
-    List<int>& adjncy,
-    List<int>& xadj
-)
-{
-    // Count number of internal faces
-    label nConnections = 0;
-
-    forAll(cellCells, coarseI)
-    {
-        nConnections += cellCells[coarseI].size();
-    }
-
-    // Create the adjncy array as twice the size of the total number of
-    // internal faces
-    adjncy.setSize(nConnections);
-
-    xadj.setSize(cellCells.size()+1);
-
-
-    // Fill in xadj
-    // ~~~~~~~~~~~~
-    label freeAdj = 0;
-
-    forAll(cellCells, coarseI)
-    {
-        xadj[coarseI] = freeAdj;
-
-        const labelList& cCells = cellCells[coarseI];
-
-        forAll(cCells, i)
-        {
-            adjncy[freeAdj++] = cCells[i];
-        }
-    }
-    xadj[cellCells.size()] = freeAdj;
 }
 
 
@@ -535,7 +395,7 @@ Foam::labelList Foam::metisDecomp::decompose
             cellCells
         );
 
-        calcMetisCSR(cellCells, adjncy, xadj);
+        scotchDecomp::calcCSR(cellCells, adjncy, xadj);
     }
 
     // Decompose using default weights
@@ -580,7 +440,7 @@ Foam::labelList Foam::metisDecomp::decompose
 
     List<int> adjncy;
     List<int> xadj;
-    calcMetisCSR(globalCellCells, adjncy, xadj);
+    scotchDecomp::calcCSR(globalCellCells, adjncy, xadj);
 
 
     // Decompose using default weights

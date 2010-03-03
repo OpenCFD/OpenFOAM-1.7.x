@@ -28,6 +28,8 @@ wmake libso edgeMesh
 wmake libso surfMesh
 
 # Decomposition methods needed by meshTools
+decompositionMethods/AllwmakeLnInclude
+dummyThirdParty/Allwmake
 decompositionMethods/Allwmake
 
 wmake libso meshTools
