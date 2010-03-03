@@ -101,14 +101,6 @@ int main(int argc, char *argv[])
 
         surfaceScalarField amaxSf("amaxSf", max(mag(am), mag(ap)));
 
-        #include "compressibleCourantNo.H"
-        #include "readTimeControls.H"
-        #include "setDeltaT.H"
-
-        runTime++;
-
-        Info<< "Time = " << runTime.timeName() << nl << endl;
-
         surfaceScalarField aSf = am*a_pos;
 
         if (fluxScheme == "Tadmor")
@@ -124,6 +116,18 @@ int main(int argc, char *argv[])
 
         surfaceScalarField aphiv_pos = phiv_pos - aSf;
         surfaceScalarField aphiv_neg = phiv_neg + aSf;
+
+        // Reuse amaxSf for the maximum positive and negative fluxes
+        // estimated by the central scheme
+        amaxSf = max(mag(aphiv_pos), mag(aphiv_neg));
+
+        #include "compressibleCourantNo.H"
+        #include "readTimeControls.H"
+        #include "setDeltaT.H"
+
+        runTime++;
+
+        Info<< "Time = " << runTime.timeName() << nl << endl;
 
         surfaceScalarField phi("phi", aphiv_pos*rho_pos + aphiv_neg*rho_neg);
 
