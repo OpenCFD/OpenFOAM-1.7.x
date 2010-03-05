@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -146,7 +146,7 @@ bool Foam::sampledTriSurfaceMesh::update()
 
     // Find the cells the triangles of the surface are in.
     // Does approximation by looking at the face centres only
-    const pointField fc = surface_.faceCentres();
+    const pointField& fc = surface_.faceCentres();
 
     cellLabels_.setSize(fc.size());
 
