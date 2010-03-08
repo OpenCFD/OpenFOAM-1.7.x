@@ -20,7 +20,7 @@ solvers
     cellDisplacement
     {
         solver          GAMG;
-        tolerance       1e-08;
+        tolerance       1e-5;
         relTol          0;
         smoother        GaussSeidel;
         cacheAgglomeration true;
@@ -35,7 +35,7 @@ solvers
         preconditioner
         {
             preconditioner  GAMG;
-            tolerance       1e-05;
+            tolerance       1e-5;
             relTol          0;
             smoother        DICGaussSeidel;
             nPreSweeps      0;
@@ -55,7 +55,7 @@ solvers
     p
     {
         solver          GAMG;
-        tolerance       1e-08;
+        tolerance       1e-8;
         relTol          0.01;
         smoother        DIC;
         nPreSweeps      0;
@@ -73,7 +73,7 @@ solvers
         preconditioner
         {
             preconditioner  GAMG;
-            tolerance       2e-09;
+            tolerance       1e-8;
             relTol          0;
             nVcycles        2;
             smoother        DICGaussSeidel;
@@ -86,7 +86,7 @@ solvers
             mergeLevels     1;
         }
 
-        tolerance       2e-09;
+        tolerance       1e-8;
         relTol          0;
         maxIter         20;
     }
@@ -95,18 +95,18 @@ solvers
     {
         solver          smoothSolver;
         smoother        GaussSeidel;
-        tolerance       1e-06;
+        tolerance       1e-6;
         relTol          0;
         nSweeps         1;
     }
 
-    "(k|epsilon|R|nuTilda)"
+    "(k|epsilon|omega|R|nuTilda)"
     {
-        $U;
-        tolerance       1e-08;
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-8;
         relTol          0;
     }
-
 }
 
 PISO
@@ -115,14 +115,14 @@ PISO
     nCorrectors     2;
     nNonOrthogonalCorrectors 0;
     nAlphaCorr      1;
-    nAlphaSubCycles 1;
-    cAlpha          1.5;
+    nAlphaSubCycles 3;
+    cAlpha          1;
     correctPhi      yes;
 }
 
 relaxationFactors
 {
-    U               1;
+    "(U|k|epsilon|omega|R|nuTilda)"               1;
 }
 
 

@@ -55,7 +55,6 @@ class subCycleTime
 
         label nSubCycles_;
         label subCycleIndex_;
-        TimeState initialTimeState_;
 
 public:
 

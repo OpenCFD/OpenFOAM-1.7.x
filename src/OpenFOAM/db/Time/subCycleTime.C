@@ -32,9 +32,10 @@ Foam::subCycleTime::subCycleTime(Time& t, const label nSubCycles)
 :
     time_(t),
     nSubCycles_(nSubCycles),
-    subCycleIndex_(0),
-    initialTimeState_(time_.subCycle(nSubCycles_))
-{}
+    subCycleIndex_(0)
+{
+    time_.subCycle(nSubCycles_);
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -55,7 +56,7 @@ bool Foam::subCycleTime::end() const
 
 void Foam::subCycleTime::endSubCycle()
 {
-    time_.endSubCycle(initialTimeState_);
+    time_.endSubCycle();
 }
 
 

@@ -94,7 +94,7 @@ void fvMesh::makeMagSf() const
 
     // Note: Added stabilisation for faces with exactly zero area.
     // These should be caught on mesh checking but at least this stops
-    // the code from producing Nans.  
+    // the code from producing Nans.
     magSfPtr_ = new surfaceScalarField
     (
         IOobject
@@ -285,6 +285,63 @@ const volScalarField::DimensionedInternalField& fvMesh::V00() const
 }
 
 
+tmp<volScalarField::DimensionedInternalField> fvMesh::Vsc() const
+{
+    if (moving() && time().subCycling())
+    {
+        const TimeState& ts = time();
+        const TimeState& ts0 = time().prevTimeState();
+
+        scalar tFrac =
+        (
+            ts.value() - (ts0.value() - ts0.deltaTValue())
+        )/ts0.deltaTValue();
+
+        if (tFrac < (1 - SMALL))
+        {
+            return V0() + tFrac*(V() - V0());
+        }
+        else
+        {
+            return V();
+        }
+    }
+    else
+    {
+        return V();
+    }
+}
+
+
+tmp<volScalarField::DimensionedInternalField> fvMesh::Vsc0() const
+{
+    if (moving() && time().subCycling())
+    {
+        const TimeState& ts = time();
+        const TimeState& ts0 = time().prevTimeState();
+
+        scalar t0Frac =
+        (
+            (ts.value() - ts.deltaTValue())
+          - (ts0.value() - ts0.deltaTValue())
+        )/ts0.deltaTValue();
+
+        if (t0Frac > SMALL)
+        {
+            return V0() + t0Frac*(V() - V0());
+        }
+        else
+        {
+            return V0();
+        }
+    }
+    else
+    {
+        return V0();
+    }
+}
+
+
 const surfaceVectorField& fvMesh::Sf() const
 {
     if (!SfPtr_)
@@ -338,7 +395,7 @@ const surfaceScalarField& fvMesh::phi() const
             << exit(FatalError);
     }
 
-    // Set zero current time 
+    // Set zero current time
     // mesh motion fluxes if the time has been incremented
     if (phiPtr_->timeIndex() != time().timeIndex())
     {
