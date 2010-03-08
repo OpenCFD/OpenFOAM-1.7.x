@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-libs            ("libparMetisDecompositionMethod.so");
+libs            ("libparMetisDecomp.so");
 
 application     simpleFoam;
 
