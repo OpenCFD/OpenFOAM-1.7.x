@@ -36,20 +36,12 @@ Foam::sampledTriSurfaceMesh::sampleField
 ) const
 {
     // One value per face
-    tmp<Field<Type> > tvalues(new Field<Type>(faceMap_.size()));
+    tmp<Field<Type> > tvalues(new Field<Type>(cellLabels_.size()));
     Field<Type>& values = tvalues();
 
-    forAll(faceMap_, i)
+    forAll(cellLabels_, triI)
     {
-        label cellI = cellLabels_[faceMap_[i]];
-        if (cellI != -1)
-        {
-            values[i] = vField[cellI];
-        }
-        else
-        {
-            values[i] = pTraits<Type>::zero;
-        }
+        values[triI] = vField[cellLabels_[triI]];
     }
 
     return tvalues;
@@ -64,24 +56,15 @@ Foam::sampledTriSurfaceMesh::interpolateField
 ) const
 {
     // One value per vertex
-    tmp<Field<Type> > tvalues(new Field<Type>(pointMap_.size()));
+    tmp<Field<Type> > tvalues(new Field<Type>(pointToFace_.size()));
     Field<Type>& values = tvalues();
 
-    forAll(pointMap_, i)
+    forAll(pointToFace_, pointI)
     {
-        label origPointI = pointMap_[i];
-        label origTriI = surface_.pointFaces()[origPointI][0];
+        label triI = pointToFace_[pointI];
+        label cellI = cellLabels_[triI];
 
-        label cellI = cellLabels_[origTriI];
-
-        if (cellI != -1)
-        {
-            values[i] = interpolator.interpolate(points()[i], cellI);
-        }
-        else
-        {
-            values[i] = pTraits<Type>::zero;
-        }
+        values[pointI] = interpolator.interpolate(points()[pointI], cellI);
     }
 
     return tvalues;
