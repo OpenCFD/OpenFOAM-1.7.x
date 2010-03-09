@@ -187,7 +187,7 @@ bool Foam::sampledTriSurfaceMesh::update()
 
     // Add to master all triangles are outside all meshes.
     {
-        boolList onAnyProc(surface_.size(), false);
+        boolList onAnyProc(include);
         Pstream::listCombineGather(onAnyProc, orEqOp<bool>());
 
         if (Pstream::master())
