@@ -25,11 +25,10 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "sampledTriSurfaceMesh.H"
-#include "dictionary.H"
-#include "polyMesh.H"
-#include "polyPatch.H"
-#include "volFields.H"
+#include "treeDataPoint.H"
 #include "meshSearch.H"
+#include "Tuple2.H"
+#include "globalIndex.H"
 
 #include "addToRunTimeSelectionTable.H"
 
@@ -44,6 +43,25 @@ namespace Foam
         sampledTriSurfaceMesh,
         word
     );
+
+    //- Private class for finding nearest
+    //  - global index
+    //  - sqr(distance)
+    typedef Tuple2<scalar, label> nearInfo;
+
+    class nearestEqOp
+    {
+
+    public:
+
+        void operator()(nearInfo& x, const nearInfo& y) const
+        {
+            if (y.first() < x.first())
+            {
+                x = y;
+            }
+        }
+    };
 }
 
 
@@ -63,16 +81,16 @@ Foam::sampledTriSurfaceMesh::sampledTriSurfaceMesh
         (
             name,
             mesh.time().constant(), // instance
-            "triSurface",       // local
-            mesh,               // registry
+            "triSurface",           // local
+            mesh,                   // registry
             IOobject::MUST_READ,
-            IOobject::NO_WRITE
+            IOobject::NO_WRITE,
+            false
         )
     ),
     needsUpdate_(true),
     cellLabels_(0),
-    pointMap_(0),
-    faceMap_(0)
+    pointToFace_(0)
 {}
 
 
@@ -90,16 +108,16 @@ Foam::sampledTriSurfaceMesh::sampledTriSurfaceMesh
         (
             dict.lookup("surface"),
             mesh.time().constant(), // instance
-            "triSurface",       // local
-            mesh,               // registry
+            "triSurface",           // local
+            mesh,                   // registry
             IOobject::MUST_READ,
-            IOobject::NO_WRITE
+            IOobject::NO_WRITE,
+            false
         )
     ),
     needsUpdate_(true),
     cellLabels_(0),
-    pointMap_(0),
-    faceMap_(0)
+    pointToFace_(0)
 {}
 
 
@@ -128,8 +146,7 @@ bool Foam::sampledTriSurfaceMesh::expire()
     sampledSurface::clearGeom();
     MeshStorage::clear();
     cellLabels_.clear();
-    pointMap_.clear();
-    faceMap_.clear();
+    pointToFace_.clear();
 
     needsUpdate_ = true;
     return true;
@@ -148,93 +165,137 @@ bool Foam::sampledTriSurfaceMesh::update()
     // Does approximation by looking at the face centres only
     const pointField& fc = surface_.faceCentres();
 
-    cellLabels_.setSize(fc.size());
-
     meshSearch meshSearcher(mesh(), false);
 
+    const indexedOctree<treeDataPoint>& cellCentreTree =
+        meshSearcher.cellCentreTree();
+
+
+    // Global numbering for cells - only used to uniquely identify local cells.
+    globalIndex globalCells(mesh().nCells());
+    List<nearInfo> nearest(fc.size());
+    forAll(nearest, i)
+    {
+        nearest[i].first() = GREAT;
+        nearest[i].second() = labelMax;
+    }
+
+    // Search triangles using nearest on local mesh
     forAll(fc, triI)
     {
-        cellLabels_[triI] = meshSearcher.findCell
+        pointIndexHit nearInfo = cellCentreTree.findNearest
         (
             fc[triI],
-            -1,                 // seed
-            true                // use tree
+            sqr(GREAT)
         );
-    }
-
-
-    boolList include(surface_.size(), true);
-
-    label nNotFound = 0;
-
-    forAll(cellLabels_, triI)
-    {
-        if (cellLabels_[triI] == -1)
+        if (nearInfo.hit())
         {
-            include[triI] = false;
-            nNotFound++;
+            nearest[triI].first() = magSqr(nearInfo.hitPoint()-fc[triI]);
+            nearest[triI].second() = globalCells.toGlobal(nearInfo.index());
         }
     }
-    label nTotalNotFound = returnReduce(nNotFound, sumOp<label>());
+
+    // See which processor has the nearest.
+    Pstream::listCombineGather(nearest, nearestEqOp());
+    Pstream::listCombineScatter(nearest);
+
+    boolList include(surface_.size(), false);
+
+    cellLabels_.setSize(fc.size());
+    cellLabels_ = -1;
+
+    label nFound = 0;
+    forAll(nearest, triI)
+    {
+        if (nearest[triI].second() == labelMax)
+        {
+            // Not found on any processor. How to map?
+        }
+        else if (globalCells.isLocal(nearest[triI].second()))
+        {
+            cellLabels_[triI] = globalCells.toLocal(nearest[triI].second());
+
+            include[triI] = true;
+            nFound++;
+        }
+    }
+
 
     if (debug)
     {
-        Pout<< "surface:" << surface_.size()
-            << "  included:" << surface_.size()-nNotFound
-            << "  total not found" << nTotalNotFound << endl;
+        Pout<< "Local out of faces:" << cellLabels_.size()
+            << " keeping:" << nFound << endl;
     }
 
+    // Now subset the surface. Do not use triSurface::subsetMesh since requires
+    // original surface to be in compact numbering.
 
-    // Add to master all triangles are outside all meshes.
+    const triSurface& s = surface_;
+
+    // Compact to original triangle
+    labelList faceMap(s.size());
+    // Compact to original points
+    labelList pointMap(s.points().size());
+    // From original point to compact points
+    labelList reversePointMap(s.points().size(), -1);
+
     {
-        boolList onAnyProc(surface_.size(), false);
-        Pstream::listCombineGather(onAnyProc, orEqOp<bool>());
+        label newPointI = 0;
+        label newTriI = 0;
 
-        if (Pstream::master())
+        forAll(s, triI)
         {
-            label nAdded = 0;
-            forAll(onAnyProc, triI)
+            if (include[triI])
             {
-                if (!onAnyProc[triI])
+                faceMap[newTriI++] = triI;
+
+                const labelledTri& f = s[triI];
+                forAll(f, fp)
                 {
-                    include[triI] = true;
-                    nAdded++;
+                    if (reversePointMap[f[fp]] == -1)
+                    {
+                        pointMap[newPointI] = f[fp];
+                        reversePointMap[f[fp]] = newPointI++;
+                    }
                 }
             }
+        }
+        faceMap.setSize(newTriI);
+        pointMap.setSize(newPointI);
+    }
 
-            if (debug)
-            {
-                Pout<< "nAdded to master:" << nAdded << endl;
-            }
+    // Subset cellLabels
+    cellLabels_ = UIndirectList<label>(cellLabels_, faceMap)();
+
+    // Store any face per point
+    pointToFace_.setSize(pointMap.size());
+
+    // Create faces and points for subsetted surface
+    faceList& faces = this->storedFaces();
+    faces.setSize(faceMap.size());
+    forAll(faceMap, i)
+    {
+        const triFace& f = s[faceMap[i]];
+        triFace newF
+        (
+            reversePointMap[f[0]],
+            reversePointMap[f[1]],
+            reversePointMap[f[2]]
+        );
+        faces[i] = newF.triFaceFace();
+
+        forAll(newF, fp)
+        {
+            pointToFace_[newF[fp]] = i;
         }
     }
 
-
-    // Now subset the surface
-    triSurface localSurface
-    (
-        surface_.subsetMesh
-        (
-            include,
-            pointMap_,
-            faceMap_
-        )
-    );
-
-    // And convert into faces.
-    faceList& faces = this->storedFaces();
-    faces.setSize(localSurface.size());
-    forAll(localSurface, i)
-    {
-        faces[i] = localSurface[i].triFaceFace();
-    }
-
-    this->storedPoints() = localSurface.points();
+    this->storedPoints() = pointField(s.points(), pointMap);
 
     if (debug)
     {
         print(Pout);
-        Pout << endl;
+        Pout<< endl;
     }
 
     needsUpdate_ = false;
