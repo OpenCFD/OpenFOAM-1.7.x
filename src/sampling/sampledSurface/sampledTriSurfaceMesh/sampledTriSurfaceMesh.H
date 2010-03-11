@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -29,14 +29,12 @@ Description
     A sampledSurface from a triSurfaceMesh. It samples on the points/triangles
     of the triSurface.
 
+    It samples using the cell nearest to the triangle centre so does
+    not check the cell the centre is actually in ...
+
     In parallel every processor just operates on the part of the surface
     where the face centres are inside the mesh. It is then up to the
     caller to stitch the partial surfaces together.
-
-    No check is done for triangle centres being on multiple processors
-    (should never happen but truncation errors ...)
-
-    Any value on a triangle outside the mesh will be set to 0.
 
 SourceFiles
     sampledTriSurfaceMesh.C
@@ -75,14 +73,11 @@ class sampledTriSurfaceMesh
         //- Track if the surface needs an update
         mutable bool needsUpdate_;
 
-        //- Local cell labels
+        //- From local surface triangle to mesh cell.
         labelList cellLabels_;
 
         //- From local surface back to surface_
-        labelList pointMap_;
-
-        //- From local surface back to surface_
-        labelList faceMap_;
+        labelList pointToFace_;
 
 
     // Private Member Functions

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,17 +22,51 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+InClass
+    vtkPV3Foam
+
 \*---------------------------------------------------------------------------*/
 
-#include "LimitedScheme.H"
-#include "MC.H"
+#ifndef vtkOpenFOAMTupleRemap_H
+#define vtkOpenFOAMTupleRemap_H
+
+// OpenFOAM includes
+#include "StaticAssert.H"
+#include "Swap.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
+template<class Type>
+inline void vtkOpenFOAMTupleRemap(float vec[]);
+
+
+// a symmTensor specialization to remap OpenFOAM -> ParaView naming order
+// Qt/Core/pqScalarBarRepresentation.cxx defines this order
+//     { "XX", "YY", "ZZ", "XY", "YZ", "XZ" }
+// in pqScalarBarRepresentation::getDefaultComponentLabel()
+// whereas OpenFOAM uses this order
+//     { XX, XY, XZ, YY, YZ, ZZ }
+//
+// for extra safety, assert that symmTensor indeed has 6 components
+StaticAssert(Foam::symmTensor::nComponents == 6);
+
+
+// Template specialization for symmTensor
+template<>
+inline void vtkOpenFOAMTupleRemap<Foam::symmTensor>(float vec[])
 {
-    makeLimitedSurfaceInterpolationScheme(MC, MCLimiter)
-    makeLimitedVSurfaceInterpolationScheme(MCV, MCLimiter)
+    Foam::Swap(vec[1], vec[3]);   // swap XY <-> YY
+    Foam::Swap(vec[2], vec[5]);   // swap XZ <-> ZZ
 }
+
+
+template<class Type>
+inline void vtkOpenFOAMTupleRemap(float vec[])
+{}
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#endif
 
 // ************************************************************************* //
