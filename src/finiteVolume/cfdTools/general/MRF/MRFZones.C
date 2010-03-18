@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -96,11 +96,37 @@ void Foam::MRFZones::relativeFlux(surfaceScalarField& phi) const
 }
 
 
+void Foam::MRFZones::relativeFlux
+(
+    const surfaceScalarField& rho,
+    surfaceScalarField& phi
+) const
+{
+    forAll(*this, i)
+    {
+        operator[](i).relativeFlux(rho, phi);
+    }
+}
+
+
 void Foam::MRFZones::absoluteFlux(surfaceScalarField& phi) const
 {
     forAll(*this, i)
     {
         operator[](i).absoluteFlux(phi);
+    }
+}
+
+
+void Foam::MRFZones::absoluteFlux
+(
+    const surfaceScalarField& rho,
+    surfaceScalarField& phi
+) const
+{
+    forAll(*this, i)
+    {
+        operator[](i).absoluteFlux(rho, phi);
     }
 }
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,13 +24,28 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "oneField.H"
+#include "geometricOneField.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-inline Foam::scalar Foam::oneField::operator[](const label) const
+inline Foam::scalar Foam::geometricOneField::operator[](const label) const
 {
     return scalar(1);
+}
+
+inline Foam::oneField Foam::geometricOneField::field() const
+{
+    return oneField();
+}
+
+inline Foam::oneField Foam::geometricOneField::oldTime() const
+{
+    return oneField();
+}
+
+inline Foam::oneFieldField Foam::geometricOneField::boundaryField() const
+{
+    return oneFieldField();
 }
 
 

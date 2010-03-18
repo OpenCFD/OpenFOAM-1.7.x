@@ -1,0 +1,36 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      porousZones;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+1
+(
+    stator
+    {
+        coordinateSystem
+        {
+            e1  (1 0 0);
+            e2  (0 1 0);
+        }
+
+        Darcy
+        {
+            d   d [0 -2 0 0 0 0 0] (1e5 -1000 -1000);
+            f   f [0 -1 0 0 0 0 0] (0 0 0);
+        }
+    }
+)
+
+// ************************************************************************* //

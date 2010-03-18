@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,23 +22,24 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-InNamespace
-    Foam::fvm
+Class
+    Foam::GeometricField
 
 Description
-    Calulate the matrix for the first temporal derivative.
+    A class representing the concept of a GeometricField of 1 used to avoid
+    unnecessary manipulations for objects which are known to be one at
+    compile-time.
 
-SourceFiles
-    fvmDdt.C
+    Used for example as the density argument to a function written for
+    compressible to be used for incompressible flow.
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef fvmDdt_H
-#define fvmDdt_H
+#ifndef geometricOneField_H
+#define geometricOneField_H
 
-#include "volFieldsFwd.H"
-#include "fvMatrix.H"
-#include "geometricOneField.H"
+#include "oneFieldField.H"
+#include "scalar.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -46,38 +47,33 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                     Namespace fvm functions Declaration
+                      Class geometricOneField Declaration
 \*---------------------------------------------------------------------------*/
 
-namespace fvm
+class geometricOneField
+:
+    public one
 {
-    template<class Type>
-    tmp<fvMatrix<Type> > ddt
-    (
-        GeometricField<Type, fvPatchField, volMesh>&
-    );
 
-    template<class Type>
-    tmp<fvMatrix<Type> > ddt
-    (
-        const geometricOneField&,
-        GeometricField<Type, fvPatchField, volMesh>&
-    );
+public:
 
-    template<class Type>
-    tmp<fvMatrix<Type> > ddt
-    (
-        const dimensionedScalar&,
-        GeometricField<Type, fvPatchField, volMesh>&
-    );
+    // Constructors
 
-    template<class Type>
-    tmp<fvMatrix<Type> > ddt
-    (
-        const volScalarField&,
-        GeometricField<Type, fvPatchField, volMesh>&
-    );
-}
+        //- Construct null
+        geometricOneField()
+        {}
+
+
+    // Member Operators
+
+        inline scalar operator[](const label) const;
+
+        inline oneField field() const;
+
+        inline oneField oldTime() const;
+
+        inline oneFieldField boundaryField() const;
+};
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -86,9 +82,7 @@ namespace fvm
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#ifdef NoRepository
-#   include "fvmDdt.C"
-#endif
+#   include "geometricOneFieldI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
