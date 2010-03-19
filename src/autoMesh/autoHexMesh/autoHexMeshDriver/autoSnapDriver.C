@@ -107,9 +107,10 @@ Foam::Map<Foam::label> Foam::autoSnapDriver::getZoneBafflePatches
                             FatalErrorIn("getZoneBafflePatches(const bool)")
                                 << "Face " << faceI
                                 << " fc:" << mesh.faceCentres()[faceI]
-                                << " is in faceZone "
+                                << " in zone " << fZone.name()
+                                << " is in patch "
                                 << mesh.boundaryMesh()[oldPatchI].name()
-                                << " and in faceZone "
+                                << " and in patch "
                                 << mesh.boundaryMesh()[patchI].name()
                                 << abort(FatalError);
                         }
