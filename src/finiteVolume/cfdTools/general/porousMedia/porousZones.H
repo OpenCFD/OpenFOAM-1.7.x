@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -63,7 +63,7 @@ SourceFiles
 
 #include "volFieldsFwd.H"
 #include "fvMatrix.H"
-#include "oneField.H"
+#include "geometricOneField.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -119,7 +119,7 @@ public:
         template<class Type>
         tmp<fvMatrix<Type> > ddt
         (
-            const oneField&,
+            const geometricOneField&,
             GeometricField<Type, fvPatchField, volMesh>&
         );
 

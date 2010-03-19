@@ -40,7 +40,7 @@ solvers
         maxIter         100;
     }
 
-    pmh
+    p
     {
         solver          GAMG;
         tolerance       1e-08;
@@ -55,7 +55,7 @@ solvers
         mergeLevels     1;
     }
 
-    pmhFinal
+    pFinal
     {
         solver          PCG;
         preconditioner
@@ -99,8 +99,7 @@ PISO
     cAlpha          1.5;
     correctPhi      no;
 
-    pmhRefPoint     (0 0 0.15);
-    pmhRefValue     0;
+    pRefPoint       (0 0 0.15);
     pRefValue       1e5;
 }
 

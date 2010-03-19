@@ -25,7 +25,7 @@ solvers
         relTol          0;
     }
 
-    pmh
+    p
     {
         solver          PCG;
         preconditioner  DIC;
@@ -33,10 +33,9 @@ solvers
         relTol          0.05;
     }
 
-    pmhFinal
+    pFinal
     {
-        solver          PCG;
-        preconditioner  DIC;
+        $p;
         tolerance       1e-07;
         relTol          0;
     }

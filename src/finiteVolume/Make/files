@@ -244,7 +244,6 @@ $(limitedSchemes)/SuperBee/SuperBee.C
 $(limitedSchemes)/QUICK/QUICK.C
 $(limitedSchemes)/MUSCL/MUSCL.C
 $(limitedSchemes)/UMIST/UMIST.C
-$(limitedSchemes)/MC/MC.C
 $(limitedSchemes)/Phi/Phi.C
 $(limitedSchemes)/filteredLinear/filteredLinear.C
 $(limitedSchemes)/filteredLinear2/filteredLinear2.C

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -31,6 +31,7 @@ License
 #include "fvMatrices.H"
 #include "syncTools.H"
 #include "faceSet.H"
+#include "geometricOneField.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -377,85 +378,33 @@ void Foam::MRFZone::relativeVelocity(volVectorField& U) const
 
 void Foam::MRFZone::relativeFlux(surfaceScalarField& phi) const
 {
-    const surfaceVectorField& Cf = mesh_.Cf();
-    const surfaceVectorField& Sf = mesh_.Sf();
+    relativeRhoFlux(geometricOneField(), phi);
+}
 
-    const vector& origin = origin_.value();
-    const vector& Omega = Omega_.value();
 
-    // Internal faces
-    forAll(internalFaces_, i)
-    {
-        label facei = internalFaces_[i];
-        phi[facei] -= (Omega ^ (Cf[facei] - origin)) & Sf[facei];
-    }
-
-    // Included patches
-    forAll(includedFaces_, patchi)
-    {
-        forAll(includedFaces_[patchi], i)
-        {
-            label patchFacei = includedFaces_[patchi][i];
-
-            phi.boundaryField()[patchi][patchFacei] = 0.0;
-        }
-    }
-
-    // Excluded patches
-    forAll(excludedFaces_, patchi)
-    {
-        forAll(excludedFaces_[patchi], i)
-        {
-            label patchFacei = excludedFaces_[patchi][i];
-
-            phi.boundaryField()[patchi][patchFacei] -=
-                (Omega ^ (Cf.boundaryField()[patchi][patchFacei] - origin))
-              & Sf.boundaryField()[patchi][patchFacei];
-        }
-    }
+void Foam::MRFZone::relativeFlux
+(
+    const surfaceScalarField& rho,
+    surfaceScalarField& phi
+) const
+{
+    relativeRhoFlux(rho, phi);
 }
 
 
 void Foam::MRFZone::absoluteFlux(surfaceScalarField& phi) const
 {
-    const surfaceVectorField& Cf = mesh_.Cf();
-    const surfaceVectorField& Sf = mesh_.Sf();
+    absoluteRhoFlux(geometricOneField(), phi);
+}
 
-    const vector& origin = origin_.value();
-    const vector& Omega = Omega_.value();
 
-    // Internal faces
-    forAll(internalFaces_, i)
-    {
-        label facei = internalFaces_[i];
-        phi[facei] += (Omega ^ (Cf[facei] - origin)) & Sf[facei];
-    }
-
-    // Included patches
-    forAll(includedFaces_, patchi)
-    {
-        forAll(includedFaces_[patchi], i)
-        {
-            label patchFacei = includedFaces_[patchi][i];
-
-            phi.boundaryField()[patchi][patchFacei] +=
-                (Omega ^ (Cf.boundaryField()[patchi][patchFacei] - origin))
-              & Sf.boundaryField()[patchi][patchFacei];
-        }
-    }
-
-    // Excluded patches
-    forAll(excludedFaces_, patchi)
-    {
-        forAll(excludedFaces_[patchi], i)
-        {
-            label patchFacei = excludedFaces_[patchi][i];
-
-            phi.boundaryField()[patchi][patchFacei] +=
-                (Omega ^ (Cf.boundaryField()[patchi][patchFacei] - origin))
-              & Sf.boundaryField()[patchi][patchFacei];
-        }
-    }
+void Foam::MRFZone::absoluteFlux
+(
+    const surfaceScalarField& rho,
+    surfaceScalarField& phi
+) const
+{
+    absoluteRhoFlux(rho, phi);
 }
 
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -85,8 +85,22 @@ public:
         //- Make the given absolute flux relative within the MRF region
         void relativeFlux(surfaceScalarField& phi) const;
 
+        //- Make the given absolute mass-flux relative within the MRF region
+        void relativeFlux
+        (
+            const surfaceScalarField& rho,
+            surfaceScalarField& phi
+        ) const;
+
         //- Make the given relative flux absolute within the MRF region
         void absoluteFlux(surfaceScalarField& phi) const;
+
+        //- Make the given relative mass-flux absolute within the MRF region
+        void absoluteFlux
+        (
+            const surfaceScalarField& rho,
+            surfaceScalarField& phi
+        ) const;
 
         //- Correct the boundary velocity for the roation of the MRF region
         void correctBoundaryVelocity(volVectorField& U) const;

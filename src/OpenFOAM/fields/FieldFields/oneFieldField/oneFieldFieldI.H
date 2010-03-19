@@ -24,15 +24,14 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "LimitedScheme.H"
-#include "MC.H"
+#include "oneFieldField.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
+inline Foam::oneField Foam::oneFieldField::operator[](const label) const
 {
-    makeLimitedSurfaceInterpolationScheme(MC, MCLimiter)
-    makeLimitedVSurfaceInterpolationScheme(MCV, MCLimiter)
+    return oneField();
 }
+
 
 // ************************************************************************* //

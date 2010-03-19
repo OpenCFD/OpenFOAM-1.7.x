@@ -23,24 +23,22 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::MCLimiter
+    Foam::oneFieldField
 
 Description
-    Class with limiter function which returns the limiter for the
-    monotonised centred differencing scheme based on r obtained from
-    the LimiterFunc class.
+    A class representing the concept of a field of oneFields used to
+    avoid unnecessary manipulations for objects which are known to be one at
+    compile-time.
 
-    Used in conjunction with the template class LimitedScheme.
-
-SourceFiles
-    MC.C
+    Used for example as the density argument to a function written for
+    compressible to be used for incompressible flow.
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef MC_H
-#define MC_H
+#ifndef oneFieldField_H
+#define oneFieldField_H
 
-#include "vector.H"
+#include "oneField.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -48,44 +46,36 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                       Class MCLimiter Declaration
+                           Class oneField Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class LimiterFunc>
-class MCLimiter
+class oneFieldField
 :
-    public LimiterFunc
+    public one
 {
 
 public:
 
-    MCLimiter(Istream&)
-    {}
+    // Constructors
 
-    scalar limiter
-    (
-        const scalar cdWeight,
-        const scalar faceFlux,
-        const typename LimiterFunc::phiType& phiP,
-        const typename LimiterFunc::phiType& phiN,
-        const typename LimiterFunc::gradPhiType& gradcP,
-        const typename LimiterFunc::gradPhiType& gradcN,
-        const vector& d
-    ) const
-    {
-        scalar r = LimiterFunc::r
-        (
-            faceFlux, phiP, phiN, gradcP, gradcN, d
-        );
+        //- Construct null
+        oneFieldField()
+        {}
 
-        return max(min(min(2*r, 0.5*(1 + r)), 2), 0);
-    }
+
+    // Member Operators
+
+        inline oneField operator[](const label) const;
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#   include "oneFieldFieldI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
