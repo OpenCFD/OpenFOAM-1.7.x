@@ -59,7 +59,7 @@
                 alpharScheme
             );
 
-        MULES::explicitSolve(oneField(), alpha1, phi, phiAlpha1, Sp, Su, 1, 0);
+        MULES::explicitSolve(geometricOneField(), alpha1, phi, phiAlpha1, Sp, Su, 1, 0);
 
         surfaceScalarField rho1f = fvc::interpolate(rho1);
         surfaceScalarField rho2f = fvc::interpolate(rho2);

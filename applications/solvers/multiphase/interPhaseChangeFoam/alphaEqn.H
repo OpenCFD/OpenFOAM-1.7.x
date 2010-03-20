@@ -51,8 +51,8 @@
         );
 
         //MULES::explicitSolve(alpha1, phi, phiAlpha, 1, 0);
-        //MULES::explicitSolve(oneField(), alpha1, phi, phiAlpha, Sp, Su, 1, 0);
-        MULES::implicitSolve(oneField(), alpha1, phi, phiAlpha, Sp, Su, 1, 0);
+        //MULES::explicitSolve(geometricOneField(), alpha1, phi, phiAlpha, Sp, Su, 1, 0);
+        MULES::implicitSolve(geometricOneField(), alpha1, phi, phiAlpha, Sp, Su, 1, 0);
 
         rhoPhi +=
             (runTime.deltaT()/totalDeltaT)
