@@ -258,6 +258,8 @@ kOmegaSST::kOmegaSST
         autoCreateAlphat("alphat", mesh_)
     )
 {
+    bound(omega_, omega0_);
+
     mut_ = a1_*rho_*k_/max(a1_*omega_, F2()*sqrt(magSqr(symm(fvc::grad(U_)))));
     mut_.correctBoundaryConditions();
 
