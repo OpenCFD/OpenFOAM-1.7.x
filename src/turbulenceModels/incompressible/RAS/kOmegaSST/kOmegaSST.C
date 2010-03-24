@@ -236,13 +236,9 @@ kOmegaSST::kOmegaSST
         autoCreateNut("nut", mesh_)
     )
 {
-    nut_ =
-        a1_*k_
-       /max
-        (
-            a1_*(omega_ + omegaSmall_),
-            F2()*mag(symm(fvc::grad(U_)))
-        );
+    bound(omega_, omega0_);
+
+    nut_ = a1_*k_/max(a1_*omega_, F2()*mag(symm(fvc::grad(U_))));
     nut_.correctBoundaryConditions();
 
     printCoeffs();

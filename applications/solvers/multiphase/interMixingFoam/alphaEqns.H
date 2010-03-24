@@ -70,7 +70,7 @@
         MULES::limiter
         (
             allLambda,
-            oneField(),
+            geometricOneField(),
             alpha1,
             phiAlpha1BD,
             phiAlpha1,
@@ -107,7 +107,7 @@
         MULES::limiter
         (
             allLambda,
-            oneField(),
+            geometricOneField(),
             alpha2,
             phiAlpha2BD,
             phiAlpha2,
