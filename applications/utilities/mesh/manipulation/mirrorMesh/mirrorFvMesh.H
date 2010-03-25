@@ -71,12 +71,6 @@ class mirrorFvMesh
 public:
 
 
-    // Static data
-
-        //- Cell renumnering table
-        static const label cellRenumber[8][8];
-
-
     // Constructors
 
         //- Construct from IOobject

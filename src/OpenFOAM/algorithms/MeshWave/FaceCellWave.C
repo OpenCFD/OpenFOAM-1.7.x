@@ -40,7 +40,7 @@ template <class Type>
 const Foam::scalar Foam::FaceCellWave<Type>::geomTol_ = 1e-6;
 
 template <class Type>
-const Foam::scalar Foam::FaceCellWave<Type>::propagationTol_ = 0.01;
+Foam::scalar Foam::FaceCellWave<Type>::propagationTol_ = 0.01;
 
 // Write to ostream
 template <class Type>
@@ -405,7 +405,7 @@ void Foam::FaceCellWave<Type>::leaveDomain
 ) const
 {
     const vectorField& fc = mesh_.faceCentres();
-    
+
     for(label i = 0; i < nFaces; i++)
     {
         label patchFaceI = faceLabels[i];
@@ -427,7 +427,7 @@ void Foam::FaceCellWave<Type>::enterDomain
 ) const
 {
     const vectorField& fc = mesh_.faceCentres();
-    
+
     for(label i = 0; i < nFaces; i++)
     {
         label patchFaceI = faceLabels[i];
@@ -739,7 +739,7 @@ void Foam::FaceCellWave<Type>::handleCyclicPatches()
 
             if (debug)
             {
-                Pout<< " Cyclic patch " << patchI << ' ' << patch.name() 
+                Pout<< " Cyclic patch " << patchI << ' ' << patch.name()
                     << "  Changed on first half : " << nSendFaces
                     << "  Changed on second half : " << nReceiveFaces
                     << endl;
@@ -819,7 +819,7 @@ Foam::FaceCellWave<Type>::FaceCellWave
 {}
 
 
-// Iterate, propagating changedFacesInfo across mesh, until no change (or 
+// Iterate, propagating changedFacesInfo across mesh, until no change (or
 // maxIter reached). Initial cell values specified.
 template <class Type>
 Foam::FaceCellWave<Type>::FaceCellWave
