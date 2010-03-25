@@ -93,6 +93,8 @@ int main(int argc, char *argv[])
             kappa = (runTime.deltaT() + tc)/(runTime.deltaT()+tc+tk);
         }
 
+        chemistrySh = kappa*chemistry.Sh()();
+
         #include "rhoEqn.H"
         #include "UEqn.H"
 
