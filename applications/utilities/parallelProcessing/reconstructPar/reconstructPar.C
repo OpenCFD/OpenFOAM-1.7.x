@@ -181,6 +181,10 @@ int main(int argc, char *argv[])
          || objects.lookupClass(volSymmTensorField::typeName).size()
          || objects.lookupClass(volTensorField::typeName).size()
          || objects.lookupClass(surfaceScalarField::typeName).size()
+         || objects.lookupClass(surfaceVectorField::typeName).size()
+         || objects.lookupClass(surfaceSphericalTensorField::typeName).size()
+         || objects.lookupClass(surfaceSymmTensorField::typeName).size()
+         || objects.lookupClass(surfaceTensorField::typeName).size()
         )
         {
             Info << "Reconstructing FV fields" << nl << endl;
@@ -221,6 +225,26 @@ int main(int argc, char *argv[])
             );
 
             fvReconstructor.reconstructFvSurfaceFields<scalar>
+            (
+                objects,
+                selectedFields
+            );
+            fvReconstructor.reconstructFvSurfaceFields<vector>
+            (
+                objects,
+                selectedFields
+            );
+            fvReconstructor.reconstructFvSurfaceFields<sphericalTensor>
+            (
+                objects,
+                selectedFields
+            );
+            fvReconstructor.reconstructFvSurfaceFields<symmTensor>
+            (
+                objects,
+                selectedFields
+            );
+            fvReconstructor.reconstructFvSurfaceFields<tensor>
             (
                 objects,
                 selectedFields
