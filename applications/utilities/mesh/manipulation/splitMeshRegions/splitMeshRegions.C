@@ -35,6 +35,7 @@ Description
     - any face inbetween differing cellZones (-cellZones)
 
     Output is:
+    - volScalarField with regions as different scalars (-detectOnly) or
     - mesh with multiple regions or
     - mesh with cells put into cellZones (-makeCellZones)
 
