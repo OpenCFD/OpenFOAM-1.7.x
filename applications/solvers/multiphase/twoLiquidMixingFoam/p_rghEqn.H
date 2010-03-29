@@ -37,6 +37,20 @@
         }
     }
 
+    p == p_rgh + rho*gh;
+
+    if (p_rgh.needReference())
+    {
+        p += dimensionedScalar
+        (
+            "p",
+            p.dimensions(),
+            pRefValue - getRefCellValue(p, p_rghRefCell)
+        );
+    }
+
+    #include "continuityErrs.H"
+
     U += rUA*fvc::reconstruct((phi - phiU)/rUAf);
     U.correctBoundaryConditions();
 }

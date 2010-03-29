@@ -81,8 +81,6 @@ int main(int argc, char *argv[])
                 #include "p_rghEqn.H"
             }
 
-            #include "continuityErrs.H"
-
             turbulence->correct();
         }
 
