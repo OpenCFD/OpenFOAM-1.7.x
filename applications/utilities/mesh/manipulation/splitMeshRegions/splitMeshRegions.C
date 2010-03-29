@@ -22,6 +22,9 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+Application
+    splitMeshRegions
+
 Description
     Splits mesh into multiple regions.
 
@@ -47,7 +50,13 @@ Description
     - useCellZonesOnly does not do a walk and uses the cellZones only. Use
     this if you don't mind having disconnected domains in a single region.
     This option requires all cells to be in one (and one only) cellZone.
-
+    - writes maps like decomposePar back to original mesh:
+        - pointRegionAddressing : for every point in this region the point in
+        the original mesh
+        - cellRegionAddressing  :   ,,      cell                ,,  cell    ,,
+        - faceRegionAddressing  :   ,,      face                ,,  face in
+        the original mesh + 'turning index'. For a face in the same orientation
+        this is the original facelabel+1, for a turned face this is -facelabel-1
 \*---------------------------------------------------------------------------*/
 
 #include "SortableList.H"
