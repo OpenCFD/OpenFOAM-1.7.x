@@ -11,33 +11,29 @@
       + fvc::ddtPhiCorr(rUA, rho, U, phi)
     );
 
-    phi = phiU + fvc::interpolate(rho)*(g & mesh.Sf())*rUAf;
+    phi = phiU - ghf*fvc::snGrad(rho)*rUAf*mesh.magSf();
 
     for(int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
     {
-        fvScalarMatrix pEqn
+        fvScalarMatrix p_rghEqn
         (
-            fvm::laplacian(rUAf, p) == fvc::div(phi)
+            fvm::laplacian(rUAf, p_rgh) == fvc::div(phi)
         );
 
-        pEqn.setReference(pRefCell, pRefValue);
+        p_rghEqn.setReference(p_rghRefCell, p_rghRefValue);
 
-        if
+        p_rghEqn.solve
         (
-            corr == nCorr-1
-         && nonOrth == nNonOrthCorr
-        )
-        {
-            pEqn.solve(mesh.solver(p.name() + "Final"));
-        }
-        else
-        {
-            pEqn.solve(mesh.solver(p.name()));
-        }
+            mesh.solver
+            (
+                p_rgh.name()
+              + ((corr == nCorr-1 && nonOrth == nNonOrthCorr) ? "Final" : "")
+            )
+        );
 
         if (nonOrth == nNonOrthCorr)
         {
-            phi -= pEqn.flux();
+            phi -= p_rghEqn.flux();
         }
     }
 
