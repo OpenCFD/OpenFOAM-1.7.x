@@ -1,4 +1,4 @@
-CPP        = /usr/lib/cpp -undef $(GFLAGS)
+CPP        = cpp -undef $(GFLAGS)
 
 PROJECT_LIBS = -l$(WM_PROJECT) -liberty -lnsl -lsocket -L$(FOAM_LIBBIN)/dummy -lPstream
 

@@ -1,4 +1,4 @@
-CPP        = /lib/cpp $(GFLAGS)
+CPP        = cpp $(GFLAGS)
 LD         = ld -64
 
 PROJECT_LIBS = -l$(WM_PROJECT) -liberty -lnsl -lsocket -L$(FOAM_LIBBIN)/dummy -lPstream
