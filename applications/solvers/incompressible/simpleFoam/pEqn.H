@@ -40,4 +40,3 @@
     // Momentum corrector
     U -= fvc::grad(p)/AU;
     U.correctBoundaryConditions();
-

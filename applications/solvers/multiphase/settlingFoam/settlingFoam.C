@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
             // --- PISO loop
             for (int corr=0; corr<nCorr; corr++)
             {
-                #include "pmhEqn.H"
+                #include "p_rghEqn.H"
             }
 
             #include "kEpsilon.H"

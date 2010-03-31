@@ -78,10 +78,8 @@ int main(int argc, char *argv[])
             // --- PISO loop
             for (int corr=0; corr<nCorr; corr++)
             {
-                #include "pEqn.H"
+                #include "p_rghEqn.H"
             }
-
-            #include "continuityErrs.H"
 
             turbulence->correct();
         }
