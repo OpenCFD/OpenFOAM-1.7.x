@@ -37,7 +37,8 @@ Foam::lagrangianWriter::lagrangianWriter
     const vtkMesh& vMesh,
     const bool binary,
     const fileName& fName,
-    const word& cloudName
+    const word& cloudName,
+    const bool dummyCloud
 )
 :
     vMesh_(vMesh),
@@ -52,19 +53,28 @@ Foam::lagrangianWriter::lagrangianWriter
     writeFuns::writeHeader(os_, binary_, mesh.time().caseName());
     os_ << "DATASET POLYDATA" << std::endl;
 
-    Cloud<passiveParticle> parcels(mesh, cloudName_, false);
-
-    nParcels_ = parcels.size();
-
-    os_ << "POINTS " << parcels.size() << " float" << std::endl;
-
-    DynamicList<floatScalar> partField(3*parcels.size());
-
-    forAllConstIter(Cloud<passiveParticle>, parcels, elmnt)
+    if (dummyCloud)
     {
-        writeFuns::insert(elmnt().position(), partField);
+        nParcels_ = 0;
+
+        os_ << "POINTS " << nParcels_ << " float" << std::endl;
     }
-    writeFuns::write(os_, binary_, partField);
+    else
+    {
+        Cloud<passiveParticle> parcels(mesh, cloudName_, false);
+
+        nParcels_ = parcels.size();
+
+        os_ << "POINTS " << nParcels_ << " float" << std::endl;
+
+        DynamicList<floatScalar> partField(3*parcels.size());
+
+        forAllConstIter(Cloud<passiveParticle>, parcels, elmnt)
+        {
+            writeFuns::insert(elmnt().position(), partField);
+        }
+        writeFuns::write(os_, binary_, partField);
+    }
 }
 
 

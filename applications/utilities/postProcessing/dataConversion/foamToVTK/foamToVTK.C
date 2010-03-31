@@ -102,30 +102,6 @@ Note
     fvMeshSubset.interpolate function to directly interpolate the
     whole-mesh values onto the subset patch.
 
-Note
-    new file format: \n
-    no automatic timestep recognition.
-    However can have .pvd file format which refers to time simulation
-    if XML *.vtu files are available:
-
-    @verbatim
-      <?xml version="1.0"?>
-      <VTKFile type="Collection" version="0.1" byte_order="LittleEndian" compressor="vtkZLibDataCompressor">
-        <Collection>
-          <DataSet timestep="50" file="pitzDaily_2.vtu"/>
-          <DataSet timestep="100" file="pitzDaily_3.vtu"/>
-          <DataSet timestep="150" file="pitzDaily_4.vtu"/>
-          <DataSet timestep="200" file="pitzDaily_5.vtu"/>
-          <DataSet timestep="250" file="pitzDaily_6.vtu"/>
-          <DataSet timestep="300" file="pitzDaily_7.vtu"/>
-          <DataSet timestep="350" file="pitzDaily_8.vtu"/>
-          <DataSet timestep="400" file="pitzDaily_9.vtu"/>
-          <DataSet timestep="450" file="pitzDaily_10.vtu"/>
-          <DataSet timestep="500" file="pitzDaily_11.vtu"/>
-        </Collection>
-      </VTKFile>
-    @endverbatim
-
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
@@ -357,6 +333,44 @@ int main(int argc, char *argv[])
 
     // mesh wrapper; does subsetting and decomposition
     vtkMesh vMesh(mesh, cellSetName);
+
+
+    // Scan for all possible lagrangian clouds
+    HashSet<fileName> allCloudDirs;
+    forAll(timeDirs, timeI)
+    {
+        runTime.setTime(timeDirs[timeI], timeI);
+        fileNameList cloudDirs
+        (
+            readDir
+            (
+                runTime.timePath()/regionPrefix/cloud::prefix,
+                fileName::DIRECTORY
+            )
+        );
+        forAll(cloudDirs, i)
+        {
+            IOobjectList sprayObjs
+            (
+                mesh,
+                runTime.timeName(),
+                cloud::prefix/cloudDirs[i]
+            );
+
+            IOobject* positionsPtr = sprayObjs.lookup("positions");
+
+            if (positionsPtr)
+            {
+                if (allCloudDirs.insert(cloudDirs[i]))
+                {
+                    Info<< "At time: " << runTime.timeName()
+                        << " detected cloud directory : " << cloudDirs[i]
+                        << endl;
+                }
+            }
+        }
+    }
+
 
     forAll(timeDirs, timeI)
     {
@@ -919,38 +933,33 @@ int main(int argc, char *argv[])
         //
         //---------------------------------------------------------------------
 
-        fileNameList cloudDirs
-        (
-            readDir
-            (
-                runTime.timePath()/regionPrefix/cloud::prefix,
-                fileName::DIRECTORY
-            )
-        );
-
-        forAll(cloudDirs, i)
+        forAllConstIter(HashSet<fileName>, allCloudDirs, iter)
         {
+            const fileName& cloudName = iter.key();
+
+            // Always create the cloud directory.
+            mkDir(fvPath/cloud::prefix/cloudName);
+
+            fileName lagrFileName
+            (
+                fvPath/cloud::prefix/cloudName/cloudName
+              + "_" + timeDesc + ".vtk"
+            );
+
+            Info<< "    Lagrangian: " << lagrFileName << endl;
+
+
             IOobjectList sprayObjs
             (
                 mesh,
                 runTime.timeName(),
-                cloud::prefix/cloudDirs[i]
+                cloud::prefix/cloudName
             );
 
             IOobject* positionsPtr = sprayObjs.lookup("positions");
 
             if (positionsPtr)
             {
-                mkDir(fvPath/cloud::prefix/cloudDirs[i]);
-
-                fileName lagrFileName
-                (
-                    fvPath/cloud::prefix/cloudDirs[i]/cloudDirs[i]
-                  + "_" + timeDesc + ".vtk"
-                );
-
-                Info<< "    Lagrangian: " << lagrFileName << endl;
-
                 wordList labelNames(sprayObjs.names(labelIOField::typeName));
                 Info<< "        labels            :";
                 print(Info, labelNames);
@@ -992,18 +1001,19 @@ int main(int argc, char *argv[])
                     vMesh,
                     binary,
                     lagrFileName,
-                    cloudDirs[i]
+                    cloudName,
+                    false
                 );
 
                 // Write number of fields
                 writer.writeParcelHeader
                 (
                     labelNames.size()
-                + scalarNames.size()
-                + vectorNames.size()
-                + sphereNames.size()
-                + symmNames.size()
-                + tensorNames.size()
+                  + scalarNames.size()
+                  + vectorNames.size()
+                  + sphereNames.size()
+                  + symmNames.size()
+                  + tensorNames.size()
                 );
 
                 // Fields
@@ -1013,6 +1023,20 @@ int main(int argc, char *argv[])
                 writer.writeIOField<sphericalTensor>(sphereNames);
                 writer.writeIOField<symmTensor>(symmNames);
                 writer.writeIOField<tensor>(tensorNames);
+            }
+            else
+            {
+                lagrangianWriter writer
+                (
+                    vMesh,
+                    binary,
+                    lagrFileName,
+                    cloudName,
+                    true
+                );
+
+                // Write number of fields
+                writer.writeParcelHeader(0);
             }
         }
     }
