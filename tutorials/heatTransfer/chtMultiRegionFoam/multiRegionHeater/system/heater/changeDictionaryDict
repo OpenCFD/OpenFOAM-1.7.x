@@ -41,14 +41,14 @@ dictionaryReplacement
             ".*"
             {
                 type            zeroGradient;
-                value           uniform 300;
+                value           $internalField;
             }
             "heater_to_.*"
             {
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
             }
             minY
             {
@@ -67,6 +67,7 @@ dictionaryReplacement
             ".*"
             {
                 type            calculated;
+                value           $internalField;
             }
         }
     }
@@ -80,6 +81,7 @@ dictionaryReplacement
             ".*"
             {
                 type            zeroGradient;
+                value           $internalField;
             }
         }
     }
@@ -93,6 +95,7 @@ dictionaryReplacement
             ".*"
             {
                 type            zeroGradient;
+                value           $internalField;
             }
         }
     }

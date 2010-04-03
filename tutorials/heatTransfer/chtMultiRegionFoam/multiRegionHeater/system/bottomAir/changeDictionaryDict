@@ -51,6 +51,7 @@ dictionaryReplacement
             ".*"
             {
                 type            zeroGradient;
+                value           $internalField;
             }
 
             "bottomAir_to_.*"
@@ -58,7 +59,7 @@ dictionaryReplacement
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
             }
         }
     }
@@ -72,7 +73,7 @@ dictionaryReplacement
             ".*"
             {
                 type            compressible::epsilonWallFunction;
-                value           uniform 0.01;
+                value           $internalField;
             }
         }
     }
@@ -86,7 +87,7 @@ dictionaryReplacement
             ".*"
             {
                 type            compressible::kqRWallFunction;
-                value           uniform 0.1;
+                value           $internalField;
             }
         }
     }
