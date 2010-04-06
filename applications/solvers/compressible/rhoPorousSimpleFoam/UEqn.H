@@ -3,7 +3,6 @@
     tmp<fvVectorMatrix> UEqn
     (
         fvm::div(phi, U)
-      - fvm::Sp(fvc::div(phi), U)
       + turbulence->divDevRhoReff(U)
     );
 
