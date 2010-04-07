@@ -32,7 +32,7 @@ divSchemes
     div(phi,U)      Gauss upwind;
     div(phid,p)     Gauss upwind;
     div(phiU,p)     Gauss linear;
-    div(phi,h)      Gauss upwind;
+    div(phi,hs)     Gauss upwind;
     div(phi,k)      Gauss upwind;
     div(phi,epsilon) Gauss upwind;
     div(U)          Gauss linear;
@@ -49,7 +49,7 @@ laplacianSchemes
     laplacian(DepsilonEff,epsilon) Gauss linear corrected;
     laplacian(DREff,R) Gauss linear corrected;
     laplacian((rho*(1|A(U))),p) Gauss linear corrected;
-    laplacian(alphaEff,h) Gauss linear corrected;
+    laplacian(alphaEff,hs) Gauss linear corrected;
 }
 
 interpolationSchemes
