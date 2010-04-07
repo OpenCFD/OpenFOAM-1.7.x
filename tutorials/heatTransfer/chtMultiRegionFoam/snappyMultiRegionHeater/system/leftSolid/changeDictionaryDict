@@ -25,21 +25,24 @@ dictionaryReplacement
             minX
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             minZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             maxZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             leftSolid_to_bottomAir
             {
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
 
             }
             leftSolid_to_heater
@@ -47,14 +50,14 @@ dictionaryReplacement
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
             }
             leftSolid_to_topAir
             {
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
             }
         }
     }
@@ -68,26 +71,32 @@ dictionaryReplacement
             minX
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             minZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             maxZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             leftSolid_to_bottomAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             leftSolid_to_heater
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             leftSolid_to_topAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
         }
     }
@@ -101,26 +110,32 @@ dictionaryReplacement
             minX
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             minZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             maxZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             leftSolid_to_bottomAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             leftSolid_to_heater
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             leftSolid_to_topAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
         }
     }
@@ -134,26 +149,32 @@ dictionaryReplacement
             minX
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             minZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             maxZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             leftSolid_to_bottomAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             leftSolid_to_heater
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             leftSolid_to_topAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
         }
     }

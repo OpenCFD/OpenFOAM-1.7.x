@@ -19,29 +19,29 @@ phi -= ghf*fvc::snGrad(rho)*rUAf*mesh.magSf();
 
 for(int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
 {
-    fvScalarMatrix pmhEqn
+    fvScalarMatrix p_rghEqn
     (
-        fvm::laplacian(rUAf, pmh) == fvc::ddt(rho) + fvc::div(phi)
+        fvm::laplacian(rUAf, p_rgh) == fvc::ddt(rho) + fvc::div(phi)
     );
 
-    pmhEqn.setReference(pmhRefCell, pmhRefValue);
-    pmhEqn.solve();
+    p_rghEqn.setReference(p_rghRefCell, p_rghRefValue);
+    p_rghEqn.solve();
 
     if (nonOrth == nNonOrthCorr)
     {
-        phi -= pmhEqn.flux();
+        phi -= p_rghEqn.flux();
     }
 }
 
-p == pmh + rho*gh;
+p == p_rgh + rho*gh;
 
-if (pmh.needReference())
+if (p_rgh.needReference())
 {
     p += dimensionedScalar
     (
         "p",
         p.dimensions(),
-        pRefValue - getRefCellValue(p, pmhRefCell)
+        pRefValue - getRefCellValue(p, p_rghRefCell)
     );
 }
 

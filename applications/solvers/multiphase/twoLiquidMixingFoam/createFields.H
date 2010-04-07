@@ -1,9 +1,9 @@
-    Info<< "Reading field p\n" << endl;
-    volScalarField p
+    Info<< "Reading field p_rgh\n" << endl;
+    volScalarField p_rgh
     (
         IOobject
         (
-            "p",
+            "p_rgh",
             runTime.timeName(),
             mesh,
             IOobject::MUST_READ,
@@ -74,10 +74,49 @@
         rho1*phi
     );
 
+    Info<< "Calculating field (g.h)f\n" << endl;
+    volScalarField gh("gh", g & mesh.C());
+    surfaceScalarField ghf = surfaceScalarField("gh", g & mesh.Cf());
 
-    label pRefCell = 0;
+    volScalarField p
+    (
+        IOobject
+        (
+            "p",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        p_rgh + rho*gh
+    );
+
+    label p_rghRefCell = 0;
+    scalar p_rghRefValue = 0.0;
+    setRefCell
+    (
+        p_rgh,
+        mesh.solutionDict().subDict("PIMPLE"),
+        p_rghRefCell,
+        p_rghRefValue
+    );
+
     scalar pRefValue = 0.0;
-    setRefCell(p, mesh.solutionDict().subDict("PIMPLE"), pRefCell, pRefValue);
+
+    if (p_rgh.needReference())
+    {
+        pRefValue = readScalar
+        (
+            mesh.solutionDict().subDict("PIMPLE").lookup("pRefValue")
+        );
+
+        p += dimensionedScalar
+        (
+            "p",
+            p.dimensions(),
+            pRefValue - getRefCellValue(p, p_rghRefCell)
+        );
+    }
 
 
     // Construct incompressible turbulence model

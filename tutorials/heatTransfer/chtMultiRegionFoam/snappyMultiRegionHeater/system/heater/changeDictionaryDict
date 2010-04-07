@@ -31,10 +31,12 @@ dictionaryReplacement
             minZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             maxZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
 
             heater_to_bottomAir
@@ -42,7 +44,7 @@ dictionaryReplacement
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
 
             }
             heater_to_leftSolid
@@ -50,21 +52,21 @@ dictionaryReplacement
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
             }
             heater_to_rightSolid
             {
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
             }
             heater_to_topAir
             {
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
             }
         }
     }
@@ -78,30 +80,37 @@ dictionaryReplacement
             minY
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             minZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             maxZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_bottomAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_leftSolid
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_rightSolid
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_topAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
         }
     }
@@ -115,30 +124,37 @@ dictionaryReplacement
             minY
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             minZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             maxZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_bottomAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_leftSolid
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_rightSolid
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_topAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
         }
     }
@@ -152,30 +168,37 @@ dictionaryReplacement
             minY
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             minZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             maxZ
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_bottomAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_leftSolid
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_rightSolid
             {
                 type            zeroGradient;
+                value           $internalField;
             }
             heater_to_topAir
             {
                 type            zeroGradient;
+                value           $internalField;
             }
         }
     }

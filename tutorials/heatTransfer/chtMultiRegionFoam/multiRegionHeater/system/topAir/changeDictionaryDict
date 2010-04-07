@@ -50,18 +50,19 @@ dictionaryReplacement
             ".*"
             {
                 type            zeroGradient;
+                value           $internalField;
             }
 
             minX
             {
                 type            fixedValue;
-                value           uniform 300;
+                value           $internalField;
             }
             maxX
             {
                 type            inletOutlet;
-                inletValue      uniform 300;
-                value           uniform 300;
+                inletValue      $internalField;
+                value           $internalField;
             }
 
             "topAir_to_.*"
@@ -69,7 +70,7 @@ dictionaryReplacement
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
             }
         }
     }
@@ -83,19 +84,19 @@ dictionaryReplacement
             ".*"
             {
                 type            compressible::epsilonWallFunction;
-                value           uniform 0.01;
+                value           $internalField;
             }
 
             minX
             {
                 type            fixedValue;
-                value           uniform 0.01;
+                value           $internalField;
             }
             maxX
             {
                 type            inletOutlet;
-                inletValue      uniform 0.01;
-                value           uniform 0.01;
+                inletValue      $internalField;
+                value           $internalField;
             }
         }
     }
@@ -109,19 +110,19 @@ dictionaryReplacement
             ".*"
             {
                 type            compressible::kqRWallFunction;
-                value           uniform 0.1;
+                value           $internalField;
             }
 
             minX
             {
                 type            fixedValue;
-                value           uniform 0.1;
+                value           $internalField;
             }
             maxX
             {
                 type            inletOutlet;
-                inletValue      uniform 0.1;
-                value           uniform 0.1;
+                inletValue      $internalField;
+                value           $internalField;
             }
         }
     }
@@ -144,7 +145,7 @@ dictionaryReplacement
                 gamma           1.4;
                 fieldInf        100000;
                 lInf            0.4;
-                value           uniform 100000;
+                value           $internalField;
             }
         }
     }

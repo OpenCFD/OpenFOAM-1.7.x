@@ -37,6 +37,7 @@ Description
 #include "fixedGradientFvPatchFields.H"
 #include "regionProperties.H"
 #include "compressibleCourantNo.H"
+#include "solidRegionDiffNo.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -56,23 +57,24 @@ int main(int argc, char *argv[])
     #include "initContinuityErrs.H"
 
     #include "readTimeControls.H"
+    #include "readSolidTimeControls.H"
 
-    if (fluidRegions.size())
-    {
-        #include "compressibleMultiRegionCourantNo.H"
-        #include "setInitialDeltaT.H"
-    }
+
+    #include "compressibleMultiRegionCourantNo.H"
+    #include "solidRegionDiffusionNo.H"
+    #include "setInitialMultiRegionDeltaT.H"
+
 
     while (runTime.run())
     {
         #include "readTimeControls.H"
+        #include "readSolidTimeControls.H"
         #include "readPIMPLEControls.H"
 
-        if (fluidRegions.size())
-        {
-            #include "compressibleMultiRegionCourantNo.H"
-            #include "setDeltaT.H"
-        }
+
+        #include "compressibleMultiRegionCourantNo.H"
+        #include "solidRegionDiffusionNo.H"
+        #include "setMultiRegionDeltaT.H"
 
         runTime++;
 

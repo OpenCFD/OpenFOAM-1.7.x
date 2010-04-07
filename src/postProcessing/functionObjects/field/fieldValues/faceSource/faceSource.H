@@ -29,9 +29,9 @@ Description
     Face source variant of field value function object. Values of user-
     specified fields reported for collections of faces.
 
-    cellObj1                        // Name also used to identify output folder
+    faceObj1                        // Name also used to identify output folder
     {
-        type            cellSource;
+        type            faceSource;
         functionObjectLibs ("libfieldValueFunctionObjects.so");
         enabled         true;
         outputControl   outputTime;

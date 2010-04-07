@@ -44,9 +44,14 @@
     scalar pRefValue = 0.0;
     setRefCell(p, mesh.solutionDict().subDict("SIMPLE"), pRefCell, pRefValue);
 
-    dimensionedScalar pMin
+    dimensionedScalar rhoMax
     (
-        mesh.solutionDict().subDict("SIMPLE").lookup("pMin")
+        mesh.solutionDict().subDict("SIMPLE").lookup("rhoMax")
+    );
+
+    dimensionedScalar rhoMin
+    (
+        mesh.solutionDict().subDict("SIMPLE").lookup("rhoMin")
     );
 
     Info<< "Creating turbulence model\n" << endl;

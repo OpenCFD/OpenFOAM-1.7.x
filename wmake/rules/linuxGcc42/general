@@ -1,4 +1,4 @@
-CPP        = /lib/cpp $(GFLAGS)
+CPP        = cpp $(GFLAGS)
 LD         = ld -melf_i386
 
 PROJECT_LIBS = -l$(WM_PROJECT) -ldl

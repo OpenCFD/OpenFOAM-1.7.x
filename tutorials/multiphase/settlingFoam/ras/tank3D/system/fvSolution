@@ -17,7 +17,7 @@ FoamFile
 
 solvers
 {
-    pmh
+    p_rgh
     {
         solver          PCG;
         preconditioner  DIC;

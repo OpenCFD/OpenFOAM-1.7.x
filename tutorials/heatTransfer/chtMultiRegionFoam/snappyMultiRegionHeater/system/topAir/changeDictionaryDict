@@ -77,34 +77,34 @@ dictionaryReplacement
             maxY
             {
                 type            fixedValue;
-                value           uniform 300;
+                value           $internalField;
             }
             minX
             {
                 type            fixedValue;
-                value           uniform 300;
+                value           $internalField;
             }
             maxX
             {
                 type            fixedValue;
-                value           uniform 300;
+                value           $internalField;
             }
             minZ
             {
                 type            fixedValue;
-                value           uniform 300;
+                value           $internalField;
             }
             maxZ
             {
                 type            fixedValue;
-                value           uniform 300;
+                value           $internalField;
             }
             topAir_to_leftSolid
             {
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
 
             }
             topAir_to_heater
@@ -112,14 +112,14 @@ dictionaryReplacement
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
             }
             topAir_to_rightSolid
             {
                 type            solidWallMixedTemperatureCoupled;
                 neighbourFieldName T;
                 K               K;
-                value           uniform 300;
+                value           $internalField;
             }
         }
     }
@@ -133,49 +133,49 @@ dictionaryReplacement
             minX
             {
                 type            fixedValue;
-                value           uniform 0.01;
+                value           $internalField;
             }
             maxX
             {
                 type            zeroGradient;
-                value           uniform 0.01;
+                value           $internalField;
             }
 
             minY
             {
                 type            zeroGradient;
-                value           uniform 0.01;
+                value           $internalField;
             }
             maxY
             {
                 type            zeroGradient;
-                value           uniform 0.01;
+                value           $internalField;
             }
 
             minZ
             {
                 type            zeroGradient;
-                value           uniform 0.01;
+                value           $internalField;
             }
             maxZ
             {
                 type            zeroGradient;
-                value           uniform 0.01;
+                value           $internalField;
             }
             topAir_to_leftSolid
             {
                 type            zeroGradient;
-                value           uniform 0.01;
+                value           $internalField;
             }
             topAir_to_heater
             {
                 type            zeroGradient;
-                value           uniform 0.01;
+                value           $internalField;
             }
             topAir_to_rightSolid
             {
                 type            zeroGradient;
-                value           uniform 0.01;
+                value           $internalField;
             }
         }
     }
@@ -188,46 +188,46 @@ dictionaryReplacement
             minX
             {
                 type            fixedValue;
-                value           uniform 0.1;
+                value           $internalField;
             }
 
             maxX
             {
                 type            zeroGradient;
-                value           uniform 0.1;
+                value           $internalField;
             }
 
             maxY
             {
                 type            zeroGradient;
-                value           uniform 0.1;
+                value           $internalField;
             }
 
             minZ
             {
                 type            zeroGradient;
-                value           uniform 0.1;
+                value           $internalField;
             }
             maxZ
             {
                 type            zeroGradient;
-                value           uniform 0.1;
+                value           $internalField;
             }
 
             topAir_to_leftSolid
             {
                 type            zeroGradient;
-                value           uniform 0.1;
+                value           $internalField;
             }
             topAir_to_heater
             {
                 type            zeroGradient;
-                value           uniform 0.1;
+                value           $internalField;
             }
             topAir_to_rightSolid
             {
                 type            zeroGradient;
-                value           uniform 0.1;
+                value           $internalField;
             }
         }
     }
@@ -241,7 +241,7 @@ dictionaryReplacement
             minX
             {
                 type            buoyantPressure;
-                value           1e5;
+                value           $internalField;
             }
             maxX
             {
@@ -253,40 +253,40 @@ dictionaryReplacement
                 gamma           1.4;    // cp/cv
                 fieldInf        1e5;
                 lInf            0.40;   // double length of domain
-                value           uniform 1e5;
+                value           $internalField;
             }
 
             maxY
             {
                 type            buoyantPressure;
-                value           1e5;
+                value           $internalField;
             }
 
             minZ
             {
                 type            buoyantPressure;
-                value           1e5;
+                value           $internalField;
             }
             maxZ
             {
                 type            buoyantPressure;
-                value           1e5;
+                value           $internalField;
             }
 
             topAir_to_leftSolid
             {
                 type            buoyantPressure;
-                value           1e5;
+                value           $internalField;
             }
             topAir_to_heater
             {
                 type            buoyantPressure;
-                value           1e5;
+                value           $internalField;
             }
             topAir_to_rightSolid
             {
                 type            buoyantPressure;
-                value           1e5;
+                value           $internalField;
             }
         }
     }
