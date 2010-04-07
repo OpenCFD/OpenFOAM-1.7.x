@@ -638,7 +638,7 @@ Foam::directMappedPatchBase::directMappedPatchBase
     samplePatch_(samplePatch),
     uniformOffset_(true),
     offset_(offset),
-    offsets_(0),
+    offsets_(pp.size(), offset_),
     sameRegion_(sampleRegion_ == patch_.boundaryMesh().mesh().name()),
     mapPtr_(NULL)
 {}
@@ -671,7 +671,7 @@ Foam::directMappedPatchBase::directMappedPatchBase
     offsets_
     (
         uniformOffset_
-      ? pointField(patch_.size(), offset_)
+      ? pointField(pp.size(), offset_)
       : dict.lookup("offsets")
     ),
     sameRegion_(sampleRegion_ == patch_.boundaryMesh().mesh().name()),
