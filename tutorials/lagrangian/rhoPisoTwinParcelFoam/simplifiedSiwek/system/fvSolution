@@ -49,7 +49,7 @@ solvers
         relTol          0;
     }
 
-    Yi
+    "(Yi|CO2|O2|N2|CH4|H2|H2O|CO)"
     {
         solver          PBiCG;
         preconditioner  DILU;
@@ -57,63 +57,7 @@ solvers
         relTol          0;
     }
 
-    CO2
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    }
-
-    O2
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    }
-
-    N2
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    }
-
-    CH4
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    }
-
-    H2
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    }
-
-    H2O
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    }
-
-    CO
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-06;
-        relTol          0;
-    }
-
-    h
+    hs
     {
         solver          PBiCG;
         preconditioner  DILU;
@@ -121,23 +65,7 @@ solvers
         relTol          0;
     }
 
-    R
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-05;
-        relTol          0;
-    }
-
-    k
-    {
-        solver          PBiCG;
-        preconditioner  DILU;
-        tolerance       1e-05;
-        relTol          0;
-    }
-
-    epsilon
+    "(R|k|epsilon)"
     {
         solver          PBiCG;
         preconditioner  DILU;

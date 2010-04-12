@@ -65,7 +65,6 @@ int main(int argc, char *argv[])
             tmp<fvVectorMatrix> UEqn
             (
                 fvm::div(phi, U)
-              - fvm::Sp(fvc::div(phi), U)
               + turbulence->divDevReff(U)
             );
             mrfZones.addCoriolis(UEqn());
