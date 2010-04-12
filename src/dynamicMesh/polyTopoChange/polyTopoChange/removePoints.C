@@ -204,10 +204,43 @@ Foam::label Foam::removePoints::countPointUsage
             pointCanBeDeleted[pointI] = true;
             nDeleted++;
         }
-
     }
     edge0.clear();
     edge1.clear();
+
+
+    // Protect any points on faces that would collapse down to nothing
+    // No particular intelligence so might protect too many points
+    forAll(mesh_.faces(), faceI)
+    {
+        const face& f = mesh_.faces()[faceI];
+
+        label nCollapse = 0;
+        forAll(f, fp)
+        {
+            if (pointCanBeDeleted[f[fp]])
+            {
+                nCollapse++;
+            }
+        }
+
+        if ((f.size() - nCollapse) < 3)
+        {
+            // Just unmark enough points
+            forAll(f, fp)
+            {
+                if (pointCanBeDeleted[f[fp]])
+                {
+                    pointCanBeDeleted[f[fp]] = false;
+                    --nCollapse;
+                    if (nCollapse == 0)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
 
     // Point can be deleted only if all processors want to delete it
