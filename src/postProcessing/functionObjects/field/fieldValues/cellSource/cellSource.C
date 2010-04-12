@@ -46,13 +46,14 @@ namespace Foam
         fieldValues::cellSource::sourceTypeNames_;
 
     template<>
-    const char* NamedEnum<fieldValues::cellSource::operationType, 5>::
+    const char* NamedEnum<fieldValues::cellSource::operationType, 7>::
         names[] =
         {
-            "none", "sum", "volAverage", "volIntegrate", "weightedAverage"
+            "none", "sum", "volAverage",
+            "volIntegrate", "weightedAverage", "min", "max"
         };
 
-    const NamedEnum<fieldValues::cellSource::operationType, 5>
+    const NamedEnum<fieldValues::cellSource::operationType, 7>
         fieldValues::cellSource::operationTypeNames_;
 
 }

@@ -12,4 +12,10 @@ fieldValues/faceSource/faceSourceFunctionObject.C
 fieldValues/cellSource/cellSource.C
 fieldValues/cellSource/cellSourceFunctionObject.C
 
+readFields/readFields.C
+readFields/readFieldsFunctionObject.C
+
+surfaceInterpolateFields/surfaceInterpolateFieldsFunctionObject.C
+surfaceInterpolateFields/surfaceInterpolateFields.C
+
 LIB = $(FOAM_LIBBIN)/libfieldFunctionObjects

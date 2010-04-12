@@ -68,28 +68,6 @@ void Foam::writeRegisteredObject::read(const dictionary& dict)
     if (active_)
     {
         dict.lookup("objectNames") >> objectNames_;
-
-        forAll(objectNames_, i)
-        {
-            if (obr_.foundObject<regIOobject>(objectNames_[i]))
-            {
-                regIOobject& obj =
-                    const_cast<regIOobject&>
-                    (
-                        obr_.lookupObject<regIOobject>(objectNames_[i])
-                    );
-                obj.writeOpt() = IOobject::NO_WRITE;
-            }
-            else
-            {
-                FatalErrorIn
-                (
-                    "Foam::writeRegisteredObject::read(const dictionary&)"
-                )   << "Object " << objectNames_[i] << " not found in "
-                    << "database. Available objects are:" << nl << obr_.toc()
-                    << nl << exit(FatalError);
-            }
-        }
     }
 }
 
@@ -112,9 +90,27 @@ void Foam::writeRegisteredObject::write()
     {
         forAll(objectNames_, i)
         {
-            const regIOobject& obj =
-                obr_.lookupObject<regIOobject>(objectNames_[i]);
-            obj.write();
+            if (obr_.foundObject<regIOobject>(objectNames_[i]))
+            {
+                regIOobject& obj =
+                    const_cast<regIOobject&>
+                    (
+                        obr_.lookupObject<regIOobject>(objectNames_[i])
+                    );
+                // Switch off automatic writing to prevent double write
+                obj.writeOpt() = IOobject::NO_WRITE;
+                obj.write();
+            }
+            else
+            {
+                WarningIn
+                (
+                    "Foam::writeRegisteredObject::read(const dictionary&)"
+                )   << "Object " << objectNames_[i] << " not found in "
+                    << "database. Available objects are:" << nl << obr_.toc()
+                    << endl;
+            }
+
         }
     }
 }

@@ -104,11 +104,13 @@ public:
             opSum,
             opVolAverage,
             opVolIntegrate,
-            opWeightedAverage
+            opWeightedAverage,
+            opMin,
+            opMax
         };
 
         //- Operation type names
-        static const NamedEnum<operationType, 5> operationTypeNames_;
+        static const NamedEnum<operationType, 7> operationTypeNames_;
 
 
 private:

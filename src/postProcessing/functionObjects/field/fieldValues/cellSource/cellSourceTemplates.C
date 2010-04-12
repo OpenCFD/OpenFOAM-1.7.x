@@ -92,6 +92,16 @@ Type Foam::fieldValues::cellSource::processValues
             result = sum(values*weightField)/sum(weightField);
             break;
         }
+        case opMin:
+        {
+            result = min(values);
+            break;
+        }
+        case opMax:
+        {
+            result = max(values);
+            break;
+        }
         default:
         {
             // Do nothing
