@@ -53,9 +53,11 @@ functions
 {
     probes
     {
-        type        probes;
         // Where to load it from
         functionObjectLibs ( "libsampling.so" );
+
+        type        probes;
+
         // Name of the directory for probe data
         name        probes;
         probeLocations
