@@ -83,7 +83,7 @@ void Foam::fieldValues::faceSource::setFaceZoneFaces()
 
     faceId_.setSize(fZone.size());
     facePatchId_.setSize(fZone.size());
-    flipMap_.setSize(fZone.size());
+    faceSign_.setSize(fZone.size());
 
     label count = 0;
     forAll(fZone, i)
@@ -139,11 +139,11 @@ void Foam::fieldValues::faceSource::setFaceZoneFaces()
         {
             if (fZone.flipMap()[i])
             {
-                flipMap_[count] = -1;
+                faceSign_[count] = -1;
             }
             else
             {
-                flipMap_[count] = 1;
+                faceSign_[count] = 1;
             }
             faceId_[count] = faceId;
             facePatchId_[count] = facePatchId;
@@ -153,11 +153,12 @@ void Foam::fieldValues::faceSource::setFaceZoneFaces()
 
     faceId_.setSize(count);
     facePatchId_.setSize(count);
-    flipMap_.setSize(count);
+    faceSign_.setSize(count);
+    nFaces_ = returnReduce(faceId_.size(), sumOp<label>());
 
     if (debug)
     {
-        Info<< "Original face zone size = " << fZone.size()
+        Pout<< "Original face zone size = " << fZone.size()
             << ", new size = " << count << endl;
     }
 }
@@ -192,13 +193,14 @@ void Foam::fieldValues::faceSource::setPatchFaces()
 
     faceId_.setSize(nFaces);
     facePatchId_.setSize(nFaces);
-    flipMap_.setSize(nFaces);
+    faceSign_.setSize(nFaces);
+    nFaces_ = returnReduce(faceId_.size(), sumOp<label>());
 
     forAll(faceId_, faceI)
     {
         faceId_[faceI] = faceI;
         facePatchId_[faceI] = patchId;
-        flipMap_[faceI] = 1;
+        faceSign_[faceI] = 1;
     }
 }
 
@@ -221,7 +223,7 @@ void Foam::fieldValues::faceSource::initialise(const dictionary& dict)
         }
         default:
         {
-            FatalErrorIn("faceSource::initiliase()")
+            FatalErrorIn("faceSource::initialise()")
                 << type() << " " << name_ << ": "
                 << sourceTypeNames_[source_] << "(" << sourceName_ << "):"
                 << nl << "    Unknown source type. Valid source types are:"
@@ -230,8 +232,10 @@ void Foam::fieldValues::faceSource::initialise(const dictionary& dict)
     }
 
     Info<< type() << " " << name_ << ":" << nl
-        << "    total faces  = " << faceId_.size() << nl
-        << "    total area   = " << sum(filterField(mesh().magSf())) << nl;
+        << "    total faces  = " << nFaces_
+        << nl
+        << "    total area   = " << gSum(filterField(mesh().magSf(), false))
+        << nl;
 
     if (operation_ == opWeightedAverage)
     {
@@ -265,7 +269,7 @@ void Foam::fieldValues::faceSource::writeFileHeader()
     {
         outputFilePtr_()
             << "# Source : " << sourceTypeNames_[source_] << " "
-            << sourceName_ <<  nl << "# Faces  : " << faceId_.size() << nl
+            << sourceName_ <<  nl << "# Faces  : " << nFaces_ << nl
             << "# Time" << tab << "sum(magSf)";
 
         forAll(fields_, i)
@@ -293,9 +297,10 @@ Foam::fieldValues::faceSource::faceSource
     fieldValue(name, obr, dict, loadFromFiles),
     source_(sourceTypeNames_.read(dict.lookup("source"))),
     operation_(operationTypeNames_.read(dict.lookup("operation"))),
+    nFaces_(0),
     faceId_(),
     facePatchId_(),
-    flipMap_(),
+    faceSign_(),
     weightFieldName_("undefinedWeightedFieldName")
 {
     read(dict);
@@ -331,7 +336,7 @@ void Foam::fieldValues::faceSource::write()
         {
             outputFilePtr_()
                 << obr_.time().value() << tab
-                << sum(filterField(mesh().magSf()));
+                << sum(filterField(mesh().magSf(), false));
         }
 
         forAll(fields_, i)

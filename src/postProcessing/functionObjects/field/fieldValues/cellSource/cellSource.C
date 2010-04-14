@@ -86,10 +86,11 @@ void Foam::fieldValues::cellSource::setCellZoneCells()
     }
 
     cellId_.setSize(count);
+    nCells_ = returnReduce(cellId_.size(), sumOp<label>());
 
     if (debug)
     {
-        Info<< "Original cell zone size = " << cZone.size()
+        Pout<< "Original cell zone size = " << cZone.size()
             << ", new size = " << count << endl;
     }
 }
@@ -115,8 +116,8 @@ void Foam::fieldValues::cellSource::initialise(const dictionary& dict)
     }
 
     Info<< type() << " " << name_ << ":" << nl
-        << "    total cells  = " << cellId_.size() << nl
-        << "    total volume = " << sum(filterField(mesh().V()))
+        << "    total cells  = " << nCells_ << nl
+        << "    total volume = " << gSum(filterField(mesh().V()))
         << nl << endl;
 
     if (operation_ == opWeightedAverage)
@@ -150,7 +151,7 @@ void Foam::fieldValues::cellSource::writeFileHeader()
     {
         outputFilePtr_()
             << "# Source : " << sourceTypeNames_[source_] << " "
-            << sourceName_ <<  nl << "# Cells  : " << cellId_.size() << nl
+            << sourceName_ <<  nl << "# Cells  : " << nCells_ << nl
             << "# Time" << tab << "sum(V)";
 
         forAll(fields_, i)
@@ -178,6 +179,7 @@ Foam::fieldValues::cellSource::cellSource
     fieldValue(name, obr, dict, loadFromFiles),
     source_(sourceTypeNames_.read(dict.lookup("source"))),
     operation_(operationTypeNames_.read(dict.lookup("operation"))),
+    nCells_(0),
     cellId_()
 {
     read(dict);

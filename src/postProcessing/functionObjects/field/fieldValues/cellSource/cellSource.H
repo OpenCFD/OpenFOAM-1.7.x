@@ -134,6 +134,9 @@ protected:
         //- Operation to apply to values
         operationType operation_;
 
+        //- Global number of cells
+        label nCells_;
+
         //- Local list of cell IDs
         labelList cellId_;
 
