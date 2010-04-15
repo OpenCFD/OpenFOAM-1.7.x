@@ -125,6 +125,41 @@ void Foam::solidWallHeatFluxTemperatureFvPatchScalarField::rmap
 }
 
 
+Foam::tmp<Foam::scalarField>
+Foam::solidWallHeatFluxTemperatureFvPatchScalarField::K() const
+{
+    const fvMesh& mesh = patch().boundaryMesh().mesh();
+
+    if (mesh.objectRegistry::foundObject<volScalarField>(KName_))
+    {
+        return patch().lookupPatchField<volScalarField, scalar>(KName_);
+    }
+    else if (mesh.objectRegistry::foundObject<volSymmTensorField>(KName_))
+    {
+        const symmTensorField& KWall =
+            patch().lookupPatchField<volSymmTensorField, scalar>(KName_);
+
+        vectorField n = patch().nf();
+
+        return n & KWall & n;
+    }
+    else
+    {
+        FatalErrorIn
+        (
+            "solidWallHeatFluxTemperatureFvPatchScalarField::K()"
+            " const"
+        )   << "Did not find field " << KName_
+            << " on mesh " << mesh.name() << " patch " << patch().name()
+            << endl
+            << "Please set 'K' to a valid volScalarField"
+            << " or a valid volSymmTensorField." << exit(FatalError);
+
+        return scalarField(0);
+    }
+}
+
+
 void Foam::solidWallHeatFluxTemperatureFvPatchScalarField::updateCoeffs()
 {
     if (updated())
@@ -132,12 +167,7 @@ void Foam::solidWallHeatFluxTemperatureFvPatchScalarField::updateCoeffs()
         return;
     }
 
-    const scalarField& Kw = patch().lookupPatchField<volScalarField, scalar>
-    (
-        KName_
-    );
-
-    gradient() = q_/Kw;
+    gradient() = q_/K();
 
     fixedGradientFvPatchScalarField::updateCoeffs();
 }
