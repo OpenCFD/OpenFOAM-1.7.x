@@ -15,9 +15,12 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-thermoType      ePsiThermo<pureMixture<constTransport<specieThermo<eConstThermo<perfectGas>>>>>;
+thermoType      ePsiThermo<pureMixture<constTransport<specieThermo<hConstThermo<perfectGas>>>>>;
 
-mixture         air 1 11640.31 1.78571 0 0 0.7;
+// Note: these are the properties for a "normalised" inviscid gas
+//       for which the speed of sound is 1 m/s at a temperature of 1K
+//       and gamma = 7/5
+mixture         normalisedGas 1 11640.31 2.5 0 0 1;
 
 
 // ************************************************************************* //

@@ -15,8 +15,10 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+// Note: these are the properties for a "normalised" inviscid gas
+//       for which the speed of sound is 1 m/s at a temperature of 1K
+//       and gamma = 7/5
 Cv              Cv [ 0 2 -2 -1 0 0 0 ] 1.78571;
-
 R               R [ 0 2 -2 -1 0 0 0 ] 0.714286;
 
 
