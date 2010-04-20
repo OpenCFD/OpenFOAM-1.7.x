@@ -89,7 +89,7 @@ correctedSnGrad<Type>::correction
             mesh.correctionVectors()
           & linear
             <
-                typename 
+                typename
                 outerProduct<vector, typename pTraits<Type>::cmptType>::type
             >(mesh).interpolate
             (

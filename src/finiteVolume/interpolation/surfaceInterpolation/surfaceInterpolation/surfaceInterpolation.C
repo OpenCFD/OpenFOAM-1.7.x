@@ -22,9 +22,6 @@ License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-Description
-    Cell to face interpolation scheme. Included in fvMesh.
-
 \*---------------------------------------------------------------------------*/
 
 #include "fvMesh.H"
@@ -34,19 +31,16 @@ Description
 #include "coupledFvPatch.H"
 #include "mathematicalConstants.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-defineTypeNameAndDebug(surfaceInterpolation, 0);
-
+    defineTypeNameAndDebug(surfaceInterpolation, 0);
+}
 
 // * * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * //
 
-void surfaceInterpolation::clearOut()
+void Foam::surfaceInterpolation::clearOut()
 {
     deleteDemandDrivenData(weightingFactors_);
     deleteDemandDrivenData(differenceFactors_);
@@ -56,7 +50,7 @@ void surfaceInterpolation::clearOut()
 
 // * * * * * * * * * * * * * * * * Constructors * * * * * * * * * * * * * * //
 
-surfaceInterpolation::surfaceInterpolation(const fvMesh& fvm)
+Foam::surfaceInterpolation::surfaceInterpolation(const fvMesh& fvm)
 :
     fvSchemes(static_cast<const objectRegistry&>(fvm)),
     fvSolution(static_cast<const objectRegistry&>(fvm)),
@@ -70,7 +64,7 @@ surfaceInterpolation::surfaceInterpolation(const fvMesh& fvm)
 
 // * * * * * * * * * * * * * * * * Destructor * * * * * * * * * * * * * * * //
 
-surfaceInterpolation::~surfaceInterpolation()
+Foam::surfaceInterpolation::~surfaceInterpolation()
 {
     clearOut();
 }
@@ -78,7 +72,7 @@ surfaceInterpolation::~surfaceInterpolation()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-const surfaceScalarField& surfaceInterpolation::weights() const
+const Foam::surfaceScalarField& Foam::surfaceInterpolation::weights() const
 {
     if (!weightingFactors_)
     {
@@ -89,7 +83,7 @@ const surfaceScalarField& surfaceInterpolation::weights() const
 }
 
 
-const surfaceScalarField& surfaceInterpolation::deltaCoeffs() const
+const Foam::surfaceScalarField& Foam::surfaceInterpolation::deltaCoeffs() const
 {
     if (!differenceFactors_)
     {
@@ -100,7 +94,7 @@ const surfaceScalarField& surfaceInterpolation::deltaCoeffs() const
 }
 
 
-bool surfaceInterpolation::orthogonal() const
+bool Foam::surfaceInterpolation::orthogonal() const
 {
     if (orthogonal_ == false && !correctionVectors_)
     {
@@ -111,7 +105,8 @@ bool surfaceInterpolation::orthogonal() const
 }
 
 
-const surfaceVectorField& surfaceInterpolation::correctionVectors() const
+const Foam::surfaceVectorField&
+Foam::surfaceInterpolation::correctionVectors() const
 {
     if (orthogonal())
     {
@@ -124,8 +119,7 @@ const surfaceVectorField& surfaceInterpolation::correctionVectors() const
 }
 
 
-// Do what is neccessary if the mesh has moved
-bool surfaceInterpolation::movePoints()
+bool Foam::surfaceInterpolation::movePoints()
 {
     deleteDemandDrivenData(weightingFactors_);
     deleteDemandDrivenData(differenceFactors_);
@@ -137,7 +131,7 @@ bool surfaceInterpolation::movePoints()
 }
 
 
-void surfaceInterpolation::makeWeights() const
+void Foam::surfaceInterpolation::makeWeights() const
 {
     if (debug)
     {
@@ -205,7 +199,7 @@ void surfaceInterpolation::makeWeights() const
 }
 
 
-void surfaceInterpolation::makeDeltaCoeffs() const
+void Foam::surfaceInterpolation::makeDeltaCoeffs() const
 {
     if (debug)
     {
@@ -267,7 +261,7 @@ void surfaceInterpolation::makeDeltaCoeffs() const
 }
 
 
-void surfaceInterpolation::makeCorrectionVectors() const
+void Foam::surfaceInterpolation::makeCorrectionVectors() const
 {
     if (debug)
     {
@@ -340,17 +334,17 @@ void surfaceInterpolation::makeCorrectionVectors() const
         }
     }
 
-    scalar NonOrthogCoeff = 0.0;
+    scalar MaxNonOrthog = 0.0;
 
     // Calculate the non-orthogonality for meshes with 1 face or more
     if (returnReduce(magSf.size(), sumOp<label>()) > 0)
     {
-        NonOrthogCoeff =
+        MaxNonOrthog =
             asin
             (
                 min
                 (
-                    (sum(magSf*mag(corrVecs))/sum(magSf)).value(),
+                    max(mag(corrVecs)).value(),
                     1.0
                 )
             )*180.0/mathematicalConstant::pi;
@@ -359,13 +353,13 @@ void surfaceInterpolation::makeCorrectionVectors() const
     if (debug)
     {
         Info<< "surfaceInterpolation::makeCorrectionVectors() : "
-            << "non-orthogonality coefficient = " << NonOrthogCoeff << " deg."
+            << "maximum non-orthogonality = " << MaxNonOrthog << " deg."
             << endl;
     }
 
-    //NonOrthogCoeff = 0.0;
+    //MaxNonOrthog = 0.0;
 
-    if (NonOrthogCoeff < 0.1)
+    if (MaxNonOrthog < 5)
     {
         orthogonal_ = true;
         deleteDemandDrivenData(correctionVectors_);
@@ -383,9 +377,5 @@ void surfaceInterpolation::makeCorrectionVectors() const
     }
 }
 
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //
