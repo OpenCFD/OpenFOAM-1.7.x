@@ -82,6 +82,9 @@ public:
         //- Make the given absolute velocity relative within the MRF region
         void relativeVelocity(volVectorField& U) const;
 
+        //- Make the given relative velocity absolute within the MRF region
+        void absoluteVelocity(volVectorField& U) const;
+
         //- Make the given absolute flux relative within the MRF region
         void relativeFlux(surfaceScalarField& phi) const;
 

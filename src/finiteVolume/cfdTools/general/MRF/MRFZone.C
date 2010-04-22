@@ -376,6 +376,45 @@ void Foam::MRFZone::relativeVelocity(volVectorField& U) const
 }
 
 
+void Foam::MRFZone::absoluteVelocity(volVectorField& U) const
+{
+    const volVectorField& C = mesh_.C();
+
+    const vector& origin = origin_.value();
+    const vector& Omega = Omega_.value();
+
+    const labelList& cells = mesh_.cellZones()[cellZoneID_];
+
+    forAll(cells, i)
+    {
+        label celli = cells[i];
+        U[celli] += (Omega ^ (C[celli] - origin));
+    }
+
+    // Included patches
+    forAll(includedFaces_, patchi)
+    {
+        forAll(includedFaces_[patchi], i)
+        {
+            label patchFacei = includedFaces_[patchi][i];
+            U.boundaryField()[patchi][patchFacei] =
+                (Omega ^ (C.boundaryField()[patchi][patchFacei] - origin));
+        }
+    }
+
+    // Excluded patches
+    forAll(excludedFaces_, patchi)
+    {
+        forAll(excludedFaces_[patchi], i)
+        {
+            label patchFacei = excludedFaces_[patchi][i];
+            U.boundaryField()[patchi][patchFacei] +=
+                (Omega ^ (C.boundaryField()[patchi][patchFacei] - origin));
+        }
+    }
+}
+
+
 void Foam::MRFZone::relativeFlux(surfaceScalarField& phi) const
 {
     relativeRhoFlux(geometricOneField(), phi);
