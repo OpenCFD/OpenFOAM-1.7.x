@@ -116,7 +116,11 @@ mutSpalartAllmarasWallFunctionFvPatchScalarField::calcMut() const
     const scalarField& rhow = rasModel.rho().boundaryField()[patchI];
     const scalarField& muw = rasModel.mu().boundaryField()[patchI];
 
-    return max(scalar(0), rhow*sqr(calcUTau(magGradU))/magGradU - muw);
+    return max
+    (
+        scalar(0),
+        rhow*sqr(calcUTau(magGradU))/(magGradU + ROOTVSMALL) - muw
+    );
 }
 
 

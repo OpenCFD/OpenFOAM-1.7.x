@@ -169,6 +169,11 @@ omegaWallFunctionFvPatchScalarField::omegaWallFunctionFvPatchScalarField
 
 void omegaWallFunctionFvPatchScalarField::updateCoeffs()
 {
+    if (updated())
+    {
+        return;
+    }
+
     const RASModel& rasModel = db().lookupObject<RASModel>("RASProperties");
     const scalar yPlusLam = rasModel.yPlusLam(kappa_, E_);
     const scalarField& y = rasModel.y()[patch().index()];
@@ -191,6 +196,8 @@ void omegaWallFunctionFvPatchScalarField::updateCoeffs()
 
     const fvPatchVectorField& Uw =
         patch().lookupPatchField<volVectorField, vector>(UName_);
+
+    vectorField n = patch().nf();
 
     const scalarField magGradUw = mag(Uw.snGrad());
 
@@ -222,6 +229,8 @@ void omegaWallFunctionFvPatchScalarField::updateCoeffs()
     }
 
     // TODO: perform averaging for cells sharing more than one boundary face
+
+    fixedInternalValueFvPatchField<scalar>::updateCoeffs();
 }
 
 

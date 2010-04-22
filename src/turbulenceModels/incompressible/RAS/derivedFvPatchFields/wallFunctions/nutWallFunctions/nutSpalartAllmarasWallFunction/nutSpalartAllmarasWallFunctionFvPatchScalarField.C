@@ -51,7 +51,11 @@ nutSpalartAllmarasWallFunctionFvPatchScalarField::calcNut() const
     const scalarField magGradU = mag(Uw.snGrad());
     const scalarField& nuw = rasModel.nu().boundaryField()[patchI];
 
-    return max(scalar(0), sqr(calcUTau(magGradU))/magGradU - nuw);
+    return max
+    (
+        scalar(0),
+        sqr(calcUTau(magGradU))/(magGradU + ROOTVSMALL) - nuw
+    );
 }
 
 
