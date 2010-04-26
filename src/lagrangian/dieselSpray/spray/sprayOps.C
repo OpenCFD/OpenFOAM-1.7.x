@@ -89,7 +89,7 @@ void spray::move()
 
 void spray::breakupLoop()
 {
-    forAllIter(spray::iterator, *this, elmnt)
+    forAllIter(spray, *this, elmnt)
     {
         // interpolate...
         vector velocity = UInterpolator().interpolate
@@ -123,7 +123,7 @@ void spray::breakupLoop()
 
 void spray::atomizationLoop()
 {
-    forAllIter(spray::iterator, *this, elmnt)
+    forAllIter(spray, *this, elmnt)
     {
         // interpolate...
         vector velocity = UInterpolator().interpolate

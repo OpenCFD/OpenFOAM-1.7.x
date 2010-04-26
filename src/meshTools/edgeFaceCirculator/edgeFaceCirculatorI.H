@@ -353,8 +353,7 @@ bool Foam::edgeFaceCirculator::operator!=(const edgeFaceCirculator& circ) const
 
 
 //- Step to next face.
-Foam::edgeFaceCirculator::edgeFaceCirculator&
- Foam::edgeFaceCirculator::operator++()
+Foam::edgeFaceCirculator& Foam::edgeFaceCirculator::operator++()
 {
     if (faceLabel_ == -1)
     {

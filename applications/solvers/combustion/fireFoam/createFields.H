@@ -71,7 +71,7 @@ IOdictionary combustionProperties
 );
 
 Info<< "Creating combustion model\n" << endl;
-autoPtr<combustionModel::combustionModel> combustion
+autoPtr<combustionModel> combustion
 (
     combustionModel::combustionModel::New
     (

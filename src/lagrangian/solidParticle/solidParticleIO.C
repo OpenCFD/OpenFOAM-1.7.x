@@ -73,7 +73,7 @@ void Foam::solidParticle::readFields(Cloud<solidParticle>& c)
     c.checkFieldIOobject(c, U);
 
     label i = 0;
-    forAllIter(Cloud<solidParticle>::iterator, c, iter)
+    forAllIter(Cloud<solidParticle>, c, iter)
     {
         solidParticle& p = iter();
 
