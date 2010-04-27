@@ -41,13 +41,18 @@ namespace Foam
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 template<class T>
-inline bool writeMeshObject(const word& name, Time& runTime)
+inline bool writeMeshObject
+(
+    const word& name,
+    const fileName& meshDir,
+    Time& runTime
+)
 {
     IOobject io
     (
         name,
         runTime.timeName(),
-        polyMesh::meshSubDir,
+        meshDir,
         runTime,
         IOobject::MUST_READ,
         IOobject::NO_WRITE,
