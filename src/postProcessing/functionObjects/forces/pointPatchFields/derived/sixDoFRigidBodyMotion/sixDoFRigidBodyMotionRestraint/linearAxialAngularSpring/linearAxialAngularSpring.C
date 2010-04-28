@@ -101,10 +101,10 @@ Foam::sixDoFRigidBodyMotionRestraints::linearAxialAngularSpring::restrain
 
     // Removing any axis component from oldDir and newDir and normalising
     oldDir -= (axis_ & oldDir)*axis_;
-    oldDir /= mag(oldDir);
+    oldDir /= (mag(oldDir) + VSMALL);
 
     newDir -= (axis_ & newDir)*axis_;
-    newDir /= mag(newDir);
+    newDir /= (mag(newDir) + VSMALL);
 
     scalar theta = mag(acos(min(oldDir & newDir, 1.0)));
 
