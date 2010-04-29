@@ -140,10 +140,7 @@ dictionaryReplacement
 
             maxX
             {
-                type            waveTransmissive;
-                gamma           1.4;
-                fieldInf        100000;
-                lInf            0.4;
+                type            fixedValue;
                 value           uniform 100000;
             }
         }
