@@ -503,7 +503,7 @@ Foam::wordList Foam::dictionary::toc() const
     wordList keys(size());
 
     label nKeys = 0;
-    forAllConstIter(IDLList<entry>::const_iterator, *this, iter)
+    forAllConstIter(IDLList<entry>, *this, iter)
     {
         keys[nKeys++] = iter().keyword();
     }

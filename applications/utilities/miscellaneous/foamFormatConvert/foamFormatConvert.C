@@ -65,13 +65,13 @@ namespace Foam
 
 
 // Hack to do zones which have Lists in them. See above.
-bool writeZones(const word& name, Time& runTime)
+bool writeZones(const word& name, const fileName& meshDir, Time& runTime)
 {
     IOobject io
     (
         name,
         runTime.timeName(),
-        polyMesh::meshSubDir,
+        meshDir,
         runTime,
         IOobject::MUST_READ,
         IOobject::NO_WRITE,
@@ -145,8 +145,20 @@ bool writeZones(const word& name, Time& runTime)
 int main(int argc, char *argv[])
 {
     timeSelector::addOptions();
+#   include "addRegionOption.H"
 #   include "setRootCase.H"
 #   include "createTime.H"
+
+    fileName meshDir = polyMesh::meshSubDir;
+    fileName regionPrefix = "";
+    word regionName = polyMesh::defaultRegion;
+    if (args.optionReadIfPresent("region", regionName))
+    {
+        Info<< "Using region " << regionName << nl << endl;
+        regionPrefix = regionName;
+        meshDir = regionName/polyMesh::meshSubDir;
+    }
+
     Foam::instantList timeDirs = Foam::timeSelector::select0(runTime, args);
 
     forAll(timeDirs, timeI)
@@ -155,27 +167,32 @@ int main(int argc, char *argv[])
         Info<< "Time = " << runTime.timeName() << endl;
 
         // Convert all the standard mesh files
-        writeMeshObject<cellIOList>("cells", runTime);
-        writeMeshObject<labelIOList>("owner", runTime);
-        writeMeshObject<labelIOList>("neighbour", runTime);
-        writeMeshObject<faceIOList>("faces", runTime);
-        writeMeshObject<pointIOField>("points", runTime);
-        writeMeshObject<labelIOList>("pointProcAddressing", runTime);
-        writeMeshObject<labelIOList>("faceProcAddressing", runTime);
-        writeMeshObject<labelIOList>("cellProcAddressing", runTime);
-        writeMeshObject<labelIOList>("boundaryProcAddressing", runTime);
+        writeMeshObject<cellIOList>("cells", meshDir, runTime);
+        writeMeshObject<labelIOList>("owner", meshDir, runTime);
+        writeMeshObject<labelIOList>("neighbour", meshDir, runTime);
+        writeMeshObject<faceIOList>("faces", meshDir, runTime);
+        writeMeshObject<pointIOField>("points", meshDir, runTime);
+        writeMeshObject<labelIOList>("pointProcAddressing", meshDir, runTime);
+        writeMeshObject<labelIOList>("faceProcAddressing", meshDir, runTime);
+        writeMeshObject<labelIOList>("cellProcAddressing", meshDir, runTime);
+        writeMeshObject<labelIOList>
+        (
+            "boundaryProcAddressing",
+            meshDir,
+            runTime
+        );
 
         if (runTime.writeFormat() == IOstream::ASCII)
         {
             // Only do zones when converting from binary to ascii
             // The other way gives problems since working on dictionary level.
-            writeZones("cellZones", runTime);
-            writeZones("faceZones", runTime);
-            writeZones("pointZones", runTime);
+            writeZones("cellZones", meshDir, runTime);
+            writeZones("faceZones", meshDir, runTime);
+            writeZones("pointZones", meshDir, runTime);
         }
 
         // Get list of objects from the database
-        IOobjectList objects(runTime, runTime.timeName());
+        IOobjectList objects(runTime, runTime.timeName(), regionPrefix);
 
         forAllConstIter(IOobjectList, objects, iter)
         {
