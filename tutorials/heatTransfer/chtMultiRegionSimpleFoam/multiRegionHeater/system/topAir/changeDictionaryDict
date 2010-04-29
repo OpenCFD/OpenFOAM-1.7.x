@@ -1,0 +1,153 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dictionaryReplacement
+{
+    U
+    {
+        internalField   uniform (0.01 0 0);
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+            minX
+            {
+                type            fixedValue;
+                value           uniform ( 0.01 0 0 );
+            }
+            maxX
+            {
+                type            inletOutlet;
+                inletValue      uniform ( 0 0 0 );
+                value           uniform ( 0 0 0 );
+            }
+        }
+    }
+
+    T
+    {
+        internalField   uniform 300;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            zeroGradient;
+            }
+
+            minX
+            {
+                type            fixedValue;
+                value           uniform 300;
+            }
+            maxX
+            {
+                type            inletOutlet;
+                inletValue      uniform 300;
+                value           uniform 300;
+            }
+
+            "topAir_to_.*"
+            {
+                type            compressible::turbulentTemperatureCoupledBaffle;
+                neighbourFieldName T;
+                K               K;
+                value           uniform 300;
+            }
+        }
+    }
+
+    epsilon
+    {
+        internalField   uniform 0.01;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            compressible::epsilonWallFunction;
+                value           uniform 0.01;
+            }
+
+            minX
+            {
+                type            fixedValue;
+                value           uniform 0.01;
+            }
+            maxX
+            {
+                type            inletOutlet;
+                inletValue      uniform 0.01;
+                value           uniform 0.01;
+            }
+        }
+    }
+
+    k
+    {
+        internalField   uniform 0.1;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            compressible::kqRWallFunction;
+                value           uniform 0.1;
+            }
+
+            minX
+            {
+                type            fixedValue;
+                value           uniform 0.1;
+            }
+            maxX
+            {
+                type            inletOutlet;
+                inletValue      uniform 0.1;
+                value           uniform 0.1;
+            }
+        }
+    }
+
+    p
+    {
+        internalField   uniform 100000;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            buoyantPressure;
+                value           1e5;
+            }
+
+            maxX
+            {
+                type            waveTransmissive;
+                gamma           1.4;
+                fieldInf        100000;
+                lInf            0.4;
+                value           uniform 100000;
+            }
+        }
+    }
+}
+
+// ************************************************************************* //
