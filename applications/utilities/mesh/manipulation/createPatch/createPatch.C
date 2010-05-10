@@ -522,7 +522,9 @@ int main(int argc, char *argv[])
 #   include "setRootCase.H"
 #   include "createTime.H"
     runTime.functionObjects().off();
-#   include "createNamedPolyMesh.H"
+
+    Foam::word meshRegionName = polyMesh::defaultRegion;
+    args.optionReadIfPresent("region", meshRegionName);
 
     const bool overwrite = args.optionFound("overwrite");
 
@@ -535,8 +537,8 @@ int main(int argc, char *argv[])
             "createPatchDict",
             runTime.system(),
             (
-                regionName != polyMesh::defaultRegion
-              ? regionName
+                meshRegionName != polyMesh::defaultRegion
+              ? meshRegionName
               : word::null
             ),
             runTime,
@@ -557,6 +559,7 @@ int main(int argc, char *argv[])
         << " to match up faces and points" << nl << endl;
     coupledPolyPatch::matchTol = tol;
 
+#   include "createNamedPolyMesh.H"
 
     const word oldInstance = mesh.pointsInstance();
 
