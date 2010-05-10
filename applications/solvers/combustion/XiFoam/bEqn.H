@@ -30,7 +30,7 @@ if (ign.ignited())
     n /= mgb;
 
 
-#   include "StCorr.H"
+    #include "StCorr.H"
 
     // Calculate turbulent flame speed flux
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,7 +58,7 @@ if (ign.ignited())
 
     // Add ignition cell contribution to b-equation
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#   include "ignite.H"
+    #include "ignite.H"
 
 
     // Solve for b
@@ -134,7 +134,7 @@ if (ign.ignited())
             (sigmas*SuInf*(Su0 - SuInf) + sqr(SuMin)*sigmaExt)
            /(sqr(Su0 - SuInf) + sqr(SuMin));
 
-        solve
+        fvScalarMatrix SuEqn
         (
             fvm::ddt(rho, Su)
           + fvm::div(phi + phiXi, Su, "div(phiXi,Su)")
@@ -143,6 +143,9 @@ if (ign.ignited())
           - fvm::SuSp(-rho*Rc*Su0/Su, Su)
           - fvm::SuSp(rho*(sigmas + Rc), Su)
         );
+
+        SuEqn.relax();
+        SuEqn.solve();
 
         // Limit the maximum Su
         // ~~~~~~~~~~~~~~~~~~~~
@@ -196,7 +199,7 @@ if (ign.ignited())
 
         // Solve for the flame wrinkling
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        solve
+        fvScalarMatrix XiEqn
         (
             fvm::ddt(rho, Xi)
           + fvm::div(phi + phiXi, Xi, "div(phiXi,Xi)")
@@ -215,6 +218,8 @@ if (ign.ignited())
             )
         );
 
+        XiEqn.relax();
+        XiEqn.solve();
 
         // Correct boundedness of Xi
         // ~~~~~~~~~~~~~~~~~~~~~~~~~

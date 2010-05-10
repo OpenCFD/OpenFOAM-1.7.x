@@ -129,5 +129,10 @@ PISO
     nNonOrthogonalCorrectors 0;
 }
 
+relaxationFactors
+{
+    Xi     1;
+    Su     1;
+}
 
 // ************************************************************************* //

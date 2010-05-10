@@ -1,0 +1,109 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dictionaryReplacement
+{
+    boundary
+    {
+        minX
+        {
+            type            wall;
+        }
+        maxX
+        {
+            type            wall;
+        }
+    }
+
+    U
+    {
+        internalField   uniform (0.01 0 0);
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+        }
+    }
+
+    T
+    {
+        internalField   uniform 300;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            zeroGradient;
+            }
+
+            "bottomAir_to_.*"
+            {
+                type            compressible::turbulentTemperatureCoupledBaffle;
+                neighbourFieldName T;
+                K               K;
+                value           uniform 300;
+            }
+        }
+    }
+
+    epsilon
+    {
+        internalField   uniform 0.01;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            compressible::epsilonWallFunction;
+                value           uniform 0.01;
+            }
+        }
+    }
+
+    k
+    {
+        internalField   uniform 0.1;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            compressible::kqRWallFunction;
+                value           uniform 0.1;
+            }
+        }
+    }
+
+    p
+    {
+        internalField   uniform 100000;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            buoyantPressure;
+                value           1e5;
+            }
+        }
+    }
+}
+
+// ************************************************************************* //

@@ -151,9 +151,9 @@ int main(int argc, char *argv[])
                 U -= rAU*fvc::grad(p);
                 U.correctBoundaryConditions();
             }
-        }
 
-        turbulence->correct();
+            turbulence->correct();
+        }
 
         runTime.write();
 

@@ -86,7 +86,7 @@ void Foam::sixDoFRigidBodyMotionRestraints::linearSpring::restrain
     scalar magR = mag(r);
 
     // r is now the r unit vector
-    r /= magR;
+    r /= (magR + VSMALL);
 
     vector v = motion.currentVelocity(restraintPosition);
 

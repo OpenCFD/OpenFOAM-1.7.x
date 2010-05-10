@@ -1,0 +1,5 @@
+derivedFvPatchFields/solidWallHeatFluxTemperature/solidWallHeatFluxTemperatureFvPatchScalarField.C
+chtMultiRegionSimpleFoam.C
+
+EXE = $(FOAM_APPBIN)/chtMultiRegionSimpleFoam
+

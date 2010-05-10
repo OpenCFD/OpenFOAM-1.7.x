@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dictionaryReplacement
+{
+    boundary
+    {
+        minZ
+        {
+            type            patch;
+        }
+        maxZ
+        {
+            type            patch;
+        }
+    }
+
+    T
+    {
+        internalField   uniform 300;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            zeroGradient;
+                value           uniform 300;
+            }
+            "leftSolid_to_.*"
+            {
+                type            compressible::turbulentTemperatureCoupledBaffle;
+                neighbourFieldName T;
+                K               K;
+                value           uniform 300;
+            }
+        }
+    }
+
+    rho
+    {
+        internalField   uniform 8000;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            calculated;
+                value           uniform 8000;
+            }
+        }
+    }
+
+    K
+    {
+        internalField   uniform 80;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            zeroGradient;
+                value           uniform 80;
+            }
+        }
+    }
+
+    cp
+    {
+        internalField   uniform 450;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            zeroGradient;
+                value           uniform 450;
+            }
+        }
+    }
+}
+
+// ************************************************************************* //
