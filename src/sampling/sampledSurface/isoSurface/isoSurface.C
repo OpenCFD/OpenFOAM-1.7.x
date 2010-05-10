@@ -1273,6 +1273,18 @@ void Foam::isoSurface::calcAddressing
 
     if (!hasMerged)
     {
+        if (surf.size() == 1)
+        {
+            faceEdges.setSize(1);
+            faceEdges[0][0] = 0;
+            faceEdges[0][1] = 1;
+            faceEdges[0][2] = 2;
+            edgeFace0.setSize(1);
+            edgeFace0[0] = 0;
+            edgeFace1.setSize(1);
+            edgeFace1[0] = -1;
+            edgeFacesRest.clear();
+        }
         return;
     }
 
@@ -2054,8 +2066,8 @@ Foam::isoSurface::isoSurface
     }
 
 
-    //if (false)
-    //{
+//if (false)
+{
     List<FixedList<label, 3> > faceEdges;
     labelList edgeFace0, edgeFace1;
     Map<labelList> edgeFacesRest;
@@ -2108,7 +2120,7 @@ Foam::isoSurface::isoSurface
     }
 
     orientSurface(*this, faceEdges, edgeFace0, edgeFace1, edgeFacesRest);
-    //}
+}
 
 
     if (debug)
