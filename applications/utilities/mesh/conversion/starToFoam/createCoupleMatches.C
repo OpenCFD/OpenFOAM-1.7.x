@@ -884,7 +884,7 @@ void starMesh::createCoupleMatches()
                 << "newSlaveEdges: " << newSlaveEdges << endl;
 #           endif
 
-            edge startEdge;
+            edge startEdge(-1, -1);
 
             // Remember where the start edge was found:
             // 0 for not found

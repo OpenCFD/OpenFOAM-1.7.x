@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
     argList::validArgs.clear();
     argList::validArgs.append("OBJ file");
     argList::validArgs.append("output VTK file");
-    argList::argList args(argc, argv);
+    argList args(argc, argv);
 
     fileName objName(args.additionalArgs()[0]);
     fileName outName(args.additionalArgs()[1]);
