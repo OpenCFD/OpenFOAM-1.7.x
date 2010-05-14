@@ -34,7 +34,7 @@ Description
         active          true;      // on/off switch
         timeStart       0.2;       // start time
         duration        2.0;       // duration
-        selectionMode   points;    // cellSet
+        selectionMode   points;    // cellSet/cellZone/all
         volumeMode      absolute;  // specific
 
         fieldData                  // field data - usage for multiple fields
@@ -49,7 +49,8 @@ Description
             (2.75 0.5 0)
         );
 
-        cellSet         c0;        // cellSet name when selectionMode = cekllSet
+        cellSet         c0;        // cellSet name when selectionMode=cellSet
+        cellZone        c0;        // cellZone name when selectionMode=cellZone
     }
 
 SourceFiles
@@ -101,7 +102,9 @@ public:
         enum selectionModeType
         {
             smPoints,
-            smCellSet
+            smCellSet,
+            smCellZone,
+            smAll
         };
 
         //- Word list of selection mode type names
@@ -148,14 +151,14 @@ protected:
         //- List of points for "points" selectionMode
         List<point> points_;
 
-        //- Name of cell set for "cellSet" selectionMode
+        //- Name of cell set for "cellSet" and "cellZone" selectionMode
         word cellSetName_;
 
-        //- Field of cell volumes according to cell set cells
-        scalarList V_;
+        //- Set of cells to apply source to
+        labelList cells_;
 
-        //- Cell set
-        autoPtr<cellSet> cellsPtr_;
+        //- Sum of cell volumes
+        scalar V_;
 
         //- List of source field name vs value pairs
         List<fieldNameValuePair> fieldData_;
@@ -289,12 +292,11 @@ public:
             //  selectionMode
             inline const word& cellSetName() const;
 
-            //- Return const access to the field of cell volumes according to
-            //  cell set cells
-            inline const scalarList& V() const;
+            //- Return const access to the total cell volume
+            inline scalar V() const;
 
             //- Return const access to the cell set
-            inline const cellSet& cells() const;
+            inline const labelList& cells() const;
 
             //- Return const access to the source field name vs value pairs
             inline const List<fieldNameValuePair>& fieldData() const;
@@ -331,12 +333,11 @@ public:
             //  selectionMode
             inline word& cellSetName();
 
-            //- Return access to the field of cell volumes according to
-            //  cell set cells
-            inline scalarList& V();
+            //- Return access to the total cell volume
+            inline scalar& V();
 
             //- Return access to the cell set
-            inline cellSet& cells();
+            inline labelList& cells();
 
             //- Return access to the source field name vs value pairs
             inline List<fieldNameValuePair>& fieldData();

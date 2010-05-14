@@ -34,7 +34,7 @@ template<class Type>
 const Foam::wordList Foam::TimeActivatedExplicitSource<Type>::
 selectionModeTypeNames_
 (
-    IStringStream("(points cellSet)")()
+    IStringStream("(points cellSet cellZone all)")()
 );
 
 
@@ -157,6 +157,15 @@ void Foam::TimeActivatedExplicitSource<Type>::setSelection
             dict.lookup("cellSet") >> cellSetName_;
             break;
         }
+        case smCellZone:
+        {
+            dict.lookup("cellZone") >> cellSetName_;
+            break;
+        }
+        case smAll:
+        {
+            break;
+        }
         default:
         {
             FatalErrorIn
@@ -222,13 +231,14 @@ void Foam::TimeActivatedExplicitSource<Type>::setCellSet()
         {
             Info<< indent << "- selecting cells using points" << endl;
 
-            labelHashSet cellOwners;
+            labelHashSet selectedCells;
+
             forAll(points_, i)
             {
                 label cellI = mesh_.findCell(points_[i]);
                 if (cellI >= 0)
                 {
-                    cellOwners.insert(cellI);
+                    selectedCells.insert(cellI);
                 }
 
                 label globalCellI = returnReduce(cellI, maxOp<label>());
@@ -240,7 +250,7 @@ void Foam::TimeActivatedExplicitSource<Type>::setCellSet()
                 }
             }
 
-            cellsPtr_.reset(new cellSet(mesh_, "points", cellOwners));
+            cells_ = selectedCells.toc();
 
             break;
         }
@@ -248,7 +258,32 @@ void Foam::TimeActivatedExplicitSource<Type>::setCellSet()
         {
             Info<< indent << "- selecting cells using cellSet "
                 << cellSetName_ << endl;
-            cellsPtr_.reset(new cellSet(mesh_, cellSetName_));
+
+            cellSet selectedCells(mesh_, cellSetName_);
+            cells_ = selectedCells.toc();
+
+            break;
+        }
+        case smCellZone:
+        {
+            Info<< indent << "- selecting cells using cellZone "
+                << cellSetName_ << endl;
+            label zoneID = mesh_.cellZones().findZoneID(cellSetName_);
+            if (zoneID == -1)
+            {
+                FatalErrorIn("TimeActivatedExplicitSource<Type>::setCellIds()")
+                    << "Cannot find cellZone " << cellSetName_ << endl
+                    << "Valid cellZones are " << mesh_.cellZones().names()
+                    << exit(FatalError);
+            }
+            cells_ = mesh_.cellZones()[zoneID];
+
+            break;
+        }
+        case smAll:
+        {
+            Info<< indent << "- selecting all cells" << endl;
+            cells_ = identity(mesh_.nCells());
 
             break;
         }
@@ -262,21 +297,20 @@ void Foam::TimeActivatedExplicitSource<Type>::setCellSet()
         }
     }
 
-    const cellSet& cSet = cellsPtr_();
-
     // Set volume normalisation
-    V_ = scalarField(cSet.size(), 1.0);
     if (volumeMode_ == vmAbsolute)
     {
-        label i = 0;
-        forAllConstIter(cellSet, cSet, iter)
+        V_ = 0.0;
+        forAll(cells_, i)
         {
-            V_[i++] = mesh_.V()[iter.key()];
+            V_ += mesh_.V()[cells_[i]];
         }
+        reduce(V_, sumOp<scalar>());
     }
 
-    Info<< indent << "- selected " << returnReduce(cSet.size(), sumOp<label>())
-        << " cell(s)" << nl << decrIndent << endl;
+    Info<< indent << "- selected "
+        << returnReduce(cells_.size(), sumOp<label>())
+        << " cell(s) with volume " << V_ << nl << decrIndent << endl;
 }
 
 
@@ -300,8 +334,7 @@ Foam::TimeActivatedExplicitSource<Type>::TimeActivatedExplicitSource
     selectionMode_(wordToSelectionModeType(dict.lookup("selectionMode"))),
     points_(),
     cellSetName_("none"),
-    V_(),
-    cellsPtr_(),
+    V_(1.0),
     fieldData_(),
     fieldIds_(fieldNames.size(), -1)
 {
@@ -346,12 +379,9 @@ void Foam::TimeActivatedExplicitSource<Type>::addToField
             setCellSet();
         }
 
-        const cellSet& cSet = cellsPtr_();
-
-        label i = 0;
-        forAllConstIter(cellSet, cSet, iter)
+        forAll(cells_, i)
         {
-            Su[iter.key()] = fieldData_[fid].second()/V_[i++];
+            Su[cells_[i]] = fieldData_[fid].second()/V_;
         }
     }
 }
