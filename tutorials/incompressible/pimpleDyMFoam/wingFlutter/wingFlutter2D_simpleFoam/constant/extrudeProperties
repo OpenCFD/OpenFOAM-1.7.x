@@ -1,0 +1,47 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6.x                                 |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      extrudeProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// What to extrude:
+//      patch   : from patch of another case ('sourceCase')
+
+constructFrom patch;
+sourceCase "../wingFlutter_snappyHexMesh";
+sourcePatch front;
+
+// If construct from patch: patch to use for back (can be same as sourcePatch)
+exposedPatchName back;
+
+// Flip surface normals before usage.
+flipNormals false;
+
+//- Linear extrusion in point-normal direction
+extrudeModel        linearNormal;
+
+nLayers             1;
+
+expansionRatio      1.0;
+
+linearNormalCoeffs
+{
+    thickness       0.05;
+}
+
+// Do front and back need to be merged? Usually only makes sense for 360
+// degree wedges.
+mergeFaces false;
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

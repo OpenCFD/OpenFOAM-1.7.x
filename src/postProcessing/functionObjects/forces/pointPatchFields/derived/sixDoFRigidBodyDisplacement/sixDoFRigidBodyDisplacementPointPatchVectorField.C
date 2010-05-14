@@ -50,7 +50,10 @@ sixDoFRigidBodyDisplacementPointPatchVectorField
     fixedValuePointPatchField<vector>(p, iF),
     motion_(),
     initialPoints_(p.localPoints()),
-    rhoInf_(1.0)
+    rhoInf_(1.0),
+    rhoName_("rho"),
+    lookupGravity_(-1),
+    g_(vector::zero)
 {}
 
 
@@ -64,8 +67,23 @@ sixDoFRigidBodyDisplacementPointPatchVectorField
 :
     fixedValuePointPatchField<vector>(p, iF, dict),
     motion_(dict),
-    rhoInf_(readScalar(dict.lookup("rhoInf")))
+    rhoInf_(1.0),
+    rhoName_(dict.lookupOrDefault<word>("rhoName", "rho")),
+    lookupGravity_(-1),
+    g_(vector::zero)
 {
+    if (rhoName_ == "rhoInf")
+    {
+        rhoInf_ = readScalar(dict.lookup("rhoInf"));
+    }
+
+    if (dict.found("g"))
+    {
+        lookupGravity_ = -2;
+
+        g_ = dict.lookup("g");
+    }
+
     if (!dict.found("value"))
     {
         updateCoeffs();
@@ -94,7 +112,10 @@ sixDoFRigidBodyDisplacementPointPatchVectorField
     fixedValuePointPatchField<vector>(ptf, p, iF, mapper),
     motion_(ptf.motion_),
     initialPoints_(ptf.initialPoints_, mapper),
-    rhoInf_(ptf.rhoInf_)
+    rhoInf_(ptf.rhoInf_),
+    rhoName_(ptf.rhoName_),
+    lookupGravity_(ptf.lookupGravity_),
+    g_(ptf.g_)
 {}
 
 
@@ -108,7 +129,10 @@ sixDoFRigidBodyDisplacementPointPatchVectorField
     fixedValuePointPatchField<vector>(ptf, iF),
     motion_(ptf.motion_),
     initialPoints_(ptf.initialPoints_),
-    rhoInf_(ptf.rhoInf_)
+    rhoInf_(ptf.rhoInf_),
+    rhoName_(ptf.rhoName_),
+    lookupGravity_(ptf.lookupGravity_),
+    g_(ptf.g_)
 {}
 
 
@@ -147,6 +171,33 @@ void sixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
         return;
     }
 
+    if (lookupGravity_ < 0)
+    {
+        if (db().foundObject<uniformDimensionedVectorField>("g"))
+        {
+            if (lookupGravity_ == -2)
+            {
+                FatalErrorIn
+                (
+                    "void sixDoFRigidBodyDisplacementPointPatchVectorField"
+                    "::updateCoeffs()"
+                )
+                    << "Specifying the value of g in this boundary condition "
+                    << "when g is available from the database is considered "
+                    << "a fatal error to avoid the possibility of inconsistency"
+                    << exit(FatalError);
+            }
+            else
+            {
+                lookupGravity_ = 1;
+            }
+        }
+        else
+        {
+            lookupGravity_ = 0;
+        }
+    }
+
     const polyMesh& mesh = this->dimensionedInternalField().mesh()();
     const Time& t = mesh.time();
     const pointPatch& ptPatch = this->patch();
@@ -161,6 +212,7 @@ void sixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
 
     forcesDict.add("patches", wordList(1, ptPatch.name()));
     forcesDict.add("rhoInf", rhoInf_);
+    forcesDict.add("rhoName", rhoName_);
     forcesDict.add("CofR", motion_.centreOfMass());
 
     forces f("forces", db(), forcesDict);
@@ -169,19 +221,17 @@ void sixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
 
     // Get the forces on the patch faces at the current positions
 
-    vector gravity = vector::zero;
-
-    if (db().foundObject<uniformDimensionedVectorField>("g"))
+    if (lookupGravity_ == 1)
     {
         uniformDimensionedVectorField g =
             db().lookupObject<uniformDimensionedVectorField>("g");
 
-        gravity = g.value();
+        g_ = g.value();
     }
 
     motion_.updateForce
     (
-        fm.first().first() + fm.first().second() + gravity*motion_.mass(),
+        fm.first().first() + fm.first().second() + g_*motion_.mass(),
         fm.second().first() + fm.second().second(),
         t.deltaTValue()
     );
@@ -198,10 +248,20 @@ void sixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
 void sixDoFRigidBodyDisplacementPointPatchVectorField::write(Ostream& os) const
 {
     pointPatchField<vector>::write(os);
+
+    os.writeKeyword("rhoInf") << rhoInf_ << token::END_STATEMENT << nl;
+
+    os.writeKeyword("rhoName") << rhoName_ << token::END_STATEMENT << nl;
+
+    if (lookupGravity_ == 0 || lookupGravity_ == -2)
+    {
+        os.writeKeyword("g") << g_ << token::END_STATEMENT << nl;
+    }
+
     motion_.write(os);
-    os.writeKeyword("rhoInf")
-        << rhoInf_ << token::END_STATEMENT << nl;
+
     initialPoints_.writeEntry("initialPoints", os);
+
     writeEntry("value", os);
 }
 
