@@ -61,8 +61,29 @@ class sixDoFRigidBodyDisplacementPointPatchVectorField
         pointField initialPoints_;
 
         //- Reference density required by the forces object for
-        //  incompressible calculations
+        //  incompressible calculations, required if rhoName == rhoInf
         scalar rhoInf_;
+
+        //- Name of density field, optional unless used for an
+        //  incompressible simulation, when this needs to be specified
+        //  as rhoInf
+        word rhoName_;
+
+        //- State of gravity lookup:
+        //  -1 = not determined yet, as the BC may be instantiated before g has
+        //       been read into the db yet.  Determination deferred until first
+        //       call to updateCoeffs.  A g keyword was not supplied to the
+        //       dictionary.
+        //  -2 = as for -1, but a gravity value was specified in the dictionary,
+        //       specifying a value in the dictionary is considered a fatal
+        //       error if g is available from the db.
+        //   0 = Use this boundary condition's own value of gravity, as not
+        //       available from the db.
+        //   1 = Lookup gravity from db.
+        label lookupGravity_;
+
+        //- Gravity vector to store when not available from the db
+        vector g_;
 
 
 public:
