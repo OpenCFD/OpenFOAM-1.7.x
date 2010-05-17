@@ -327,7 +327,7 @@ Foam::TimeActivatedExplicitSource<Type>::TimeActivatedExplicitSource
 :
     name_(name),
     mesh_(mesh),
-    active_(dict.lookup("active")),
+    active_(readBool(dict.lookup("active"))),
     timeStart_(readScalar(dict.lookup("timeStart"))),
     duration_(readScalar(dict.lookup("duration"))),
     volumeMode_(wordToVolumeModeType(dict.lookup("volumeMode"))),
