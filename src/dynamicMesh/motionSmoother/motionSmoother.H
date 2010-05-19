@@ -209,7 +209,8 @@ class motionSmoother
             const Field<Type>&,
             const CombineOp& cop,
             const Type& zero,
-            const bool separation
+            const bool separation,
+            const scalar maxMag
         ) const;
 
         //- Assemble tensors for multi-patch constraints

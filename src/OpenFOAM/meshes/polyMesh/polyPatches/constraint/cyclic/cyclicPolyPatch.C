@@ -762,6 +762,26 @@ Foam::cyclicPolyPatch::cyclicPolyPatch
     rotationCentre_(point::zero),
     separationVector_(vector::zero)
 {
+    if (dict.found("neighbourPatch"))
+    {
+        FatalIOErrorIn
+        (
+            "cyclicPolyPatch::cyclicPolyPatch\n"
+            "(\n"
+            "    const word& name,\n"
+            "    const dictionary& dict,\n"
+            "    const label index,\n"
+            "    const polyBoundaryMesh& bm\n"
+            ")",
+            dict
+        )   << "Found \"neighbourPatch\" entry when reading cyclic patch "
+            << name << endl
+            << "Is this mesh already with split cyclics?" << endl
+            << "If so run a newer version that supports it"
+            << ", if not comment out the \"neighbourPatch\" entry and re-run"
+            << exit(FatalIOError);
+    }
+
     dict.readIfPresent("featureCos", featureCos_);
 
     if (dict.found("transform"))

@@ -294,7 +294,8 @@ void Foam::motionSmoother::testSyncField
     const Field<Type>& fld,
     const CombineOp& cop,
     const Type& zero,
-    const bool separation
+    const bool separation,
+    const scalar maxMag
 ) const
 {
     if (debug)
@@ -316,7 +317,7 @@ void Foam::motionSmoother::testSyncField
 
     forAll(syncedFld, i)
     {
-        if (syncedFld[i] != fld[i])
+        if (mag(syncedFld[i] - fld[i]) > maxMag)
         {
             FatalErrorIn
             (

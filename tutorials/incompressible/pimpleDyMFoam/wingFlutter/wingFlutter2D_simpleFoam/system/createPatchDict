@@ -1,0 +1,90 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6.x                                 |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Tolerance used in matching faces. Absolute tolerance is span of
+// face times this factor. To load incorrectly matches meshes set this
+// to a higher value.
+matchTolerance 1E-3;
+
+// Do a synchronisation of coupled points after creation of any patches.
+// Note: this does not work with points that are on multiple coupled patches
+//       with transformations.
+pointSync true;
+
+// Patches to create.
+patchInfo
+(
+    {
+        name topAndBottom;
+        dictionary
+        {
+            type patch;
+        }
+        constructFrom patches;
+        patches ( auto0 auto2 );
+    }
+
+    {
+        name inlet;
+        dictionary
+        {
+            type patch;
+        }
+        constructFrom patches;
+        patches ( auto1 );
+    }
+
+    {
+        name outlet;
+        dictionary
+        {
+            type patch;
+        }
+        constructFrom patches;
+        patches ( auto3 );
+    }
+
+    {
+        name wing;
+        dictionary
+        {
+            type wall;
+        }
+        constructFrom patches;
+        patches ( auto4 );
+    }
+
+    {
+        name back;
+        dictionary
+        {
+            type empty;
+        }
+        constructFrom patches;
+        patches ( auto5 );
+    }
+
+    {
+        name front;
+        dictionary
+        {
+            type empty;
+        }
+        constructFrom patches;
+        patches ( auto6 );
+    }
+);

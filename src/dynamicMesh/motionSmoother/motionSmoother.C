@@ -780,7 +780,8 @@ Foam::tmp<Foam::scalarField> Foam::motionSmoother::movePoints
             newPoints,
             minEqOp<point>(),           // combine op
             vector(GREAT,GREAT,GREAT),  // null
-            true                        // separation
+            true,                       // separation
+            1E-6*mesh_.bounds().mag()
         );
     }
 
@@ -931,7 +932,8 @@ bool Foam::motionSmoother::scaleMesh
                 totalDisplacement,
                 maxMagEqOp(),
                 vector::zero,   // null value
-                false           // separation
+                false,          // separation
+                1E-6*mesh_.bounds().mag()
             );
         }
 

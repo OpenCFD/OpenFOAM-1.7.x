@@ -60,11 +60,6 @@ class uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField
         //- Initial positions of points on the patch
         pointField initialPoints_;
 
-        //- Reference density required by the forces object for
-        //  incompressible calculations.  Retained here to give
-        //  dictionary compatibility with other sixDoF patches.
-        scalar rhoInf_;
-
 
 public:
 

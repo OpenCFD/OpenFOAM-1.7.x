@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     argList::validArgs.append("surface file");
     argList::validArgs.append("min length");
     argList::validArgs.append("output surface file");
-    argList::argList args(argc, argv);
+    argList args(argc, argv);
 
     fileName inFileName(args.additionalArgs()[0]);
     scalar minLen(readScalar(IStringStream(args.additionalArgs()[1])()));

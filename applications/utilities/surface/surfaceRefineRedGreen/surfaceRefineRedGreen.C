@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     argList::validArgs.clear();
     argList::validArgs.append("surface file");
     argList::validArgs.append("output surface file");
-    argList::argList args(argc, argv);
+    argList args(argc, argv);
 
     fileName surfFileName(args.additionalArgs()[0]);
     fileName outFileName(args.additionalArgs()[1]);

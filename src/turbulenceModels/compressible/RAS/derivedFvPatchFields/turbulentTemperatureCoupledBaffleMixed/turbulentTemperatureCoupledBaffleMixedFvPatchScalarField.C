@@ -152,13 +152,11 @@ turbulentTemperatureCoupledBaffleMixedFvPatchScalarField::K() const
         const compressible::RASModel& model =
             db().lookupObject<compressible::RASModel>("RASProperties");
 
-        tmp<volScalarField> talpha = model.alphaEff();
-
         const basicThermo& thermo =
             db().lookupObject<basicThermo>("thermophysicalProperties");
 
         return
-            talpha().boundaryField()[patch().index()]
+            model.alphaEff()().boundaryField()[patch().index()]
            *thermo.Cp()().boundaryField()[patch().index()];
     }
     else if (mesh.objectRegistry::foundObject<volScalarField>(KName_))
