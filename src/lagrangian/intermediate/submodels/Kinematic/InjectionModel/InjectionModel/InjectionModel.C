@@ -203,7 +203,7 @@ Foam::scalar Foam::InjectionModel<CloudType>::setNumberOfParticles
         }
         case pbNumber:
         {
-            nP = massTotal_/(rho*volumeTotal_*parcels);
+            nP = massTotal_/(rho*volumeTotal_);
             break;
         }
         default:
