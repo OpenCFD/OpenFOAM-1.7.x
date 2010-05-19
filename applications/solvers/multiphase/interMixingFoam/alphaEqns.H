@@ -34,7 +34,8 @@
             ),
             mesh,
             dimless,
-            allLambda
+            allLambda,
+            false   // Use slices for the couples
         );
 
 
