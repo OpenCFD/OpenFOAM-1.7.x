@@ -331,11 +331,11 @@ void Foam::turbulentTemperatureCoupledBaffleFvPatchScalarField::updateCoeffs()
 
         Info<< patch().boundaryMesh().mesh().name() << ':'
             << patch().name() << ':'
-            << this->dimensionedInternalField().name() << " -> "
+            << this->dimensionedInternalField().name() << " <- "
             << nbrMesh.name() << ':'
             << nbrPatch.name() << ':'
             << this->dimensionedInternalField().name() << " :"
-            << " heatFlux:" << Q
+            << " heat[W]:" << Q
             << " walltemperature "
             << " min:" << gMin(*this)
             << " max:" << gMax(*this)
