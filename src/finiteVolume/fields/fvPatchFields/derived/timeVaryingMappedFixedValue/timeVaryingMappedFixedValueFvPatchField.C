@@ -61,13 +61,7 @@ timeVaryingMappedFixedValueFvPatchField
     endSampleTime_(-1),
     endSampledValues_(0),
     endAverage_(pTraits<Type>::zero)
-{
-    if (debug)
-    {
-        Pout<< "timeVaryingMappedFixedValue :"
-            << " construct from fvPatch and internalField" << endl;
-    }
-}
+{}
 
 
 template<class Type>
@@ -93,13 +87,7 @@ timeVaryingMappedFixedValueFvPatchField
     endSampleTime_(-1),
     endSampledValues_(0),
     endAverage_(pTraits<Type>::zero)
-{
-    if (debug)
-    {
-        Pout<< "timeVaryingMappedFixedValue"
-            << " : construct from mappedFixedValue and mapper" << endl;
-    }
-}
+{}
 
 
 template<class Type>
@@ -125,12 +113,6 @@ timeVaryingMappedFixedValueFvPatchField
     endSampledValues_(0),
     endAverage_(pTraits<Type>::zero)
 {
-    if (debug)
-    {
-        Pout<< "timeVaryingMappedFixedValue : construct from dictionary"
-            << endl;
-    }
-
     if (dict.found("fieldTableName"))
     {
         dict.lookup("fieldTableName") >> fieldTableName_;
@@ -167,13 +149,7 @@ timeVaryingMappedFixedValueFvPatchField
     endSampleTime_(ptf.endSampleTime_),
     endSampledValues_(ptf.endSampledValues_),
     endAverage_(ptf.endAverage_)
-{
-    if (debug)
-    {
-        Pout<< "timeVaryingMappedFixedValue : copy construct"
-            << endl;
-    }
-}
+{}
 
 
 
@@ -198,13 +174,7 @@ timeVaryingMappedFixedValueFvPatchField
     endSampleTime_(ptf.endSampleTime_),
     endSampledValues_(ptf.endSampledValues_),
     endAverage_(ptf.endAverage_)
-{
-    if (debug)
-    {
-        Pout<< "timeVaryingMappedFixedValue :"
-            << " copy construct, resetting internal field" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -288,64 +258,61 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
 
     const point& p0 = samplePoints[0];
 
-    // Find point separate from p0
+    // Find furthest away point
     vector e1;
     label index1 = -1;
+    scalar maxDist = -GREAT;
 
     for (label i = 1; i < samplePoints.size(); i++)
     {
         e1 = samplePoints[i] - p0;
-
         scalar magE1 = mag(e1);
 
-        if (magE1 > SMALL)
+        if (magE1 > maxDist)
         {
             e1 /= magE1;
             index1 = i;
-            break;
+            maxDist = magE1;
         }
     }
 
-    // Find point that makes angle with n1
+    // Find point that is furthest away from line p0-p1
+    const point& p1 = samplePoints[index1];
+
     label index2 = -1;
-    vector e2;
-    vector n;
-
-    for (label i = index1+1; i < samplePoints.size(); i++)
+    maxDist = -GREAT;
+    for (label i = 1; i < samplePoints.size(); i++)
     {
-        e2 = samplePoints[i] - p0;
-
-        scalar magE2 = mag(e2);
-
-        if (magE2 > SMALL)
+        if (i != index1)
         {
-            e2 /= magE2;
+            const point& p2 = samplePoints[i];
+            vector e2(p2 - p0);
+            e2 -= (e2&e1)*e1;
+            scalar magE2 = mag(e2);
 
-            n = e1^e2;
-
-            scalar magN = mag(n);
-
-            if (magN > SMALL)
+            if (magE2 > maxDist)
             {
                 index2 = i;
-                n /= magN;
-                break;
+                maxDist = magE2;
             }
         }
     }
-
     if (index2 == -1)
     {
         FatalErrorIn
         (
             "timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()"
         )   << "Cannot find points that make valid normal." << nl
+            << "Have so far points " << p0 << " and " << p1
             << "Need at least three sample points which are not in a line."
             << "\n    on patch " << this->patch().name()
             << " of points " << samplePoints.name()
             << " in file " << samplePoints.objectPath()
             << exit(FatalError);
     }
+
+    vector n = e1^(samplePoints[index2]-p0);
+    n /= mag(n);
 
     if (debug)
     {
@@ -783,7 +750,8 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::write(Ostream& os) const
 
     if (fieldTableName_ != this->dimensionedInternalField().name())
     {
-        os.writeKeyword("fieldTableName") << fieldTableName_ << token::END_STATEMENT << nl;
+        os.writeKeyword("fieldTableName") << fieldTableName_
+            << token::END_STATEMENT << nl;
     }
 
     this->writeEntry("value", os);
