@@ -18,7 +18,7 @@ FoamFile
 //      patch   : from patch of another case ('sourceCase')
 
 constructFrom patch;
-sourceCase "../wingFlutter_snappyHexMesh";
+sourceCase "../wingMotion_snappyHexMesh";
 sourcePatch front;
 
 // If construct from patch: patch to use for back (can be same as sourcePatch)

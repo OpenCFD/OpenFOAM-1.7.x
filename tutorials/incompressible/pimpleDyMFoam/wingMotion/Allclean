@@ -4,15 +4,15 @@ cd ${0%/*} || exit 1    # run from this directory
 # Source tutorial run functions
 . $WM_PROJECT_DIR/bin/tools/CleanFunctions
 
-cd wingFlutter_snappyHexMesh
+cd wingMotion_snappyHexMesh
 cleanCase
 rm front.sMesh
 
 
-cd ../wingFlutter2D_simpleFoam
+cd ../wingMotion2D_simpleFoam
 cleanCase
 
-cd ../wingFlutter2D_pimpleDyMFoam
+cd ../wingMotion2D_pimpleDyMFoam
 cleanCase
 rm -rf 0
 
