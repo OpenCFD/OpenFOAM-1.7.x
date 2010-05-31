@@ -116,7 +116,7 @@ bool Foam::sixDoFRigidBodyMotionConstraints::fixedPoint::constrain
 
     bool converged(mag(error) < tolerance_);
 
-    if (motion.report())
+    if (sixDoFRigidBodyMotionConstraint::debug)
     {
         Info<< " error " << error
             << " force " << constraintForceIncrement

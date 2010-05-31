@@ -121,7 +121,7 @@ bool Foam::sixDoFRigidBodyMotionConstraints::fixedAxis::constrain
 
     bool converged(mag(theta) < tolerance_);
 
-    if (motion.report())
+    if (sixDoFRigidBodyMotionConstraint::debug)
     {
         Info<< " angle " << theta
             << " force " << constraintForceIncrement

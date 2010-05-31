@@ -41,7 +41,7 @@ void Foam::sixDoFRigidBodyMotion::applyRestraints()
         {
             if (report_)
             {
-                Info<< "Restraint " << restraintNames_[rI];
+                Info<< "Restraint " << restraintNames_[rI] << ": ";
             }
 
             // restraint position
@@ -90,9 +90,9 @@ void Foam::sixDoFRigidBodyMotion::applyConstraints(scalar deltaT)
 
             forAll(constraints_, cI)
             {
-                if (report_)
+                if (sixDoFRigidBodyMotionConstraint::debug)
                 {
-                    Info<< "Constraint " << constraintNames_[cI];
+                    Info<< "Constraint " << constraintNames_[cI] << ": ";
                 }
 
                 // constraint position

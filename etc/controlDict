@@ -726,6 +726,7 @@ DebugSwitches
     shapeList           0;
     shapeToCell         0;
     simple              0;
+    sixDoFRigidBodyMotionConstraint 0;
     skewCorrected       0;
     skewCorrectionVectors 0;
     sliced              0;
