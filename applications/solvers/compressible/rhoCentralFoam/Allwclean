@@ -4,5 +4,6 @@ set -x
 
 wclean libso BCs
 wclean
+wclean rhoCentralDyMFoam
 
 # ----------------------------------------------------------------- end-of-file
