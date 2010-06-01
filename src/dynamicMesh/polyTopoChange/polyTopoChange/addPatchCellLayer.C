@@ -348,7 +348,10 @@ Foam::label Foam::addPatchCellLayer::addSideFace
 
     // Get my mesh face and its zone.
     label meshFaceI = pp.addressing()[ownFaceI];
-    label zoneI = mesh_.faceZones().whichZone(meshFaceI);
+    // Zone info comes from any side patch face. Otherwise -1 since we
+    // don't know what to put it in - inherit from the extruded faces?
+    label zoneI = -1;   //mesh_.faceZones().whichZone(meshFaceI);
+    bool flip = false;
 
     label addedFaceI = -1;
 
@@ -375,6 +378,12 @@ Foam::label Foam::addPatchCellLayer::addSideFace
             )
             {
                 otherPatchID = patches.whichPatch(faceI);
+                zoneI = mesh_.faceZones().whichZone(faceI);
+                if (zoneI != -1)
+                {
+                    label index = mesh_.faceZones()[zoneI].whichFace(faceI);
+                    flip = mesh_.faceZones()[zoneI].flipMap()[index];
+                }
                 break;
             }
         }
@@ -421,7 +430,7 @@ Foam::label Foam::addPatchCellLayer::addSideFace
                 false,                      // flux flip
                 otherPatchID,               // patch for face
                 zoneI,                      // zone for face
-                false                       // face zone flip
+                flip                        // face zone flip
             )
         );
     }
@@ -487,7 +496,7 @@ Foam::label Foam::addPatchCellLayer::addSideFace
                 false,                      // flux flip
                 -1,                         // patch for face
                 zoneI,                      // zone for face
-                false                       // face zone flip
+                flip                        // face zone flip
             )
         );
 
@@ -967,8 +976,6 @@ void Foam::addPatchCellLayer::setRefinement
             layerFaces_[patchFaceI].setSize(addedCells[patchFaceI].size() + 1);
             layerFaces_[patchFaceI][0] = meshFaceI;
 
-            label zoneI = mesh_.faceZones().whichZone(meshFaceI);
-
             // Get duplicated vertices on the patch face.
             const face& f = pp.localFaces()[patchFaceI];
 
@@ -997,12 +1004,21 @@ void Foam::addPatchCellLayer::setRefinement
                 // Get new neighbour
                 label nei;
                 label patchI;
+                label zoneI = -1;
+                bool flip = false;
+
 
                 if (i == addedCells[patchFaceI].size()-1)
                 {
                     // Top layer so is patch face.
                     nei = -1;
                     patchI = patchID[patchFaceI];
+                    zoneI = mesh_.faceZones().whichZone(meshFaceI);
+                    if (zoneI != -1)
+                    {
+                        const faceZone& fz = mesh_.faceZones()[zoneI];
+                        flip = fz.flipMap()[fz.whichFace(meshFaceI)];
+                    }
                 }
                 else
                 {
@@ -1025,7 +1041,7 @@ void Foam::addPatchCellLayer::setRefinement
                         false,                      // flux flip
                         patchI,                     // patch for face
                         zoneI,                      // zone for face
-                        false                       // face zone flip
+                        flip                        // face zone flip
                     )
                 );
                 //Pout<< "Added inbetween face " << newFace
@@ -1046,8 +1062,6 @@ void Foam::addPatchCellLayer::setRefinement
         {
             label meshFaceI = pp.addressing()[patchFaceI];
 
-            label zoneI = mesh_.faceZones().whichZone(meshFaceI);
-
             meshMod.setAction
             (
                 polyModifyFace
@@ -1058,8 +1072,8 @@ void Foam::addPatchCellLayer::setRefinement
                     addedCells[patchFaceI][0],      // neighbour
                     false,                          // face flip
                     -1,                             // patch for face
-                    false,                          // remove from zone
-                    zoneI,                          // zone for face
+                    true, //false,                        // remove from zone
+                    -1, //zoneI,                          // zone for face
                     false                           // face flip in zone
                 )
             );

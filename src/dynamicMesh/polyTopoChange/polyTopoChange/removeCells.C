@@ -324,7 +324,9 @@ void Foam::removeCells::setRefinement
                 if (zoneID >= 0)
                 {
                     const faceZone& fZone = faceZones[zoneID];
-                    zoneFlip = fZone.flipMap()[fZone.whichFace(faceI)];
+                    // Note: we reverse the owner/neighbour of the face
+                    // so should also select the other side of the zone
+                    zoneFlip = !fZone.flipMap()[fZone.whichFace(faceI)];
                 }
 
                 //Pout<< "Putting exposed internal face " << faceI
@@ -339,7 +341,7 @@ void Foam::removeCells::setRefinement
                         faceI,                  // label of face being modified
                         nei,                    // owner
                         -1,                     // neighbour
-                        false,                  // face flip
+                        true,                   // face flip
                         newPatchID[faceI],      // patch for face
                         false,                  // remove from zone
                         zoneID,                 // zone for face

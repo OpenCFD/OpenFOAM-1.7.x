@@ -285,28 +285,50 @@ void Foam::fvMeshSubset::subsetZones()
     {
         const faceZone& fz = faceZones[i];
 
-        // Create list of mesh faces part of the new zone
-        labelList subAddressing
-        (
-            subset
-            (
-                baseMesh().nFaces(),
-                fz,
-                faceMap()
-            )
-        );
-
-        // Flipmap for all mesh faces
-        boolList fullFlipStatus(baseMesh().nFaces(), false);
+        // Expand faceZone to full mesh
+        // +1 : part of faceZone, flipped
+        // -1 :    ,,           , unflipped
+        //  0 : not part of faceZone
+        labelList zone(baseMesh().nFaces(), 0);
         forAll(fz, j)
         {
-            fullFlipStatus[fz[j]] = fz.flipMap()[j];
+            if (fz.flipMap()[j])
+            {
+                zone[fz[j]] = 1;
+            }
+            else
+            {
+                zone[fz[j]] = -1;
+            }
         }
-        // Extract sub part
-        boolList subFlipStatus(subAddressing.size(), false);
-        forAll(subAddressing, j)
+
+        // Select faces
+        label nSub = 0;
+        forAll(faceMap(), j)
         {
-            subFlipStatus[j] = fullFlipStatus[faceMap()[subAddressing[j]]];
+            if (zone[faceMap()[j]] != 0)
+            {
+                nSub++;
+            }
+        }
+        labelList subAddressing(nSub);
+        boolList subFlipStatus(nSub);
+        nSub = 0;
+        forAll(faceMap(), subFaceI)
+        {
+            label meshFaceI = faceMap()[subFaceI];
+            if (zone[meshFaceI] != 0)
+            {
+                subAddressing[nSub] = subFaceI;
+                label subOwner = subMesh().faceOwner()[subFaceI];
+                label baseOwner = baseMesh().faceOwner()[meshFaceI];
+                // If subowner is the same cell as the base keep the flip status
+                bool sameOwner = (cellMap()[subOwner] == baseOwner);
+                bool flip = (zone[meshFaceI] == 1);
+                subFlipStatus[nSub] = (sameOwner == flip);
+
+                nSub++;
+            }
         }
 
         fZonePtrs[i] = new faceZone
