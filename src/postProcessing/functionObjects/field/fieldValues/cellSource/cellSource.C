@@ -39,10 +39,10 @@ namespace Foam
     }
 
     template<>
-    const char* NamedEnum<fieldValues::cellSource::sourceType, 1>::
-        names[] = {"cellZone"};
+    const char* NamedEnum<fieldValues::cellSource::sourceType, 2>::
+        names[] = {"cellZone", "all"};
 
-    const NamedEnum<fieldValues::cellSource::sourceType, 1>
+    const NamedEnum<fieldValues::cellSource::sourceType, 2>
         fieldValues::cellSource::sourceTypeNames_;
 
     template<>
@@ -63,35 +63,43 @@ namespace Foam
 
 void Foam::fieldValues::cellSource::setCellZoneCells()
 {
-    label zoneId = mesh().cellZones().findZoneID(sourceName_);
-
-    if (zoneId < 0)
+    switch (source_)
     {
-        FatalErrorIn("cellSource::cellSource::setCellZoneCells()")
-            << "Unknown cell zone name: " << sourceName_
-            << ". Valid cell zones are: " << mesh().cellZones().names()
-            << nl << exit(FatalError);
+        case stCellZone:
+        {
+            label zoneId = mesh().cellZones().findZoneID(sourceName_);
+
+            if (zoneId < 0)
+            {
+                FatalErrorIn("cellSource::cellSource::setCellZoneCells()")
+                    << "Unknown cell zone name: " << sourceName_
+                    << ". Valid cell zones are: " << mesh().cellZones().names()
+                    << nl << exit(FatalError);
+            }
+
+            cellId_ = mesh().cellZones()[zoneId];
+            nCells_ = returnReduce(cellId_.size(), sumOp<label>());
+            break;
+        }
+
+        case stAll:
+        {
+            cellId_ = identity(mesh().nCells());
+            nCells_ = returnReduce(cellId_.size(), sumOp<label>());
+            break;
+        }
+
+        default:
+        {
+            FatalErrorIn("cellSource::setCellZoneCells()")
+               << "Unknown source type. Valid source types are:"
+                << sourceTypeNames_ << nl << exit(FatalError);
+        }
     }
-
-    const cellZone& cZone = mesh().cellZones()[zoneId];
-
-    cellId_.setSize(cZone.size());
-
-    label count = 0;
-    forAll(cZone, i)
-    {
-        label cellI = cZone[i];
-        cellId_[count] = cellI;
-        count++;
-    }
-
-    cellId_.setSize(count);
-    nCells_ = returnReduce(cellId_.size(), sumOp<label>());
 
     if (debug)
     {
-        Pout<< "Original cell zone size = " << cZone.size()
-            << ", new size = " << count << endl;
+        Pout<< "Selected source size = " << cellId_.size() << endl;
     }
 }
 
@@ -100,20 +108,7 @@ void Foam::fieldValues::cellSource::setCellZoneCells()
 
 void Foam::fieldValues::cellSource::initialise(const dictionary& dict)
 {
-    switch (source_)
-    {
-        case stCellZone:
-        {
-            setCellZoneCells();
-            break;
-        }
-        default:
-        {
-            FatalErrorIn("cellSource::initialise()")
-                << "Unknown source type. Valid source types are:"
-                << sourceTypeNames_ << nl << exit(FatalError);
-        }
-    }
+    setCellZoneCells();
 
     Info<< type() << " " << name_ << ":" << nl
         << "    total cells  = " << nCells_ << nl

@@ -90,11 +90,12 @@ public:
         //- Source type enumeration
         enum sourceType
         {
-            stCellZone
+            stCellZone,
+            stAll
         };
 
         //- Source type names
-        static const NamedEnum<sourceType, 1> sourceTypeNames_;
+        static const NamedEnum<sourceType, 2> sourceTypeNames_;
 
 
         //- Operation type enumeration
