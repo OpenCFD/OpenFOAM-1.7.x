@@ -8,10 +8,10 @@
 License
     This file is part of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
+    OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU Generac License as published by the
     Free Software Foundation; either  2 of the License, or (at your
-    option) any later version.
+    (at your option) any later version.
 
     OpenFOAM is distributed in the ho it will be useful, but WITHOUT
     ANY WARRANTY; without even the imarranty of MERCHANTABILITY or
