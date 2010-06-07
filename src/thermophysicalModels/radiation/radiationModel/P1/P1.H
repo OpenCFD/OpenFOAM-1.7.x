@@ -64,6 +64,9 @@ class P1
         //- Incident radiation / [W/m2]
         volScalarField G_;
 
+        //- Total radiative heat flux [W/m2]
+        volScalarField Qr_;
+
         //- Absorption coefficient
         volScalarField a_;
 

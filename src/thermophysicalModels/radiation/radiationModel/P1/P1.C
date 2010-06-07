@@ -27,6 +27,7 @@ License
 #include "P1.H"
 #include "addToRunTimeSelectionTable.H"
 #include "fvm.H"
+#include "fvc.H"
 
 #include "absorptionEmissionModel.H"
 #include "scatterModel.H"
@@ -67,6 +68,19 @@ Foam::radiation::P1::P1(const volScalarField& T)
             IOobject::AUTO_WRITE
         ),
         mesh_
+    ),
+    Qr_
+    (
+        IOobject
+        (
+            "Qr",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar("Qr", dimMass/pow3(dimTime), 0.0)
     ),
     a_
     (
@@ -162,6 +176,13 @@ void Foam::radiation::P1::calculate()
      ==
       - 4.0*(e_*radiation::sigmaSB*pow4(T_) + E_)
     );
+
+    // Calculate radiative heat flux on boundaries.
+    forAll(mesh_.boundaryMesh(), patchI)
+    {
+        Qr_.boundaryField()[patchI] =
+            -gamma.boundaryField()[patchI]*G_.boundaryField()[patchI].snGrad();
+    }
 }
 
 
