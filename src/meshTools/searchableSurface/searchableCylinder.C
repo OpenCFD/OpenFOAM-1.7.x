@@ -61,45 +61,66 @@ Foam::pointIndexHit Foam::searchableCylinder::findNearest
     // Decompose sample-point1 into normal and parallel component
     scalar parallel = (v & unitDir_);
 
-    // Remove the parallel component
+    // Remove the parallel component and normalise
     v -= parallel*unitDir_;
     scalar magV = mag(v);
+
+    if (magV < ROOTVSMALL)
+    {
+        v = vector::zero;
+    }
+    else
+    {
+        v /= magV;
+    }
 
     if (parallel <= 0)
     {
         // nearest is at point1 end cap. Clip to radius.
-        if (magV < ROOTVSMALL)
-        {
-            info.setPoint(point1_);
-        }
-        else
-        {
-            //info.setPoint(point1_ + min(magV, radius_)*v/magV);
-            info.setPoint(point1_ + radius_*(v/magV));
-        }
+        info.setPoint(point1_ + min(magV, radius_)*v);
     }
     else if (parallel >= magDir_)
     {
-        // nearest is at point2
-        if (magV < ROOTVSMALL)
-        {
-            info.setPoint(point2_);
-        }
-        else
-        {
-            info.setPoint(point2_ + min(magV, radius_)*v/magV);
-        }
+        // nearest is at point2 end cap. Clip to radius.
+        info.setPoint(point2_ + min(magV, radius_)*v);
     }
     else
     {
-        if (magV < ROOTVSMALL)
+        // inbetween endcaps. Might either be nearer endcaps or cylinder wall
+
+        // distance to endpoint: parallel or parallel-magDir
+        // distance to cylinder wall: magV-radius_
+
+        // Nearest cylinder point
+        point cylPt = sample + (radius_-magV)*v;
+
+        if (parallel < 0.5*magDir_)
         {
-            info.setPoint(point1_ + parallel*unitDir_);
+            // Project onto p1 endcap
+            point end1Pt = point1_ + min(magV, radius_)*v;
+
+            if (magSqr(sample-cylPt) < magSqr(sample-end1Pt))
+            {
+                info.setPoint(cylPt);
+            }
+            else
+            {
+                info.setPoint(end1Pt);
+            }
         }
         else
         {
-            // Project onto radius
-            info.setPoint(point1_ + parallel*unitDir_ + radius_*v/magV);
+            // Project onto p2 endcap
+            point end2Pt = point2_ + min(magV, radius_)*v;
+
+            if (magSqr(sample-cylPt) < magSqr(sample-end2Pt))
+            {
+                info.setPoint(cylPt);
+            }
+            else
+            {
+                info.setPoint(end2Pt);
+            }
         }
     }
 
