@@ -88,7 +88,7 @@ public:
     static int debug;
 
     //- Tolerance used in calculating barycentric co-ordinates
-    //  (applied to normailised values)
+    //  (applied to normalised values)
     static scalar tol;
 
 
