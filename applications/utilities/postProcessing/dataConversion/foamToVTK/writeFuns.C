@@ -249,14 +249,16 @@ void Foam::writeFuns::insert
 
 void Foam::writeFuns::insert
 (
-    const symmTensor& pt,
+    const symmTensor& src,
     DynamicList<floatScalar>& dest
 )
 {
-    for (direction cmpt = 0; cmpt < symmTensor::nComponents; cmpt++)
-    {
-        dest.append(float(pt[cmpt]));
-    }
+    dest.append(float(src.xx()));
+    dest.append(float(src.yy()));
+    dest.append(float(src.zz()));
+    dest.append(float(src.xy()));
+    dest.append(float(src.yz()));
+    dest.append(float(src.xz()));
 }
 
 
