@@ -132,7 +132,7 @@ surfaces
         normalVector    (0.1 0.1 1);
 
         //- Optional: restrict to a particular zone
-        // zoneName        zone1;
+        // zone        zone1;
     }
 
     interpolatedPlane
