@@ -133,7 +133,7 @@ class polyTopoChange
             DynamicList<label> reversePointMap_;
 
             //- Zone of point
-            Map<label> pointZone_;
+            DynamicList<label> pointZone_;
 
             //- Retired points
             labelHashSet retiredPoints_;
@@ -173,7 +173,7 @@ class polyTopoChange
             PackedBoolList flipFaceFlux_;
 
             //- Zone of face
-            Map<label> faceZone_;
+            DynamicList<label> faceZone_;
 
             //- Orientation of face in zone
             PackedBoolList faceZoneFlip_;
