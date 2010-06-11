@@ -27,6 +27,9 @@ Class
 Description
     A sampledSurface defined by a cuttingPlane. Always triangulated.
 
+    Note: does not cut at construction (since might need fields which
+    are not registered yet). Explicitly call update().
+
 SourceFiles
     sampledPlane.C
 
