@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
     splitMeshRegions
@@ -397,7 +396,8 @@ void subsetVolFields
     const fvMesh& mesh,
     const fvMesh& subMesh,
     const labelList& cellMap,
-    const labelList& faceMap
+    const labelList& faceMap,
+    const labelHashSet& addedPatches
 )
 {
     const labelList patchMap(identity(mesh.boundaryMesh().size()));
@@ -428,14 +428,7 @@ void subsetVolFields
         //       get initialised.
         forAll(tSubFld().boundaryField(), patchI)
         {
-            const fvPatchField<typename GeoField::value_type>& pfld =
-                tSubFld().boundaryField()[patchI];
-
-            if
-            (
-                isA<calculatedFvPatchField<typename GeoField::value_type> >
-                (pfld)
-            )
+            if (addedPatches.found(patchI))
             {
                 tSubFld().boundaryField()[patchI] ==
                     pTraits<typename GeoField::value_type>::zero;
@@ -456,7 +449,8 @@ void subsetSurfaceFields
 (
     const fvMesh& mesh,
     const fvMesh& subMesh,
-    const labelList& faceMap
+    const labelList& faceMap,
+    const labelHashSet& addedPatches
 )
 {
     const labelList patchMap(identity(mesh.boundaryMesh().size()));
@@ -486,14 +480,7 @@ void subsetSurfaceFields
         //       get initialised.
         forAll(tSubFld().boundaryField(), patchI)
         {
-            const fvsPatchField<typename GeoField::value_type>& pfld =
-                tSubFld().boundaryField()[patchI];
-
-            if
-            (
-                isA<calculatedFvsPatchField<typename GeoField::value_type> >
-                (pfld)
-            )
+            if (addedPatches.found(patchI))
             {
                 tSubFld().boundaryField()[patchI] ==
                     pTraits<typename GeoField::value_type>::zero;
@@ -868,6 +855,15 @@ void createAndWriteRegion
         newMesh
     );
 
+
+    // Make map of all added patches
+    labelHashSet addedPatches(2*interfaceToPatch.size());
+    forAllConstIter(EdgeMap<label>, interfaceToPatch, iter)
+    {
+        addedPatches.insert(iter());
+        addedPatches.insert(iter()+1);
+    }
+
     Info<< "Mapping fields" << endl;
 
     // Map existing fields
@@ -879,66 +875,76 @@ void createAndWriteRegion
         mesh,
         newMesh(),
         map().cellMap(),
-        map().faceMap()
+        map().faceMap(),
+        addedPatches
     );
     subsetVolFields<volVectorField>
     (
         mesh,
         newMesh(),
         map().cellMap(),
-        map().faceMap()
+        map().faceMap(),
+        addedPatches
     );
     subsetVolFields<volSphericalTensorField>
     (
         mesh,
         newMesh(),
         map().cellMap(),
-        map().faceMap()
+        map().faceMap(),
+        addedPatches
     );
     subsetVolFields<volSymmTensorField>
     (
         mesh,
         newMesh(),
         map().cellMap(),
-        map().faceMap()
+        map().faceMap(),
+        addedPatches
     );
     subsetVolFields<volTensorField>
     (
         mesh,
         newMesh(),
         map().cellMap(),
-        map().faceMap()
+        map().faceMap(),
+        addedPatches
     );
 
     subsetSurfaceFields<surfaceScalarField>
     (
         mesh,
         newMesh(),
-        map().faceMap()
+        map().faceMap(),
+        addedPatches
     );
     subsetSurfaceFields<surfaceVectorField>
     (
         mesh,
         newMesh(),
-        map().faceMap()
+        map().faceMap(),
+        addedPatches
     );
     subsetSurfaceFields<surfaceSphericalTensorField>
     (
         mesh,
         newMesh(),
-        map().faceMap()
+        map().faceMap(),
+        addedPatches
     );
     subsetSurfaceFields<surfaceSymmTensorField>
     (
         mesh,
         newMesh(),
-        map().faceMap()
+        map().faceMap(),
+        addedPatches
     );
     subsetSurfaceFields<surfaceTensorField>
     (
         mesh,
         newMesh(),
-        map().faceMap()
+        map().faceMap(),
+        addedPatches
     );
 
 

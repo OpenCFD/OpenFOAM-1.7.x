@@ -2,16 +2,16 @@
 #
 #+TITLE:             OpenFOAM README for version 1.6
 #+AUTHOR:                      OpenCFD Ltd.
-#+DATE:                         July 2009
+#+DATE:                         April 2010
 #+LINK:                  http://www.opencfd.co.uk
 #+OPTIONS: author:nil ^:{}
 
 * Copyright
-  OpenFOAM is free software; you can redistribute it and/or modify it under the
+  OpenFOAM is free software: you can redistribute it and/or modify it under the
   terms of the GNU General Public License as published by the Free Software
-  Foundation; either version 2 of the License, or (at your option) any later
-  version.  See the file COPYING in this directory, for a description of the GNU
-  General Public License terms under which you can copy the files.
+  Foundation, either version 3 of the License, or (at your option) any later
+  version.  See the file COPYING in this directory, for a description of the
+  GNU General Public License terms under which you can copy the files.
 
 * System requirements
   OpenFOAM is developed and tested on Linux, but should work with other POSIX
@@ -23,15 +23,15 @@
   section "Running OpenFOAM in 32-bit mode".
 
 *** Qt (from http://trolltech.com/products/qt)
-    The ParaView 3.6.1 visualisation package requires Qt to be installed on the
+    The ParaView 3.7.0 visualisation package requires Qt to be installed on the
     system.  ParaView's producers state that ParaView is only officially
-    supported on Qt version 4.3.x.  However, we have found in limited tests that
-    ParaView works satisfactorily with newer versions of Qt than 4.3.x.  To
+    supported on Qt version 4.6.x.  However, we have found in limited tests that
+    ParaView works satisfactorily with Qt than 4.5.x.  To
     check whether Qt4 is installed, and the version, type:
     + qmake --version
 
-    Both 32- and 64-bit version of ParaView were compiled with Qt-4.4.3 (with
-    openSuSE-11.1).  If the user finds that a ParaView binary fails to run, then
+    Both 32-bit and 64-bit version of ParaView were compiled with Qt-4.4.3 (with
+    openSUSE-11.1).  If the user finds that a ParaView binary fails to run, then
     it is almost certainly due to a conflict in compiled and installed Qt
     versions and they will need to consult the section below on "Compiling
     ParaView and the PV3FoamReader module."
@@ -40,18 +40,19 @@
     + ubuntu-7.10:   Version 4.3.2
     + ubuntu-8.04:   Version 4.3.4
     + ubuntu-9.04:   Version 4.5.0
-    + openSuSE-10.2: Version 4.2.1 - too old
-    + openSuSE-10.3: Version 4.3.1
-    + openSuSE-11.0: Version 4.4.0
-    + openSuSE-11.1: Version 4.4.3
+    + openSUSE-10.2: Version 4.2.1 - too old
+    + openSUSE-10.3: Version 4.3.1
+    + openSUSE-11.0: Version 4.4.0
+    + openSUSE-11.1: Version 4.4.3
+    + openSUSE-11.2: Version 4.5.3
 
     Compilation and running of ParaView has been successful using the libraries
     downloaded in the "libqt4-dev" package on ubuntu.
 
     If you don't have an appropriate version of Qt installed you can download
-    the sources from TrollTech e.g.:
-    ftp://ftp.trolltech.com/qt/source/qt-x11-opensource-src-4.3.5.tar.bz2
-    and compile and install in /usr/local or some other location that does to
+    the sources e.g.:
+    http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.6.2.tar.gz
+    and compile and install in /usr/local or some other location that does not
     conflict with the pre-installed version.
 
 * Installation
@@ -108,11 +109,11 @@
 * Building from Sources (Optional)
   If you cannot find an appropriate binary pack for your platform, you can build
   the complete OpenFOAM from the source-pack.  You will first need to compile or
-  obtain a recent version of gcc (we recomend gcc-4.3.?) for your platform,
+  obtain a recent version of gcc (we recommend gcc-4.4.?) for your platform,
   which may be obtained from http://gcc.gnu.org/.
 
   Install the compiler in
-  $WM_PROJECT_INST_DIR/ThirdParty/gcc-<GCC_VERSION>/platforms/$WM_ARCH$WM_COMPILER_ARCH/
+  $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER_ARCH/gcc-<GCC_VERSION>
   and change the gcc version number in $WM_PROJECT_DIR/etc/settings.sh and
   $WM_PROJECT_DIR/etc/settings.csh appropriately and finally update the
   environment variables as in section 3.
@@ -120,7 +121,7 @@
   Now go to the top-level source directory $WM_PROJECT_DIR and execute the
   top-level build script './Allwmake'.  In principle this will build everything,
   but if problems occur with the build order it may be necessary to update the
-  environment variables and re-execute 'Allwmake'.
+  environment variables and re-execute './Allwmake'.
 
   If you experience difficulties with building the source-pack, or your platform
   is not currently supported, please contact <enquiries@OpenCFD.co.uk> to
@@ -157,26 +158,28 @@
   Refer to the OpenFOAM User Guide at http://www.OpenFOAM.org/doc/user.html for
   more information.
 
-* Compiling Paraview 3.6.1 and the PV3FoamReader module
+* Compiling Paraview 3.7.0 and the PV3FoamReader module
   If there are problems encountered with ParaView, then it may be necessary to
   compile ParaView from sources.  The compilation
-  is a fairly simple process using the supplied makeParaView script that
-  has worked in our tests with other packages supplied in the ThirdParty
-  directory, namely cmake-2.6.4 and gcc-4.3.3.  Execute the following:
+  is a fairly simple process using the makeParaView script
+  (found in ThirdParty directory), which has worked in our tests with other
+  packages supplied in the ThirdParty directory, namely cmake-2.8.0 and
+  gcc-4.4.3.  Execute the following:
   + cd $WM_THIRD_PARTY_DIR
-  + rm -rf paraview-3.6.1/platforms
+  + rm -rf paraview-3.7.0/platforms
+  + rm -rf platforms/*/paraview-3.7.0
   + ./makeParaView
 
-  The PV3FoamReader module is an OpenFOAM utility that can be compiled in the
-  usual manner as follows:
-  + cd $FOAM_UTILITIES/postProcessing/graphics/PV3FoamReader
+  The PV3blockMeshReader and the PV3FoamReader ParaView plugins are compiled
+  as usual for OpenFOAM utilities:
+  + cd $FOAM_UTILITIES/postProcessing/graphics/PV3Readers/
   + ./Allwclean
   + ./Allwmake
 
 *** Compiling Paraview with a local version of Qt
     If the user still encounters problems with ParaView, it may relate to the
     version of Qt, in which case, it is recommended that the user first
-    downloads a supported version of Qt /e.g./ 4.3.5 as described in the section
+    downloads a supported version of Qt /e.g./ 4.5.3 as described in the section
     on "Qt".  The user should unpack the source pack in the $WM_THIRD_PARTY_DIR.
     Then the user can build Qt by executing from within $WM_THIRD_PARTY_DIR:
     + ./makeQt
@@ -186,7 +189,8 @@
     newly built qmake as an argument:
     + ./makeParaView -qmake <path_to_qmake>
 
-    The user must then recompile the PV3FoamReader module as normal (see above).
+    The user must then recompile the PV3blockMeshReader and the
+    PV3FoamReader plugins as usual (see above).
 
 * Documentation
   http://www.OpenFOAM.org/doc

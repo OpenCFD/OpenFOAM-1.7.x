@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -348,7 +347,10 @@ Foam::label Foam::addPatchCellLayer::addSideFace
 
     // Get my mesh face and its zone.
     label meshFaceI = pp.addressing()[ownFaceI];
-    label zoneI = mesh_.faceZones().whichZone(meshFaceI);
+    // Zone info comes from any side patch face. Otherwise -1 since we
+    // don't know what to put it in - inherit from the extruded faces?
+    label zoneI = -1;   //mesh_.faceZones().whichZone(meshFaceI);
+    bool flip = false;
 
     label addedFaceI = -1;
 
@@ -375,6 +377,12 @@ Foam::label Foam::addPatchCellLayer::addSideFace
             )
             {
                 otherPatchID = patches.whichPatch(faceI);
+                zoneI = mesh_.faceZones().whichZone(faceI);
+                if (zoneI != -1)
+                {
+                    label index = mesh_.faceZones()[zoneI].whichFace(faceI);
+                    flip = mesh_.faceZones()[zoneI].flipMap()[index];
+                }
                 break;
             }
         }
@@ -421,7 +429,7 @@ Foam::label Foam::addPatchCellLayer::addSideFace
                 false,                      // flux flip
                 otherPatchID,               // patch for face
                 zoneI,                      // zone for face
-                false                       // face zone flip
+                flip                        // face zone flip
             )
         );
     }
@@ -487,7 +495,7 @@ Foam::label Foam::addPatchCellLayer::addSideFace
                 false,                      // flux flip
                 -1,                         // patch for face
                 zoneI,                      // zone for face
-                false                       // face zone flip
+                flip                        // face zone flip
             )
         );
 
@@ -967,8 +975,6 @@ void Foam::addPatchCellLayer::setRefinement
             layerFaces_[patchFaceI].setSize(addedCells[patchFaceI].size() + 1);
             layerFaces_[patchFaceI][0] = meshFaceI;
 
-            label zoneI = mesh_.faceZones().whichZone(meshFaceI);
-
             // Get duplicated vertices on the patch face.
             const face& f = pp.localFaces()[patchFaceI];
 
@@ -997,12 +1003,21 @@ void Foam::addPatchCellLayer::setRefinement
                 // Get new neighbour
                 label nei;
                 label patchI;
+                label zoneI = -1;
+                bool flip = false;
+
 
                 if (i == addedCells[patchFaceI].size()-1)
                 {
                     // Top layer so is patch face.
                     nei = -1;
                     patchI = patchID[patchFaceI];
+                    zoneI = mesh_.faceZones().whichZone(meshFaceI);
+                    if (zoneI != -1)
+                    {
+                        const faceZone& fz = mesh_.faceZones()[zoneI];
+                        flip = fz.flipMap()[fz.whichFace(meshFaceI)];
+                    }
                 }
                 else
                 {
@@ -1025,7 +1040,7 @@ void Foam::addPatchCellLayer::setRefinement
                         false,                      // flux flip
                         patchI,                     // patch for face
                         zoneI,                      // zone for face
-                        false                       // face zone flip
+                        flip                        // face zone flip
                     )
                 );
                 //Pout<< "Added inbetween face " << newFace
@@ -1046,8 +1061,6 @@ void Foam::addPatchCellLayer::setRefinement
         {
             label meshFaceI = pp.addressing()[patchFaceI];
 
-            label zoneI = mesh_.faceZones().whichZone(meshFaceI);
-
             meshMod.setAction
             (
                 polyModifyFace
@@ -1058,8 +1071,8 @@ void Foam::addPatchCellLayer::setRefinement
                     addedCells[patchFaceI][0],      // neighbour
                     false,                          // face flip
                     -1,                             // patch for face
-                    false,                          // remove from zone
-                    zoneI,                          // zone for face
+                    true, //false,                        // remove from zone
+                    -1, //zoneI,                          // zone for face
                     false                           // face flip in zone
                 )
             );

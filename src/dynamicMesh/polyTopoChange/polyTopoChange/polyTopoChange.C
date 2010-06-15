@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -784,7 +783,10 @@ void Foam::polyTopoChange::reorderCompactFaces
     renumberKey(oldToNew, faceFromEdge_);
     inplaceReorder(oldToNew, flipFaceFlux_);
     flipFaceFlux_.setCapacity(newSize);
-    renumberKey(oldToNew, faceZone_);
+
+    reorder(oldToNew, faceZone_);
+    faceZone_.setCapacity(newSize);
+
     inplaceReorder(oldToNew, faceZoneFlip_);
     faceZoneFlip_.setCapacity(newSize);
 }
@@ -806,6 +808,7 @@ void Foam::polyTopoChange::compact
     points_.shrink();
     pointMap_.shrink();
     reversePointMap_.shrink();
+    pointZone_.shrink();
 
     faces_.shrink();
     region_.shrink();
@@ -813,6 +816,7 @@ void Foam::polyTopoChange::compact
     faceNeighbour_.shrink();
     faceMap_.shrink();
     reverseFaceMap_.shrink();
+    faceZone_.shrink();
 
     cellMap_.shrink();
     reverseCellMap_.shrink();
@@ -966,7 +970,8 @@ void Foam::polyTopoChange::compact
         pointMap_.setCapacity(newPointI);
         renumberReverseMap(localPointMap, reversePointMap_);
 
-        renumberKey(localPointMap, pointZone_);
+        reorder(localPointMap, pointZone_);
+        pointZone_.setCapacity(newPointI);
         renumber(localPointMap, retiredPoints_);
 
         // Use map to relabel face vertices
@@ -1475,21 +1480,25 @@ void Foam::polyTopoChange::resetZones
 
         labelList nPoints(pointZones.size(), 0);
 
-        forAllConstIter(Map<label>, pointZone_, iter)
+        forAll(pointZone_, pointI)
         {
-            label zoneI = iter();
+            label zoneI = pointZone_[pointI];
 
-            if (zoneI < 0 || zoneI >= pointZones.size())
+            if (zoneI >= pointZones.size())
             {
                 FatalErrorIn
                 (
                     "resetZones(const polyMesh&, polyMesh&, labelListList&"
                     "labelListList&, labelListList&)"
                 )   << "Illegal zoneID " << zoneI << " for point "
-                    << iter.key() << " coord " << mesh.points()[iter.key()]
+                    << pointI << " coord " << mesh.points()[pointI]
                     << abort(FatalError);
             }
-            nPoints[zoneI]++;
+
+            if (zoneI >= 0)
+            {
+                nPoints[zoneI]++;
+            }
         }
 
         // Distribute points per zone
@@ -1501,11 +1510,13 @@ void Foam::polyTopoChange::resetZones
         }
         nPoints = 0;
 
-        forAllConstIter(Map<label>, pointZone_, iter)
+        forAll(pointZone_, pointI)
         {
-            label zoneI = iter();
-
-            addressing[zoneI][nPoints[zoneI]++] = iter.key();
+            label zoneI = pointZone_[pointI];
+            if (zoneI >= 0)
+            {
+                addressing[zoneI][nPoints[zoneI]++] = pointI;
+            }
         }
         // Sort the addressing
         forAll(addressing, zoneI)
@@ -1562,21 +1573,24 @@ void Foam::polyTopoChange::resetZones
 
         labelList nFaces(faceZones.size(), 0);
 
-        forAllConstIter(Map<label>, faceZone_, iter)
+        forAll(faceZone_, faceI)
         {
-            label zoneI = iter();
+            label zoneI = faceZone_[faceI];
 
-            if (zoneI < 0 || zoneI >= faceZones.size())
+            if (zoneI >= faceZones.size())
             {
                 FatalErrorIn
                 (
                     "resetZones(const polyMesh&, polyMesh&, labelListList&"
                     "labelListList&, labelListList&)"
                 )   << "Illegal zoneID " << zoneI << " for face "
-                    << iter.key()
+                    << faceI
                     << abort(FatalError);
             }
-            nFaces[zoneI]++;
+            if (zoneI >= 0)
+            {
+                nFaces[zoneI]++;
+            }
         }
 
         labelListList addressing(faceZones.size());
@@ -1589,15 +1603,16 @@ void Foam::polyTopoChange::resetZones
         }
         nFaces = 0;
 
-        forAllConstIter(Map<label>, faceZone_, iter)
+        forAll(faceZone_, faceI)
         {
-            label zoneI = iter();
-            label faceI = iter.key();
+            label zoneI = faceZone_[faceI];
 
-            label index = nFaces[zoneI]++;
-
-            addressing[zoneI][index] = faceI;
-            flipMode[zoneI][index] = faceZoneFlip_[faceI];
+            if (zoneI >= 0)
+            {
+                label index = nFaces[zoneI]++;
+                addressing[zoneI][index] = faceI;
+                flipMode[zoneI][index] = faceZoneFlip_[faceI];
+            }
         }
         // Sort the addressing
         forAll(addressing, zoneI)
@@ -2212,7 +2227,7 @@ void Foam::polyTopoChange::addMesh
         points_.setCapacity(points_.size() + points.size());
         pointMap_.setCapacity(pointMap_.size() + points.size());
         reversePointMap_.setCapacity(reversePointMap_.size() + points.size());
-        pointZone_.resize(pointZone_.size() + points.size()/100);
+        pointZone_.setCapacity(pointZone_.size() + points.size());
 
         // Precalc offset zones
         labelList newZoneID(points.size(), -1);
@@ -2319,9 +2334,9 @@ void Foam::polyTopoChange::addMesh
         reverseFaceMap_.setCapacity(reverseFaceMap_.size() + nAllFaces);
         faceFromPoint_.resize(faceFromPoint_.size() + nAllFaces/100);
         faceFromEdge_.resize(faceFromEdge_.size() + nAllFaces/100);
-        flipFaceFlux_.setCapacity(faces_.size() + nAllFaces);
-        faceZone_.resize(faceZone_.size() + nAllFaces/100);
-        faceZoneFlip_.setCapacity(faces_.size() + nAllFaces);
+        flipFaceFlux_.setCapacity(flipFaceFlux_.size() + nAllFaces);
+        faceZone_.setCapacity(faceZone_.size() + nAllFaces);
+        faceZoneFlip_.setCapacity(faceZoneFlip_.size() + nAllFaces);
 
 
         // Precalc offset zones
@@ -2411,7 +2426,7 @@ void Foam::polyTopoChange::setCapacity
     points_.setCapacity(nPoints);
     pointMap_.setCapacity(nPoints);
     reversePointMap_.setCapacity(nPoints);
-    pointZone_.resize(pointZone_.size() + nPoints/100);
+    pointZone_.setCapacity(nPoints);
 
     faces_.setCapacity(nFaces);
     region_.setCapacity(nFaces);
@@ -2422,7 +2437,7 @@ void Foam::polyTopoChange::setCapacity
     faceFromPoint_.resize(faceFromPoint_.size() + nFaces/100);
     faceFromEdge_.resize(faceFromEdge_.size() + nFaces/100);
     flipFaceFlux_.setCapacity(nFaces);
-    faceZone_.resize(faceZone_.size() + nFaces/100);
+    faceZone_.setCapacity(nFaces);
     faceZoneFlip_.setCapacity(nFaces);
 
     cellMap_.setCapacity(nCells);
@@ -2577,11 +2592,7 @@ Foam::label Foam::polyTopoChange::addPoint
     points_.append(pt);
     pointMap_.append(masterPointID);
     reversePointMap_.append(pointI);
-
-    if (zoneID >= 0)
-    {
-        pointZone_.insert(pointI, zoneID);
-    }
+    pointZone_.append(zoneID);
 
     if (!inCell)
     {
@@ -2618,24 +2629,7 @@ void Foam::polyTopoChange::modifyPoint
             << abort(FatalError);
     }
     points_[pointI] = pt;
-
-    Map<label>::iterator pointFnd = pointZone_.find(pointI);
-
-    if (pointFnd != pointZone_.end())
-    {
-        if (newZoneID >= 0)
-        {
-            pointFnd() = newZoneID;
-        }
-        else
-        {
-            pointZone_.erase(pointFnd);
-        }
-    }
-    else if (newZoneID >= 0)
-    {
-        pointZone_.insert(pointI, newZoneID);
-    }
+    pointZone_[pointI] = newZoneID;
 
     if (inCell)
     {
@@ -2709,7 +2703,7 @@ void Foam::polyTopoChange::removePoint
     {
         reversePointMap_[pointI] = -1;
     }
-    pointZone_.erase(pointI);
+    pointZone_[pointI] = -1;
     retiredPoints_.erase(pointI);
 }
 
@@ -2767,11 +2761,7 @@ Foam::label Foam::polyTopoChange::addFace
     reverseFaceMap_.append(faceI);
 
     flipFaceFlux_[faceI] = (flipFaceFlux ? 1 : 0);
-
-    if (zoneID >= 0)
-    {
-        faceZone_.insert(faceI, zoneID);
-    }
+    faceZone_.append(zoneID);
     faceZoneFlip_[faceI] = (zoneFlip ? 1 : 0);
 
     return faceI;
@@ -2802,24 +2792,7 @@ void Foam::polyTopoChange::modifyFace
     region_[faceI] = patchID;
 
     flipFaceFlux_[faceI] = (flipFaceFlux ? 1 : 0);
-
-    Map<label>::iterator faceFnd = faceZone_.find(faceI);
-
-    if (faceFnd != faceZone_.end())
-    {
-        if (zoneID >= 0)
-        {
-            faceFnd() = zoneID;
-        }
-        else
-        {
-            faceZone_.erase(faceFnd);
-        }
-    }
-    else if (zoneID >= 0)
-    {
-        faceZone_.insert(faceI, zoneID);
-    }
+    faceZone_[faceI] = zoneID;
     faceZoneFlip_[faceI] = (zoneFlip ? 1 : 0);
 }
 
@@ -2862,7 +2835,7 @@ void Foam::polyTopoChange::removeFace(const label faceI, const label mergeFaceI)
     faceFromEdge_.erase(faceI);
     faceFromPoint_.erase(faceI);
     flipFaceFlux_[faceI] = 0;
-    faceZone_.erase(faceI);
+    faceZone_[faceI] = -1;
     faceZoneFlip_[faceI] = 0;
 }
 

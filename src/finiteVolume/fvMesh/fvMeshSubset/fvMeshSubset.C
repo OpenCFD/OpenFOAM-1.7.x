@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
     Post-processing mesh subset tool.  Given the original mesh and the
@@ -285,28 +284,50 @@ void Foam::fvMeshSubset::subsetZones()
     {
         const faceZone& fz = faceZones[i];
 
-        // Create list of mesh faces part of the new zone
-        labelList subAddressing
-        (
-            subset
-            (
-                baseMesh().nFaces(),
-                fz,
-                faceMap()
-            )
-        );
-
-        // Flipmap for all mesh faces
-        boolList fullFlipStatus(baseMesh().nFaces(), false);
+        // Expand faceZone to full mesh
+        // +1 : part of faceZone, flipped
+        // -1 :    ,,           , unflipped
+        //  0 : not part of faceZone
+        labelList zone(baseMesh().nFaces(), 0);
         forAll(fz, j)
         {
-            fullFlipStatus[fz[j]] = fz.flipMap()[j];
+            if (fz.flipMap()[j])
+            {
+                zone[fz[j]] = 1;
+            }
+            else
+            {
+                zone[fz[j]] = -1;
+            }
         }
-        // Extract sub part
-        boolList subFlipStatus(subAddressing.size(), false);
-        forAll(subAddressing, j)
+
+        // Select faces
+        label nSub = 0;
+        forAll(faceMap(), j)
         {
-            subFlipStatus[j] = fullFlipStatus[faceMap()[subAddressing[j]]];
+            if (zone[faceMap()[j]] != 0)
+            {
+                nSub++;
+            }
+        }
+        labelList subAddressing(nSub);
+        boolList subFlipStatus(nSub);
+        nSub = 0;
+        forAll(faceMap(), subFaceI)
+        {
+            label meshFaceI = faceMap()[subFaceI];
+            if (zone[meshFaceI] != 0)
+            {
+                subAddressing[nSub] = subFaceI;
+                label subOwner = subMesh().faceOwner()[subFaceI];
+                label baseOwner = baseMesh().faceOwner()[meshFaceI];
+                // If subowner is the same cell as the base keep the flip status
+                bool sameOwner = (cellMap()[subOwner] == baseOwner);
+                bool flip = (zone[meshFaceI] == 1);
+                subFlipStatus[nSub] = (sameOwner == flip);
+
+                nSub++;
+            }
         }
 
         fZonePtrs[i] = new faceZone

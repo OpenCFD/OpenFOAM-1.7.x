@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -39,10 +38,10 @@ namespace Foam
     }
 
     template<>
-    const char* NamedEnum<fieldValues::cellSource::sourceType, 1>::
-        names[] = {"cellZone"};
+    const char* NamedEnum<fieldValues::cellSource::sourceType, 2>::
+        names[] = {"cellZone", "all"};
 
-    const NamedEnum<fieldValues::cellSource::sourceType, 1>
+    const NamedEnum<fieldValues::cellSource::sourceType, 2>
         fieldValues::cellSource::sourceTypeNames_;
 
     template<>
@@ -63,35 +62,43 @@ namespace Foam
 
 void Foam::fieldValues::cellSource::setCellZoneCells()
 {
-    label zoneId = mesh().cellZones().findZoneID(sourceName_);
-
-    if (zoneId < 0)
+    switch (source_)
     {
-        FatalErrorIn("cellSource::cellSource::setCellZoneCells()")
-            << "Unknown cell zone name: " << sourceName_
-            << ". Valid cell zones are: " << mesh().cellZones().names()
-            << nl << exit(FatalError);
+        case stCellZone:
+        {
+            label zoneId = mesh().cellZones().findZoneID(sourceName_);
+
+            if (zoneId < 0)
+            {
+                FatalErrorIn("cellSource::cellSource::setCellZoneCells()")
+                    << "Unknown cell zone name: " << sourceName_
+                    << ". Valid cell zones are: " << mesh().cellZones().names()
+                    << nl << exit(FatalError);
+            }
+
+            cellId_ = mesh().cellZones()[zoneId];
+            nCells_ = returnReduce(cellId_.size(), sumOp<label>());
+            break;
+        }
+
+        case stAll:
+        {
+            cellId_ = identity(mesh().nCells());
+            nCells_ = returnReduce(cellId_.size(), sumOp<label>());
+            break;
+        }
+
+        default:
+        {
+            FatalErrorIn("cellSource::setCellZoneCells()")
+               << "Unknown source type. Valid source types are:"
+                << sourceTypeNames_ << nl << exit(FatalError);
+        }
     }
-
-    const cellZone& cZone = mesh().cellZones()[zoneId];
-
-    cellId_.setSize(cZone.size());
-
-    label count = 0;
-    forAll(cZone, i)
-    {
-        label cellI = cZone[i];
-        cellId_[count] = cellI;
-        count++;
-    }
-
-    cellId_.setSize(count);
-    nCells_ = returnReduce(cellId_.size(), sumOp<label>());
 
     if (debug)
     {
-        Pout<< "Original cell zone size = " << cZone.size()
-            << ", new size = " << count << endl;
+        Pout<< "Selected source size = " << cellId_.size() << endl;
     }
 }
 
@@ -100,20 +107,7 @@ void Foam::fieldValues::cellSource::setCellZoneCells()
 
 void Foam::fieldValues::cellSource::initialise(const dictionary& dict)
 {
-    switch (source_)
-    {
-        case stCellZone:
-        {
-            setCellZoneCells();
-            break;
-        }
-        default:
-        {
-            FatalErrorIn("cellSource::initialise()")
-                << "Unknown source type. Valid source types are:"
-                << sourceTypeNames_ << nl << exit(FatalError);
-        }
-    }
+    setCellZoneCells();
 
     Info<< type() << " " << name_ << ":" << nl
         << "    total cells  = " << nCells_ << nl

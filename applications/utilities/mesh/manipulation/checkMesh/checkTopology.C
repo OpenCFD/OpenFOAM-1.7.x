@@ -12,6 +12,7 @@ bool Foam::checkSync(const wordList& names)
     List<wordList> allNames(Pstream::nProcs());
     allNames[Pstream::myProcNo()] = names;
     Pstream::gatherList(allNames);
+    Pstream::scatterList(allNames);
 
     bool hasError = false;
 
@@ -72,8 +73,8 @@ Foam::label Foam::checkTopology
                 Info<< " ***FaceZone " << mesh.faceZones()[zoneI].name()
                     << " is not correctly synchronised"
                     << " across coupled boundaries."
-                    << " (coupled faces both"
-                    << " present in set but with opposite flipmap)" << endl;
+                    << " (coupled faces are either not both "
+                    << " present in set or have same flipmap)" << endl;
                 noFailedChecks++;
             }
         }
