@@ -1,4 +1,3 @@
-mount -t vboxsf share <mount_point>
 
 
 How to create a Debian package.
