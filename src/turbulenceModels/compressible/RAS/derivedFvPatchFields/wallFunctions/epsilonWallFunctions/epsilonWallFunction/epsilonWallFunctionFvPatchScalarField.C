@@ -177,7 +177,6 @@ void epsilonWallFunctionFvPatchScalarField::updateCoeffs()
 
     const scalar Cmu25 = pow(Cmu_, 0.25);
     const scalar Cmu75 = pow(Cmu_, 0.75);
-    const scalar yPlusLam = rasModel.yPlusLam(kappa_, E_);
 
     const scalarField& y = rasModel.y()[patch().index()];
 
