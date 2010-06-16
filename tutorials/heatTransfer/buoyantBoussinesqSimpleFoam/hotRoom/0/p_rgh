@@ -2,24 +2,44 @@
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
 |  \\    /   O peration     | Version:  1.6                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    location    "constant";
-    object      thermophysicalProperties;
+    class       volScalarField;
+    object      p_rgh;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-thermoType      hRhoThermo<pureMixture<constTransport<specieThermo<hConstThermo<perfectGas>>>>>;
+dimensions      [0 2 -2 0 0 0 0];
 
-mixture         air 1 28.9 1000 0 1.8e-05 0.7;
+internalField   uniform 0;
 
-pRef            100000;
+boundaryField
+{
+    floor
+    {
+        type            buoyantPressure;
+        rho             rhok;
+        value           uniform 0;
+    }
 
+    ceiling
+    {
+        type            buoyantPressure;
+        rho             rhok;
+        value           uniform 0;
+    }
+
+    fixedWalls
+    {
+        type            buoyantPressure;
+        rho             rhok;
+        value           uniform 0;
+    }
+}
 
 // ************************************************************************* //

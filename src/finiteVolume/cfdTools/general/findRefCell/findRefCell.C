@@ -30,13 +30,14 @@ License
 void Foam::setRefCell
 (
     const volScalarField& field,
+    const volScalarField& fieldRef,
     const dictionary& dict,
     label& refCelli,
     scalar& refValue,
     const bool forceReference
 )
 {
-    if (field.needReference() || forceReference)
+    if (fieldRef.needReference() || forceReference)
     {
         word refCellName = field.name() + "RefCell";
         word refPointName = field.name() + "RefPoint";
@@ -55,6 +56,7 @@ void Foam::setRefCell
                     (
                         "void Foam::setRefCell\n"
                          "(\n"
+                         "    const volScalarField&,\n"
                          "    const volScalarField&,\n"
                          "    const dictionary&,\n"
                          "    label& scalar&,\n"
@@ -84,6 +86,7 @@ void Foam::setRefCell
                     "void Foam::setRefCell\n"
                      "(\n"
                      "    const volScalarField&,\n"
+                     "    const volScalarField&,\n"
                      "    const dictionary&,\n"
                      "    label& scalar&,\n"
                      "    bool\n"
@@ -103,6 +106,7 @@ void Foam::setRefCell
                 "void Foam::setRefCell\n"
                  "(\n"
                  "    const volScalarField&,\n"
+                 "    const volScalarField&,\n"
                  "    const dictionary&,\n"
                  "    label& scalar&,\n"
                  "    bool\n"
@@ -119,6 +123,19 @@ void Foam::setRefCell
 }
 
 
+void Foam::setRefCell
+(
+    const volScalarField& field,
+    const dictionary& dict,
+    label& refCelli,
+    scalar& refValue,
+    const bool forceReference
+)
+{
+    setRefCell(field, field, dict, refCelli, refValue, forceReference);
+}
+
+
 Foam::scalar Foam::getRefCellValue
 (
     const volScalarField& field,
@@ -126,7 +143,7 @@ Foam::scalar Foam::getRefCellValue
 )
 {
     scalar refCellValue = (refCelli >= 0 ? field[refCelli] : 0.0);
-    return returnReduce<label>(refCellValue, sumOp<scalar>());
+    return returnReduce(refCellValue, sumOp<scalar>());
 }
 
 

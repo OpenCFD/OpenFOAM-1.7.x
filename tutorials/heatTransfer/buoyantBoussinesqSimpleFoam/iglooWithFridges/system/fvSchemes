@@ -40,12 +40,12 @@ divSchemes
 laplacianSchemes
 {
     default         none;
-    laplacian(nuEff,U) Gauss linear corrected;
-    laplacian((1|A(U)),p) Gauss linear corrected;
-    laplacian(kappaEff,T) Gauss linear corrected;
-    laplacian(DkEff,k) Gauss linear corrected;
-    laplacian(DepsilonEff,epsilon) Gauss linear corrected;
-    laplacian(DREff,R) Gauss linear corrected;
+    laplacian(nuEff,U) Gauss linear limited 0.333;
+    laplacian((1|A(U)),p_rgh) Gauss linear limited 0.333;
+    laplacian(kappaEff,T) Gauss linear limited 0.333;
+    laplacian(DkEff,k) Gauss linear limited 0.333;
+    laplacian(DepsilonEff,epsilon) Gauss linear limited 0.333;
+    laplacian(DREff,R) Gauss linear limited 0.333;
 }
 
 interpolationSchemes
@@ -55,13 +55,13 @@ interpolationSchemes
 
 snGradSchemes
 {
-    default         corrected;
+    default         limited 0.333;
 }
 
 fluxRequired
 {
     default         no;
-    p               ;
+    p_rgh           ;
 }
 
 

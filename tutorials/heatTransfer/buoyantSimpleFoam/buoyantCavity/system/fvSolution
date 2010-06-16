@@ -44,8 +44,8 @@ SIMPLE
 {
     momentumPredictor yes;
     nNonOrthogonalCorrectors 0;
-    p_rghRefCell    0;
-    p_rghRefValue   0;
+    pRefCell        0;
+    pRefValue       0;
     convergence     1e-04;
 }
 

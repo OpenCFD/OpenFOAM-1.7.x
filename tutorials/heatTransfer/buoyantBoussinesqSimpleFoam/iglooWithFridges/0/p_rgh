@@ -9,33 +9,43 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      U;
+    class       volScalarField;
+    object      p_rgh;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+dimensions      [0 2 -2 0 0 0 0];
 
-internalField   uniform (0 0 0);
+internalField   uniform 0;
 
 boundaryField
 {
-    floor           
+    ground
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+        type            buoyantPressure;
+        rho             rhok;
+        value           uniform 0;
     }
 
-    ceiling         
+    igloo_region0
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+        type            buoyantPressure;
+        rho             rhok;
+        value           uniform 0;
     }
 
-    fixedWalls      
+    twoFridgeFreezers_seal_0
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+        type            buoyantPressure;
+        rho             rhok;
+        value           uniform 0;
+    }
+
+    twoFridgeFreezers_herring_1
+    {
+        type            buoyantPressure;
+        rho             rhok;
+        value           uniform 0;
     }
 }
 

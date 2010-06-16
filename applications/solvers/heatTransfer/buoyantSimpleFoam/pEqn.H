@@ -21,7 +21,10 @@
             fvm::laplacian(rhorUAf, p_rgh) == fvc::div(phi)
         );
 
-        p_rghEqn.setReference(p_rghRefCell, p_rgh[p_rghRefCell]);
+        p_rghEqn.setReference
+        (
+            pRefCell, getRefCellValue(p_rgh, pRefCell)
+        );
 
         // retain the residual from the first iteration
         if (nonOrth == 0)
