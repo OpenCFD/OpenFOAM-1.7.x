@@ -1,0 +1,40 @@
+src/autoMesh/
+    lower memory for snappyHexMesh (pre-balancing, non-blocking mesh transfers)
+
+src/dynamicMesh/polyTopoChange/
+    avoiding hashtable::erase slowness
+    preserve facezone orientation in snappyHexMesh
+
+src/finiteVolume/
+    - Use isA instead of isType :
+        -wall functions on directMappedWall
+        -derived cyclic types
+
+    - TimeActivatedExplicitSource now templated on type
+    - new: timeActivatedExplicitCellSource : explicit source
+        for selected number of cells. Replaces timeActivatedExplict
+    - new: timeActivatedExplicitMultiComponentPointSource : explicit source
+        for multicomponent flows
+    - removed:expDirectionMixedFvPatchField
+    - new:timeVaryingMappedPressureDirectedInletVelocityFvPatchVectorField
+    - new:timeVaryingMappedTotalPressureFvPatchScalarField
+    - new:timeVaryingUniformInletOutlet
+    - new:translatingWallVelocity
+
+    - new:fvm::adjDiv ?
+    - MULES+subcycling on moving mesh
+    - new: MC limitedScheme
+
+src/lagrangian/
+    - new: uniform cloud properties file
+
+src/lagrangian/dsmc/
+    - new: MixedDiffuseSpecular wall interaction model
+
+src/lagrangian/intermediate/
+    - new: active switch in KinematicCloud
+    - new: kinematicParcelInjectionData[CH]
+
+src/meshTools/
+    - new: cellZoneSet, faceZoneSet, pointZoneSet.
+
