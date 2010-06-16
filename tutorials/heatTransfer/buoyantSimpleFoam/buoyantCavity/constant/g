@@ -9,34 +9,14 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volScalarField;
-    object      p;
+    class       uniformDimensionedVectorField;
+    location    "constant";
+    object      g;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [1 -1 -2 0 0 0 0];
+dimensions      [0 1 -2 0 0 0 0];
+value           ( 0 -9.81 0 );
 
-internalField   uniform 1e5;
-
-boundaryField
-{
-    floor
-    {
-        type            calculated;
-        value           $internalField;
-    }
-
-    ceiling
-    {
-        type            calculated;
-        value           $internalField;
-    }
-
-    fixedWalls
-    {
-        type            calculated;
-        value           $internalField;
-    }
-}
 
 // ************************************************************************* //

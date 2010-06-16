@@ -2,7 +2,7 @@
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
 |  \\    /   O peration     | Version:  1.6                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -10,7 +10,8 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volScalarField;
-    object      p;
+    location    "0";
+    object      p_rgh;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -20,23 +21,30 @@ internalField   uniform 1e5;
 
 boundaryField
 {
-    floor
+    frontAndBack
     {
-        type            calculated;
-        value           $internalField;
+        type            buoyantPressure;
+        value           uniform 1e5;
     }
 
-    ceiling
+    topAndBottom
     {
-        type            calculated;
-        value           $internalField;
+        type            buoyantPressure;
+        value           uniform 1e5;
     }
 
-    fixedWalls
+    hot
     {
-        type            calculated;
-        value           $internalField;
+        type            buoyantPressure;
+        value           uniform 1e5;
+    }
+
+    cold
+    {
+        type            buoyantPressure;
+        value           uniform 1e5;
     }
 }
+
 
 // ************************************************************************* //

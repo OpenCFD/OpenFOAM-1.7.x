@@ -2,41 +2,47 @@
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
 |  \\    /   O peration     | Version:  1.6                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volScalarField;
-    object      p;
+    class       dictionary;
+    object      controlDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [1 -1 -2 0 0 0 0];
+application     buoyantSimpleFoam;
 
-internalField   uniform 1e5;
+startFrom       startTime;
 
-boundaryField
-{
-    floor
-    {
-        type            calculated;
-        value           $internalField;
-    }
+startTime       0;
 
-    ceiling
-    {
-        type            calculated;
-        value           $internalField;
-    }
+stopAt          endTime;
 
-    fixedWalls
-    {
-        type            calculated;
-        value           $internalField;
-    }
-}
+endTime         1000;
+
+deltaT          1;
+
+writeControl    timeStep;
+
+writeInterval   50;
+
+purgeWrite      3;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression compressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
 
 // ************************************************************************* //

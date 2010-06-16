@@ -23,7 +23,6 @@
     volScalarField& h = thermo.h();
     const volScalarField& psi = thermo.psi();
 
-
     Info<< "Reading field U\n" << endl;
     volVectorField U
     (
@@ -40,7 +39,6 @@
 
     #include "compressibleCreatePhi.H"
 
-
     Info<< "Creating turbulence model\n" << endl;
     autoPtr<compressible::RASModel> turbulence
     (
@@ -53,17 +51,38 @@
         )
     );
 
-    thermo.correct();
 
-    label pRefCell = 0;
-    scalar pRefValue = 0.0;
-    setRefCell
+    Info<< "Calculating field g.h\n" << endl;
+    volScalarField gh("gh", g & mesh.C());
+    surfaceScalarField ghf("ghf", g & mesh.Cf());
+
+    Info<< "Reading field p_rgh\n" << endl;
+    volScalarField p_rgh
     (
-        p,
-        mesh.solutionDict().subDict("SIMPLE"),
-        pRefCell,
-        pRefValue
+        IOobject
+        (
+            "p_rgh",
+            runTime.timeName(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh
     );
 
+    // Force p_rgh to be consistent with p
+    p_rgh = p - rho*gh;
+
+
+    label p_rghRefCell = 0;
+    scalar p_rghRefValue = 0.0;
+    setRefCell
+    (
+        p_rgh,
+        mesh.solutionDict().subDict("SIMPLE"),
+        p_rghRefCell,
+        p_rghRefValue
+    );
 
     dimensionedScalar initialMass = fvc::domainIntegrate(rho);
+    dimensionedScalar totalVolume = sum(mesh.V());

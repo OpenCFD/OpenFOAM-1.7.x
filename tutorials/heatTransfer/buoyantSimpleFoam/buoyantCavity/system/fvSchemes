@@ -2,7 +2,7 @@
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
 |  \\    /   O peration     | Version:  1.6                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -10,14 +10,13 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "system";
     object      fvSchemes;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 ddtSchemes
 {
-    default         steadyState;
+    default steadyState;
 }
 
 gradSchemes
@@ -28,12 +27,11 @@ gradSchemes
 divSchemes
 {
     default         none;
-    div(phi,U)      Gauss upwind;
-    div(phi,h)      Gauss upwind;
-    div(phi,k)      Gauss upwind;
-    div(phi,epsilon) Gauss upwind;
-    div(phi,R)      Gauss upwind;
-    div(R)          Gauss linear;
+    div(phi,U)      Gauss limitedLinear 0.2;
+    div(phi,h)      Gauss limitedLinear 0.2;
+    div(phi,k)      Gauss limitedLinear 0.2;
+    div(phi,epsilon) Gauss limitedLinear 0.2;
+    div(phi,omega) Gauss limitedLinear 0.2;
     div((muEff*dev2(grad(U).T()))) Gauss linear;
 }
 
@@ -45,7 +43,7 @@ laplacianSchemes
     laplacian(alphaEff,h) Gauss linear uncorrected;
     laplacian(DkEff,k) Gauss linear uncorrected;
     laplacian(DepsilonEff,epsilon) Gauss linear uncorrected;
-    laplacian(DREff,R) Gauss linear uncorrected;
+    laplacian(DomegaEff,omega) Gauss linear uncorrected;
 }
 
 interpolationSchemes
@@ -55,13 +53,13 @@ interpolationSchemes
 
 snGradSchemes
 {
-    default         corrected;
+    default         uncorrected;
 }
 
 fluxRequired
 {
     default         no;
-    p_rgh           ;
+    p_rgh;
 }
 
 

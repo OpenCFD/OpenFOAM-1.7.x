@@ -35,15 +35,15 @@ purgeWrite      0;
 
 writeFormat     ascii;
 
-writePrecision  6;
+writePrecision  8;
 
-writeCompression uncompressed;
+writeCompression off;
 
 timeFormat      general;
 
 timePrecision   6;
 
-runTimeModifiable yes;
+runTimeModifiable true;
 
 
 // ************************************************************************* //

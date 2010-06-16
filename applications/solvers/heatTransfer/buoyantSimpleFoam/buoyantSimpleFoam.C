@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
         #include "readSIMPLEControls.H"
         #include "initConvergenceCheck.H"
 
-        p.storePrevIter();
+        p_rgh.storePrevIter();
         rho.storePrevIter();
 
         // Pressure-velocity SIMPLE corrector

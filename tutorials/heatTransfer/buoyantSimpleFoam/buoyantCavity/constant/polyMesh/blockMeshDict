@@ -2,7 +2,7 @@
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
 |  \\    /   O peration     | Version:  1.6                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -14,45 +14,51 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-convertToMeters 1;
+convertToMeters 0.001;
 
-vertices        
+vertices
 (
-    (0 0 0)
-    (10 0 0)
-    (10 5 0)
-    (0 5 0)
-    (0 0 10)
-    (10 0 10)
-    (10 5 10)
-    (0 5 10)
+    ( 0     0  -260)
+    (76     0  -260)
+    (76  2180  -260)
+    ( 0  2180  -260)
+    ( 0     0   260)
+    (76     0   260)
+    (76  2180   260)
+    ( 0  2180   260)
 );
 
-blocks          
-(
-    hex (0 1 2 3 4 5 6 7) (20 10 20) simpleGrading (1 1 1)
-);
-
-edges           
+edges
 (
 );
 
-patches         
+blocks
 (
-    wall floor 
+    hex (0 1 2 3 4 5 6 7) (35 150 15) simpleGrading (1 1 1)
+);
+
+patches
+(
+    wall frontAndBack
     (
-        (1 5 4 0)
+        (0 1 5 4)
+        (2 3 7 6)
     )
-    wall ceiling 
+
+    wall topAndBottom
     (
-        (3 7 6 2)
-    )
-    wall fixedWalls 
-    (
-        (0 4 7 3)
-        (2 6 5 1)
-        (0 3 2 1)
         (4 5 6 7)
+        (3 2 1 0)
+    )
+
+    wall hot
+    (
+        (6 5 1 2)
+    )
+
+    wall cold
+    (
+        (4 7 3 0)
     )
 );
 
@@ -60,4 +66,3 @@ mergePatchPairs
 (
 );
 
-// ************************************************************************* //

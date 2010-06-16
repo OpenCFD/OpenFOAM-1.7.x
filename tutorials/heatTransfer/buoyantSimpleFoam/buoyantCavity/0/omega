@@ -10,33 +10,38 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volScalarField;
-    object      p;
+    location    "0";
+    object      omega;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [1 -1 -2 0 0 0 0];
+dimensions      [0 0 -1 0 0 0 0];
 
-internalField   uniform 1e5;
+internalField   uniform 0.12;
 
 boundaryField
 {
-    floor
+    frontAndBack
     {
-        type            calculated;
-        value           $internalField;
+        type            compressible::omegaWallFunction;
+        value           uniform 0.12;
     }
-
-    ceiling
+    topAndBottom
     {
-        type            calculated;
-        value           $internalField;
+        type            compressible::omegaWallFunction;
+        value           uniform 0.12;
     }
-
-    fixedWalls
+    hot
     {
-        type            calculated;
-        value           $internalField;
+        type            compressible::omegaWallFunction;
+        value           uniform 0.12;
+    }
+    cold
+    {
+        type            compressible::omegaWallFunction;
+        value           uniform 0.12;
     }
 }
+
 
 // ************************************************************************* //
