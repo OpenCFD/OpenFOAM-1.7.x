@@ -199,22 +199,13 @@ void epsilonWallFunctionFvPatchScalarField::updateCoeffs()
     {
         label faceCellI = patch().faceCells()[faceI];
 
-        scalar yPlus = Cmu25*y[faceI]*sqrt(k[faceCellI])/nuw[faceI];
-
         epsilon[faceCellI] = Cmu75*pow(k[faceCellI], 1.5)/(kappa_*y[faceI]);
 
-        if (yPlus > yPlusLam)
-        {
-            G[faceCellI] =
-                (nutw[faceI] + nuw[faceI])
-               *magGradUw[faceI]
-               *Cmu25*sqrt(k[faceCellI])
-               /(kappa_*y[faceI]);
-        }
-        else
-        {
-            G[faceCellI] = 0.0;
-        }
+        G[faceCellI] =
+            (nutw[faceI] + nuw[faceI])
+           *magGradUw[faceI]
+           *Cmu25*sqrt(k[faceCellI])
+           /(kappa_*y[faceI]);
     }
 
     // TODO: perform averaging for cells sharing more than one boundary face

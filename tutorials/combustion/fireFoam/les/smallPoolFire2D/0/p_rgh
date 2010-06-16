@@ -23,23 +23,23 @@ boundaryField
 {
     outlet
     {
-        type            calculated;
-        value           $internalField;
+        type            buoyantPressure;
+        value           uniform 101325;
     }
 
     sides
     {
-        type            calculated;
+        type            fixedValue;
         value           $internalField;
     }
     base
     {
-        type            calculated;
+        type            buoyantPressure;
         value           $internalField;
     }
     inlet
     {
-        type            calculated;
+        type            buoyantPressure;
         value           $internalField;
     }
     frontBack
