@@ -1,0 +1,144 @@
+src/autoMesh/
+    lower memory for snappyHexMesh (pre-balancing, non-blocking mesh transfers)
+
+src/dynamicMesh/polyTopoChange/
+    avoiding hashtable::erase slowness
+    preserve facezone orientation in snappyHexMesh
+
+src/finiteVolume/
+    - Use isA instead of isType :
+        -wall functions on directMappedWall
+        -derived cyclic types
+
+    - TimeActivatedExplicitSource now templated on type
+    - new: timeActivatedExplicitCellSource : explicit source
+        for selected number of cells. Replaces timeActivatedExplict
+    - new: timeActivatedExplicitMultiComponentPointSource : explicit source
+        for multicomponent flows
+    - removed:expDirectionMixedFvPatchField
+    - new:timeVaryingMappedPressureDirectedInletVelocityFvPatchVectorField
+    - new:timeVaryingMappedTotalPressureFvPatchScalarField
+    - new:timeVaryingUniformInletOutlet
+    - new:translatingWallVelocity
+
+    - new:fvm::adjDiv ?
+    - MULES+subcycling on moving mesh
+    - new: MC limitedScheme
+
+src/lagrangian/
+    - new: uniform cloud properties file
+
+src/lagrangian/dsmc/
+    - new: MixedDiffuseSpecular wall interaction model
+
+src/lagrangian/intermediate/
+    - new: active switch in KinematicCloud
+    - new: kinematicParcelInjectionData[CH]
+
+src/meshTools/
+    - new: cellZoneSet, faceZoneSet, pointZoneSet.
+
+src/OpenFOAM/
+    - Time.C automatic write precision adaptation
+    - new: oneFieldField
+    - GeometricField : construct from dictionary
+    - argList : sets environment variables FOAM_CASE and FOAM_CASENAME
+    - PrimitivePatch : have faceCentres() member
+
+src/postProcessing/
+    - new : fieldValues functionObjects
+    - new : readFields functionObject
+    - new : surfaceInterpolateFields functionObject
+    - deleted : facezoneIntegration
+
+src/sampling/
+    - new : sampledTriSurfaceMesh sampledSurface type
+
+
+src/thermoPhysicalModels/
+    - basicThermo hs()
+    - hsPsiThermo
+    - hsRhoThermo
+    - all liquids: have D(p, T, Wb) member function
+    - hsCombustionThermo
+    - hsPsiMixtureThermo
+    - hsReactionThermo
+
+src/turbulence/
+    - new cht bcs: turbulentTemperatureCoupledBaffleMixed
+    - new cht bcs: turbulentTemperatureCoupledBaffle
+    - new: mutkWallFunction
+    - new: mutLowReWallFunction
+    - new: nutkWallFunction
+    - new: nutLowReWallFunction
+    - omegaWallFunction : new beta1_ factor
+
+
+applications/solvers/
+    - dieselEngineFoam : switch to hs instead of h
+    - dieselFoam :          ,,
+    - new: fireFoam
+    - reactingFoam :        ,,
+    - rhoReactingFoam:      ,,
+    - XiFoam : added relaxation to XiEqn and SuEqn
+    - new: rhoPorousMRFPimpleFoam
+    - rhoSimpleFoam: removed explicit div(phi) correction term
+    - buoyantBoussinesqPisoFoam : from RASModel to turbulenceModel
+    - bouyantBoussinesqSimpleFoam: removed explicit div(phi) correction term
+    - bouyantSimpleFoam: removed explicit div(phi) correction term
+    - chtMultiRegionFoam :
+        - went to 0-gradient for mixed bc.
+        - added diffusion number limit to timestep
+    - new: chtMultiRegionSimpleFoam
+    - new: porousSimpleFoam
+    - coalChemistryFoam: switched to hs
+    - porousExplictSourceReactingParcelFoam: switch to hs
+    - reactingParcelFoam: switch to hs
+    - cavitatingFoam: added phase-change correction
+    - compressibleInterDyMFoam: added evaluation of U bcs
+    - interDyMFoam: added evaluation of U bcs
+    - new: interMixingFoam
+    - new: porousInterFoam
+    - settlingFoam: switch to p_rgh
+    - twoLiquidMixingFoam: switch to p_rgh
+
+applications/utilities/
+    - gmshToFoam : adapted for msh2.1 and 2.2 format
+    - blockMesh: proper spline edges
+    - setSet: handling of faceZoneSet,cellZoneSet,pointZoneSet
+    - splitMeshRegions: option to use existing cellZones only for split.
+    - new: foamToTecplot360
+    - changeDictionary: allow wildcards in changeDictionaryDict
+    - new: IFCLookUpTableGen thermoPhysical application
+
+tutorials/
+    - dieselFoam/aachenBomb/ switch to hs
+    - new: fireFoam/les/smallPoolFire2D
+    - new: reactingFoam/ras/counterFlowFlame2D
+    - rhoCentralFoam/shockTube/ : switch from hConstThermo to eConstThermo
+    - new: rhoPorousMRFPimpleFoam/mixerVessel2D
+    - compressible/sonicFoam/forwardStep: switch to hConstThermo
+
+    - heatTransfer/buoyantBoussinesqPisoFoam/hotRoom: Pr 0.7, Ptr 0.9
+          ,,       buoyantBoussinesqSimpleFoam            ,,
+
+    - new: heatTransfer/chtMultiRegionSimpleFoam/multiRegionHeater
+    - incompressible/MRFSimpleFoam : removed explicit div(phi) correction term
+    - new: pimpleDyMFoam/wingMotion
+    - new: incompressible:porousSimpleFoam/angledDuct*
+    - new: lagrangian/porousExplictSourceReactingParcelFoam/parcelInbox
+    - new: lagrangian/porousExplictSourceReactingParcelFoam/verticalChannel
+    - lagrangian/reactingParcelFoam/evaporationTest: switch to hs.
+    - lagrangian/reactingParcelFoam/evaporationTest: switch to hs.
+    - lagrangian/rhoPisoTwinParcelFoam : switch to hs
+
+    - new: multiPhase/interDyMFoam/floatingObject
+    - new: multiPhase/interMixingFoam/
+    - new: multiPhase/interPhaseChangeFoam/
+    - settlingFoam: switch to p_rgh
+
+
+
+
+
+
