@@ -25,8 +25,8 @@ Class
     Foam::sixDoFRigidBodyMotionConstraints::fixedAxis
 
 Description
-    sixDoFRigidBodyMotionConstraint.  Axis of body fixed global
-    space.
+    sixDoFRigidBodyMotionConstraint.  Body may only rotate around
+    an axis fixed in global space.
 
 SourceFiles
     fixedAxis.C
