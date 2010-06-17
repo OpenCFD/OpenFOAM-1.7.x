@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    buoyantPisoFoam
+    buoyantPimpleFoam
 
 Description
     Transient solver for buoyant, turbulent flow of compressible fluids for
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     while (runTime.run())
     {
         #include "readTimeControls.H"
-        #include "readPISOControls.H"
+        #include "readPIMPLEControls.H"
         #include "compressibleCourantNo.H"
         #include "setDeltaT.H"
 
@@ -69,20 +69,29 @@ int main(int argc, char *argv[])
 
         #include "rhoEqn.H"
 
-        #include "UEqn.H"
-
-        #include "hEqn.H"
-
-        // --- PISO loop
-
-        for (int corr=0; corr<nCorr; corr++)
+        // --- Pressure-velocity PIMPLE corrector loop
+        for (int oCorr=0; oCorr<nOuterCorr; oCorr++)
         {
-            #include "pEqn.H"
+            bool finalIter = oCorr == nOuterCorr-1;
+
+            if (nOuterCorr != 1)
+            {
+                p.storePrevIter();
+            }
+
+            #include "UEqn.H"
+            #include "hEqn.H"
+
+            // --- PISO loop
+            for (int corr=0; corr<nCorr; corr++)
+            {
+                #include "pEqn.H"
+            }
+
+            turbulence->correct();
+
+            rho = thermo.rho();
         }
-
-        turbulence->correct();
-
-        rho = thermo.rho();
 
         runTime.write();
 
