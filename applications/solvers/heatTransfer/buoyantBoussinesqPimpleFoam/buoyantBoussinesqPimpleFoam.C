@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    buoyantBoussinesqPisoFoam
+    buoyantBoussinesqPimpleFoam
 
 Description
     Transient solver for buoyant, turbulent flow of incompressible fluids
@@ -47,7 +47,7 @@ Description
 
 #include "fvCFD.H"
 #include "singlePhaseTransportModel.H"
-#include "turbulenceModel.H"
+#include "RASModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -72,20 +72,31 @@ int main(int argc, char *argv[])
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
         #include "readTimeControls.H"
-        #include "readPISOControls.H"
+        #include "readPIMPLEControls.H"
         #include "CourantNo.H"
         #include "setDeltaT.H"
 
-        #include "UEqn.H"
-        #include "TEqn.H"
-
-        // --- PISO loop
-        for (int corr=0; corr<nCorr; corr++)
+        // --- Pressure-velocity PIMPLE corrector loop
+        for (int oCorr=0; oCorr<nOuterCorr; oCorr++)
         {
-            #include "pEqn.H"
-        }
+            bool finalIter = oCorr == nOuterCorr-1;
 
-        turbulence->correct();
+            if (nOuterCorr != 1)
+            {
+                p.storePrevIter();
+            }
+
+            #include "UEqn.H"
+            #include "TEqn.H"
+
+            // --- PISO loop
+            for (int corr=0; corr<nCorr; corr++)
+            {
+                #include "pEqn.H"
+            }
+
+            turbulence->correct();
+        }
 
         runTime.write();
 

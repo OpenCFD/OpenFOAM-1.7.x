@@ -10,40 +10,26 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "system";
-    object      controlDict;
+    object      transportProperties;
 }
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     buoyantBoussinesqSimpleFoam;
+transportModel Newtonian;
 
-startFrom       latestTime;
+// Laminar viscosity
+nu              nu [0 2 -1 0 0 0 0] 1e-05;
 
-startTime       0;
+// Thermal expansion coefficient
+beta            beta [0 0 0 -1 0 0 0] 3e-03;
 
-stopAt          endTime;
+// Reference temperature
+TRef            TRef [0 0 0 1 0 0 0] 300;
 
-endTime         1000;
+// Laminar Prandtl number
+Pr              Pr [0 0 0 0 0 0 0] 0.9;
 
-deltaT          1;
-
-writeControl    timeStep;
-
-writeInterval   100;
-
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression uncompressed;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
+// Turbulent Prandtl number
+Prt             Prt [0 0 0 0 0 0 0] 0.7;
 
 // ************************************************************************* //

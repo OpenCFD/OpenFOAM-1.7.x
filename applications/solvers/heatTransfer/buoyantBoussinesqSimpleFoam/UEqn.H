@@ -13,7 +13,7 @@
         eqnResidual = solve
         (
             UEqn()
-            ==
+          ==
             fvc::reconstruct
             (
                 (

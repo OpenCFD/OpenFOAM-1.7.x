@@ -18,9 +18,10 @@
             fvc::reconstruct
             (
                 (
-                    fvc::interpolate(rhok)*(g & mesh.Sf())
-                  - fvc::snGrad(p)*mesh.magSf()
-                )
-            )
+                  - ghf*fvc::snGrad(rhok)
+                  - fvc::snGrad(p)
+                )*mesh.magSf()
+            ),
+            mesh.solver(U.select(finalIter))
         );
     }

@@ -11,39 +11,55 @@ FoamFile
     format      ascii;
     class       dictionary;
     location    "system";
-    object      controlDict;
+    object      fvSolution;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     buoyantBoussinesqSimpleFoam;
+solvers
+{
+    p_rgh
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-8;
+        relTol          0.01;
+    }
 
-startFrom       latestTime;
+    p_rghFinal
+    {
+        $p_rgh;
+        relTol          0;
+    }
 
-startTime       0;
+    "(U|T|k|epsilon|R)"
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-6;
+        relTol          0.1;
+    }
 
-stopAt          endTime;
+    "(U|T|k|epsilon|R)Final"
+    {
+        $U;
+        relTol          0;
+    }
+}
 
-endTime         1000;
+PIMPLE
+{
+    momentumPredictor no;
+    nOuterCorrectors 1;
+    nCorrectors     2;
+    nNonOrthogonalCorrectors 0;
+    pRefCell        0;
+    pRefValue       0;
+}
 
-deltaT          1;
-
-writeControl    timeStep;
-
-writeInterval   100;
-
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression uncompressed;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
+relaxationFactors
+{
+    "(U|T|k|epsilon|R)" 1;
+    "(U|T|k|epsilon|R)Final" 1;
+}
 
 // ************************************************************************* //

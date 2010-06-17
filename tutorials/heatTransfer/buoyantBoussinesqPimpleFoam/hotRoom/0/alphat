@@ -9,41 +9,34 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    location    "system";
-    object      controlDict;
+    class       volScalarField;
+    location    "0";
+    object      alphat;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     buoyantBoussinesqSimpleFoam;
+dimensions      [1 -1 -1 0 0 0 0];
 
-startFrom       latestTime;
+internalField   uniform 0;
 
-startTime       0;
-
-stopAt          endTime;
-
-endTime         1000;
-
-deltaT          1;
-
-writeControl    timeStep;
-
-writeInterval   100;
-
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression uncompressed;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
+boundaryField
+{
+    floor
+    {
+        type            alphatWallFunction;
+        value           uniform 0;
+    }
+    ceiling
+    {
+        type            alphatWallFunction;
+        value           uniform 0;
+    }
+    fixedWalls
+    {
+        type            alphatWallFunction;
+        value           uniform 0;
+    }
+}
 
 
 // ************************************************************************* //
