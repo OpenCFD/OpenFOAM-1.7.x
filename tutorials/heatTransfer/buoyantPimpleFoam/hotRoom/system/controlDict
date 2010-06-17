@@ -15,17 +15,17 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     buoyantBoussinesqSimpleFoam;
+application     buoyantPimpleFoam;
 
-startFrom       latestTime;
+startFrom       startTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         1000;
+endTime         2000;
 
-deltaT          1;
+deltaT          2;
 
 writeControl    timeStep;
 
@@ -45,5 +45,8 @@ timePrecision   6;
 
 runTimeModifiable true;
 
+adjustTimeStep  no;
+
+maxCo           0.5;
 
 // ************************************************************************* //

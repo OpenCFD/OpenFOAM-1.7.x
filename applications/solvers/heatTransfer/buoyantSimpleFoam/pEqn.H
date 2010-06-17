@@ -26,15 +26,12 @@
             pRefCell, getRefCellValue(p_rgh, pRefCell)
         );
 
-        // retain the residual from the first iteration
+        eqnResidual = p_rghEqn.solve().initialResidual();
+
+        // Retain the residual from the first iteration
         if (nonOrth == 0)
         {
-            eqnResidual = p_rghEqn.solve().initialResidual();
             maxResidual = max(eqnResidual, maxResidual);
-        }
-        else
-        {
-            p_rghEqn.solve();
         }
 
         if (nonOrth == nNonOrthCorr)
