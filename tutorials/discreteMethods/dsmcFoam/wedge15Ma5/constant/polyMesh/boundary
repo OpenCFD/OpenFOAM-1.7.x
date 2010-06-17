@@ -20,21 +20,20 @@ FoamFile
     flow
     {
         type            patch;
-        nFaces          1920;
-        startFace       82800;
+        nFaces          160;
+        startFace       4700;
     }
     obstacle
     {
         type            wall;
-        nFaces          480;
-        startFace       84720;
+        nFaces          40;
+        startFace       4860;
     }
-    periodic
+    frontAndBack
     {
-        type            cyclic;
+        type            empty;
         nFaces          4800;
-        startFace       85200;
-        featureCos      0.9;
+        startFace       4900;
     }
 )
 
