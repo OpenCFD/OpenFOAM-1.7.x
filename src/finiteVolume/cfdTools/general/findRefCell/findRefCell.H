@@ -44,8 +44,22 @@ SourceFiles
 namespace Foam
 {
 
-//- Find the reference cell nearest (in index) to the given cell,
-//  but which is not on a cyclic, symmetry or processor patch.
+//- If the field fieldRef needs referencing find the reference cell nearest
+//  (in index) to the given cell looked-up for field, but which is not on a
+//  cyclic, symmetry or processor patch.
+void setRefCell
+(
+    const volScalarField& field,
+    const volScalarField& fieldRef,
+    const dictionary& dict,
+    label& refCelli,
+    scalar& refValue,
+    const bool forceReference = false
+);
+
+//- If the field needs referencing find the reference cell nearest
+//  (in index) to the given cell looked-up for field, but which is not on a
+//  cyclic, symmetry or processor patch.
 void setRefCell
 (
     const volScalarField& field,

@@ -11,7 +11,7 @@ License
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your (at your (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -256,6 +256,13 @@ public:
         tmp<surfaceScalarField> nuf() const;
 
         tmp<surfaceScalarField> surfaceTensionForce() const;
+
+        //- Indicator of the proximity of the interface
+        //  Field values are 1 near and 0 away for the interface.
+        tmp<surfaceScalarField> nearInterface() const;
+
+        //- Solve for the mixture phase-fractions
+        void solve();
 
         //- Correct the mixture properties
         void correct();

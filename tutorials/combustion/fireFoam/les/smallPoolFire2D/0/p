@@ -11,7 +11,7 @@ FoamFile
     format      ascii;
     class       volScalarField;
     location    "0";
-    object      p;
+    object      p_rgh;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -23,26 +23,23 @@ boundaryField
 {
     outlet
     {
-        type            buoyantPressure;
-        value           uniform 101325;
+        type            calculated;
+        value           $internalField;
     }
 
     sides
     {
-        type            uniformDensityHydrostaticPressure;
-        rho             1.2;
-        pRefValue       101325;
-        pRefPoint       (0 0 0);
+        type            calculated;
         value           $internalField;
     }
     base
     {
-        type            buoyantPressure;
+        type            calculated;
         value           $internalField;
     }
     inlet
     {
-        type            buoyantPressure;
+        type            calculated;
         value           $internalField;
     }
     frontBack

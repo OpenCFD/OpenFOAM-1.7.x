@@ -233,6 +233,44 @@ void storeCellInZone
 }
 
 
+// Reads mesh format
+scalar readMeshFormat(IFstream& inFile)
+{
+    Info<< "Starting to read mesh format at line " << inFile.lineNumber() << endl;
+
+    string line;
+    inFile.getLine(line);
+    IStringStream lineStr(line);
+
+    scalar version;
+    label asciiFlag, nBytes;
+    lineStr >> version >> asciiFlag >> nBytes;
+
+    Info<< "Read format version " << version << "  ascii " << asciiFlag << endl;
+
+    if (asciiFlag != 0)
+    {
+        FatalIOErrorIn("readMeshFormat(IFstream&)", inFile)
+            << "Can only read ascii msh files."
+            << exit(FatalIOError);
+    }
+
+    inFile.getLine(line);
+    IStringStream tagStr(line);
+    word tag(tagStr);
+
+    if (tag != "$EndMeshFormat")
+    {
+        FatalIOErrorIn("readMeshFormat(IFstream&)", inFile)
+            << "Did not find $ENDNOD tag on line "
+            << inFile.lineNumber() << exit(FatalIOError);
+    }
+    Info<< endl;
+
+    return version;
+}
+
+
 // Reads points and map
 void readPoints(IFstream& inFile, pointField& points, Map<label>& mshToFoam)
 {
@@ -278,9 +316,9 @@ void readPoints(IFstream& inFile, pointField& points, Map<label>& mshToFoam)
 
     if (tag != "$ENDNOD" && tag != "$EndNodes")
     {
-        FatalErrorIn("readPoints(..)")
+        FatalIOErrorIn("readPoints(..)", inFile)
             << "Did not find $ENDNOD tag on line "
-            << inFile.lineNumber() << exit(FatalError);
+            << inFile.lineNumber() << exit(FatalIOError);
     }
     Info<< endl;
 }
@@ -351,9 +389,9 @@ void readPhysNames(IFstream& inFile, Map<word>& physicalNames)
 
     if (tag != "$EndPhysicalNames")
     {
-        FatalErrorIn("readPhysicalNames(..)")
+        FatalIOErrorIn("readPhysicalNames(..)", inFile)
             << "Did not find $EndPhysicalNames tag on line "
-            << inFile.lineNumber() << exit(FatalError);
+            << inFile.lineNumber() << exit(FatalIOError);
     }
     Info<< endl;
 }
@@ -362,7 +400,7 @@ void readPhysNames(IFstream& inFile, Map<word>& physicalNames)
 // Reads cells and patch faces
 void readCells
 (
-    const bool version2Format,
+    const scalar versionFormat,
     const bool keepOrientation,
     const pointField& points,
     const Map<label>& mshToFoam,
@@ -426,23 +464,18 @@ void readCells
 
         label elmNumber, elmType, regPhys;
 
-        if (version2Format)
+        if (versionFormat >= 2)
         {
             lineStr >> elmNumber >> elmType;
 
             label nTags;
             lineStr>> nTags;
 
-            label regElem, partition;
-
-            if (nTags == 3)
+            if (nTags > 0)
             {
-                lineStr >> regPhys >> regElem >> partition;
-            }
-            else
-            {
-                regPhys = 0;
-                for (label i = 0; i < nTags; i++)
+                // Assume the first tag is the physical surface
+                lineStr >> regPhys;
+                for (label i = 1; i < nTags; i++)
                 {
                     label dummy;
                     lineStr>> dummy;
@@ -659,9 +692,9 @@ void readCells
 
     if (tag != "$ENDELM" && tag != "$EndElements")
     {
-        FatalErrorIn("readCells(..)")
+        FatalIOErrorIn("readCells(..)", inFile)
             << "Did not find $ENDELM tag on line "
-            << inFile.lineNumber() << exit(FatalError);
+            << inFile.lineNumber() << exit(FatalIOError);
     }
 
 
@@ -683,13 +716,13 @@ void readCells
 
     if (cells.size() == 0)
     {
-        FatalErrorIn("readCells(..)")
+        FatalIOErrorIn("readCells(..)", inFile)
             << "No cells read from file " << inFile.name() << nl
             << "Does your file specify any 3D elements (hex=" << MSHHEX
             << ", prism=" << MSHPRISM << ", pyramid=" << MSHPYR
             << ", tet=" << MSHTET << ")?" << nl
             << "Perhaps you have not exported the 3D elements?"
-            << exit(FatalError);
+            << exit(FatalIOError);
     }
 
     Info<< "CellZones:" << nl
@@ -746,7 +779,7 @@ int main(int argc, char *argv[])
     Map<word> physicalNames;
 
     // Version 1 or 2 format
-    bool version2Format = false;
+    scalar versionFormat = 1;
 
 
     IFstream inFile(mshName);
@@ -763,12 +796,7 @@ int main(int argc, char *argv[])
         {
             Info<< "Found $MeshFormat tag; assuming version 2 file format."
                 << endl;
-            version2Format = true;
-
-            if (!skipSection(inFile))
-            {
-                break;
-            }
+            versionFormat = readMeshFormat(inFile);
         }
         else if (tag == "$PhysicalNames")
         {
@@ -782,7 +810,7 @@ int main(int argc, char *argv[])
         {
             readCells
             (
-                version2Format,
+                versionFormat,
                 keepOrientation,
                 points,
                 mshToFoam,

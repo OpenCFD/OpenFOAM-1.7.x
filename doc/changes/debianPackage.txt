@@ -1,0 +1,111 @@
+
+
+How to create a Debian package.
+
+- install OpenFOAM as usual
+(I installed the 1.7.0 git version:
+    cd ~/OpenFOAM
+    git clone ssh://mattijs@10.0.0.4/home/noisy3/OpenFOAM/OpenFOAM-1.7.0.git
+)
+
+Get all your dependencies:
+
+Package building:
+    sudo apt-get install dh-make
+    sudo apt-get install dpkg
+    sudo apt-get install lintian        # contains package checking
+    sudo apt-get install devscripts     # contains debuild package building
+
+OpenFOAM building:
+
+    sudo apt-get install binutils-dev
+    sudo apt-get install flex
+    sudo apt-get install libscotch-dev
+    sudo apt-get install libopenmpi-dev
+    sudo apt-get install libxt-dev (tecplot360 converter)
+
+Compile all. Metis will fail.
+
+Create a directory with a tar.bz2 pack of all:
+
+    cd ~/OpenFOAM
+    mkdir openfoam-1.7.0
+    tar czf openfoam-1.7.0/openfoam-1.7.0.orig.tar.gz OpenFOAM-1.7.0
+    cd openfoam-1.7.0
+
+Packaging:
+
+    dh_make -f openfoam-1.7.0.orig.tar.gz
+
+    cd debian
+    rm emacs*
+    rm cron.d.ex
+    rm init.d.ex
+    rm init.d.lsb.ex
+    rm openfoam.default.ex
+    rm postrm.ex    <- probably not sourced so we cannot use it
+                       to do a foamCleanPath
+    preinst.ex :
+        - change etc/ files to have hardcoded current installation
+            (/opt/OpenFOAM/openfoam-1.7.0)
+        - source /opt/OpenFOAM/openfoam-1.7.0/etc/bashrc
+    postinst.ex :
+        - have it print message about users needing to add
+          source /opt/OpenFOAM/openfoam-1.7.0/etc/bashrc
+                    
+
+    cp ../README README.source
+
+    vi control
+        - section=optional
+        - Maintainer=patches <patches@opencfd.co.uk>
+        - homepage=<http://www.openfoam.com>
+        - Architecture=i386    (or amd64)
+        - Depends: binutils-dev, flex, ...
+        - Description: OpenFOAM-1.7.0
+            OpenFOAM is a free, open source CFD software package produced by a
+            commercial company, OpenCFD Ltd. It has a large user base across most
+            areas of engineering and science, from both commercial and academic
+            organisations. OpenFOAM has an extensive range of features to solve
+            anything from complex fluid flows involving chemical reactions,
+            turbulence and heat transfer, to solid dynamics and
+            electromagnetics.            
+    vi copyright
+    - change to our v3.
+    vi rules and change to makefile with rules:
+
+        make clean:
+            -> ./Allwclean
+        make build:
+            -> ./Allwmake
+        make binary:
+            -> ./Allwmake
+
+    vi changeLog
+    - update email address
+    - possibly add git log
+
+    rm watch.ex (could be used to check for updates)
+    rm README.Debian <- already in our readme. Or maybe note lack of *Metis.
+
+Test of packaging
+-----------------
+    dpkg - creates a .deb package:
+
+        dpdg-buildpackage -rfakeroot
+
+    + rename into
+
+        openfoam-1.7.0-0ubuntu1.deb
+                              ^
+                       ^      package counter. incremented (by hand) for every new deb pack
+                    from us
+
+
+    lintian - checks .deb package
+
+
+
+
+
+

@@ -51,8 +51,7 @@ laplacianSchemes
     laplacian(alphaEff,hs) Gauss linear uncorrected;
     laplacian(alphaEff,fu) Gauss linear uncorrected;
     laplacian(alphaEff,ft) Gauss linear uncorrected;
-    laplacian((((rho*(1|A(U)))*rho)*gh)) Gauss linear uncorrected;
-    laplacian(interpolate((rho*(1|A(U)))),p) Gauss linear uncorrected;
+    laplacian(interpolate((rho*(1|A(U)))),p_rgh) Gauss linear uncorrected;
     laplacian(gammaRad,G) Gauss linear corrected;
 }
 
@@ -69,7 +68,7 @@ snGradSchemes
 fluxRequired
 {
     default         no;
-    p;
+    p_rgh;
 }
 
 

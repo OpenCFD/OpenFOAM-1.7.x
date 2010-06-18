@@ -29,7 +29,6 @@ WallInteractionModel            MaxwellianThermal;
 
 MaxwellianThermalCoeffs {}
 
-
 // Binary Collision Model
 // ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -46,8 +45,6 @@ LarsenBorgnakkeVariableHardSphereCoeffs
 // ~~~~~~~~~~~~~~~~~~~~~
 
 InflowBoundaryModel             FreeStream;
-
-NoInflowCoeffs {}
 
 FreeStreamCoeffs
 {
@@ -71,7 +68,6 @@ moleculeProperties
         mass                            46.5e-27;
         diameter                        4.17e-10;
         internalDegreesOfFreedom        2;
-        viscosityCoefficient            1.656e-5;
         omega                           0.74;
     }
 
@@ -80,7 +76,6 @@ moleculeProperties
         mass                            53.12e-27;
         diameter                        4.07e-10;
         internalDegreesOfFreedom        2;
-        viscosityCoefficient            1.919e-5;
         omega                           0.77;
     }
 }

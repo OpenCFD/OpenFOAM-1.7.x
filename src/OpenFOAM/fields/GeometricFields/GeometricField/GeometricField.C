@@ -929,6 +929,23 @@ void Foam::GeometricField<Type, PatchField, GeoMesh>::relax()
 }
 
 
+template<class Type, template<class> class PatchField, class GeoMesh>
+Foam::word Foam::GeometricField<Type, PatchField, GeoMesh>::select
+(
+    bool final
+) const
+{
+    if (final)
+    {
+        return this->name() + "Final";
+    }
+    else
+    {
+        return this->name();
+    }
+}
+
+
 // writeData member function required by regIOobject
 template<class Type, template<class> class PatchField, class GeoMesh>
 bool Foam::GeometricField<Type, PatchField, GeoMesh>::

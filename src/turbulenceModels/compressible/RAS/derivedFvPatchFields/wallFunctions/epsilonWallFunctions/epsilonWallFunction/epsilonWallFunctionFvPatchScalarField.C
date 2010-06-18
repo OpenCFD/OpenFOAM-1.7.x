@@ -177,7 +177,6 @@ void epsilonWallFunctionFvPatchScalarField::updateCoeffs()
 
     const scalar Cmu25 = pow(Cmu_, 0.25);
     const scalar Cmu75 = pow(Cmu_, 0.75);
-    const scalar yPlusLam = rasModel.yPlusLam(kappa_, E_);
 
     const scalarField& y = rasModel.y()[patch().index()];
 
@@ -208,24 +207,13 @@ void epsilonWallFunctionFvPatchScalarField::updateCoeffs()
     {
         label faceCellI = patch().faceCells()[faceI];
 
-        scalar yPlus =
-            Cmu25*y[faceI]*sqrt(k[faceCellI])
-           /(muw[faceI]/rhow[faceI]);
-
         epsilon[faceCellI] = Cmu75*pow(k[faceCellI], 1.5)/(kappa_*y[faceI]);
 
-        if (yPlus > yPlusLam)
-        {
-            G[faceCellI] =
-                (mutw[faceI] + muw[faceI])
-               *magGradUw[faceI]
-               *Cmu25*sqrt(k[faceCellI])
-               /(kappa_*y[faceI]);
-        }
-        else
-        {
-            G[faceCellI] = 0.0;
-        }
+        G[faceCellI] =
+            (mutw[faceI] + muw[faceI])
+           *magGradUw[faceI]
+           *Cmu25*sqrt(k[faceCellI])
+           /(kappa_*y[faceI]);
     }
 
     // TODO: perform averaging for cells sharing more than one boundary face

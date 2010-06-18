@@ -45,7 +45,6 @@ laplacianSchemes
 interpolationSchemes
 {
     default         linear;
-    interpolate(HbyA) linear;
 }
 
 snGradSchemes
@@ -56,7 +55,7 @@ snGradSchemes
 fluxRequired
 {
     default         no;
-    p;
+    p_rgh;
     pcorr;
     alpha;
 }

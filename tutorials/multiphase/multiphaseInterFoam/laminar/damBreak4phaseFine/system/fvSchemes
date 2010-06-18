@@ -30,7 +30,7 @@ gradSchemes
 divSchemes
 {
     div(rho*phi,U)  Gauss upwind;
-    div(phi,alpha)  Gauss limitedLimitedLinear 1 -1e-05 1.00001;
+    div(phi,alpha)  Gauss vanLeer;
     div(phic,alpha) Gauss interfaceCompression;
 }
 
@@ -51,7 +51,10 @@ snGradSchemes
 
 fluxRequired
 {
-    default         yes;
+    default         no;
+    pcorr;
+    p_rgh;
+    "alpha.*";
 }
 
 
