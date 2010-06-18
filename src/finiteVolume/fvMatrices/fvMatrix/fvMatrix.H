@@ -112,8 +112,6 @@ class fvMatrix
     public refCount,
     public lduMatrix
 {
-public:
-
     // Private data
 
         // Reference to GeometricField<Type, fvPatchField, volMesh>

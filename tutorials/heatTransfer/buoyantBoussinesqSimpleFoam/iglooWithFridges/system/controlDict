@@ -15,8 +15,6 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-libs            ("libparMetisDecomp.so");
-
 application     buoyantBoussinesqSimpleFoam;
 
 startFrom       startTime;
@@ -25,7 +23,7 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         1000;
+endTime         2000;
 
 deltaT          1;
 
@@ -39,13 +37,13 @@ writeFormat     ascii;
 
 writePrecision  6;
 
-writeCompression uncompressed;
+writeCompression compressed;
 
 timeFormat      general;
 
 timePrecision   6;
 
-runTimeModifiable yes;
+runTimeModifiable true;
 
 
 // ************************************************************************* //

@@ -6,46 +6,58 @@
     UEqn.clear();
 
     phi = fvc::interpolate(U) & mesh.Sf();
-    adjustPhi(phi, U, p);
+    adjustPhi(phi, U, p_rgh);
 
-    surfaceScalarField buoyancyPhi =
-        rUAf*fvc::interpolate(rhok)*(g & mesh.Sf());
-    phi += buoyancyPhi;
+    surfaceScalarField buoyancyPhi = rUAf*ghf*fvc::snGrad(rhok)*mesh.magSf();
+    phi -= buoyancyPhi;
 
     for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
     {
-        fvScalarMatrix pEqn
+        fvScalarMatrix p_rghEqn
         (
-            fvm::laplacian(rUAf, p) == fvc::div(phi)
+            fvm::laplacian(rUAf, p_rgh) == fvc::div(phi)
         );
 
-        pEqn.setReference(pRefCell, pRefValue);
+        p_rghEqn.setReference(pRefCell, getRefCellValue(p_rgh, pRefCell));
 
         // retain the residual from the first iteration
         if (nonOrth == 0)
         {
-            eqnResidual = pEqn.solve().initialResidual();
+            eqnResidual = p_rghEqn.solve().initialResidual();
             maxResidual = max(eqnResidual, maxResidual);
         }
         else
         {
-            pEqn.solve();
+            p_rghEqn.solve();
         }
 
         if (nonOrth == nNonOrthCorr)
         {
             // Calculate the conservative fluxes
-            phi -= pEqn.flux();
+            phi -= p_rghEqn.flux();
 
             // Explicitly relax pressure for momentum corrector
-            p.relax();
+            p_rgh.relax();
 
             // Correct the momentum source with the pressure gradient flux
             // calculated from the relaxed pressure
-            U += rUA*fvc::reconstruct((buoyancyPhi - pEqn.flux())/rUAf);
+            U -= rUA*fvc::reconstruct((buoyancyPhi + p_rghEqn.flux())/rUAf);
             U.correctBoundaryConditions();
         }
     }
 
     #include "continuityErrs.H"
+
+    p = p_rgh + rhok*gh;
+
+    if (p_rgh.needReference())
+    {
+        p += dimensionedScalar
+        (
+            "p",
+            p.dimensions(),
+            pRefValue - getRefCellValue(p, pRefCell)
+        );
+        p_rgh = p - rhok*gh;
+    }
 }

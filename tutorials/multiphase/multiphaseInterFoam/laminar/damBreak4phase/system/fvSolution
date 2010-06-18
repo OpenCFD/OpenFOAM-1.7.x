@@ -34,13 +34,12 @@ solvers
             agglomerator    faceAreaPair;
             mergeLevels     2;
         }
-
         tolerance       1e-05;
         relTol          0;
         maxIter         100;
     }
 
-    p
+    p_rgh
     {
         solver          GAMG;
         tolerance       1e-07;
@@ -55,7 +54,7 @@ solvers
         mergeLevels     1;
     }
 
-    pFinal
+    p_rghFinal
     {
         solver          PCG;
         preconditioner
@@ -73,22 +72,12 @@ solvers
             agglomerator    faceAreaPair;
             mergeLevels     1;
         }
-
         tolerance       1e-07;
         relTol          0;
         maxIter         20;
     }
 
-    U
-    {
-        solver          smoothSolver;
-        smoother        GaussSeidel;
-        tolerance       1e-08;
-        relTol          0;
-        nSweeps         1;
-    }
-
-    alpha
+    "(U|alpha)"
     {
         solver          smoothSolver;
         smoother        GaussSeidel;
@@ -105,7 +94,7 @@ PISO
     nAlphaCorr      4;
     nAlphaSubCycles 4;
     cycleAlpha      yes;
-    cAlpha          4;
+    cAlpha          2;
 }
 
 

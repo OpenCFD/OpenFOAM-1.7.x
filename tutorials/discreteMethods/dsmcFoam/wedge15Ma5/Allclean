@@ -4,4 +4,5 @@
 . $WM_PROJECT_DIR/bin/tools/CleanFunctions
 
 cleanCase
-rm -rf 0/lagrangian 0/dsmcSigmaTcRMax
+rm -rf 0/lagrangian 0/dsmcSigmaTcRMax 0/uniform
+

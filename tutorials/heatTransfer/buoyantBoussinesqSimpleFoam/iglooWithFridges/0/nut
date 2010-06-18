@@ -23,25 +23,25 @@ boundaryField
 {
     ground
     {
-        type            nutWallFunction;
+        type            nutkWallFunction;
         value           uniform 0;
     }
 
     igloo_region0
     {
-        type            nutWallFunction;
+        type            nutkWallFunction;
         value           uniform 0;
     }
 
     twoFridgeFreezers_seal_0
     {
-        type            nutWallFunction;
+        type            nutkWallFunction;
         value           uniform 0;
     }
 
     twoFridgeFreezers_herring_1
     {
-        type            nutWallFunction;
+        type            nutkWallFunction;
         value           uniform 0;
     }
 }

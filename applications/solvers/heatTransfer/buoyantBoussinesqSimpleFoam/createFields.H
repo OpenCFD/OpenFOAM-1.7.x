@@ -14,12 +14,12 @@
         mesh
     );
 
-    Info<< "Reading field p\n" << endl;
-    volScalarField p
+    Info<< "Reading field p_rgh\n" << endl;
+    volScalarField p_rgh
     (
         IOobject
         (
-            "p",
+            "p_rgh",
             runTime.timeName(),
             mesh,
             IOobject::MUST_READ,
@@ -42,29 +42,15 @@
         mesh
     );
 
-#   include "createPhi.H"
+    #include "createPhi.H"
 
-#   include "readTransportProperties.H"
+    #include "readTransportProperties.H"
 
     Info<< "Creating turbulence model\n" << endl;
     autoPtr<incompressible::RASModel> turbulence
     (
         incompressible::RASModel::New(U, phi, laminarTransport)
     );
-
-    Info<< "Calculating field beta*(g.h)\n" << endl;
-    surfaceScalarField betaghf("betagh", beta*(g & mesh.Cf()));
-
-    label pRefCell = 0;
-    scalar pRefValue = 0.0;
-    setRefCell
-    (
-        p,
-        mesh.solutionDict().subDict("SIMPLE"),
-        pRefCell,
-        pRefValue
-    );
-
 
     // Kinematic density for buoyancy force
     volScalarField rhok
@@ -77,3 +63,41 @@
         ),
         1.0 - beta*(T - TRef)
     );
+
+    Info<< "Calculating field g.h\n" << endl;
+    volScalarField gh("gh", g & mesh.C());
+    surfaceScalarField ghf("ghf", g & mesh.Cf());
+
+    volScalarField p
+    (
+        IOobject
+        (
+            "p",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        p_rgh + rhok*gh
+    );
+
+    label pRefCell = 0;
+    scalar pRefValue = 0.0;
+    setRefCell
+    (
+        p,
+        p_rgh,
+        mesh.solutionDict().subDict("SIMPLE"),
+        pRefCell,
+        pRefValue
+    );
+
+    if (p_rgh.needReference())
+    {
+        p += dimensionedScalar
+        (
+            "p",
+            p.dimensions(),
+            pRefValue - getRefCellValue(p, pRefCell)
+        );
+    }

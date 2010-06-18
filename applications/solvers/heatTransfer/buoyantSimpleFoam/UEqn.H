@@ -8,15 +8,20 @@
 
     UEqn().relax();
 
-    eqnResidual = solve
-    (
-        UEqn()
-     ==
-        fvc::reconstruct
+    if (momentumPredictor)
+    {
+        eqnResidual = solve
         (
-            fvc::interpolate(rho)*(g & mesh.Sf())
-          - fvc::snGrad(p)*mesh.magSf()
-        )
-    ).initialResidual();
+            UEqn()
+         ==
+            fvc::reconstruct
+            (
+                (
+                  - ghf*fvc::snGrad(rho)
+                  - fvc::snGrad(p_rgh)
+                )*mesh.magSf()
+            )
+        ).initialResidual();
 
-    maxResidual = max(eqnResidual, maxResidual);
+        maxResidual = max(eqnResidual, maxResidual);
+    }
