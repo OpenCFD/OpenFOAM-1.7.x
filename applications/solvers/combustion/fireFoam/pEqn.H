@@ -1,5 +1,3 @@
-bool closedVolume = false;
-
 rho = thermo.rho();
 
 volScalarField rUA = 1.0/UEqn.A();
@@ -28,8 +26,6 @@ for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
       - fvm::laplacian(rhorUAf, p_rgh)
     );
 
-    closedVolume = p_rgh.needReference();
-
     p_rghEqn.solve
     (
         mesh.solver(p_rgh.select(corr == nCorr-1 && nonOrth == nNonOrthCorr))
@@ -48,16 +44,5 @@ p = p_rgh + rho*gh;
 
 U += rUA*fvc::reconstruct((phi - phiU)/rhorUAf);
 U.correctBoundaryConditions();
-
-// For closed-volume cases adjust the pressure and density levels
-// to obey overall mass continuity
-if (closedVolume)
-{
-    p +=
-        (initialMass - fvc::domainIntegrate(thermo.psi()*p))
-       /fvc::domainIntegrate(thermo.psi());
-    p_rgh == p - rho*gh;
-    rho = thermo.rho();
-}
 
 DpDt = fvc::DDt(surfaceScalarField("phiU", phi/fvc::interpolate(rho)), p);
