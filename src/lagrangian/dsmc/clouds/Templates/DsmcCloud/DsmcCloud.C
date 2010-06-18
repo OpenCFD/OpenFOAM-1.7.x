@@ -27,6 +27,7 @@ License
 #include "BinaryCollisionModel.H"
 #include "WallInteractionModel.H"
 #include "InflowBoundaryModel.H"
+#include "zeroGradientFvPatchFields.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -458,6 +459,8 @@ void Foam::DsmcCloud<ParcelType>::collisions()
 
     reduce(collisionCandidates, sumOp<label>());
 
+    sigmaTcRMax_.correctBoundaryConditions();
+
     if (collisionCandidates)
     {
         Info<< "    Collisions                      = "
@@ -548,6 +551,8 @@ void Foam::DsmcCloud<ParcelType>::calculateFields()
 
     rhoM *= nParticle_/mesh().cellVolumes();
     rhoM_.correctBoundaryConditions();
+
+    dsmcRhoN_.correctBoundaryConditions();
 
     linearKE *= nParticle_/mesh().cellVolumes();
     linearKE_.correctBoundaryConditions();
@@ -850,7 +855,8 @@ Foam::DsmcCloud<ParcelType>::DsmcCloud
             IOobject::AUTO_WRITE
         ),
         mesh_,
-        dimensionedScalar("zero",  dimensionSet(0, 3, -1, 0, 0), 0.0)
+        dimensionedScalar("zero",  dimensionSet(0, 3, -1, 0, 0), 0.0),
+        zeroGradientFvPatchScalarField::typeName
     ),
     collisionSelectionRemainder_(),
     q_

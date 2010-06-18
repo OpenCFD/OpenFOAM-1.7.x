@@ -17,19 +17,19 @@ FoamFile
 
 application     dsmcFoam;
 
-startFrom       startTime;
+startFrom       latestTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         0.01;
+endTime         0.02;
 
 deltaT          2e-6;
 
 writeControl    runTime;
 
-writeInterval   1e-4;
+writeInterval   1e-3;
 
 purgeWrite      0;
 
@@ -43,98 +43,98 @@ timeFormat      general;
 
 timePrecision   6;
 
-runTimeModifiable yes;
+runTimeModifiable true;
 
 adjustTimeStep  no;
 
 functions
-(
+{
     dsmcFields1
     {
-        type dsmcFields;
-        enabled   on;
+        type            dsmcFields;
         functionObjectLibs ( "libutilityFunctionObjects.so" );
-        outputControl     outputTime;
+        enabled         true;
+        outputControl   outputTime;
     }
 
     fieldAverage1
     {
-        type fieldAverage;
+        type            fieldAverage;
         functionObjectLibs ( "libfieldFunctionObjects.so" );
-        outputControl     outputTime;
-        resetOnOutput     on;
+        outputControl   outputTime;
+        resetOnOutput   off;
+
         fields
         (
             rhoN
             {
-                 mean on;
-                 prime2Mean off;
-                 base time;
+                mean        on;
+                prime2Mean  off;
+                base        time;
             }
             rhoM
             {
-                mean on;
-                prime2Mean off;
-                base time;
+                mean        on;
+                prime2Mean  off;
+                base        time;
             }
             dsmcRhoN
             {
-                 mean on;
-                 prime2Mean off;
-                 base time;
+                mean        on;
+                prime2Mean  off;
+                base        time;
             }
             momentum
             {
-                mean on;
-                prime2Mean off;
-                base time;
+                mean        on;
+                prime2Mean  off;
+                base        time;
             }
             linearKE
             {
-                mean on;
-                prime2Mean off;
-                base time;
+                mean        on;
+                prime2Mean  off;
+                base        time;
             }
             internalE
             {
-                mean on;
-                prime2Mean off;
-                base time;
+                mean        on;
+                prime2Mean  off;
+                base        time;
             }
             iDof
             {
-                mean on;
-                prime2Mean off;
-                base time;
+                mean        on;
+                prime2Mean  off;
+                base        time;
             }
             q
             {
-                 mean on;
-                 prime2Mean off;
-                 base time;
+                mean        on;
+                prime2Mean  off;
+                base        time;
             }
             fD
             {
-                mean on;
-                prime2Mean off;
-                base time;
+                mean        on;
+                prime2Mean  off;
+                base        time;
             }
         );
     }
 
     forces1
     {
-        type        forces;
-        enabled     on;
+        type            forces;
+        enabled         true;
         functionObjectLibs ( "libforces.so" );
-        outputControl     outputTime;
-        patches     ( obstacle );
+        outputControl   outputTime;
+        patches         ( obstacle );
         directForceDensity true;
-        fDName      fDMean;
-        CofR        ( 0 0 0 );
-        log         on;
+        fDName          fDMean;
+        CofR            ( 0 0 0 );
+        log             on;
     }
-);
-
+}
 
 // ************************************************************************* //
