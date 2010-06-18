@@ -4,6 +4,7 @@
 
 runApplication blockMesh
 runApplication setSet -batch createObstacle.setSet
-runApplication subsetMesh c0 -patch walls
+runApplication subsetMesh -overwrite c0 -patch walls
+cp -r 0.org 0 > /dev/null 2>&1
 runApplication setFields
 runApplication interDyMFoam

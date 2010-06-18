@@ -3,13 +3,13 @@
 
     wordList pcorrTypes
     (
-        p.boundaryField().size(),
+        p_rgh.boundaryField().size(),
         zeroGradientFvPatchScalarField::typeName
     );
 
-    for (label i=0; i<p.boundaryField().size(); i++)
+    for (label i=0; i<p_rgh.boundaryField().size(); i++)
     {
-        if (p.boundaryField()[i].fixesValue())
+        if (p_rgh.boundaryField()[i].fixesValue())
         {
             pcorrTypes[i] = fixedValueFvPatchScalarField::typeName;
         }
@@ -26,11 +26,11 @@
             IOobject::NO_WRITE
         ),
         mesh,
-        dimensionedScalar("pcorr", p.dimensions(), 0.0),
+        dimensionedScalar("pcorr", p_rgh.dimensions(), 0.0),
         pcorrTypes
     );
 
-    dimensionedScalar rUAf("(1|A(U))", dimTime/rho.dimensions(), 1.0);
+    dimensionedScalar rAUf("(1|A(U))", dimTime/rho.dimensions(), 1.0);
 
     adjustPhi(phi, U, pcorr);
 
@@ -38,7 +38,7 @@
     {
         fvScalarMatrix pcorrEqn
         (
-            fvm::laplacian(rUAf, pcorr) == fvc::div(phi)
+            fvm::laplacian(rAUf, pcorr) == fvc::div(phi)
         );
 
         pcorrEqn.setReference(pRefCell, pRefValue);
