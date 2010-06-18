@@ -23,14 +23,13 @@
 
         p_rghEqn.setReference(pRefCell, getRefCellValue(p_rgh, pRefCell));
 
-        if (corr == nCorr-1 && nonOrth == nNonOrthCorr)
-        {
-            p_rghEqn.solve(mesh.solver(p_rgh.name() + "Final"));
-        }
-        else
-        {
-            p_rghEqn.solve(mesh.solver(p_rgh.name()));
-        }
+        p_rghEqn.solve
+        (
+            mesh.solver
+            (
+                p_rgh.select(corr == nCorr-1 && nonOrth == nNonOrthCorr)
+            )
+        );
 
         if (nonOrth == nNonOrthCorr)
         {
@@ -53,5 +52,6 @@
             p.dimensions(),
             pRefValue - getRefCellValue(p, pRefCell)
         );
+        p_rgh = p - rho*gh;
     }
 }

@@ -11,7 +11,7 @@ License
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your (at your (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -78,24 +78,17 @@ int main(int argc, char *argv[])
 
         twoPhaseProperties.correct();
 
-        for (int oCorr=0; oCorr<nOuterCorr; oCorr++)
+        #include "alphaEqnSubCycle.H"
+
+        #include "UEqn.H"
+
+        // --- PISO loop
+        for (int corr=0; corr<nCorr; corr++)
         {
-            #include "alphaEqnSubCycle.H"
-
-            #include "UEqn.H"
-
-            {
-                // --- PISO loop
-                for (int corr=0; corr<nCorr; corr++)
-                {
-                    #include "pEqn.H"
-                }
-
-                #include "continuityErrs.H"
-            }
-
-            turbulence->correct();
+            #include "pEqn.H"
         }
+
+        turbulence->correct();
 
         runTime.write();
 
