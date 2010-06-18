@@ -11,7 +11,7 @@ License
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your (at your (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -236,7 +236,7 @@ Foam::multiphaseMixture::surfaceTensionForce() const
 }
 
 
-void Foam::multiphaseMixture::correct()
+void Foam::multiphaseMixture::solve()
 {
     forAllIter(PtrDictionary<phase>, phases_, iter)
     {
@@ -293,6 +293,10 @@ void Foam::multiphaseMixture::correct()
         solveAlphas(nAlphaCorr, cycleAlpha, cAlpha);
     }
 }
+
+
+void Foam::multiphaseMixture::correct()
+{}
 
 
 Foam::tmp<Foam::surfaceVectorField> Foam::multiphaseMixture::nHatfv
@@ -450,6 +454,34 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixture::K
 
     // Simple expression for curvature
     return -fvc::div(tnHatfv & mesh_.Sf());
+}
+
+
+Foam::tmp<Foam::surfaceScalarField>
+Foam::multiphaseMixture::nearInterface() const
+{
+    tmp<surfaceScalarField> tnearInt
+    (
+        new surfaceScalarField
+        (
+            IOobject
+            (
+                "nearInterface",
+                mesh_.time().timeName(),
+                mesh_
+            ),
+            mesh_,
+            dimensionedScalar("nearInterface", dimless, 0.0)
+        )
+    );
+
+    forAllConstIter(PtrDictionary<phase>, phases_, iter)
+    {
+        surfaceScalarField alphaf = fvc::interpolate(iter());
+        tnearInt() = max(tnearInt(), pos(alphaf - 0.01)*pos(0.99 - alphaf));
+    }
+
+    return tnearInt;
 }
 
 
