@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
     #include "readPISOControls.H"
     #include "initContinuityErrs.H"
     #include "createFields.H"
+    #include "createPorousZones.H"
     #include "readTimeControls.H"
     #include "correctPhi.H"
     #include "CourantNo.H"
@@ -70,6 +71,7 @@ int main(int argc, char *argv[])
         #include "readPISOControls.H"
         #include "readTimeControls.H"
         #include "CourantNo.H"
+        #include "alphaCourantNo.H"
         #include "setDeltaT.H"
 
         runTime++;

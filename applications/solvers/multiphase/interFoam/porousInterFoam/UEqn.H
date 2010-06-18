@@ -29,10 +29,10 @@
          ==
             fvc::reconstruct
             (
-                fvc::interpolate(rho)*(g & mesh.Sf())
-              + (
+                (
                     fvc::interpolate(interface.sigmaK())*fvc::snGrad(alpha1)
-                  - fvc::snGrad(p)
+                  - ghf*fvc::snGrad(rho)
+                  - fvc::snGrad(p_rgh)
                 ) * mesh.magSf()
             )
         );
