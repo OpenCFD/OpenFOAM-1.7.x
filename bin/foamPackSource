@@ -61,31 +61,7 @@ fi
 # Clean up on termination and on Ctrl-C
 trap 'rm -f $tmpFile 2>/dev/null; exit 0' EXIT TERM INT
 
-find -H $packDir               \
-    ! -type d                  \
-   \( -type f -o -type l \)    \
-    ! -name "*~"               \
- -a ! -name ".*~"              \
- -a ! -name "*.orig"           \
- -a ! -name "*.dep"            \
- -a ! -name "*.o"              \
- -a ! -name "*.so"             \
- -a ! -name "*.a"              \
- -a ! -name "*.tgz"            \
- -a ! -name "core"             \
- -a ! -name "core.[1-9]*"      \
- -a ! -name "libccmio*"        \
-| sed                          \
- -e "\@$packDir/lib/@d"        \
- -e '\@/\.git/@d'              \
- -e '\@/\.tags/@d'             \
- -e '\@applications/bin/@d'    \
- -e '\@wmake/bin/@d'           \
- -e '\@/t/@d'                  \
- -e '\@/Make[.A-Za-z]*/[^/]*/@d'\
- -e '\@/platforms/@d'          \
- -e '\@libccmio.*/@d'          \
- > $tmpFile
+foamSourceFiles $packDir > $tmpFile
 
 
 # provide some feedback
