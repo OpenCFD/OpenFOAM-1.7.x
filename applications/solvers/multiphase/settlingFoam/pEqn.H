@@ -24,7 +24,7 @@ for(int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
         fvm::laplacian(rUAf, p_rgh) == fvc::ddt(rho) + fvc::div(phi)
     );
 
-    p_rghEqn.setReference(p_rghRefCell, p_rghRefValue);
+    p_rghEqn.setReference(pRefCell, getRefCellValue(p_rgh, pRefCell));
     p_rghEqn.solve();
 
     if (nonOrth == nNonOrthCorr)
@@ -41,8 +41,9 @@ if (p_rgh.needReference())
     (
         "p",
         p.dimensions(),
-        pRefValue - getRefCellValue(p, p_rghRefCell)
+        pRefValue - getRefCellValue(p, pRefCell)
     );
+    p_rgh = p - rho*gh;
 }
 
 #include "rhoEqn.H"

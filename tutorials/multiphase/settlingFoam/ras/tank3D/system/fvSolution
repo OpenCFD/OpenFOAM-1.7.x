@@ -71,7 +71,7 @@ PISO
     momentumPredictor yes;
     nOuterCorrectors  1;
     nCorrectors       2;
-    nNonOrthogonalCorrectors 0;
+    nNonOrthogonalCorrectors 1;
 }
 
 relaxationFactors
