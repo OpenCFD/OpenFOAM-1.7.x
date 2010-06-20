@@ -11,13 +11,13 @@
       + fvc::ddtPhiCorr(rUA, rho, U, phi)
     );
 
-    adjustPhi(phiU, U, p);
+    adjustPhi(phiU, U, p_rgh);
 
     phi = phiU +
         (
-            fvc::interpolate(interface.sigmaK())*fvc::snGrad(alpha1)*mesh.magSf()
-          + fvc::interpolate(rho)*(g & mesh.Sf())
-        )*rUAf;
+            fvc::interpolate(interface.sigmaK())*fvc::snGrad(alpha1)
+          - ghf*fvc::snGrad(rho)
+        )*rUAf*mesh.magSf();
 
     Pair<tmp<volScalarField> > vDotP = twoPhaseProperties->vDotP();
     const volScalarField& vDotcP = vDotP[0]();
@@ -25,29 +25,48 @@
 
     for(int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
     {
-        fvScalarMatrix pEqn
+        fvScalarMatrix p_rghEqn
         (
-            fvc::div(phi) - fvm::laplacian(rUAf, p)
-          - (vDotvP - vDotcP)*pSat + fvm::Sp(vDotvP - vDotcP, p)
+            fvc::div(phi) - fvm::laplacian(rUAf, p_rgh)
+          - (vDotvP - vDotcP)*(pSat - rho*gh) + fvm::Sp(vDotvP - vDotcP, p_rgh)
         );
 
-        pEqn.setReference(pRefCell, pRefValue);
+        p_rghEqn.setReference(pRefCell, pRefValue);
 
-        if (corr == nCorr-1 && nonOrth == nNonOrthCorr)
-        {
-            pEqn.solve(mesh.solver(p.name() + "Final"));
-        }
-        else
-        {
-            pEqn.solve(mesh.solver(p.name()));
-        }
+        p_rghEqn.solve
+        (
+            mesh.solver
+            (
+                p_rgh.select
+                (
+                    finalIter
+                 && corr == nCorr-1
+                 && nonOrth == nNonOrthCorr
+                )
+            )
+        );
 
         if (nonOrth == nNonOrthCorr)
         {
-            phi += pEqn.flux();
+            phi += p_rghEqn.flux();
         }
     }
 
     U += rUA*fvc::reconstruct((phi - phiU)/rUAf);
     U.correctBoundaryConditions();
+
+    #include "continuityErrs.H"
+
+    p == p_rgh + rho*gh;
+
+    if (p_rgh.needReference())
+    {
+        p += dimensionedScalar
+        (
+            "p",
+            p.dimensions(),
+            pRefValue - getRefCellValue(p, pRefCell)
+        );
+        p_rgh = p - rho*gh;
+    }
 }

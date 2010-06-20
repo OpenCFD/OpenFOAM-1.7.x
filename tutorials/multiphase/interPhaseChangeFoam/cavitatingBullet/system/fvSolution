@@ -37,7 +37,7 @@ solvers
         relTol           0;
     };
 
-    p
+    p_rgh
     {
         solver           GAMG;
         tolerance        1e-8;
@@ -58,11 +58,11 @@ solvers
 
     pcorr
     {
-        $p;
+        $p_rgh;
         relTol           0;
     };
 
-    pFinal
+    p_rghFinal
     {
         solver            PCG;
         preconditioner
