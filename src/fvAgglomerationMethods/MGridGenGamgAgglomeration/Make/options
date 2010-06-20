@@ -9,6 +9,7 @@ EXE_INC = \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I$(ParMGridGen)/MGridGen/Lib/lnInclude \
     -I$(ParMGridGen)/MGridGen/IMlib/lnInclude \
+    -I../../dummyThirdParty/MGridGen/MGridGen /* location of dummy mgridgen.h */ \
     $(TYPE_REAL)
 
 LIB_LIBS = \

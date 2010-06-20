@@ -1,9 +1,8 @@
 EXE_INC = \
-	-I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I$(LIB_SRC)/errorEstimation/lnInclude
 
 EXE_LIBS = \
-    -lerrorEstimation \
     -lmeshTools \
     -ldynamicMesh \
     -lfiniteVolume

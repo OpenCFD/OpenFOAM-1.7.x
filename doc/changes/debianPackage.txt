@@ -21,17 +21,32 @@ OpenFOAM building:
     sudo apt-get install binutils-dev
     sudo apt-get install flex
     sudo apt-get install libscotch-dev
+    sudo apt-get install libparmetis-dev
     sudo apt-get install libopenmpi-dev
     sudo apt-get install libxt-dev (tecplot360 converter)
 
-Compile all. Metis will fail.
+Compile all.
+- metis will give warning about dummy version of metis.h
+- parmetis might give problems
+- mgridgen might give problems
 
-Create a directory with a tar.bz2 pack of all:
+
+Create a directory with a tar.gz pack of all:
 
     cd ~/OpenFOAM
-    mkdir openfoam-1.7.0
-    tar czf openfoam-1.7.0/openfoam-1.7.0.orig.tar.gz OpenFOAM-1.7.0
-    cd openfoam-1.7.0
+    tar czf openfoam_1.7.0.orig.tar.gz OpenFOAM-1.7.0
+
+Test packaging:
+    # Clean build
+    fakeroot debian/clean
+    # Build : does Allwmake
+    fakeroot debian/build
+    # Create .deb from build results
+    fakeroot debian/binary
+or one one go:
+    dpdg-buildpackage -rfakeroot
+
+
 
 Packaging:
 

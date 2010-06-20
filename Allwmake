@@ -13,7 +13,10 @@ fi
 ( cd wmake/src && make )
 
 # build ThirdParty sources
-( cd $WM_THIRD_PARTY_DIR && ./Allwmake )
+if [ -d "$WM_THIRD_PARTY_DIR" ]
+then
+    ( cd $WM_THIRD_PARTY_DIR && ./Allwmake )
+fi
 
 # build OpenFOAM libraries and applications
 src/Allwmake
