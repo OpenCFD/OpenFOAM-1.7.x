@@ -14,7 +14,7 @@
     //- fvc::div(muEff*(fvc::interpolate(dev(fvc::grad(U))) & mesh.Sf()))
     );
 
-    if (oCorr == nOuterCorr-1)
+    if (finalIter)
     {
         UEqn.relax(1);
     }
@@ -31,8 +31,11 @@
          ==
             fvc::reconstruct
             (
-                (- ghf*fvc::snGrad(rho) - fvc::snGrad(p_rgh))*mesh.magSf()
+                (
+                  - ghf*fvc::snGrad(rho)
+                  - fvc::snGrad(p_rgh)
+                ) * mesh.magSf()
             ),
-            mesh.solver(oCorr == nOuterCorr-1 ? "UFinal" : "U")
+            mesh.solver(U.select(finalIter))
         );
     }
