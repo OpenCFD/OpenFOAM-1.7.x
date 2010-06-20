@@ -7,7 +7,7 @@ application=`getApplication`
 
 runApplication blockMesh
 cp 0/alpha1.org 0/alpha1
-cp 0/p.org 0/p
+cp 0/p_rgh.org 0/p_rgh
 runApplication setFields
 runApplication decomposePar
 runParallel $application 4

@@ -18,7 +18,7 @@ FoamFile
 defaultFieldValues
 (
     volScalarFieldValue alpha1 1
-    volScalarFieldValue p 100000
+    volScalarFieldValue p_rgh 100000
 );
 
 regions
@@ -30,7 +30,7 @@ regions
         fieldValues
         (
             volScalarFieldValue alpha1 0
-            volScalarFieldValue p 1000000
+            volScalarFieldValue p_rgh 1000000
         );
     }
     boxToCell

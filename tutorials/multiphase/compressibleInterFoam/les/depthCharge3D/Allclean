@@ -2,4 +2,4 @@
 
 foamCleanTutorials cases
 rm -rf processor*
-rm -rf 0/p.gz 0/alpha1.gz
+rm -rf 0/p_rgh.gz 0/alpha1.gz
