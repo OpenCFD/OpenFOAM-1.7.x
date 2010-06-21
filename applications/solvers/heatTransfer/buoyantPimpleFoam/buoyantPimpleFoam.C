@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 
             if (nOuterCorr != 1)
             {
-                p.storePrevIter();
+                p_rgh.storePrevIter();
             }
 
             #include "UEqn.H"

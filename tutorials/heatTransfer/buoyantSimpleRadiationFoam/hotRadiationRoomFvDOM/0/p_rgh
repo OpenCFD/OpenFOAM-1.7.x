@@ -2,23 +2,47 @@
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
 |  \\    /   O peration     | Version:  1.6                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    location    "0/uniform/lagrangian/dsmc";
-    object      particleProperties;
+    class       volScalarField;
+    object      p_rgh;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-processor0
-{
-    particleCount   63978;
-}
+dimensions      [1 -1 -2 0 0 0 0];
 
+internalField   uniform 100000;
+
+boundaryField
+{
+    floor
+    {
+        type            buoyantPressure;
+        value           uniform 100000;
+    }
+
+    ceiling
+    {
+        type            buoyantPressure;
+        value           uniform 100000;
+    }
+
+    fixedWalls
+    {
+        type            buoyantPressure;
+        value           uniform 100000;
+    }
+
+    box
+    {
+        type            buoyantPressure;
+        value           uniform 100000;
+    }
+}
 
 // ************************************************************************* //

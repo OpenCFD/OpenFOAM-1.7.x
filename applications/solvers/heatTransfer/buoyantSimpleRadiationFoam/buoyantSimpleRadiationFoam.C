@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
         #include "readSIMPLEControls.H"
         #include "initConvergenceCheck.H"
 
-        p.storePrevIter();
+        p_rgh.storePrevIter();
         rho.storePrevIter();
 
         // Pressure-velocity SIMPLE corrector
