@@ -91,7 +91,7 @@ multivariateSurfaceInterpolationScheme<Type>::New
             schemeData
         )   << "unknown discretisation scheme " << schemeName << endl << endl
             << "Valid schemes are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

@@ -46,7 +46,7 @@ Foam::autoPtr<Foam::ODESolver> Foam::ODESolver::New
         )   << "Unknown ODESolver type "
             << ODESolverTypeName << endl << endl
             << "Valid  ODESolvers are : " << endl
-            << ODEConstructorTablePtr_->toc()
+            << ODEConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

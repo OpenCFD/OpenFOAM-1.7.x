@@ -57,9 +57,10 @@ autoPtr<heatTransferModel> heatTransferModel::New
             << "heatTransferModel::New(const dictionary&) : " << endl
             << "    unknown heatTransferModelType type "
             << heatTransferModelType
-            << ", constructor not in hash table" << endl << endl
-            << "    Valid heatTransferModel types are :" << endl;
-        Info<< dictionaryConstructorTablePtr_->toc() << abort(FatalError);
+            << ", constructor not in hash table" << endl << nl
+            << "    Valid heatTransferModel types are :" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
+            << abort(FatalError);
     }
 
     return autoPtr<heatTransferModel>(cstrIter()(dict));

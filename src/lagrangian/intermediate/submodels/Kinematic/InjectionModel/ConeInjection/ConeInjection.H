@@ -96,7 +96,7 @@ class ConeInjection
         const autoPtr<DataEntry<scalar> > thetaOuter_;
 
         //- Parcel size PDF model
-        const autoPtr<pdf> parcelPDF_;
+        const autoPtr<pdfs::pdf> parcelPDF_;
 
 
         // Tangential vectors to the direction vector

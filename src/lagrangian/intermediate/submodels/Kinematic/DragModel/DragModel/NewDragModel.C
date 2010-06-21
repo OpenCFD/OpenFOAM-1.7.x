@@ -54,7 +54,7 @@ Foam::autoPtr<Foam::DragModel<CloudType> > Foam::DragModel<CloudType>::New
             << DragModelType
             << ", constructor not in hash table" << nl << nl
             << "    Valid DragModel types are:" << nl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

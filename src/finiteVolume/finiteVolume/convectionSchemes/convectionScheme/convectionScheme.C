@@ -78,7 +78,7 @@ tmp<convectionScheme<Type> > convectionScheme<Type>::New
             schemeData
         )   << "Convection scheme not specified" << endl << endl
             << "Valid convection schemes are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
@@ -96,7 +96,7 @@ tmp<convectionScheme<Type> > convectionScheme<Type>::New
             schemeData
         )   << "unknown convection scheme " << schemeName << endl << endl
             << "Valid convection schemes are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
@@ -135,7 +135,7 @@ tmp<convectionScheme<Type> > convectionScheme<Type>::New
             schemeData
         )   << "Convection scheme not specified" << endl << endl
             << "Valid convection schemes are :" << endl
-            << MultivariateConstructorTablePtr_->toc()
+            << MultivariateConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
@@ -155,7 +155,7 @@ tmp<convectionScheme<Type> > convectionScheme<Type>::New
             schemeData
         )   << "unknown convection scheme " << schemeName << endl << endl
             << "Valid convection schemes are :" << endl
-            << MultivariateConstructorTablePtr_->toc()
+            << MultivariateConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

@@ -65,7 +65,7 @@ Foam::autoPtr<Foam::coordinateSystem> Foam::coordinateSystem::New
         )   << "Unknown coordinateSystem type " << coordType << nl << nl
             << "Valid coordinateSystem types are :" << nl
             << "[default: " << typeName_() << "]"
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
@@ -101,7 +101,7 @@ Foam::autoPtr<Foam::coordinateSystem> Foam::coordinateSystem::New
             "constructing coordinateSystem"
         )   << "Unknown coordinateSystem type " << coordType << nl << nl
             << "Valid coordinateSystem types are :" << nl
-            << origRotationConstructorTablePtr_->toc()
+            << origRotationConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

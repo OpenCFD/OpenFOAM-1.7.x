@@ -63,7 +63,7 @@ tmp<d2dt2Scheme<Type> > d2dt2Scheme<Type>::New
             schemeData
         )   << "D2dt2 scheme not specified" << endl << endl
             << "Valid d2dt2 schemes are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
@@ -80,7 +80,7 @@ tmp<d2dt2Scheme<Type> > d2dt2Scheme<Type>::New
             schemeData
         )   << "unknown d2dt2 scheme " << schemeName << endl << endl
             << "Valid d2dt2 schemes are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

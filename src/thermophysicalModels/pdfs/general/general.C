@@ -30,91 +30,109 @@ License
 
 namespace Foam
 {
-    defineTypeNameAndDebug(general, 0);
-    addToRunTimeSelectionTable(pdf, general, dictionary);
+    namespace pdfs
+    {
+        defineTypeNameAndDebug(general, 0);
+        addToRunTimeSelectionTable(pdf, general, dictionary);
+    }
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::general::general(const dictionary& dict, Random& rndGen)
+Foam::pdfs::general::general(const dictionary& dict, Random& rndGen)
 :
-    pdf(dict, rndGen),
-    pdfDict_(dict.subDict(typeName + "PDF")),
+    pdf(typeName, dict, rndGen),
     xy_(pdfDict_.lookup("distribution")),
     nEntries_(xy_.size()),
     minValue_(xy_[0][0]),
     maxValue_(xy_[nEntries_-1][0]),
-    range_(maxValue_-minValue_)
+    integral_(nEntries_)
 {
-    // normalize the pdf
-    scalar yMax = 0;
+    check();
 
-    for (label i=0; i<nEntries_; i++)
+    // normalize the cumulative pdf
+
+    integral_[0] = 0.0;
+    for (label i=1; i<nEntries_; i++)
     {
-        yMax = max(yMax, xy_[i][1]);
+
+        scalar k = (xy_[i][1] - xy_[i-1][1])/(xy_[i][0] - xy_[i-1][0]);
+        scalar d = xy_[i-1][1] - k*xy_[i-1][0];
+        scalar y1 = xy_[i][0]*(0.5*k*xy_[i][0] + d);
+        scalar y0 = xy_[i-1][0]*(0.5*k*xy_[i-1][0] + d);
+        scalar area = y1 - y0;
+
+        integral_[i] = area + integral_[i-1];
     }
 
     for (label i=0; i<nEntries_; i++)
     {
-        xy_[i][1] /= yMax;
+        xy_[i][1] /= integral_[nEntries_-1];
+        integral_[i] /= integral_[nEntries_-1];
     }
+
 }
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::general::~general()
+Foam::pdfs::general::~general()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::scalar Foam::general::sample() const
+Foam::scalar Foam::pdfs::general::sample() const
 {
-    scalar y = 0;
-    scalar x = 0;
+    scalar y = rndGen_.scalar01();
 
-    bool success = false;
-
-    while (!success)
+    // find the interval where y is in the table
+    label n=1;
+    while (integral_[n] <= y)
     {
-        x = minValue_ + range_*rndGen_.scalar01();
-        y = rndGen_.scalar01();
+        n++;
+    }
 
-        bool intervalFound = false;
-        label i = -1;
-        while (!intervalFound)
+    scalar k = (xy_[n][1] - xy_[n-1][1])/(xy_[n][0] - xy_[n-1][0]);
+    scalar d = xy_[n-1][1] - k*xy_[n-1][0];
+
+    scalar alpha = y + xy_[n-1][0]*(0.5*k*xy_[n-1][0] + d) - integral_[n-1];
+    scalar x = 0.0;
+
+    // if k is small it is a linear equation, otherwise it is of second order
+    if (mag(k) > SMALL)
+    {
+        scalar p = 2.0*d/k;
+        scalar q = -2.0*alpha/k;
+        scalar sqrtEr = sqrt(0.25*p*p - q);
+
+        scalar x1 = -0.5*p + sqrtEr;
+        scalar x2 = -0.5*p - sqrtEr;
+        if ((x1 >= xy_[n-1][0]) && (x1 <= xy_[n][0]))
         {
-            i++;
-            if ( (x>xy_[i][0]) && (x<xy_[i+1][0]) )
-            {
-                intervalFound = true;
-            }
+            x = x1;
         }
-
-        scalar p =
-            xy_[i][1]
-          + (x-xy_[i][0])
-           *(xy_[i+1][1]-xy_[i][1])
-           /(xy_[i+1][0]-xy_[i][0]);
-
-        if (y<p)
+        else
         {
-            success = true;
+            x = x2;
         }
+    }
+    else
+    {
+        x = alpha/d;
     }
 
     return x;
 }
 
 
-Foam::scalar Foam::general::minValue() const
+Foam::scalar Foam::pdfs::general::minValue() const
 {
     return minValue_;
 }
 
 
-Foam::scalar Foam::general::maxValue() const
+Foam::scalar Foam::pdfs::general::maxValue() const
 {
     return maxValue_;
 }

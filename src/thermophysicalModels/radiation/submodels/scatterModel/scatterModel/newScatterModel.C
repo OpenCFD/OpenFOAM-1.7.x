@@ -50,7 +50,7 @@ Foam::autoPtr<Foam::radiation::scatterModel> Foam::radiation::scatterModel::New
             << scatterModelType
             << ", constructor not in hash table" << nl << nl
             << "    Valid scatterModel types are :" << nl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

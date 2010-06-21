@@ -105,7 +105,7 @@ class FieldActivatedInjection
             scalarList diameters_;
 
             //- Parcel size PDF model
-            const autoPtr<pdf> parcelPDF_;
+            const autoPtr<pdfs::pdf> parcelPDF_;
 
 
 protected:

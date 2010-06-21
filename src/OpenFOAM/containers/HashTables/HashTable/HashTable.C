@@ -247,6 +247,16 @@ Foam::List<Key> Foam::HashTable<T, Key, Hash>::toc() const
 
 
 template<class T, class Key, class Hash>
+Foam::List<Key> Foam::HashTable<T, Key, Hash>::sortedToc() const
+{
+    List<Key> sortedLst = this->toc();
+    sort(sortedLst);
+
+    return sortedLst;
+}
+
+
+template<class T, class Key, class Hash>
 bool Foam::HashTable<T, Key, Hash>::set
 (
     const Key& key,

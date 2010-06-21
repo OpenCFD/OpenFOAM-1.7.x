@@ -75,7 +75,7 @@ autoPtr<radiationModel> radiationModel::New
         )   << "Unknown radiationModel type " << radiationModelTypeName
             << nl << nl
             << "Valid radiationModel types are:" << nl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

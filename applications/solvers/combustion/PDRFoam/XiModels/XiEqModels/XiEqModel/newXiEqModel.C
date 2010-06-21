@@ -55,7 +55,7 @@ Foam::autoPtr<Foam::XiEqModel> Foam::XiEqModel::New
         )   << "Unknown XiEqModel type "
             << XiEqModelTypeName << endl << endl
             << "Valid  XiEqModels are : " << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

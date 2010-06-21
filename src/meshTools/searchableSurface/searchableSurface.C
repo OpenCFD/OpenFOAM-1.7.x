@@ -56,7 +56,7 @@ autoPtr<searchableSurface> searchableSurface::New
         )   << "Unknown searchableSurface type " << searchableSurfaceType
             << endl << endl
             << "Valid searchableSurface types : " << endl
-            << dictConstructorTablePtr_->toc()
+            << dictConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

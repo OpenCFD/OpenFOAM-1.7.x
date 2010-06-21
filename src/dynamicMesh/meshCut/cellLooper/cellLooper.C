@@ -21,8 +21,6 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Description
-
 \*---------------------------------------------------------------------------*/
 
 #include "cellLooper.H"
@@ -61,7 +59,7 @@ autoPtr<cellLooper> cellLooper::New
         )   << "Unknown set type " << type
             << endl << endl
             << "Valid cellLooper types : " << endl
-            << wordConstructorTablePtr_->toc()
+            << wordConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

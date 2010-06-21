@@ -47,7 +47,7 @@ Foam::autoPtr<Foam::GAMGInterfaceField> Foam::GAMGInterfaceField::New
             "const lduInterfaceField& fineInterface)"
         )   << "Unknown GAMGInterfaceField type " << coupleType << ".\n"
             << "Valid GAMGInterfaceField types are :"
-            << lduInterfaceConstructorTablePtr_->toc()
+            << lduInterfaceConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

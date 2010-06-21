@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,33 +23,52 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "pdf.H"
+#include "fixedValue.H"
+#include "addToRunTimeSelectionTable.H"
 
-// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-Foam::autoPtr<Foam::pdf> Foam::pdf::New
-(
-    const dictionary& dict,
-    Random& rndGen
-)
+namespace Foam
 {
-    word pdfType(dict.lookup("pdfType"));
-
-    Info<< "Selecting pdfType " << pdfType << endl;
-
-    dictionaryConstructorTable::iterator cstrIter =
-        dictionaryConstructorTablePtr_->find(pdfType);
-
-    if (cstrIter == dictionaryConstructorTablePtr_->end())
+    namespace pdfs
     {
-        FatalErrorIn("pdf::New(const dictionary&, Random&)")
-            << "unknown pdf type " << pdfType << nl << nl
-            << "Valid pdf types are:" << nl
-            << dictionaryConstructorTablePtr_->toc()
-            << exit(FatalError);
+        defineTypeNameAndDebug(fixedValue, 0);
+        addToRunTimeSelectionTable(pdf, fixedValue, dictionary);
     }
+}
 
-    return autoPtr<pdf>(cstrIter()(dict, rndGen));
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::pdfs::fixedValue::fixedValue(const dictionary& dict, Random& rndGen)
+:
+    pdf(typeName, dict, rndGen),
+    value_(readScalar(pdfDict_.lookup("value")))
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::pdfs::fixedValue::~fixedValue()
+{}
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+Foam::scalar Foam::pdfs::fixedValue::fixedValue::sample() const
+{
+    return value_;
+}
+
+
+Foam::scalar Foam::pdfs::fixedValue::fixedValue::minValue() const
+{
+    return -VGREAT;
+}
+
+
+Foam::scalar Foam::pdfs::fixedValue::fixedValue::maxValue() const
+{
+    return VGREAT;
 }
 
 

@@ -54,7 +54,7 @@ Foam::autoPtr<Foam::combustionModel> Foam::combustionModel::New
         )   << "Unknown combustionModel type "
             << combustionModelTypeName << endl << endl
             << "Valid  combustionModels are : " << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

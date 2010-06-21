@@ -85,11 +85,11 @@ Foam::autoPtr<Foam::psiChemistryModel> Foam::psiChemistryModel::New
             FatalErrorIn("psiChemistryModelBase::New(const mesh&)")
                 << "Unknown psiChemistryModel type " << psiChemistryModelType
                 << nl << nl << "Valid psiChemistryModel types are:" << nl
-                << fvMeshConstructorTablePtr_->toc() << nl << exit(FatalError);
+                << fvMeshConstructorTablePtr_->sortedToc() << nl << exit(FatalError);
         }
         else
         {
-            wordList models = fvMeshConstructorTablePtr_->toc();
+            wordList models = fvMeshConstructorTablePtr_->sortedToc();
             forAll(models, i)
             {
                 models[i] = models[i].replace(typeName + ',', "");

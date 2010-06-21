@@ -123,9 +123,9 @@ const Foam::GAMGAgglomeration& Foam::GAMGAgglomeration::New
             )   << "Unknown GAMGAgglomeration type "
                 << agglomeratorType << ".\n"
                 << "Valid algebraic GAMGAgglomeration types are :"
-                << lduMatrixConstructorTablePtr_->toc() << endl
+                << lduMatrixConstructorTablePtr_->sortedToc() << endl
                 << "Valid algebraic GAMGAgglomeration types are :"
-                << lduMeshConstructorTablePtr_->toc()
+                << lduMeshConstructorTablePtr_->sortedToc()
                 << exit(FatalError);
         }
 

@@ -23,37 +23,33 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "fvPatch.H"
-#include "HashTable.H"
+#include "pdf.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
-Foam::autoPtr<Foam::fvPatch> Foam::fvPatch::New
+Foam::autoPtr<Foam::pdfs::pdf> Foam::pdfs::pdf::New
 (
-    const polyPatch& patch,
-    const fvBoundaryMesh& bm
+    const dictionary& dict,
+    Random& rndGen
 )
 {
-    if (debug)
-    {
-        Info<< "fvPatch::New(const polyPatch&, const fvBoundaryMesh&) : "
-            << "constructing fvPatch"
-            << endl;
-    }
+    const word modelType(dict.lookup("pdfType"));
 
-    polyPatchConstructorTable::iterator cstrIter =
-        polyPatchConstructorTablePtr_->find(patch.type());
+    Info<< "Selecting pdfType " << modelType << endl;
 
-    if (cstrIter == polyPatchConstructorTablePtr_->end())
+    dictionaryConstructorTable::iterator cstrIter =
+        dictionaryConstructorTablePtr_->find(modelType);
+
+    if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
-        FatalErrorIn("fvPatch::New(const polyPatch&, const fvBoundaryMesh&)")
-            << "Unknown fvPatch type " << patch.type() << ".\n"
-            << "Valid fvPatch types are :"
-            << polyPatchConstructorTablePtr_->sortedToc()
+        FatalErrorIn("pdfs::pdf::New(const dictionary&, Random&)")
+            << "Unknown pdf type " << modelType << nl << nl
+            << "Valid pdf types are:" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 
-    return autoPtr<fvPatch>(cstrIter()(patch, bm));
+    return autoPtr<pdf>(cstrIter()(dict, rndGen));
 }
 
 

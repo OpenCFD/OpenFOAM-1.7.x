@@ -84,7 +84,7 @@ bool Foam::functionEntry::execute
             << "' in " << is.name() << " near line " << is.lineNumber()
             << endl << endl
             << "Valid functionEntries are :" << endl
-            << executedictionaryIstreamMemberFunctionTablePtr_->toc()
+            << executedictionaryIstreamMemberFunctionTablePtr_->sortedToc()
             << exit(FatalError);
     }
 
@@ -130,7 +130,7 @@ bool Foam::functionEntry::execute
             << "' in " << is.name() << " near line " << is.lineNumber()
             << endl << endl
             << "Valid functionEntries are :" << endl
-            << executeprimitiveEntryIstreamMemberFunctionTablePtr_->toc()
+            << executeprimitiveEntryIstreamMemberFunctionTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

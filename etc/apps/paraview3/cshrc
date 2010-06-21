@@ -43,8 +43,8 @@ foreach cmake ( cmake-2.6.4 cmake-2.6.2 cmake-2.4.6 )
     endif
 end
 
-if ( ! $?ParaView_MAJOR ) setenv ParaView_MAJOR paraview-3.6
-if ( ! $?ParaView_VERSION ) setenv ParaView_VERSION 3.6.1
+if ( ! $?ParaView_MAJOR ) setenv ParaView_MAJOR paraview-3.8
+if ( ! $?ParaView_VERSION ) setenv ParaView_VERSION 3.8.0
 
 setenv ParaView_INST_DIR $WM_THIRD_PARTY_DIR/paraview-$ParaView_VERSION
 setenv ParaView_DIR $ParaView_INST_DIR/platforms/$WM_ARCH$WM_COMPILER

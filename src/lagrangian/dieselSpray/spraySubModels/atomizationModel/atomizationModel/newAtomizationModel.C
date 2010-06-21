@@ -55,12 +55,14 @@ autoPtr<atomizationModel> atomizationModel::New
     if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
         FatalError
-            << "atomizationModel::New(const dictionary&, const spray&) : " << endl
+            << "atomizationModel::New(const dictionary&, const spray&) : "
+            << nl
             << "    unknown atomizationModelType type "
             << atomizationModelType
-            << ", constructor not in hash table" << endl << endl
-            << "    Valid atomizationModel types are :" << endl;
-        Info<< dictionaryConstructorTablePtr_->toc() << abort(FatalError);
+            << ", constructor not in hash table" << nl << nl
+            << "    Valid atomizationModel types are :" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
+            << abort(FatalError);
     }
 
     return autoPtr<atomizationModel>(cstrIter()(dict, sm));

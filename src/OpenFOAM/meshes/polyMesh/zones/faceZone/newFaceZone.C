@@ -61,7 +61,7 @@ Foam::autoPtr<Foam::faceZone> Foam::faceZone::New
             dict
         )   << "Unknown faceZone type " << zoneType << endl << endl
             << "Valid faceZone types are :" << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

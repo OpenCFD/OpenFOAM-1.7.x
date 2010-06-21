@@ -60,13 +60,12 @@ autoPtr<collisionModel> collisionModel::New
     {
         FatalError
             << "collisionModel::New(const dictionary&, const spray&) : "
-            << endl
+            << nl
             << "    unknown collisionModelType type "
             << collisionModelType
-            << ", constructor not in hash table" << endl << endl
-            << "    Valid collisionModel types are :"
-            << endl;
-        Info<< dictionaryConstructorTablePtr_->toc()
+            << ", constructor not in hash table" << nl << nl
+            << "    Valid collisionModel types are :" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
             << abort(FatalError);
     }
 

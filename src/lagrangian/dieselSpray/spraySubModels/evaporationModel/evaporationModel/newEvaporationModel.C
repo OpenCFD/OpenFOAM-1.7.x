@@ -56,12 +56,13 @@ autoPtr<evaporationModel> evaporationModel::New
     if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
         FatalError
-            << "evaporationModel::New(const dictionary&) : " << endl
+            << "evaporationModel::New(const dictionary&) : " << nl
             << "    unknown evaporationModelType type "
             << evaporationModelType
-            << ", constructor not in hash table" << endl << endl
-            << "    Valid evaporationModel types are :" << endl;
-        Info<< dictionaryConstructorTablePtr_->toc() << abort(FatalError);
+            << ", constructor not in hash table" << endl << nl
+            << "    Valid evaporationModel types are :" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
+            << abort(FatalError);
     }
 
     return autoPtr<evaporationModel>(cstrIter()(dict));

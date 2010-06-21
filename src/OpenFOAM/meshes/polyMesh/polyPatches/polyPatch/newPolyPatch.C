@@ -58,7 +58,7 @@ Foam::autoPtr<Foam::polyPatch> Foam::polyPatch::New
         )   << "Unknown polyPatch type " << patchType << " for patch " << name
             << endl << endl
             << "Valid polyPatch types are :" << endl
-            << wordConstructorTablePtr_->toc()
+            << wordConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 
@@ -106,7 +106,7 @@ Foam::autoPtr<Foam::polyPatch> Foam::polyPatch::New
                 << " for patch " << name
                 << endl << endl
                 << "Valid polyPatch types are :" << endl
-                << dictionaryConstructorTablePtr_->toc()
+                << dictionaryConstructorTablePtr_->sortedToc()
                 << exit(FatalIOError);
         }
     }

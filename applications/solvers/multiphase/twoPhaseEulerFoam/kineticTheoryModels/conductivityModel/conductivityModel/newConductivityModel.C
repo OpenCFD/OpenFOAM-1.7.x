@@ -48,7 +48,7 @@ Foam::autoPtr<Foam::conductivityModel> Foam::conductivityModel::New
             << conductivityModelType
             << ", constructor not in hash table" << endl << endl
             << "    Valid conductivityModelType types are :" << endl;
-        Info<< dictionaryConstructorTablePtr_->toc() << abort(FatalError);
+        Info<< dictionaryConstructorTablePtr_->sortedToc() << abort(FatalError);
     }
 
     return autoPtr<conductivityModel>(cstrIter()(dict));

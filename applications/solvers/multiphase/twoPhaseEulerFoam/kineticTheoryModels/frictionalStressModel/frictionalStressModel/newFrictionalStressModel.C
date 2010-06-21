@@ -48,7 +48,8 @@ Foam::autoPtr<Foam::frictionalStressModel> Foam::frictionalStressModel::New
             << frictionalStressModelType
             << ", constructor not in hash table" << endl << endl
             << "    Valid frictionalStressModelType types are :" << endl;
-        Info<< dictionaryConstructorTablePtr_->toc() << abort(FatalError);
+        Info<< dictionaryConstructorTablePtr_->sortedToc()
+            << abort(FatalError);
     }
 
     return autoPtr<frictionalStressModel>(cstrIter()(dict));

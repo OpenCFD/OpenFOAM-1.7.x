@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -21,54 +21,82 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
+Class
+    Foam::fixedValue
+
+Description
+    Returns a fixed value
+
+SourceFiles
+    fixedValue.C
+
 \*---------------------------------------------------------------------------*/
 
-#include "error.H"
+#ifndef pdfFixedValue_H
+#define pdfFixedValue_H
 
-#include "dragModel.H"
-#include "parcel.H"
+#include "pdf.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-autoPtr<dragModel> dragModel::New
-(
-    const dictionary& dict
-)
+namespace pdfs
 {
-    word dragModelType
-    (
-        dict.lookup("dragModel")
-    );
+/*---------------------------------------------------------------------------*\
+                       Class fixedValue Declaration
+\*---------------------------------------------------------------------------*/
 
-    Info<< "Selecting dragModel "
-         << dragModelType << endl;
+class fixedValue
+:
+    public pdf
+{
+    // Private data
 
-    dictionaryConstructorTable::iterator cstrIter =
-        dictionaryConstructorTablePtr_->find(dragModelType);
+        //- Fixed value
+        scalar value_;
 
-    if (cstrIter == dictionaryConstructorTablePtr_->end())
-    {
-        FatalError
-            << "dragModel::New(const dictionary&) : " << endl
-            << "    unknown dragModelType type "
-            << dragModelType
-            << ", constructor not in hash table" << nl << endl
-            << "    Valid dragModel types are :" << nl
-            << dictionaryConstructorTablePtr_->sortedToc()
-            << abort(FatalError);
-    }
 
-    return autoPtr<dragModel>(cstrIter()(dict));
-}
+public:
+
+    //- Runtime type information
+    TypeName("fixedValue");
+
+
+    // Constructors
+
+        //- Construct from components
+        fixedValue
+        (
+            const dictionary& dict,
+            Random& rndGen
+        );
+
+
+    //- Destructor
+    virtual ~fixedValue();
+
+
+    // Member Functions
+
+         //- Sample the pdf
+        virtual scalar sample() const;
+
+        //- Return the minimum value
+        virtual scalar minValue() const;
+
+        //- Return the maximum value
+        virtual scalar maxValue() const;
+};
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace pdfs
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#endif
 
 // ************************************************************************* //

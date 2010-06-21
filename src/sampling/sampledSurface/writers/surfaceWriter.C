@@ -76,7 +76,7 @@ Foam::surfaceWriter<Type>::New(const word& writeType)
                 "surfaceWriter::New(const word&)"
             )   << "Unknown write type \"" << writeType << "\"\n\n"
                 << "Valid write types : "
-                << wordConstructorTablePtr_->toc() << nl
+                << wordConstructorTablePtr_->sortedToc() << nl
                 << "Valid proxy types : "
                 << MeshedSurfaceProxy<face>::writeTypes() << endl
                 << exit(FatalError);
