@@ -6,12 +6,16 @@
     PtrList<surfaceScalarField> phiFluid(fluidRegions.size());
     PtrList<uniformDimensionedVectorField> gFluid(fluidRegions.size());
     PtrList<compressible::turbulenceModel> turbulence(fluidRegions.size());
-    PtrList<volScalarField> DpDtf(fluidRegions.size());
+    PtrList<volScalarField> p_rghFluid(fluidRegions.size());
+    PtrList<volScalarField> ghFluid(fluidRegions.size());
+    PtrList<surfaceScalarField> ghfFluid(fluidRegions.size());
 
     List<scalar> initialMassFluid(fluidRegions.size());
     List<label> pRefCellFluid(fluidRegions.size(),0);
     List<scalar> pRefValueFluid(fluidRegions.size(),0.0);
 
+    PtrList<dimensionedScalar> rhoMax(fluidRegions.size());
+    PtrList<dimensionedScalar> rhoMin(fluidRegions.size());
 
     // Populate fluid field pointer lists
     forAll(fluidRegions, i)
@@ -130,6 +134,40 @@
             ).ptr()
         );
 
+        Info<< "    Adding to ghFluid\n" << endl;
+        ghFluid.set
+        (
+            i,
+            new volScalarField("gh", gFluid[i] & fluidRegions[i].C())
+        );
+
+        Info<< "    Adding to ghfFluid\n" << endl;
+        ghfFluid.set
+        (
+            i,
+            new surfaceScalarField("ghf", gFluid[i] & fluidRegions[i].Cf())
+        );
+
+        p_rghFluid.set
+        (
+            i,
+            new volScalarField
+            (
+                IOobject
+                (
+                    "p_rgh",
+                    runTime.timeName(),
+                    fluidRegions[i],
+                    IOobject::MUST_READ,
+                    IOobject::AUTO_WRITE
+                ),
+                fluidRegions[i]
+            )
+        );
+
+        // Force p_rgh to be consistent with p
+        p_rghFluid[i] = thermoFluid[i].p() - rhoFluid[i]*ghFluid[i];
+
         initialMassFluid[i] = fvc::domainIntegrate(rhoFluid[i]).value();
 
         setRefCell
@@ -139,6 +177,22 @@
             pRefCellFluid[i],
             pRefValueFluid[i]
         );
+
+        rhoMax.set
+        (
+            i,
+            new dimensionedScalar
+            (
+                fluidRegions[i].solutionDict().subDict("SIMPLE").lookup("rhoMax")
+            )
+        );
+
+        rhoMin.set
+        (
+            i,
+            new dimensionedScalar
+            (
+                fluidRegions[i].solutionDict().subDict("SIMPLE").lookup("rhoMin")
+            )
+        );
     }
-
-

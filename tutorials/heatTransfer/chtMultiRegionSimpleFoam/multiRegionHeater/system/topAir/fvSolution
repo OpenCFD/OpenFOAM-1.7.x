@@ -24,7 +24,7 @@ solvers
         relTol          0;
     }
 
-    p
+    p_rgh
     {
         solver           GAMG;
         tolerance        1e-8;
@@ -52,19 +52,20 @@ SIMPLE
     nNonOrthogonalCorrectors 0;
     pRefCell                0;
     pRefValue               100000;
+    rhoMin      rhoMin [1 -3 0 0 0] 0.2;
+    rhoMax      rhoMax [1 -3 0 0 0] 2;
 }
 
 relaxationFactors
 {
     rho         1;
-    p           0.7;
+    p_rgh       0.7;
     U           0.3;
     h           0.7;
     nuTilda     0.7;
     k           0.7;
     epsilon     0.7;
     omega       0.7;
-    "ILambda.*" 0.7;
 }
 
 // ************************************************************************* //

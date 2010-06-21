@@ -2,7 +2,6 @@
     tmp<fvVectorMatrix> UEqn
     (
         fvm::div(phi, U)
-      - fvm::Sp(fvc::div(phi), U)
       + turb.divDevRhoReff(U)
     );
 
@@ -14,8 +13,10 @@
      ==
         fvc::reconstruct
         (
-            fvc::interpolate(rho)*(g & mesh.Sf())
-          - fvc::snGrad(p)*mesh.magSf()
+            (
+              - ghf*fvc::snGrad(rho)
+              - fvc::snGrad(p_rgh)
+            )*mesh.magSf()
         )
     ).initialResidual();
 
