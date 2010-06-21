@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,24 +22,18 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::normal
+    Foam::fixedValue
 
 Description
-    A normal pdf
-
-    @verbatim
-        pdf = strength * exp(-0.5*((x - expectation)/variance)^2 )
-    @endverbatim
-
-    strength only has meaning if there's more than one pdf
+    Returns a fixed value
 
 SourceFiles
-    normal.C
+    fixedValue.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef normal_H
-#define normal_H
+#ifndef pdfFixedValue_H
+#define pdfFixedValue_H
 
 #include "pdf.H"
 
@@ -49,43 +43,30 @@ namespace Foam
 {
 namespace pdfs
 {
-
 /*---------------------------------------------------------------------------*\
-                           Class normal Declaration
+                       Class fixedValue Declaration
 \*---------------------------------------------------------------------------*/
 
-class normal
+class fixedValue
 :
     public pdf
 {
     // Private data
 
-
-        //- Distribution minimum
-        scalar minValue_;
-
-        //- Distribution maximum
-        scalar maxValue_;
-
-
-        // Model coefficients
-
-            scalar expectation_;
-            scalar variance_;
-
-            scalar a_;
+        //- Fixed value
+        scalar value_;
 
 
 public:
 
     //- Runtime type information
-    TypeName("normal");
+    TypeName("fixedValue");
 
 
     // Constructors
 
         //- Construct from components
-        normal
+        fixedValue
         (
             const dictionary& dict,
             Random& rndGen
@@ -93,12 +74,12 @@ public:
 
 
     //- Destructor
-    virtual ~normal();
+    virtual ~fixedValue();
 
 
     // Member Functions
 
-        //- Sample the pdf
+         //- Sample the pdf
         virtual scalar sample() const;
 
         //- Return the minimum value
@@ -106,8 +87,6 @@ public:
 
         //- Return the maximum value
         virtual scalar maxValue() const;
-
-        scalar erfInv(const scalar y) const;
 };
 
 

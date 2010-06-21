@@ -83,7 +83,7 @@ class PatchInjection
         const autoPtr<DataEntry<scalar> > volumeFlowRate_;
 
         //- Parcel size PDF model
-        const autoPtr<pdf> parcelPDF_;
+        const autoPtr<pdfs::pdf> parcelPDF_;
 
         //- Cell owners
         labelList cellOwners_;

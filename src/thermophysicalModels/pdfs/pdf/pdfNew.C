@@ -23,56 +23,33 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "uniform.H"
-#include "addToRunTimeSelectionTable.H"
+#include "pdf.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
-namespace Foam
+Foam::autoPtr<Foam::pdfs::pdf> Foam::pdfs::pdf::New
+(
+    const dictionary& dict,
+    Random& rndGen
+)
 {
-    namespace pdfs
+    const word modelType(dict.lookup("pdfType"));
+
+    Info<< "Selecting pdfType " << modelType << endl;
+
+    dictionaryConstructorTable::iterator cstrIter =
+        dictionaryConstructorTablePtr_->find(modelType);
+
+    if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
-        defineTypeNameAndDebug(uniform, 0);
-        addToRunTimeSelectionTable(pdf, uniform, dictionary);
+        FatalErrorIn("pdfs::pdf::New(const dictionary&, Random&)")
+            << "Unknown pdf type " << modelType << nl << nl
+            << "Valid pdf types are:" << nl
+            << dictionaryConstructorTablePtr_->toc()
+            << exit(FatalError);
     }
-}
 
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-Foam::pdfs::uniform::uniform(const dictionary& dict, Random& rndGen)
-:
-    pdf(typeName, dict, rndGen),
-    minValue_(readScalar(pdfDict_.lookup("minValue"))),
-    maxValue_(readScalar(pdfDict_.lookup("maxValue"))),
-    range_(maxValue_ - minValue_)
-{
-    check();
-}
-
-
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
-
-Foam::pdfs::uniform::~uniform()
-{}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-Foam::scalar Foam::pdfs::uniform::sample() const
-{
-    return (minValue_ + rndGen_.scalar01()*range_);
-}
-
-
-Foam::scalar Foam::pdfs::uniform::minValue() const
-{
-    return minValue_;
-}
-
-
-Foam::scalar Foam::pdfs::uniform::maxValue() const
-{
-    return maxValue_;
+    return autoPtr<pdf>(cstrIter()(dict, rndGen));
 }
 
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,24 +22,23 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::normal
+    Foam::multiNormal
 
 Description
-    A normal pdf
+    A multiNormal pdf
 
     @verbatim
-        pdf = strength * exp(-0.5*((x - expectation)/variance)^2 )
+        pdf = sum_i strength_i * exp(-0.5*((x - expectation_i)/variance_i)^2 )
     @endverbatim
 
-    strength only has meaning if there's more than one pdf
 
 SourceFiles
-    normal.C
+    multiNormal.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef normal_H
-#define normal_H
+#ifndef multiNormal_H
+#define multiNormal_H
 
 #include "pdf.H"
 
@@ -51,15 +50,14 @@ namespace pdfs
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class normal Declaration
+                        Class multiNormal Declaration
 \*---------------------------------------------------------------------------*/
 
-class normal
+class multiNormal
 :
     public pdf
 {
     // Private data
-
 
         //- Distribution minimum
         scalar minValue_;
@@ -67,25 +65,27 @@ class normal
         //- Distribution maximum
         scalar maxValue_;
 
+        //- Distribution range
+        scalar range_;
+
 
         // Model coefficients
 
-            scalar expectation_;
-            scalar variance_;
-
-            scalar a_;
+            List<scalar> expectation_;
+            List<scalar> variance_;
+            List<scalar> strength_;
 
 
 public:
 
     //- Runtime type information
-    TypeName("normal");
+    TypeName("multiNormal");
 
 
     // Constructors
 
         //- Construct from components
-        normal
+        multiNormal
         (
             const dictionary& dict,
             Random& rndGen
@@ -93,7 +93,7 @@ public:
 
 
     //- Destructor
-    virtual ~normal();
+    virtual ~multiNormal();
 
 
     // Member Functions
@@ -106,8 +106,6 @@ public:
 
         //- Return the maximum value
         virtual scalar maxValue() const;
-
-        scalar erfInv(const scalar y) const;
 };
 
 

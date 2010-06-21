@@ -57,7 +57,7 @@ ChomiakInjector::ChomiakInjector
     ChomiakDict_(dict.subDict(typeName + "Coeffs")),
     dropletPDF_
     (
-        pdf::New
+        pdfs::pdf::New
         (
             ChomiakDict_.subDict("dropletPDF"),
             sm.rndGen()
@@ -95,7 +95,7 @@ ChomiakInjector::~ChomiakInjector()
 
 scalar ChomiakInjector::d0
 (
-    const label, 
+    const label,
     const scalar
 ) const
 {
@@ -122,7 +122,7 @@ vector ChomiakInjector::direction
 
     // randomly distributed vector normal to the injection vector
     vector normal = vector::zero;
-    
+
     if (sm_.twoD())
     {
         scalar reduce = 0.01;
@@ -146,7 +146,7 @@ vector ChomiakInjector::direction
             injectors_[n].properties()->tan2(hole)*sin(beta)
         );
     }
-    
+
     // set the direction of injection by adding the normal vector
     vector dir = dcorr*injectors_[n].properties()->direction(hole, time) + normal;
     dir /= mag(dir);
@@ -180,7 +180,7 @@ scalar ChomiakInjector::averageVelocity
 (
     const label i
 ) const
-{    
+{
     const injectorType& it = sm_.injectors()[i].properties();
     scalar dt = it.teoi() - it.tsoi();
     return it.integrateTable(it.velocityProfile())/dt;

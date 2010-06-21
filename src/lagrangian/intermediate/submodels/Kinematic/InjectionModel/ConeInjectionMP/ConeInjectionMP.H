@@ -103,7 +103,7 @@ class ConeInjectionMP
         const autoPtr<DataEntry<scalar> > thetaOuter_;
 
         //- Parcel size PDF model
-        const autoPtr<pdf> parcelPDF_;
+        const autoPtr<pdfs::pdf> parcelPDF_;
 
         //- Number of parcels per injector already injected
         mutable label nInjected_;

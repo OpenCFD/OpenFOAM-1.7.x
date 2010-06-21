@@ -92,7 +92,7 @@ Foam::PatchInjection<CloudType>::PatchInjection
     ),
     parcelPDF_
     (
-        pdf::New
+        pdfs::pdf::New
         (
             this->coeffDict().subDict("parcelPDF"),
             owner.rndGen()
