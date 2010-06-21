@@ -19,7 +19,7 @@ defaultFieldValues
 (
     volScalarFieldValue alpha1 1
     volScalarFieldValue p_rgh 100000
-)
+);
 
 regions
 (
