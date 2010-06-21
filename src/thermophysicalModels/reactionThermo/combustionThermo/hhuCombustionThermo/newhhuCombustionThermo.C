@@ -68,7 +68,7 @@ autoPtr<hhuCombustionThermo> hhuCombustionThermo::New(const fvMesh& mesh)
             << "Unknown hhuCombustionThermo type "
             << hhuCombustionThermoTypeName << endl << endl
             << "Valid hhuCombustionThermo types are :" << endl
-            << fvMeshConstructorTablePtr_->toc()
+            << fvMeshConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

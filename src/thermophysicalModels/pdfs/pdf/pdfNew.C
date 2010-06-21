@@ -45,7 +45,7 @@ Foam::autoPtr<Foam::pdfs::pdf> Foam::pdfs::pdf::New
         FatalErrorIn("pdfs::pdf::New(const dictionary&, Random&)")
             << "Unknown pdf type " << modelType << nl << nl
             << "Valid pdf types are:" << nl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

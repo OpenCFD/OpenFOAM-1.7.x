@@ -427,9 +427,9 @@ Foam::autoPtr<Foam::sampledSet> Foam::sampledSet::New
             "sampledSet::New(const word&, "
             "const polyMesh&, meshSearch&, const dictionary&)"
         )   << "Unknown sample type " << sampleType
-            << endl << endl
-            << "Valid sample types : " << endl
-            << wordConstructorTablePtr_->toc()
+            << nl << nl
+            << "Valid sample types : " << nl
+            << wordConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

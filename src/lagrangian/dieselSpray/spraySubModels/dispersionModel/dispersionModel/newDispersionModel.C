@@ -56,12 +56,13 @@ autoPtr<dispersionModel> dispersionModel::New
     {
         FatalError
             << "dispersionModel::New(const dictionary&, const spray&) : "
-            << endl
+            << nl
             << "    unknown dispersionModelType type "
             << dispersionModelType
-            << ", constructor not in hash table" << endl << endl
-            << "    Valid dispersionModel types are :" << endl;
-        Info<< dictionaryConstructorTablePtr_->toc() << abort(FatalError);
+            << ", constructor not in hash table" << nl << nl
+            << "    Valid dispersionModel types are :" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
+            << abort(FatalError);
     }
 
     return autoPtr<dispersionModel>(cstrIter()(dict, sm));

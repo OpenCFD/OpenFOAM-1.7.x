@@ -55,7 +55,7 @@ Foam::InjectionModel<CloudType>::New
             << InjectionModelType
             << ", constructor not in hash table" << nl << nl
             << "    Valid InjectionModel types are:" << nl
-            << dictionaryConstructorTablePtr_->toc() << exit(FatalError);
+            << dictionaryConstructorTablePtr_->sortedToc() << exit(FatalError);
     }
 
     return autoPtr<InjectionModel<CloudType> >(cstrIter()(dict, owner));

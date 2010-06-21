@@ -68,7 +68,7 @@ Foam::autoPtr<Foam::engineMesh> Foam::engineMesh::New
         )   << "Unknown engineMesh type " << engineMeshTypeName
             << endl << endl
             << "Valid engineMesh types are :" << endl
-            << IOobjectConstructorTablePtr_->toc()
+            << IOobjectConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

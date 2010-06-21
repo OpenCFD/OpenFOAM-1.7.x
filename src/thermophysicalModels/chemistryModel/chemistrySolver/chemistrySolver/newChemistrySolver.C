@@ -48,7 +48,7 @@ Foam::chemistrySolver<CompType, ThermoType>::New
 
     if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
-        wordList models = dictionaryConstructorTablePtr_->toc();
+        wordList models = dictionaryConstructorTablePtr_->sortedToc();
         forAll(models, i)
         {
             models[i] = models[i].replace

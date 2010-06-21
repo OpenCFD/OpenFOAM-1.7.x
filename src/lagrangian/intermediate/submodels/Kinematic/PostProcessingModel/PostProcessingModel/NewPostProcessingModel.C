@@ -55,7 +55,7 @@ Foam::PostProcessingModel<CloudType>::New
             << PostProcessingModelType
             << ", constructor not in hash table" << nl << nl
             << "    Valid PostProcessingModel types are:" << nl
-            << dictionaryConstructorTablePtr_->toc() << exit(FatalError);
+            << dictionaryConstructorTablePtr_->sortedToc() << exit(FatalError);
     }
 
     return autoPtr<PostProcessingModel<CloudType> >(cstrIter()(dict, owner));

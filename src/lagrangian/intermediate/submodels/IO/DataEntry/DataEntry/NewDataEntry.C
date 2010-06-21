@@ -47,7 +47,7 @@ Foam::autoPtr<Foam::DataEntry<Type> > Foam::DataEntry<Type>::New
             << "Unknown DataEntry type " << DataEntryType << " for DataEntry "
             << entryName << ". Constructor not in hash table" << nl << nl
             << "    Valid DataEntry types are:" << nl
-            << dictionaryConstructorTablePtr_->toc() << nl
+            << dictionaryConstructorTablePtr_->sortedToc() << nl
             << exit(FatalError);
     }
 

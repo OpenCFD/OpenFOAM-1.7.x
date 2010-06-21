@@ -61,7 +61,7 @@ limitedSurfaceInterpolationScheme<Type>::New
         )   << "Discretisation scheme not specified"
             << endl << endl
             << "Valid schemes are :" << endl
-            << MeshConstructorTablePtr_->toc()
+            << MeshConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
@@ -80,7 +80,7 @@ limitedSurfaceInterpolationScheme<Type>::New
         )   << "Unknown discretisation scheme " << schemeName
             << endl << endl
             << "Valid schemes are :" << endl
-            << MeshConstructorTablePtr_->toc()
+            << MeshConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
@@ -116,7 +116,7 @@ limitedSurfaceInterpolationScheme<Type>::New
         )   << "Discretisation scheme not specified"
             << endl << endl
             << "Valid schemes are :" << endl
-            << MeshConstructorTablePtr_->toc()
+            << MeshConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
@@ -135,7 +135,7 @@ limitedSurfaceInterpolationScheme<Type>::New
         )   << "Unknown discretisation scheme " << schemeName
             << endl << endl
             << "Valid schemes are :" << endl
-            << MeshFluxConstructorTablePtr_->toc()
+            << MeshFluxConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

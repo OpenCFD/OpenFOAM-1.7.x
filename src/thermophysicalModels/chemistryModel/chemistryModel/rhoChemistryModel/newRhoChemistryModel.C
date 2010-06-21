@@ -85,11 +85,11 @@ Foam::autoPtr<Foam::rhoChemistryModel> Foam::rhoChemistryModel::New
             FatalErrorIn("rhoChemistryModelBase::New(const mesh&)")
                 << "Unknown rhoChemistryModel type " << rhoChemistryModelType
                 << nl << nl << "Valid rhoChemistryModel types are:" << nl
-                << fvMeshConstructorTablePtr_->toc() << nl << exit(FatalError);
+                << fvMeshConstructorTablePtr_->sortedToc() << nl << exit(FatalError);
         }
         else
         {
-            wordList models = fvMeshConstructorTablePtr_->toc();
+            wordList models = fvMeshConstructorTablePtr_->sortedToc();
             forAll(models, i)
             {
                 models[i] = models[i].replace(typeName + ',', "");

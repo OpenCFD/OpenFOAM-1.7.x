@@ -105,7 +105,7 @@ autoPtr<turbulenceModel> turbulenceModel::New
         )   << "Unknown turbulenceModel type " << modelName
             << endl << endl
             << "Valid turbulenceModel types are :" << endl
-            << turbulenceModelConstructorTablePtr_->toc()
+            << turbulenceModelConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

@@ -46,9 +46,9 @@ Foam::autoPtr<Foam::writer<Type> > Foam::writer<Type>::New
         (
             "writer::New(const word&)"
         )   << "Unknown write type " << writeType
-            << endl << endl
-            << "Valid write types : " << endl
-            << wordConstructorTablePtr_->toc()
+            << nl << nl
+            << "Valid write types : " << nl
+            << wordConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

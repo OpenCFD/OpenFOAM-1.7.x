@@ -43,7 +43,7 @@ Foam::autoPtr<Foam::calcType> Foam::calcType::New
             << "    unknown calcType type " << calcTypeName
             << ", constructor not in hash table" << nl << nl
             << "    Valid calcType selections are: " << nl
-            << dictionaryConstructorTablePtr_->toc() << nl
+            << dictionaryConstructorTablePtr_->sortedToc() << nl
             << abort(FatalError);
     }
 

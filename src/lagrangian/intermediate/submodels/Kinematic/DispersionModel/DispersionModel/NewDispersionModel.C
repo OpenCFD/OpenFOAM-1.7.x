@@ -55,7 +55,7 @@ Foam::DispersionModel<CloudType>::New
             << DispersionModelType
             << ", constructor not in hash table" << nl << nl
             << "    Valid DispersionModel types are:" << nl
-            << dictionaryConstructorTablePtr_->toc() << exit(FatalError);
+            << dictionaryConstructorTablePtr_->sortedToc() << exit(FatalError);
     }
 
     return autoPtr<DispersionModel<CloudType> >(cstrIter()(dict, owner));

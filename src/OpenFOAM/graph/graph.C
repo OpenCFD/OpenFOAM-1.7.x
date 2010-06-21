@@ -167,7 +167,7 @@ autoPtr<graph::writer> graph::writer::New(const word& graphFormat)
         )   << "Unknown graph format " << graphFormat
             << endl << endl
             << "Valid graph formats are : " << endl
-            << wordConstructorTablePtr_->toc()
+            << wordConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

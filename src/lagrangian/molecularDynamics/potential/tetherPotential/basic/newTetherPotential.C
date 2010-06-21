@@ -59,7 +59,7 @@ autoPtr<tetherPotential> tetherPotential::New
         )   << "Unknown tetherPotential type "
             << tetherPotentialTypeName << nl << nl
             << "Valid  tetherPotentials are: " << nl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

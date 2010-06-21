@@ -198,6 +198,9 @@ public:
             //- Return the table of contents
             List<Key> toc() const;
 
+            //- Return the table of contents as a sorted list
+            List<Key> sortedToc() const;
+
             //- Print information
             Ostream& printInfo(Ostream&) const;
 

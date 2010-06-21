@@ -65,7 +65,7 @@ Foam::autoPtr<Foam::laminarFlameSpeed> Foam::laminarFlameSpeed::New
         )   << "Unknown laminarFlameSpeed type "
             << laminarFlameSpeedType << endl << endl
             << "Valid laminarFlameSpeed types are :" << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
