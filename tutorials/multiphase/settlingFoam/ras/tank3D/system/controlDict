@@ -27,7 +27,7 @@ endTime         8000;
 
 deltaT          0.1;
 
-writeControl    runTime;
+writeControl    adjustableRunTime;
 
 writeInterval   50;
 
@@ -45,5 +45,10 @@ timePrecision   6;
 
 runTimeModifiable yes;
 
+adjustTimeStep  yes;
+
+maxCo           1;
+
+maxDeltaT       1;
 
 // ************************************************************************* //
