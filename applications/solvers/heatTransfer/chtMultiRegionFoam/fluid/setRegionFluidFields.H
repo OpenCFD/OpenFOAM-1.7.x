@@ -5,7 +5,6 @@
     volScalarField& K = KFluid[i];
     volVectorField& U = UFluid[i];
     surfaceScalarField& phi = phiFluid[i];
-    const dimensionedVector& g = gFluid[i];
 
     compressible::turbulenceModel& turb = turbulence[i];
     volScalarField& DpDt = DpDtFluid[i];
@@ -14,4 +13,13 @@
     const volScalarField& psi = thermo.psi();
     volScalarField& h = thermo.h();
 
-    const dimensionedScalar massIni("massIni", dimMass, initialMassFluid[i]);
+    volScalarField& p_rgh = p_rghFluid[i];
+    const volScalarField& gh = ghFluid[i];
+    const surfaceScalarField& ghf = ghfFluid[i];
+
+    const dimensionedScalar initialMass
+    (
+        "initialMass",
+        dimMass,
+        initialMassFluid[i]
+    );
