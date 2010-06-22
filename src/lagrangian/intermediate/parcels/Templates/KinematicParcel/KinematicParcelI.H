@@ -73,6 +73,7 @@ inline Foam::KinematicParcel<ParcelType>::KinematicParcel
 )
 :
     Particle<ParcelType>(owner, position, cellI),
+    active_(true),
     typeId_(owner.parcelTypeId()),
     nParticle_(0),
     d_(0.0),
@@ -100,6 +101,7 @@ inline Foam::KinematicParcel<ParcelType>::KinematicParcel
 )
 :
     Particle<ParcelType>(owner, position, cellI),
+    active_(true),
     typeId_(typeId),
     nParticle_(nParticle0),
     d_(d0),
@@ -200,6 +202,13 @@ Foam::KinematicParcel<ParcelType>::trackData::g() const
 // * * * * * * * * * * KinematicParcel Member Functions  * * * * * * * * * * //
 
 template <class ParcelType>
+inline bool Foam::KinematicParcel<ParcelType>::active() const
+{
+    return active_;
+}
+
+
+template <class ParcelType>
 inline Foam::label Foam::KinematicParcel<ParcelType>::typeId() const
 {
     return typeId_;
@@ -245,6 +254,13 @@ template <class ParcelType>
 inline const Foam::vector& Foam::KinematicParcel<ParcelType>::UTurb() const
 {
     return UTurb_;
+}
+
+
+template <class ParcelType>
+inline bool& Foam::KinematicParcel<ParcelType>::active()
+{
+    return active_;
 }
 
 
