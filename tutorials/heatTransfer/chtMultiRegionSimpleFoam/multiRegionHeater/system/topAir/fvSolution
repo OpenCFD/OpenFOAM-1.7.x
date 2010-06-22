@@ -20,14 +20,14 @@ solvers
     {
         solver          PCG
         preconditioner  DIC;
-        tolerance       1e-8;
+        tolerance       1e-7;
         relTol          0;
     }
 
     p_rgh
     {
         solver           GAMG;
-        tolerance        1e-8;
+        tolerance        1e-7;
         relTol           0.01;
 
         smoother         GaussSeidel;
@@ -42,7 +42,7 @@ solvers
     {
         solver           PBiCG;
         preconditioner   DILU;
-        tolerance        1e-08;
+        tolerance        1e-7;
         relTol           0.1;
     }
 }

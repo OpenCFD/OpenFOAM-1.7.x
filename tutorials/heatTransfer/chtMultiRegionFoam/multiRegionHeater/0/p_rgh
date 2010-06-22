@@ -1,48 +1,29 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.6                                  |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    location    "system";
-    object      controlDict;
+    class       volScalarField;
+    object      p_rgh;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     chtMultiRegionSimpleFoam;
+dimensions      [1 -1 -2 0 0 0 0];
 
-startFrom       startTime;
+internalField   uniform 1e5;
 
-startTime       0;
-
-stopAt          endTime;
-
-endTime         1000;
-
-deltaT          1;
-
-writeControl    timeStep;
-
-writeInterval   100;
-
-purgeWrite      0;
-
-writeFormat     binary;
-
-writePrecision  8;
-
-writeCompression uncompressed;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
+boundaryField
+{
+    ".*"
+    {
+        type            calculated;
+    }
+}
 
 // ************************************************************************* //

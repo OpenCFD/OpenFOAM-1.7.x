@@ -17,13 +17,11 @@ FoamFile
 ddtSchemes
 {
     default Euler;
-    //default CoEuler phi rho 0.1;
 }
 
 gradSchemes
 {
     default         Gauss linear;
-//    grad(U)         cellLimited Gauss linear 1;
 }
 
 divSchemes
@@ -43,7 +41,7 @@ laplacianSchemes
 {
     default         none;
     laplacian(muEff,U) Gauss linear limited 0.333;
-    laplacian((rho*(1|A(U))),p) Gauss linear limited 0.333;
+    laplacian((rho*(1|A(U))),p_rgh) Gauss linear limited 0.333;
     laplacian(alphaEff,h) Gauss linear limited 0.333;
     laplacian(DkEff,k) Gauss linear limited 0.333;
     laplacian(DepsilonEff,epsilon) Gauss linear limited 0.333;
@@ -63,7 +61,7 @@ snGradSchemes
 fluxRequired
 {
     default         no;
-    p;
+    p_rgh;
 }
 
 // ************************************************************************* //
