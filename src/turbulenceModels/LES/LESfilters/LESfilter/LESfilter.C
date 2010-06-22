@@ -58,7 +58,7 @@ autoPtr<LESfilter> LESfilter::New
             "LESfilter::New(const fvMesh&, const dictionary&)"
         )   << "Unknown LESfilter type " << filterType << endl << endl
             << "Valid LESfilter types are :" << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

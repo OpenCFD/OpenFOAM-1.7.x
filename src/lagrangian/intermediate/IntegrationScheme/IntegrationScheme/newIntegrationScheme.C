@@ -54,7 +54,7 @@ Foam::IntegrationScheme<Type>::New
         )   << "Unknown IntegrationScheme type "
             << IntegrationSchemeTypeName << nl << nl
             << "Valid IntegrationScheme types are:" << nl
-            << dictionaryConstructorTablePtr_->toc() << nl
+            << dictionaryConstructorTablePtr_->sortedToc() << nl
             << exit(FatalError);
     }
 

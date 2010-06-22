@@ -1,17 +1,12 @@
-pdf = pdf
-uniform = uniform
-normal = normal
-general = general
-exponential = exponential
-RosinRammler = RosinRammler
+pdf/pdf.C
+pdf/pdfNew.C
 
-$(pdf)/pdf.C
-$(pdf)/newPdf.C
-
-$(uniform)/uniform.C
-$(normal)/normal.C
-$(general)/general.C
-$(exponential)/exponential.C
-$(RosinRammler)/RosinRammler.C
+exponential/exponential.C
+fixedValue/fixedValue.C
+general/general.C
+multiNormal/multiNormal.C
+normal/normal.C
+RosinRammler/RosinRammler.C
+uniform/uniform.C
 
 LIB = $(FOAM_LIBBIN)/libpdf

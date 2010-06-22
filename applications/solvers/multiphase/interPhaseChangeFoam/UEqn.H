@@ -15,7 +15,14 @@
     //- fvc::div(muEff*(fvc::interpolate(dev2(fvc::grad(U))) & mesh.Sf()))
     );
 
-    UEqn.relax();
+    if (finalIter)
+    {
+        UEqn.relax(1);
+    }
+    else
+    {
+        UEqn.relax();
+    }
 
     if (momentumPredictor)
     {
@@ -25,11 +32,12 @@
          ==
             fvc::reconstruct
             (
-                fvc::interpolate(rho)*(g & mesh.Sf())
-              + (
+                (
                     fvc::interpolate(interface.sigmaK())*fvc::snGrad(alpha1)
-                  - fvc::snGrad(p)
+                  - ghf*fvc::snGrad(rho)
+                  - fvc::snGrad(p_rgh)
                 ) * mesh.magSf()
-            )
+            ),
+            mesh.solver(U.select(finalIter))
         );
     }

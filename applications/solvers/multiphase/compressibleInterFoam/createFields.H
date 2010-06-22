@@ -1,9 +1,9 @@
-    Info<< "Reading field p\n" << endl;
-    volScalarField p
+    Info<< "Reading field p_rgh\n" << endl;
+    volScalarField p_rgh
     (
         IOobject
         (
-            "p",
+            "p_rgh",
             runTime.timeName(),
             mesh,
             IOobject::MUST_READ,
@@ -82,6 +82,28 @@
     );
 
     dimensionedScalar pMin(twoPhaseProperties.lookup("pMin"));
+
+    Info<< "Calculating field g.h\n" << endl;
+    volScalarField gh("gh", g & mesh.C());
+    surfaceScalarField ghf("ghf", g & mesh.Cf());
+
+    volScalarField p
+    (
+        IOobject
+        (
+            "p",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        max
+        (
+            (p_rgh + gh*(alpha1*rho10 + alpha2*rho20))
+           /(1.0 - gh*(alpha1*psi1 + alpha2*psi2)),
+            pMin
+        )
+    );
 
     volScalarField rho1 = rho10 + psi1*p;
     volScalarField rho2 = rho20 + psi2*p;

@@ -28,14 +28,12 @@ Description
     Rosin-Rammler pdf
 
    @f[
-       pdf = ( x/d )^n \exp ( -( x/d )^n )
+       cumulative pdf = (1.0 - exp( -((x - d0)/d)^n ) / (1.0 - exp( -((d1 - d0)/d)^n )
    @f]
 
 
 SourceFiles
-    RosinRammlerI.H
     RosinRammler.C
-    RosinRammlerIO.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -48,9 +46,11 @@ SourceFiles
 
 namespace Foam
 {
+namespace pdfs
+{
 
 /*---------------------------------------------------------------------------*\
-                           Class RosinRammler Declaration
+                       Class RosinRammler Declaration
 \*---------------------------------------------------------------------------*/
 
 class RosinRammler
@@ -59,17 +59,16 @@ class RosinRammler
 {
     // Private data
 
-        dictionary pdfDict_;
-
-        //- min and max values of the distribution
+        //- Distribution minimum
         scalar minValue_;
+
+        //- Distribution maximum
         scalar maxValue_;
 
-        List<scalar> d_;
-        List<scalar> n_;
-        List<scalar> ls_;
+        // Model coefficients
 
-        scalar range_;
+            scalar d_;
+            scalar n_;
 
 
 public:
@@ -107,6 +106,7 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace pdfs
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

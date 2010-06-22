@@ -60,9 +60,9 @@ private:
         typedef VectorSpace<Vector<scalar>, scalar, 2> pair;
 
         dictionary definedHollowConeDict_;
-        autoPtr<pdf> dropletPDF_;
+        autoPtr<pdfs::pdf> dropletPDF_;
 
-        // inner and outer cone angle time histories 
+        // inner and outer cone angle time histories
         // 2 column vectors = (time, coneAngle)
         List<pair> innerConeAngle_;
         List<pair> outerConeAngle_;
@@ -107,7 +107,7 @@ public:
             const label i,
             const scalar time
         ) const;
-        
+
         scalar averageVelocity
         (
             const label i

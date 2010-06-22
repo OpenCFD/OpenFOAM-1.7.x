@@ -55,12 +55,13 @@ autoPtr<injectorModel> injectorModel::New
     if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
         FatalError
-            << "injectorModel::New(const dictionary&, spray&) : " << endl
+            << "injectorModel::New(const dictionary&, spray&) : " << nl
             << "    unknown injectorModelType type "
             << injectorModelType
-            << ", constructor not in hash table" << endl << endl
-            << "    Valid injectorModel types are :" << endl;
-        Info<< dictionaryConstructorTablePtr_->toc() << abort(FatalError);
+            << ", constructor not in hash table" << nl << nl
+            << "    Valid injectorModel types are :" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
+            << abort(FatalError);
     }
 
     return autoPtr<injectorModel>(cstrIter()(dict, sm));

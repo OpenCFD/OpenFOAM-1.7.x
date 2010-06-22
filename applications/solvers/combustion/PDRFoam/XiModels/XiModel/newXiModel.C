@@ -53,7 +53,7 @@ Foam::autoPtr<Foam::XiModel> Foam::XiModel::New
         )   << "Unknown XiModel type "
             << XiModelTypeName << endl << endl
             << "Valid  XiModels are : " << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

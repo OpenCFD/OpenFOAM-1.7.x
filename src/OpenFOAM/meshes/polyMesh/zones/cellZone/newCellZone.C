@@ -61,7 +61,7 @@ Foam::autoPtr<Foam::cellZone> Foam::cellZone::New
             dict
         )   << "Unknown cellZone type " << zoneType << endl << endl
             << "Valid cellZone types are :" << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

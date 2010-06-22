@@ -140,6 +140,7 @@ bool Foam::LocalInteraction<CloudType>::correct
     const polyPatch& pp,
     const label faceId,
     bool& keepParticle,
+    bool& active,
     vector& U
 ) const
 {
@@ -158,18 +159,21 @@ bool Foam::LocalInteraction<CloudType>::correct
             case PatchInteractionModel<CloudType>::itEscape:
             {
                 keepParticle = false;
+                active = false;
                 U = vector::zero;
                 break;
             }
             case PatchInteractionModel<CloudType>::itStick:
             {
                 keepParticle = true;
+                active = false;
                 U = vector::zero;
                 break;
             }
             case PatchInteractionModel<CloudType>::itRebound:
             {
                 keepParticle = true;
+                active = true;
 
                 vector nw = pp.faceAreas()[pp.whichFace(faceId)];
                 nw /= mag(nw);

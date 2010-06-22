@@ -478,7 +478,6 @@ $(pointPatchFields)/pointPatchField/pointPatchFields.C
 
 basicPointPatchFields = $(pointPatchFields)/basic
 $(basicPointPatchFields)/calculated/calculatedPointPatchFields.C
-$(basicPointPatchFields)/generic/genericPointPatchFields.C
 $(basicPointPatchFields)/coupled/coupledPointPatchFields.C
 $(basicPointPatchFields)/value/valuePointPatchFields.C
 $(basicPointPatchFields)/fixedValue/fixedValuePointPatchFields.C

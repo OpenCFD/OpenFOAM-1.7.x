@@ -27,7 +27,7 @@
             !(++alphaSubCycle).end();
         )
         {
-#           include "alphaEqns.H"
+            #include "alphaEqns.H"
             rhoPhiSum += (runTime.deltaT()/totalDeltaT)*rhoPhi;
         }
 
@@ -35,7 +35,7 @@
     }
     else
     {
-#       include "alphaEqns.H"
+        #include "alphaEqns.H"
     }
 
     if (oCorr == 0)

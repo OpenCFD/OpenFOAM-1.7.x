@@ -23,7 +23,6 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-
 #include "exponential.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -31,97 +30,49 @@ License
 
 namespace Foam
 {
-    defineTypeNameAndDebug(exponential, 0);
-    addToRunTimeSelectionTable(pdf, exponential, dictionary);
+    namespace pdfs
+    {
+        defineTypeNameAndDebug(exponential, 0);
+        addToRunTimeSelectionTable(pdf, exponential, dictionary);
+    }
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::exponential::exponential(const dictionary& dict, Random& rndGen)
+Foam::pdfs::exponential::exponential(const dictionary& dict, Random& rndGen)
 :
-    pdf(dict, rndGen),
-    pdfDict_(dict.subDict(typeName + "PDF")),
+    pdf(typeName, dict, rndGen),
     minValue_(readScalar(pdfDict_.lookup("minValue"))),
     maxValue_(readScalar(pdfDict_.lookup("maxValue"))),
-    lambda_(pdfDict_.lookup("lambda")),
-    ls_(lambda_),
-    range_(maxValue_-minValue_)
+    lambda_(readScalar(pdfDict_.lookup("lambda")))
 {
-    if (minValue_<0)
-    {
-        FatalErrorIn
-        (
-            "exponential::exponential(const dictionary& dict)"
-        ) << " minValue = " << minValue_ << ", it must be >0." << abort(FatalError);
-    }
-
-    scalar sMax = 0;
-    label n = lambda_.size();
-    for (label i=0; i<n; i++)
-    {
-        scalar s = lambda_[i]*exp(-lambda_[i]*minValue_);
-        for (label j=0; j<n; j++)
-        {
-            if (i!=j)
-            {
-                scalar y = lambda_[j]*exp(-lambda_[j]*minValue_);
-                s += y;
-            }
-        }
-
-        sMax = max(sMax, s);
-    }
-
-    for(label i=0; i<n; i++)
-    {
-        ls_[i] /= sMax;
-    }
+    check();
 }
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::exponential::~exponential()
+Foam::pdfs::exponential::~exponential()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::scalar Foam::exponential::sample() const
+Foam::scalar Foam::pdfs::exponential::sample() const
 {
-    scalar y = 0;
-    scalar x = 0;
-    label n = lambda_.size();
-    bool success = false;
-
-    while (!success)
-    {
-        x = minValue_ + range_*rndGen_.scalar01();
-        y = rndGen_.scalar01();
-        scalar p = 0.0;
-
-        for(label i=0; i<n; i++)
-        {
-            p += ls_[i]*exp(-lambda_[i]*x);
-        }
-
-        if (y<p)
-        {
-            success = true;
-        }
-    }
-
-    return x;
+    scalar y = rndGen_.scalar01();
+    scalar K = exp(-lambda_*maxValue_) - exp(-lambda_*minValue_);
+    return -(1.0/lambda_)*log(exp(-lambda_*minValue_) + y*K);
 }
 
 
-Foam::scalar Foam::exponential::minValue() const
+Foam::scalar Foam::pdfs::exponential::minValue() const
 {
     return minValue_;
 }
 
 
-Foam::scalar Foam::exponential::maxValue() const
+Foam::scalar Foam::pdfs::exponential::maxValue() const
 {
     return maxValue_;
 }

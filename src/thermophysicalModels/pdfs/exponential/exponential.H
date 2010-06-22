@@ -28,9 +28,7 @@ Description
     exponential pdf
 
 SourceFiles
-    exponentialI.H
     exponential.C
-    exponentialIO.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -43,6 +41,8 @@ SourceFiles
 
 namespace Foam
 {
+namespace pdfs
+{
 
 /*---------------------------------------------------------------------------*\
                         Class exponential Declaration
@@ -54,16 +54,17 @@ class exponential
 {
     // Private data
 
-        dictionary pdfDict_;
-
-        //- min and max values of the distribution
+        //- Distribution minimum
         scalar minValue_;
+
+        //- Distribution maximum
         scalar maxValue_;
 
-        List<scalar> lambda_;
-        List<scalar> ls_;
 
-        scalar range_;
+        // Model coefficients
+
+            scalar lambda_;
+
 
 public:
 
@@ -100,11 +101,8 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace pdfs
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-//#include "exponentialI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

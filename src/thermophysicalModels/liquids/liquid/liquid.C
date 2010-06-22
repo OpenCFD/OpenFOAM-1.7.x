@@ -63,7 +63,7 @@ Foam::autoPtr<Foam::liquid> Foam::liquid::New(Istream& is)
                 << "Unknown liquid type " << liquidType
                 << nl << nl
                 << "Valid liquid types are:" << nl
-                << ConstructorTablePtr_->toc()
+                << ConstructorTablePtr_->sortedToc()
                 << abort(FatalError);
         }
 
@@ -80,7 +80,7 @@ Foam::autoPtr<Foam::liquid> Foam::liquid::New(Istream& is)
                 << "Unknown liquid type " << liquidType
                 << endl << endl
                 << "Valid liquid types are:" << nl
-                << IstreamConstructorTablePtr_->toc()
+                << IstreamConstructorTablePtr_->sortedToc()
                 << abort(FatalError);
         }
 

@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     #include "initContinuityErrs.H"
     #include "createFields.H"
     #include "readTimeControls.H"
-    #include "correctPhi.H"
+    #include "../interFoam/correctPhi.H"
     #include "CourantNo.H"
     #include "setInitialDeltaT.H"
 
@@ -82,9 +82,11 @@ int main(int argc, char *argv[])
 
         turbulence->correct();
 
-        // --- Outer-corrector loop
+        // --- Pressure-velocity PIMPLE corrector loop
         for (int oCorr=0; oCorr<nOuterCorr; oCorr++)
         {
+            bool finalIter = oCorr == nOuterCorr-1;
+
             #include "UEqn.H"
 
             // --- PISO loop
@@ -92,8 +94,6 @@ int main(int argc, char *argv[])
             {
                 #include "pEqn.H"
             }
-
-            #include "continuityErrs.H"
         }
 
         twoPhaseProperties->correct();

@@ -308,8 +308,8 @@ List<specieElement> currentSpecieComposition(5);
 scalar currentLowT = 0;
 scalar currentHighT = 0;
 scalar currentCommonT = 0;
-gasThermoPhysics::coeffArray highCpCoeffs;
-gasThermoPhysics::coeffArray lowCpCoeffs;
+gasThermoPhysics::coeffArray highCpCoeffs = {0, 0, 0, 0, 0, 0, 0};
+gasThermoPhysics::coeffArray lowCpCoeffs = {0, 0, 0, 0, 0, 0, 0};
 
 gasReaction::specieCoeffs currentSpecieCoeff;
 

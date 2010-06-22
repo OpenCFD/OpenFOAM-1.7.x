@@ -57,7 +57,7 @@ autoPtr<topoSetSource> topoSetSource::New
         )   << "Unknown topoSetSource type " << topoSetSourceType
             << endl << endl
             << "Valid topoSetSource types : " << endl
-            << wordConstructorTablePtr_->toc()
+            << wordConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 
@@ -86,7 +86,7 @@ autoPtr<topoSetSource> topoSetSource::New
         )   << "Unknown topoSetSource type " << topoSetSourceType
             << endl << endl
             << "Valid topoSetSource types : " << endl
-            << istreamConstructorTablePtr_->toc()
+            << istreamConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

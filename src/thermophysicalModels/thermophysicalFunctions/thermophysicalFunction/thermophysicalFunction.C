@@ -61,7 +61,7 @@ autoPtr<thermophysicalFunction> thermophysicalFunction::New(Istream& is)
             << thermophysicalFunctionType
             << endl << endl
             << "Valid thermophysicalFunction types are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << abort(FatalError);
     }
 

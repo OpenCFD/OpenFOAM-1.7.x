@@ -1,6 +1,6 @@
 //  Pressure-velocity SIMPLE corrector
 
-    p.storePrevIter();
+    p_rgh.storePrevIter();
     rho.storePrevIter();
     {
         #include "UEqn.H"

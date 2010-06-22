@@ -74,9 +74,15 @@
         rho1*phi
     );
 
-    Info<< "Calculating field (g.h)f\n" << endl;
+    // Construct incompressible turbulence model
+    autoPtr<incompressible::turbulenceModel> turbulence
+    (
+        incompressible::turbulenceModel::New(U, phi, twoPhaseProperties)
+    );
+
+    Info<< "Calculating field g.h\n" << endl;
     volScalarField gh("gh", g & mesh.C());
-    surfaceScalarField ghf = surfaceScalarField("gh", g & mesh.Cf());
+    surfaceScalarField ghf("ghf", g & mesh.Cf());
 
     volScalarField p
     (
@@ -91,36 +97,24 @@
         p_rgh + rho*gh
     );
 
-    label p_rghRefCell = 0;
-    scalar p_rghRefValue = 0.0;
+    label pRefCell = 0;
+    scalar pRefValue = 0.0;
     setRefCell
     (
+        p,
         p_rgh,
         mesh.solutionDict().subDict("PIMPLE"),
-        p_rghRefCell,
-        p_rghRefValue
+        pRefCell,
+        pRefValue
     );
-
-    scalar pRefValue = 0.0;
 
     if (p_rgh.needReference())
     {
-        pRefValue = readScalar
-        (
-            mesh.solutionDict().subDict("PIMPLE").lookup("pRefValue")
-        );
-
         p += dimensionedScalar
         (
             "p",
             p.dimensions(),
-            pRefValue - getRefCellValue(p, p_rghRefCell)
+            pRefValue - getRefCellValue(p, pRefCell)
         );
+        p_rgh = p - rho*gh;
     }
-
-
-    // Construct incompressible turbulence model
-    autoPtr<incompressible::turbulenceModel> turbulence
-    (
-        incompressible::turbulenceModel::New(U, phi, twoPhaseProperties)
-    );

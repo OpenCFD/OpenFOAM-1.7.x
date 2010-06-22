@@ -79,7 +79,7 @@ autoPtr<LESdelta> LESdelta::New
             "LESdelta::New(const fvMesh&, const dictionary&)"
         )   << "Unknown LESdelta type " << deltaType << endl << endl
             << "Valid LESdelta types are :" << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

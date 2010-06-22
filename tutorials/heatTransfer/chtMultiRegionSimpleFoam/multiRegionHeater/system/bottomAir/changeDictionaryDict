@@ -91,16 +91,30 @@ dictionaryReplacement
         }
     }
 
-    p
+    p_rgh
     {
-        internalField   uniform 100000;
+        internalField   uniform 1e5;
 
         boundaryField
         {
             ".*"
             {
                 type            buoyantPressure;
-                value           1e5;
+                value           uniform 1e5;
+            }
+        }
+    }
+
+    p
+    {
+        internalField   uniform 1e5;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            calculated;
+                value           uniform 1e5;
             }
         }
     }

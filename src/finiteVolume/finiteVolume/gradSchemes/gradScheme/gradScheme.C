@@ -63,7 +63,7 @@ tmp<gradScheme<Type> > gradScheme<Type>::New
             schemeData
         )   << "Grad scheme not specified" << endl << endl
             << "Valid grad schemes are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
@@ -80,7 +80,7 @@ tmp<gradScheme<Type> > gradScheme<Type>::New
             schemeData
         )   << "unknown grad scheme " << schemeName << endl << endl
             << "Valid grad schemes are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

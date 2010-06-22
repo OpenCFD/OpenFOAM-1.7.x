@@ -11,4 +11,5 @@ EXE_LIBS = \
     -lreactionThermophysicalModels \
     -lfiniteVolume \
     -lspecie \
-    -lbasicThermophysicalModels
+    -lbasicThermophysicalModels \
+    -lgenericPatchFields

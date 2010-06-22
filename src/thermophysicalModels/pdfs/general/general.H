@@ -28,9 +28,7 @@ Description
     general pdf
 
 SourceFiles
-    generalI.H
     general.C
-    generalIO.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -43,6 +41,8 @@ SourceFiles
 
 namespace Foam
 {
+namespace pdfs
+{
 
 /*---------------------------------------------------------------------------*\
                            Class general Declaration
@@ -54,8 +54,6 @@ class general
 {
     // Private data
 
-        dictionary pdfDict_;
-
         typedef VectorSpace<Vector<scalar>, scalar, 2> pair;
 
         List<pair> xy_;
@@ -66,7 +64,7 @@ class general
         scalar minValue_;
         scalar maxValue_;
 
-        scalar range_;
+        List<scalar> integral_;
 
 
 public:
@@ -85,7 +83,7 @@ public:
         );
 
 
-    // Destructor
+    //- Destructor
     virtual ~general();
 
 
@@ -104,6 +102,7 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace pdfs
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

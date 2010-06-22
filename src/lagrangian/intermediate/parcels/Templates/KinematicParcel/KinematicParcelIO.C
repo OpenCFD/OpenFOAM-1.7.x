@@ -33,6 +33,7 @@ License
 template <class ParcelType>
 Foam::string Foam::KinematicParcel<ParcelType>::propHeader =
     Particle<ParcelType>::propHeader
+  + " active"
   + " typeId"
   + " nParticle"
   + " d"
@@ -53,6 +54,7 @@ Foam::KinematicParcel<ParcelType>::KinematicParcel
 )
 :
     Particle<ParcelType>(cloud, is, readFields),
+    active_(false),
     typeId_(0),
     nParticle_(0.0),
     d_(0.0),
@@ -68,6 +70,7 @@ Foam::KinematicParcel<ParcelType>::KinematicParcel
     {
         if (is.format() == IOstream::ASCII)
         {
+            active_ = readBool(is);
             typeId_ = readLabel(is);
             nParticle_ = readScalar(is);
             d_ = readScalar(is);
@@ -80,8 +83,9 @@ Foam::KinematicParcel<ParcelType>::KinematicParcel
         {
             is.read
             (
-                reinterpret_cast<char*>(&typeId_),
-                sizeof(typeId_)
+                reinterpret_cast<char*>(&active_),
+                sizeof(active_)
+              + sizeof(typeId_)
               + sizeof(nParticle_)
               + sizeof(d_)
               + sizeof(U_)
@@ -111,6 +115,9 @@ void Foam::KinematicParcel<ParcelType>::readFields(Cloud<ParcelType>& c)
 
     Particle<ParcelType>::readFields(c);
 
+    IOField<label> active(c.fieldIOobject("active", IOobject::MUST_READ));
+    c.checkFieldIOobject(c, active);
+
     IOField<label> typeId(c.fieldIOobject("typeId", IOobject::MUST_READ));
     c.checkFieldIOobject(c, typeId);
 
@@ -138,6 +145,7 @@ void Foam::KinematicParcel<ParcelType>::readFields(Cloud<ParcelType>& c)
     {
         ParcelType& p = iter();
 
+        p.active_ = active[i];
         p.typeId_ = typeId[i];
         p.nParticle_ = nParticle[i];
         p.d_ = d[i];
@@ -157,6 +165,7 @@ void Foam::KinematicParcel<ParcelType>::writeFields(const Cloud<ParcelType>& c)
 
     label np =  c.size();
 
+    IOField<label> active(c.fieldIOobject("active", IOobject::NO_READ), np);
     IOField<label> typeId(c.fieldIOobject("typeId", IOobject::NO_READ), np);
     IOField<scalar> nParticle
     (
@@ -174,6 +183,7 @@ void Foam::KinematicParcel<ParcelType>::writeFields(const Cloud<ParcelType>& c)
     {
         const KinematicParcel<ParcelType>& p = iter();
 
+        active[i] = p.active();
         typeId[i] = p.typeId();
         nParticle[i] = p.nParticle();
         d[i] = p.d();
@@ -184,6 +194,7 @@ void Foam::KinematicParcel<ParcelType>::writeFields(const Cloud<ParcelType>& c)
         i++;
     }
 
+    active.write();
     typeId.write();
     nParticle.write();
     d.write();
@@ -206,6 +217,7 @@ Foam::Ostream& Foam::operator<<
     if (os.format() == IOstream::ASCII)
     {
         os  << static_cast<const Particle<ParcelType>&>(p)
+            << token::SPACE << p.active()
             << token::SPACE << p.typeId()
             << token::SPACE << p.nParticle()
             << token::SPACE << p.d()
@@ -219,8 +231,9 @@ Foam::Ostream& Foam::operator<<
         os  << static_cast<const Particle<ParcelType>&>(p);
         os.write
         (
-            reinterpret_cast<const char*>(&p.typeId_),
-            sizeof(p.typeId())
+            reinterpret_cast<const char*>(&p.active_),
+            sizeof(p.active())
+          + sizeof(p.typeId())
           + sizeof(p.nParticle())
           + sizeof(p.d())
           + sizeof(p.U())

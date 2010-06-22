@@ -99,4 +99,5 @@ EXE_INC = \
 EXE_LIBS = \
     $(FV_LIBS) \
     -lfiniteVolume \
-    -lmeshTools
+    -lmeshTools \
+    -lgenericPatchFields

@@ -52,7 +52,7 @@ Foam::InflowBoundaryModel<CloudType>::New
             << InflowBoundaryModelType
             << ", constructor not in hash table" << nl << nl
             << "    Valid InflowBoundaryModel types are:" << nl
-            << dictionaryConstructorTablePtr_->toc() << exit(FatalError);
+            << dictionaryConstructorTablePtr_->sortedToc() << exit(FatalError);
     }
 
     return autoPtr<InflowBoundaryModel<CloudType> >(cstrIter()(dict, owner));

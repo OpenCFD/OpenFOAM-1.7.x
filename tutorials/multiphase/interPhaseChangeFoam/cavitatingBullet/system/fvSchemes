@@ -56,7 +56,7 @@ snGradSchemes
 fluxRequired
 {
     default              none;
-    p;
+    p_rgh;
     pcorr;
     alpha1;
 }

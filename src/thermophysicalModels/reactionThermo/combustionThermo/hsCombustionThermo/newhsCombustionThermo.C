@@ -66,7 +66,7 @@ Foam::autoPtr<Foam::hsCombustionThermo> Foam::hsCombustionThermo::New
             << "Unknown hsCombustionThermo type "
             << hsCombustionThermoTypeName << nl << nl
             << "Valid hsCombustionThermo types are:" << nl
-            << fvMeshConstructorTablePtr_->toc() << nl
+            << fvMeshConstructorTablePtr_->sortedToc() << nl
             << exit(FatalError);
     }
 
@@ -102,7 +102,7 @@ Foam::autoPtr<Foam::hsCombustionThermo> Foam::hsCombustionThermo::NewType
 
         if (hsCombustionThermoTypeName.find(thermoType) == string::npos)
         {
-            wordList allModels = fvMeshConstructorTablePtr_->toc();
+            wordList allModels = fvMeshConstructorTablePtr_->sortedToc();
             DynamicList<word> validModels;
             forAll(allModels, i)
             {
@@ -139,7 +139,7 @@ Foam::autoPtr<Foam::hsCombustionThermo> Foam::hsCombustionThermo::NewType
             << "Unknown hsCombustionThermo type "
             << hsCombustionThermoTypeName << nl << nl
             << "Valid hsCombustionThermo types are:" << nl
-            << fvMeshConstructorTablePtr_->toc() << nl
+            << fvMeshConstructorTablePtr_->sortedToc() << nl
             << exit(FatalError);
     }
 

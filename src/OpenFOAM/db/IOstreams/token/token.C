@@ -66,7 +66,7 @@ Foam::autoPtr<Foam::token::compound> Foam::token::compound::New
         FatalErrorIn("token::compound::New(const word&, Istream&)")
             << "Unknown compound type " << compoundType << nl << nl
             << "Valid compound types:" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << abort(FatalError);
     }
 

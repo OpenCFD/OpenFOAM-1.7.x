@@ -2,7 +2,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#   \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -21,7 +21,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Script
+# File
 #     etc/bashrc
 #
 # Description
@@ -32,16 +32,16 @@
 #------------------------------------------------------------------------------
 
 export WM_PROJECT=OpenFOAM
-export WM_PROJECT_VERSION=1.7.0
+[ -z "$WM_PROJECT_VERSION" ] && export WM_PROJECT_VERSION=1.7
 
 ################################################################################
-# USER EDITABLE PART
+# USER EDITABLE PART. Note changes made here may be lost with the next upgrade
 #
 # either set $FOAM_INST_DIR before sourcing this file or set
 #    $foamInstall below to where OpenFOAM is installed
 #
-# Location of FOAM installation
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Location of the OpenFOAM installation
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 foamInstall=$HOME/$WM_PROJECT
 # foamInstall=~$WM_PROJECT
 # foamInstall=/usr/local/$WM_PROJECT
@@ -69,10 +69,42 @@ export WM_PROJECT_INST_DIR=$FOAM_INST_DIR
 export WM_PROJECT_DIR=$WM_PROJECT_INST_DIR/$WM_PROJECT-$WM_PROJECT_VERSION
 export WM_PROJECT_USER_DIR=$HOME/$WM_PROJECT/$USER-$WM_PROJECT_VERSION
 
-
 # Location of third-party software
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 export WM_THIRD_PARTY_DIR=$WM_PROJECT_INST_DIR/ThirdParty-$WM_PROJECT_VERSION
+
+
+# Source files, possibly with some verbosity
+_foamSource()
+{
+   while [ $# -ge 1 ]
+   do
+      [ "$FOAM_VERBOSE" -a "$PS1" ] && echo "Sourcing: $1"
+      . $1
+      shift
+   done
+}
+
+
+# Add in preset user or site preferences:
+foamPrefs=`$WM_PROJECT_DIR/bin/foamEtcFile prefs.sh` && _foamSource $foamPrefs
+unset foamPrefs
+
+# Evaluate command-line parameters
+while [ $# -gt 0 ]
+do
+    case "$1" in
+    *=)
+        # name=       -> unset name
+        eval "unset ${1%=}"
+        ;;
+    *=*)
+        # name=value  -> export name=value
+        eval "export $1"
+        ;;
+    esac
+    shift
+done
 
 
 # Operating System/Platform
@@ -81,12 +113,11 @@ export WM_THIRD_PARTY_DIR=$WM_PROJECT_INST_DIR/ThirdParty-$WM_PROJECT_VERSION
 : ${WM_OSTYPE:=POSIX}; export WM_OSTYPE
 
 
-# Compiler: set to Gcc, Gcc43 or Icc (for Intel's icc)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Compiler: set to Gcc, Gcc43, Gcc44, or Icc (for Intel's icc)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 : ${WM_COMPILER:=Gcc}; export WM_COMPILER
 
-export WM_COMPILER_ARCH=
-export WM_COMPILER_LIB_ARCH=
+unset WM_COMPILER_ARCH WM_COMPILER_LIB_ARCH
 
 
 # Compilation options (architecture, precision, optimised, debug or profiling)
@@ -143,7 +174,7 @@ Linux)
             export WM_LDFLAGS='-m64'
             ;;
         *)
-            echo Unknown WM_ARCH_OPTION $WM_ARCH_OPTION, should be 32 or 64
+            echo "Unknown WM_ARCH_OPTION '$WM_ARCH_OPTION', should be 32 or 64"
             ;;
         esac
         ;;
@@ -191,7 +222,7 @@ SunOS)
     export WM_MPLIB=FJMPI
     ;;
 
-*)    	# an unsupported operating system
+*)    # an unsupported operating system
     cat <<USAGE
 
     Your "$WM_ARCH" operating system is not supported by this release
@@ -204,39 +235,28 @@ esac
 
 # Clean standard environment variables (PATH, LD_LIBRARY_PATH, MANPATH)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-cleanProg=$WM_PROJECT_DIR/bin/foamCleanPath
+foamClean=$WM_PROJECT_DIR/bin/foamCleanPath
 
 #- Clean PATH
-cleanEnv=`$cleanProg "$PATH" "$foamOldDirs"` && PATH="$cleanEnv"
+cleaned=`$foamClean "$PATH" "$foamOldDirs"` && PATH="$cleaned"
 
 #- Clean LD_LIBRARY_PATH
-cleanEnv=`$cleanProg "$LD_LIBRARY_PATH" "$foamOldDirs"` && LD_LIBRARY_PATH="$cleanEnv"
+cleaned=`$foamClean "$LD_LIBRARY_PATH" "$foamOldDirs"` && LD_LIBRARY_PATH="$cleaned"
 
 #- Clean MANPATH
-cleanEnv=`$cleanProg "$MANPATH" "$foamCleanDirs"` && MANPATH="$cleanEnv"
+cleaned=`$foamClean "$MANPATH" "$foamOldDirs"` && MANPATH="$cleaned"
 
 export PATH LD_LIBRARY_PATH MANPATH
 
+
 # Source project setup files
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
-_foamSource()
-{
-   while [ $# -ge 1 ]
-   do
-      [ "$FOAM_VERBOSE" -a "$PS1" ] && echo "Sourcing: $1"
-      . $1
-      shift
-   done
-}
-
-
 _foamSource $WM_PROJECT_DIR/etc/settings.sh
 _foamSource $WM_PROJECT_DIR/etc/aliases.sh
 
 
 # Source user setup files for optional packages
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# _foamSource $WM_PROJECT_DIR/etc/apps/paraview/bashrc
 _foamSource $WM_PROJECT_DIR/etc/apps/paraview3/bashrc
 _foamSource $WM_PROJECT_DIR/etc/apps/ensight/bashrc
 
@@ -244,27 +264,27 @@ _foamSource $WM_PROJECT_DIR/etc/apps/ensight/bashrc
 # Clean environment paths again. Only remove duplicates
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #- Clean PATH
-cleanEnv=`$cleanProg "$PATH"` && PATH="$cleanEnv"
+cleaned=`$foamClean "$PATH"` && PATH="$cleaned"
 
 #- Clean LD_LIBRARY_PATH
-cleanEnv=`$cleanProg "$LD_LIBRARY_PATH"` && LD_LIBRARY_PATH="$cleanEnv"
+cleaned=`$foamClean "$LD_LIBRARY_PATH"` && LD_LIBRARY_PATH="$cleaned"
 
-#- Clean MANPATH
-cleanEnv=`$cleanProg "$MANPATH"` && MANPATH="$cleanEnv:"
+#- Clean MANPATH (trailing ':' to find system pages)
+cleaned=`$foamClean "$MANPATH"`: && MANPATH="$cleaned"
 
 export PATH LD_LIBRARY_PATH MANPATH
 
 #- Clean LD_PRELOAD
-if [ "$LD_PRELOAD" != "" ]
+if [ -n "$LD_PRELOAD" ]
 then
-    cleanEnv=`$cleanProg "$LD_PRELOAD"` && LD_PRELOAD="$cleanEnv"
+    cleaned=`$foamClean "$LD_PRELOAD"` && LD_PRELOAD="$cleaned"
     export LD_PRELOAD
 fi
 
 
 # cleanup environment:
 # ~~~~~~~~~~~~~~~~~~~~
-unset cleanEnv cleanProg foamInstall foamOldDirs
+unset cleaned foamClean foamInstall foamOldDirs
 unset _foamSource
 
-# -----------------------------------------------------------------------------
+# ----------------------------------------------------------------- end-of-file

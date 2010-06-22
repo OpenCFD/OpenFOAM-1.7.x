@@ -59,7 +59,7 @@ autoPtr<facePointPatch> facePointPatch::New
             << patch.type()
             << endl << endl
             << "Valid facePointPatch types are :" << endl
-            << polyPatchConstructorTablePtr_->toc()
+            << polyPatchConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

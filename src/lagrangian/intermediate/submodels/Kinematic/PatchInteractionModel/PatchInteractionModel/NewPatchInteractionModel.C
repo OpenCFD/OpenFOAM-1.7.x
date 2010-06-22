@@ -56,7 +56,7 @@ Foam::PatchInteractionModel<CloudType>::New
             << PatchInteractionModelType
             << ", constructor not in hash table" << nl << nl
             << "    Valid PatchInteractionModel types are:" << nl
-            << dictionaryConstructorTablePtr_->toc() << exit(FatalError);
+            << dictionaryConstructorTablePtr_->sortedToc() << exit(FatalError);
     }
 
     return autoPtr<PatchInteractionModel<CloudType> >(cstrIter()(dict, owner));

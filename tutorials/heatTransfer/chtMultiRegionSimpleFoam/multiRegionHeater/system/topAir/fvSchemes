@@ -28,20 +28,20 @@ divSchemes
 {
     default         none;
     div(phi,U)      Gauss upwind;
-    div(phiU,p)     Gauss linear;
     div(phi,h)      Gauss upwind;
     div(phi,k)      Gauss upwind;
     div(phi,epsilon) Gauss upwind;
     div(phi,R)      Gauss upwind;
     div(R)          Gauss linear;
     div((muEff*dev2(grad(U).T()))) Gauss linear;
+    div(U,p)        Gauss upwind;
 }
 
 laplacianSchemes
 {
     default         none;
     laplacian(muEff,U) Gauss linear limited 0.333;
-    laplacian((rho*(1|A(U))),p) Gauss linear limited 0.333;
+    laplacian((rho*(1|A(U))),p_rgh) Gauss linear limited 0.333;
     laplacian(alphaEff,h) Gauss linear limited 0.333;
     laplacian(DkEff,k) Gauss linear limited 0.333;
     laplacian(DepsilonEff,epsilon) Gauss linear limited 0.333;
@@ -61,7 +61,7 @@ snGradSchemes
 fluxRequired
 {
     default         no;
-    p;
+    p_rgh;
 }
 
 // ************************************************************************* //

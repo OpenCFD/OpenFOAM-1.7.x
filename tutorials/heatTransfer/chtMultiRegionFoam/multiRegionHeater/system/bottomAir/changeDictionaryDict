@@ -51,15 +51,14 @@ dictionaryReplacement
             ".*"
             {
                 type            zeroGradient;
-                value           $internalField;
             }
 
             "bottomAir_to_.*"
             {
-                type            solidWallMixedTemperatureCoupled;
+                type            compressible::turbulentTemperatureCoupledBaffle;
                 neighbourFieldName T;
                 K               K;
-                value           $internalField;
+                value           uniform 300;
             }
         }
     }
@@ -73,7 +72,7 @@ dictionaryReplacement
             ".*"
             {
                 type            compressible::epsilonWallFunction;
-                value           $internalField;
+                value           uniform 0.01;
             }
         }
     }
@@ -87,21 +86,35 @@ dictionaryReplacement
             ".*"
             {
                 type            compressible::kqRWallFunction;
-                value           $internalField;
+                value           uniform 0.1;
             }
         }
     }
 
-    p
+    p_rgh
     {
-        internalField   uniform 100000;
+        internalField   uniform 1e5;
 
         boundaryField
         {
             ".*"
             {
                 type            buoyantPressure;
-                value           1e5;
+                value           uniform 1e5;
+            }
+        }
+    }
+
+    p
+    {
+        internalField   uniform 1e5;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            calculated;
+                value           uniform 1e5;
             }
         }
     }

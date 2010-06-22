@@ -162,7 +162,7 @@ Foam::autoPtr<Foam::coordinateRotation> Foam::coordinateRotation::New
         )   << "Unknown coordinateRotation type " << rotType << nl << nl
             << "Valid coordinateRotation types are :" <<  nl
             << "[default: axes " << typeName_() << "]"
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

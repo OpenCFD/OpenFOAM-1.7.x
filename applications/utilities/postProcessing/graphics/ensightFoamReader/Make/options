@@ -7,5 +7,6 @@ EXE_INC = \
 LIB_LIBS = \
     -lOpenFOAM \
     -lfiniteVolume \
+    -lgenericPatchFields \
     -llagrangian \
     $(PROJECT_LIBS)

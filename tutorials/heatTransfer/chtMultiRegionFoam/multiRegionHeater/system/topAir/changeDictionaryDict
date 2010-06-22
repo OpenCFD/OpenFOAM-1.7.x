@@ -18,7 +18,7 @@ dictionaryReplacement
 {
     U
     {
-        internalField   uniform (0.01 0 0);
+        internalField   uniform (0.1 0 0);
 
         boundaryField
         {
@@ -30,13 +30,13 @@ dictionaryReplacement
             minX
             {
                 type            fixedValue;
-                value           uniform ( 0.01 0 0 );
+                value           uniform ( 0.1 0 0 );
             }
             maxX
             {
                 type            inletOutlet;
                 inletValue      uniform ( 0 0 0 );
-                value           uniform ( 0 0 0 );
+                value           uniform ( 0.1 0 0 );
             }
         }
     }
@@ -50,27 +50,26 @@ dictionaryReplacement
             ".*"
             {
                 type            zeroGradient;
-                value           $internalField;
             }
 
             minX
             {
                 type            fixedValue;
-                value           $internalField;
+                value           uniform 300;
             }
             maxX
             {
                 type            inletOutlet;
-                inletValue      $internalField;
-                value           $internalField;
+                inletValue      uniform 300;
+                value           uniform 300;
             }
 
             "topAir_to_.*"
             {
-                type            solidWallMixedTemperatureCoupled;
+                type            compressible::turbulentTemperatureCoupledBaffle;
                 neighbourFieldName T;
                 K               K;
-                value           $internalField;
+                value           uniform 300;
             }
         }
     }
@@ -84,19 +83,19 @@ dictionaryReplacement
             ".*"
             {
                 type            compressible::epsilonWallFunction;
-                value           $internalField;
+                value           uniform 0.01;
             }
 
             minX
             {
                 type            fixedValue;
-                value           $internalField;
+                value           uniform 0.01;
             }
             maxX
             {
                 type            inletOutlet;
-                inletValue      $internalField;
-                value           $internalField;
+                inletValue      uniform 0.01;
+                value           uniform 0.01;
             }
         }
     }
@@ -110,42 +109,59 @@ dictionaryReplacement
             ".*"
             {
                 type            compressible::kqRWallFunction;
-                value           $internalField;
+                value           uniform 0.1;
             }
 
             minX
             {
                 type            fixedValue;
-                value           $internalField;
+                value           uniform 0.1;
             }
             maxX
             {
                 type            inletOutlet;
-                inletValue      $internalField;
-                value           $internalField;
+                inletValue      uniform 0.1;
+                value           uniform 0.1;
             }
         }
     }
 
-    p
+    p_rgh
     {
-        internalField   uniform 100000;
+        internalField   uniform 1e5;
 
         boundaryField
         {
             ".*"
             {
                 type            buoyantPressure;
-                value           1e5;
+                value           uniform 1e5;
             }
 
             maxX
             {
-                type            waveTransmissive;
-                gamma           1.4;
-                fieldInf        100000;
-                lInf            0.4;
-                value           $internalField;
+                type            fixedValue;
+                value           uniform 1e5;
+            }
+        }
+    }
+
+    p
+    {
+        internalField   uniform 1e5;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            calculated;
+                value           uniform 1e5;
+            }
+
+            maxX
+            {
+                type            calculated;
+                value           uniform 1e5;
             }
         }
     }

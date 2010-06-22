@@ -38,7 +38,8 @@ Foam::word Foam::Time::findInstance
 (
     const fileName& dir,
     const word& name,
-    const IOobject::readOption rOpt
+    const IOobject::readOption rOpt,
+    const word& stopInstance
 ) const
 {
     // Note: if name is empty, just check the directory itself
@@ -106,8 +107,35 @@ Foam::word Foam::Time::findInstance
 
             return ts[instanceI].name();
         }
-    }
 
+        // Check if hit minimum instance
+        if (ts[instanceI].name() == stopInstance)
+        {
+            if (debug)
+            {
+                Info<< "Time::findInstance"
+                    "(const fileName&, const word&"
+                    ", const IOobject::readOption, const word&)"
+                    << " : hit stopInstance " << stopInstance
+                    << endl;
+            }
+
+            if (rOpt == IOobject::MUST_READ)
+            {
+                FatalErrorIn
+                (
+                    "Time::findInstance"
+                    "(const fileName&, const word&"
+                    ", const IOobject::readOption, const word&)"
+                )   << "Cannot find file \"" << name << "\" in directory "
+                    << dir << " in times " << timeName()
+                    << " down to " << stopInstance
+                    << exit(FatalError);
+            }
+
+            return ts[instanceI].name();
+        }
+    }
 
     // not in any of the time directories, try constant
 
@@ -145,7 +173,8 @@ Foam::word Foam::Time::findInstance
             "Time::findInstance"
             "(const fileName&, const word&, const IOobject::readOption)"
         )   << "Cannot find file \"" << name << "\" in directory "
-            << constant()/dir
+            << dir << " in times " << timeName()
+            << " down to " << constant()
             << exit(FatalError);
     }
 

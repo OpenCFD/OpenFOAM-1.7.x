@@ -97,7 +97,7 @@ Foam::autoPtr<Foam::lduMatrix::smoother> Foam::lduMatrix::smoother::New
             )   << "Unknown symmetric matrix smoother "
                 << name << nl << nl
                 << "Valid symmetric matrix smoothers are :" << endl
-                << symMatrixConstructorTablePtr_->toc()
+                << symMatrixConstructorTablePtr_->sortedToc()
                 << exit(FatalIOError);
         }
 
@@ -126,7 +126,7 @@ Foam::autoPtr<Foam::lduMatrix::smoother> Foam::lduMatrix::smoother::New
             )   << "Unknown asymmetric matrix smoother "
                 << name << nl << nl
                 << "Valid asymmetric matrix smoothers are :" << endl
-                << asymMatrixConstructorTablePtr_->toc()
+                << asymMatrixConstructorTablePtr_->sortedToc()
                 << exit(FatalIOError);
         }
 

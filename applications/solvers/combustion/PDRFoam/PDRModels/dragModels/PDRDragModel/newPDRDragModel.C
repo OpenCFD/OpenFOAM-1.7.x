@@ -51,7 +51,7 @@ Foam::autoPtr<Foam::PDRDragModel> Foam::PDRDragModel::New
         )   << "Unknown PDRDragModel type "
             << PDRDragModelTypeName << endl << endl
             << "Valid  PDRDragModels are : " << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

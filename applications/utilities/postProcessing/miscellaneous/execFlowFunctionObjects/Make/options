@@ -15,4 +15,5 @@ EXE_LIBS = \
     -lspecie \
     -lcompressibleRASModels \
     -lcompressibleLESModels \
-    -lfiniteVolume
+    -lfiniteVolume \
+    -lgenericPatchFields

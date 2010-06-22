@@ -44,9 +44,9 @@ int main(int argc, char *argv[])
 
     Random rndGen(label(0));
 
-    autoPtr<pdf> p
+    autoPtr<pdfs::pdf> p
     (
-        pdf::New(pdfDictionary, rndGen)
+        pdfs::pdf::New(pdfDictionary, rndGen)
     );
 
     scalar xMin = p->minValue();

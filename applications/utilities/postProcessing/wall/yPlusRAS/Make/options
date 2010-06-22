@@ -15,4 +15,5 @@ EXE_LIBS = \
     -lcompressibleRASModels \
     -lfiniteVolume \
     -lmeshTools \
-    -lsampling
+    -lsampling \
+    -lgenericPatchFields

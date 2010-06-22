@@ -17,7 +17,7 @@ FoamFile
 
 solvers
 {
-    p
+    p_rgh
     {
         solver          PCG;
         preconditioner  DIC;
@@ -76,7 +76,7 @@ SIMPLE
 relaxationFactors
 {
     rho             1;
-    p               0.3;
+    p_rgh           0.3;
     U               0.7;
     h               0.7;
     k               0.7;

@@ -112,7 +112,7 @@ Foam::FieldActivatedInjection<CloudType>::FieldActivatedInjection
     diameters_(positions_.size()),
     parcelPDF_
     (
-        pdf::New
+        pdfs::pdf::New
         (
             this->coeffDict().subDict("parcelPDF"),
             owner.rndGen()

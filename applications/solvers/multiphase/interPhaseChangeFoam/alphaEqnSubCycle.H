@@ -36,12 +36,12 @@ surfaceScalarField rhoPhi
             !(++alphaSubCycle).end();
         )
         {
-#           include "alphaEqn.H"
+            #include "alphaEqn.H"
         }
     }
     else
     {
-#       include "alphaEqn.H"
+        #include "alphaEqn.H"
     }
 
     if (nOuterCorr == 1)

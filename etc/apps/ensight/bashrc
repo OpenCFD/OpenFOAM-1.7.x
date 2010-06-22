@@ -2,7 +2,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#   \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -21,11 +21,11 @@
 #     You should have received a copy of the GNU General Public License
 #     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Script
+# File
 #     ensight/bashrc
 #
 # Description
-#     Setup file for Ensight 8.?
+#     Setup file for Ensight
 #     Sourced from OpenFOAM-*/etc/bashrc
 #
 #------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ fi
 if [ -r $CEI_HOME ]
 then
 
-    # special treatment for 32bit FOAM and 64bit Ensight
+    # special treatment for 32bit OpenFOAM and 64bit Ensight
     if [ "$WM_ARCH" = linux -a `uname -m` = x86_64 ]
     then
         export CEI_ARCH=linux_2.6_32
@@ -51,8 +51,8 @@ then
         export PATH=$CEI_HOME/bin:$PATH
     fi
 
-    export ENSIGHT8_INPUT=dummy
-    export ENSIGHT8_READER=$FOAM_LIBBIN
+    export ENSIGHT9_INPUT=dummy
+    export ENSIGHT9_READER=$FOAM_LIBBIN
 else
     unset CEI_HOME
 fi

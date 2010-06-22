@@ -56,7 +56,7 @@ Foam::DevolatilisationModel<CloudType>::New
             << DevolatilisationModelType
             << ", constructor not in hash table" << nl << nl
             << "    Valid DevolatilisationModel types are:" << nl
-            << dictionaryConstructorTablePtr_->toc() << exit(FatalError);
+            << dictionaryConstructorTablePtr_->sortedToc() << exit(FatalError);
     }
 
     return autoPtr<DevolatilisationModel<CloudType> >(cstrIter()(dict, owner));

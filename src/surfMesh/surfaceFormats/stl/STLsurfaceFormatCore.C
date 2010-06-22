@@ -123,8 +123,8 @@ bool Foam::fileFormats::STLsurfaceFormatCore::readBINARY
     (
         !is
      || nTris < 0
-     || nTris < (dataFileSize - headerSize)/50
-     || nTris > (dataFileSize - headerSize)/25
+     || nTris < int(dataFileSize - headerSize)/50
+     || nTris > int(dataFileSize - headerSize)/25
     )
     {
         FatalErrorIn

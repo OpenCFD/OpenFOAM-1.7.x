@@ -2,7 +2,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+#   \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -21,7 +21,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Script
+# File
 #     etc/cshrc
 #
 # Description
@@ -31,16 +31,16 @@
 #------------------------------------------------------------------------------
 
 setenv WM_PROJECT OpenFOAM
-setenv WM_PROJECT_VERSION 1.7.0
+if ( ! $?WM_PROJECT_VERSION ) setenv WM_PROJECT_VERSION 1.7
 
 ################################################################################
-# USER EDITABLE PART
+# USER EDITABLE PART. Note changes made here may be lost with the next upgrade
 #
 #    either setenv FOAM_INST_DIR before sourcing this file or set
 #    foamInstall below to where OpenFOAM is installed
 #
-# Location of FOAM installation
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Location of the OpenFOAM installation
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 set foamInstall = $HOME/$WM_PROJECT
 # set foamInstall = ~$WM_PROJECT
 # set foamInstall = /usr/local/$WM_PROJECT
@@ -63,10 +63,35 @@ setenv WM_PROJECT_INST_DIR $FOAM_INST_DIR
 setenv WM_PROJECT_DIR $WM_PROJECT_INST_DIR/$WM_PROJECT-$WM_PROJECT_VERSION
 setenv WM_PROJECT_USER_DIR $HOME/$WM_PROJECT/$LOGNAME-$WM_PROJECT_VERSION
 
-
 # Location of third-party software
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 setenv WM_THIRD_PARTY_DIR $WM_PROJECT_INST_DIR/ThirdParty-$WM_PROJECT_VERSION
+
+
+# Source files, possibly with some verbosity
+alias _foamSource 'if ($?FOAM_VERBOSE && $?prompt) echo "Sourcing: \!*"; source \!*'
+
+# Add in preset user or site preferences:
+set foamPrefs=`$WM_PROJECT_DIR/bin/foamEtcFile prefs.csh`
+if ( $status == 0 ) then
+    _foamSource $foamPrefs
+endif
+unset foamPrefs
+
+# Evaluate command-line parameters
+while ( $#argv > 0 )
+    switch ($argv[1])
+    case *=:
+        # name=       -> unsetenv name
+        eval "unsetenv $argv[1]:s/=//"
+        breaksw
+    case *=*:
+        # name=value  -> setenv name value
+        eval "setenv $argv[1]:s/=/ /"
+        breaksw
+    endsw
+    shift
+end
 
 
 # Operating System/Platform
@@ -75,8 +100,8 @@ setenv WM_THIRD_PARTY_DIR $WM_PROJECT_INST_DIR/ThirdParty-$WM_PROJECT_VERSION
 if ( ! $?WM_OSTYPE ) setenv WM_OSTYPE POSIX
 
 
-# Compiler: set to Gcc, Gcc43 or Icc (for Intel's icc)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Compiler: set to Gcc, Gcc43, Gcc44 or Icc (for Intel's icc)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if ( ! $?WM_COMPILER ) setenv WM_COMPILER Gcc
 
 setenv WM_COMPILER_ARCH
@@ -119,7 +144,6 @@ case Linux:
     case x86_64:
         switch ($WM_ARCH_OPTION)
         case 32:
-            setenv WM_ARCH linux
             setenv WM_COMPILER_ARCH '-64'
             setenv WM_CC 'gcc'
             setenv WM_CXX 'g++'
@@ -139,7 +163,7 @@ case Linux:
             breaksw
 
         default:
-            echo Unknown WM_ARCH_OPTION $WM_ARCH_OPTION, should be 32 or 64
+            echo "Unknown WM_ARCH_OPTION '$WM_ARCH_OPTION', should be 32 or 64"
             breaksw
 
         endsw
@@ -199,68 +223,65 @@ default:
 endsw
 
 
-# Clean standard environment variables (path/PATH, LD_LIBRARY_PATH, MANPATH)
+# Clean standard environment variables (PATH, LD_LIBRARY_PATH, MANPATH)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-set cleanProg=$WM_PROJECT_DIR/bin/foamCleanPath
+set foamClean=$WM_PROJECT_DIR/bin/foamCleanPath
 
-if (! $?LD_LIBRARY_PATH ) then
-    setenv LD_LIBRARY_PATH ''
-endif
-if (! $?MANPATH) then
-    setenv MANPATH ''
-endif
+#- prevent local variables from shadowing setenv variables
+unset PATH MANPATH LD_LIBRARY_PATH LD_PRELOAD
 
-#- Clean path/PATH
-set colonPath=`echo "$path" | sed -e 's/ /:/g'`
-set cleanEnv=`$cleanProg "$colonPath" "$foamOldDirs"`
+if (! $?LD_LIBRARY_PATH ) setenv LD_LIBRARY_PATH ''
+if (! $?MANPATH) setenv MANPATH ''
+
+#- Clean PATH (path)
+set cleaned=`$foamClean "$PATH" "$foamOldDirs"`
 if ( $status == 0 ) then
-    set path=`echo "$cleanEnv" | sed -e 's/:/ /g'`
+    setenv PATH $cleaned
 endif
 
 #- Clean LD_LIBRARY_PATH
-setenv LD_LIBRARY_PATH `$cleanProg "$LD_LIBRARY_PATH" "$foamOldDirs"`
+set cleaned=`$foamClean "$LD_LIBRARY_PATH" "$foamOldDirs"`
+if ( $status == 0 ) setenv LD_LIBRARY_PATH $cleaned
 
 #- Clean MANPATH
-setenv MANPATH `$cleanProg "$MANPATH" "$foamOldDirs"`
+set cleaned=`$foamClean "$MANPATH" "$foamOldDirs"`
+if ( $status == 0 ) setenv MANPATH $cleaned
 
 
 # Source project setup files
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
-alias _foamSource 'if ($?FOAM_VERBOSE && $?prompt) echo "Executing: \!*"; source \!*'
-
 _foamSource $WM_PROJECT_DIR/etc/settings.csh
 _foamSource $WM_PROJECT_DIR/etc/aliases.csh
 
 # Source user setup files for optional packages
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# _foamSource $WM_PROJECT_DIR/etc/apps/paraview/cshrc
 _foamSource $WM_PROJECT_DIR/etc/apps/paraview3/cshrc
 # _foamSource $WM_PROJECT_DIR/etc/apps/ensight/cshrc
 
 
 # Clean environment paths again. Only remove duplicates
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#- Clean path/PATH
-set colonPath=`echo "$path" | sed -e 's/ /:/g'`
-set cleanEnv=`$cleanProg "$colonPath"`
-if ( $status == 0 ) then
-    set path=`echo "$cleanEnv" | sed -e 's/:/ /g'`
-endif
+#- Clean PATH (path)
+set cleaned=`$foamClean "$PATH"`
+if ( $status == 0 ) setenv PATH $cleaned
 
 #- Clean LD_LIBRARY_PATH
-setenv LD_LIBRARY_PATH `$cleanProg "$LD_LIBRARY_PATH"`
+set cleaned=`$foamClean "$LD_LIBRARY_PATH"`
+if ( $status == 0 ) setenv LD_LIBRARY_PATH $cleaned
 
-#- Clean MANPATH
-setenv MANPATH `$cleanProg "$MANPATH"`:
+#- Clean MANPATH (trailing ':' to find system pages)
+set cleaned=`$foamClean "$MANPATH"`:
+if ( $status == 0 ) setenv MANPATH "$cleaned"
 
 #- Clean LD_PRELOAD
 if ( $?LD_PRELOAD ) then
-    setenv LD_PRELOAD `$cleanProg "$LD_PRELOAD"`
+    set cleaned=`$foamClean "$LD_PRELOAD"`
+    if ( $status == 0 ) setenv LD_PRELOAD $cleaned
 endif
 
 # cleanup environment:
 # ~~~~~~~~~~~~~~~~~~~~
-unset cleanEnv cleanProg colonPath foamInstall foamOldDirs
+unset cleaned foamClean foamInstall foamOldDirs
 unalias _foamSource
 
-# -----------------------------------------------------------------------------
+# ----------------------------------------------------------------- end-of-file

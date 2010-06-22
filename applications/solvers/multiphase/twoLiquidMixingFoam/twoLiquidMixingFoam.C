@@ -68,6 +68,8 @@ int main(int argc, char *argv[])
         // --- Pressure-velocity PIMPLE corrector loop
         for (int oCorr=0; oCorr<nOuterCorr; oCorr++)
         {
+            bool finalIter = oCorr == nOuterCorr-1;
+
             twoPhaseProperties.correct();
 
             #include "alphaEqn.H"
@@ -77,7 +79,7 @@ int main(int argc, char *argv[])
             // --- PISO loop
             for (int corr=0; corr<nCorr; corr++)
             {
-                #include "p_rghEqn.H"
+                #include "pEqn.H"
             }
 
             turbulence->correct();
