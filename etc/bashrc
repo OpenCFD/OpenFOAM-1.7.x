@@ -32,7 +32,7 @@
 #------------------------------------------------------------------------------
 
 export WM_PROJECT=OpenFOAM
-[ -z "$WM_PROJECT_VERSION" ] && export WM_PROJECT_VERSION=1.6
+[ -z "$WM_PROJECT_VERSION" ] && export WM_PROJECT_VERSION=1.7
 
 ################################################################################
 # USER EDITABLE PART. Note changes made here may be lost with the next upgrade

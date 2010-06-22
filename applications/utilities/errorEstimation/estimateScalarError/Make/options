@@ -3,7 +3,7 @@ EXE_INC = \
     -I$(LIB_SRC)/errorEstimation/lnInclude
 
 EXE_LIBS = \
-    -lerrorEstimation \
+    /* -lerrorEstimation */ \
     -lfiniteVolume \
     -lmeshTools \
     -ldynamicMesh
