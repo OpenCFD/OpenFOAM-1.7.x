@@ -8,4 +8,5 @@ EXE_LIBS = \
     -lsampling \
     -lmeshTools \
     -llagrangian \
-    -lfiniteVolume
+    -lfiniteVolume \
+    -lgenericPatchFields

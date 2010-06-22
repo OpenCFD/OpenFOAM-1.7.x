@@ -39,4 +39,5 @@ EXE_LIBS = \
     -lthermophysicalFunctions \
     -ltopoChangerFvMesh \
     -ltriSurface \
-    -lautoMesh
+    -lautoMesh \
+    -lgenericPatchFields
