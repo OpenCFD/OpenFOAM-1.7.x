@@ -56,12 +56,13 @@ autoPtr<breakupModel> breakupModel::New
     if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
         FatalError
-            << "breakupModel::New(const dictionary&, const spray&) : " << endl
+            << "breakupModel::New(const dictionary&, const spray&) : " << nl
             << "    unknown breakupModelType type "
             << breakupModelType
-            << ", constructor not in hash table" << endl << endl
-            << "    Valid breakupModel types are :" << endl;
-        Info<< dictionaryConstructorTablePtr_->toc() << abort(FatalError);
+            << ", constructor not in hash table" << endl << nl
+            << "    Valid breakupModel types are :" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
+            << abort(FatalError);
     }
 
     return autoPtr<breakupModel>(cstrIter()(dict, sm));

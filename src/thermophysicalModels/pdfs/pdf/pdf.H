@@ -25,37 +25,27 @@ Class
     Foam::pdf
 
 Description
-    A library of runtime-selectable pdf's.
+    A library of runtime-selectable PDF's.
 
     Returns a sampled value given the expectation (nu) and variance (sigma^2)
 
-    Sample of planned pdfs (beta p. 374-375):
-    - binomial
-    - geometric
-    - Poisson
-    - hypergeometric
-    - Pascal
-    - uniform
+    Current PDF's include:
     - exponential
+    - fixedValue
+    - general
+    - multi-normal
     - normal
-    - Gamma
-    - chi
-    - t?
-    - F?
-    - beta
-    - Weibull
-    - Rayleigh
-    - Cauchy?
+    - Rosin-Rammler
+    - uniform
 
     The pdf is tabulated in equidistant nPoints, in an interval.
-    These values are integrated to obtain the cumulated pdf,
+    These values are integrated to obtain the cumulated PDF,
     which is then used to change the distribution from unifrom to
     the actual pdf.
 
 SourceFiles
-    pdfI.H
     pdf.C
-    pdfIO.C
+    pdfNew.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -70,6 +60,8 @@ SourceFiles
 
 namespace Foam
 {
+namespace pdfs
+{
 
 /*---------------------------------------------------------------------------*\
                            Class pdf Declaration
@@ -82,9 +74,17 @@ protected:
 
     // Protected data
 
-        const dictionary& dict_;
+        //- Coefficients dictionary
+        const dictionary pdfDict_;
 
+        //- Reference to the randmo number generator
         Random& rndGen_;
+
+
+    // Protected Member Functions
+
+        //- Check that the PDF is valid
+        virtual void check() const;
 
 
 public:
@@ -110,7 +110,7 @@ public:
     // Constructors
 
         //- Construct from dictionary
-        pdf(const dictionary& dict, Random& rndGen);
+        pdf(const word& name, const dictionary& dict, Random& rndGen);
 
 
     //- Selector
@@ -136,6 +136,7 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace pdfs
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

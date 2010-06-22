@@ -49,7 +49,7 @@ Foam::autoPtr<Foam::fvPatch> Foam::fvPatch::New
         FatalErrorIn("fvPatch::New(const polyPatch&, const fvBoundaryMesh&)")
             << "Unknown fvPatch type " << patch.type() << ".\n"
             << "Valid fvPatch types are :"
-            << polyPatchConstructorTablePtr_->toc()
+            << polyPatchConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

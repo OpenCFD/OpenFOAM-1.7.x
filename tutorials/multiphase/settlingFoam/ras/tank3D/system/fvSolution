@@ -25,7 +25,7 @@ solvers
         relTol          0;
     }
 
-    U
+    "U.*"
     {
         solver          PBiCG;
         preconditioner  DILU;
@@ -71,7 +71,7 @@ PISO
     momentumPredictor yes;
     nOuterCorrectors  1;
     nCorrectors       2;
-    nNonOrthogonalCorrectors 0;
+    nNonOrthogonalCorrectors 1;
 }
 
 relaxationFactors

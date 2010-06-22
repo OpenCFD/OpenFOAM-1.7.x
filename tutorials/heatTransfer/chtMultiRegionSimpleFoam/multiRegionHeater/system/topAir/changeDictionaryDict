@@ -18,7 +18,7 @@ dictionaryReplacement
 {
     U
     {
-        internalField   uniform (0.01 0 0);
+        internalField   uniform (0.1 0 0);
 
         boundaryField
         {
@@ -30,13 +30,13 @@ dictionaryReplacement
             minX
             {
                 type            fixedValue;
-                value           uniform ( 0.01 0 0 );
+                value           uniform ( 0.1 0 0 );
             }
             maxX
             {
                 type            inletOutlet;
                 inletValue      uniform ( 0 0 0 );
-                value           uniform ( 0 0 0 );
+                value           uniform ( 0.1 0 0 );
             }
         }
     }
@@ -126,22 +126,42 @@ dictionaryReplacement
         }
     }
 
-    p
+    p_rgh
     {
-        internalField   uniform 100000;
+        internalField   uniform 1e5;
 
         boundaryField
         {
             ".*"
             {
                 type            buoyantPressure;
-                value           1e5;
+                value           uniform 1e5;
             }
 
             maxX
             {
                 type            fixedValue;
-                value           uniform 100000;
+                value           uniform 1e5;
+            }
+        }
+    }
+
+    p
+    {
+        internalField   uniform 1e5;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            calculated;
+                value           uniform 1e5;
+            }
+
+            maxX
+            {
+                type            calculated;
+                value           uniform 1e5;
             }
         }
     }

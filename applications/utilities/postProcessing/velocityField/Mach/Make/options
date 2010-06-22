@@ -7,4 +7,5 @@ EXE_LIBS = \
     $(FOAM_LIBBIN)/postCalc.o \
     -lfiniteVolume \
     -lbasicThermophysicalModels \
-    -lspecie
+    -lspecie \
+    -lgenericPatchFields

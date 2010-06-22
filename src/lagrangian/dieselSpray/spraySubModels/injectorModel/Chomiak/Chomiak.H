@@ -63,7 +63,7 @@ private:
 
         dictionary ChomiakDict_;
 
-        autoPtr<pdf> dropletPDF_;
+        autoPtr<pdfs::pdf> dropletPDF_;
         scalarList maxSprayAngle_;
 
 public:
@@ -96,17 +96,17 @@ public:
         vector direction
         (
             const label injector,
-            const label hole, 
+            const label hole,
             const scalar time,
             const scalar d
         ) const;
-    
+
         scalar velocity
         (
             const label i,
             const scalar time
         ) const;
-        
+
         scalar averageVelocity
         (
             const label i

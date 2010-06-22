@@ -34,7 +34,7 @@ solvers
         relTol          0;
     }
 
-    p
+    p_rgh
     {
         solver          PCG;
         preconditioner  DIC;
@@ -42,7 +42,7 @@ solvers
         relTol          0.05;
     }
 
-    pFinal
+    p_rghFinal
     {
         solver          PCG;
         preconditioner  DIC;

@@ -53,7 +53,7 @@ Foam::sixDoFRigidBodyMotionConstraint::New(const dictionary& sDoFRBMCDict)
         )   << "Unknown sixDoFRigidBodyMotionConstraint type "
             << sixDoFRigidBodyMotionConstraintTypeName << endl << endl
             << "Valid  sixDoFRigidBodyMotionConstraints are : " << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

@@ -64,7 +64,7 @@ autoPtr<topoSet> topoSet::New
         )   << "Unknown set type " << setType
             << endl << endl
             << "Valid set types : " << endl
-            << wordConstructorTablePtr_->toc()
+            << wordConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 
@@ -95,7 +95,7 @@ autoPtr<topoSet> topoSet::New
         )   << "Unknown set type " << setType
             << endl << endl
             << "Valid set types : " << endl
-            << sizeConstructorTablePtr_->toc()
+            << sizeConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 
@@ -126,7 +126,7 @@ autoPtr<topoSet> topoSet::New
         )   << "Unknown set type " << setType
             << endl << endl
             << "Valid set types : " << endl
-            << setConstructorTablePtr_->toc()
+            << setConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

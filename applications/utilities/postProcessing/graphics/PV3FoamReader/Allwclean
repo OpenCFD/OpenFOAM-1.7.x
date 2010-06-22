@@ -2,7 +2,7 @@
 cd ${0%/*} || exit 1    # run from this directory
 set -x
 
-rm -rf PV3FoamReader/Make
-wclean libso vtkPV3Foam
+wclean libso vtkPV3Readers
+PV3FoamReader/Allwclean
 
 # ----------------------------------------------------------------- end-of-file

@@ -55,7 +55,7 @@ Foam::CompositionModel<CloudType>::New
             << CompositionModelType
             << ", constructor not in hash table" << nl << nl
             << "    Valid CompositionModel types are:" << nl
-            << dictionaryConstructorTablePtr_->toc() << nl
+            << dictionaryConstructorTablePtr_->sortedToc() << nl
             << exit(FatalError);
     }
 

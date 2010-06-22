@@ -227,7 +227,7 @@ autoPtr<Reaction<ReactionThermo> > Reaction<ReactionThermo>::New
             is
         )   << "Reaction type not specified" << endl << endl
             << "Valid Reaction types are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
@@ -245,7 +245,7 @@ autoPtr<Reaction<ReactionThermo> > Reaction<ReactionThermo>::New
             is
         )   << "Unknown reaction type " << reactionTypeName << endl << endl
             << "Valid reaction types are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

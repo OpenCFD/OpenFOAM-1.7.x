@@ -9,5 +9,6 @@ EXE_LIBS = \
     -lbasicThermophysicalModels \
     -lspecie \
     -lcompressibleRASModels \
-    -lfiniteVolume
+    -lfiniteVolume \
+    -lgenericPatchFields
 

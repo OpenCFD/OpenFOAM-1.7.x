@@ -12,7 +12,14 @@
       - fvm::laplacian(mu, U, "laplacian(muEff,U)")
     );
 
-    UEqn.relax();
+    if (finalIter)
+    {
+        UEqn.relax(1);
+    }
+    else
+    {
+        UEqn.relax();
+    }
 
     if (momentumPredictor)
     {
@@ -22,7 +29,11 @@
           ==
             fvc::reconstruct
             (
-                (- ghf*fvc::snGrad(rho) - fvc::snGrad(p_rgh))*mesh.magSf()
-            )
+                (
+                  - ghf*fvc::snGrad(rho)
+                  - fvc::snGrad(p_rgh)
+                )*mesh.magSf()
+            ),
+            mesh.solver(U.select(finalIter))
         );
     }

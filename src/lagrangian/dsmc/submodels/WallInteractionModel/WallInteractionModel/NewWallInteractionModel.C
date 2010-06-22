@@ -54,7 +54,7 @@ Foam::WallInteractionModel<CloudType>::New
             << WallInteractionModelType
             << ", constructor not in hash table" << nl << nl
             << "    Valid WallInteractionModel types are:" << nl
-            << dictionaryConstructorTablePtr_->toc() << exit(FatalError);
+            << dictionaryConstructorTablePtr_->sortedToc() << exit(FatalError);
     }
 
     return autoPtr<WallInteractionModel<CloudType> >(cstrIter()(dict, owner));

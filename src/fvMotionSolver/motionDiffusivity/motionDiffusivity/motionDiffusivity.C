@@ -67,7 +67,7 @@ Foam::autoPtr<Foam::motionDiffusivity> Foam::motionDiffusivity::New
         )   << "Unknown diffusion type " << diffTypeName
             << endl << endl
             << "Valid diffusion types are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

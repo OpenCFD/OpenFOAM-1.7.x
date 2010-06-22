@@ -78,7 +78,7 @@ Foam::autoPtr<Foam::dynamicFvMesh> Foam::dynamicFvMesh::New(const IOobject& io)
         )   << "Unknown dynamicFvMesh type " << dynamicFvMeshTypeName
             << endl << endl
             << "Valid dynamicFvMesh types are :" << endl
-            << IOobjectConstructorTablePtr_->toc()
+            << IOobjectConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

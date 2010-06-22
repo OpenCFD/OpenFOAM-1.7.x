@@ -55,7 +55,7 @@ Foam::PhaseChangeModel<CloudType>::New
             << PhaseChangeModelType
             << ", constructor not in hash table" << nl << nl
             << "    Valid PhaseChangeModel types are:" << nl
-            << dictionaryConstructorTablePtr_->toc() << exit(FatalError);
+            << dictionaryConstructorTablePtr_->sortedToc() << exit(FatalError);
     }
 
     return autoPtr<PhaseChangeModel<CloudType> >(cstrIter()(dict, owner));

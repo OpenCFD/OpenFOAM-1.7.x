@@ -61,7 +61,7 @@ tmp<ddtScheme<Type> > ddtScheme<Type>::New
             schemeData
         )   << "Ddt scheme not specified" << endl << endl
             << "Valid ddt schemes are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 
@@ -78,7 +78,7 @@ tmp<ddtScheme<Type> > ddtScheme<Type>::New
             schemeData
         )   << "unknown ddt scheme " << schemeName << endl << endl
             << "Valid ddt schemes are :" << endl
-            << IstreamConstructorTablePtr_->toc()
+            << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

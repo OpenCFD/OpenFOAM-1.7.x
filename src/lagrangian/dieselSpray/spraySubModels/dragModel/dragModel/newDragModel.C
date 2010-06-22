@@ -57,9 +57,10 @@ autoPtr<dragModel> dragModel::New
             << "dragModel::New(const dictionary&) : " << endl
             << "    unknown dragModelType type "
             << dragModelType
-            << ", constructor not in hash table" << endl << endl
-            << "    Valid dragModel types are :" << endl;
-        Info<< dictionaryConstructorTablePtr_->toc() << abort(FatalError);
+            << ", constructor not in hash table" << nl << endl
+            << "    Valid dragModel types are :" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
+            << abort(FatalError);
     }
 
     return autoPtr<dragModel>(cstrIter()(dict));

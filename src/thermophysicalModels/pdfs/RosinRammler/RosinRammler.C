@@ -30,110 +30,52 @@ License
 
 namespace Foam
 {
-    defineTypeNameAndDebug(RosinRammler, 0);
-
-    addToRunTimeSelectionTable(pdf, RosinRammler, dictionary);
+    namespace pdfs
+    {
+        defineTypeNameAndDebug(RosinRammler, 0);
+        addToRunTimeSelectionTable(pdf, RosinRammler, dictionary);
+    }
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::RosinRammler::RosinRammler(const dictionary& dict, Random& rndGen)
+Foam::pdfs::RosinRammler::RosinRammler(const dictionary& dict, Random& rndGen)
 :
-    pdf(dict, rndGen),
-    pdfDict_(dict.subDict(typeName + "PDF")),
+    pdf(typeName, dict, rndGen),
     minValue_(readScalar(pdfDict_.lookup("minValue"))),
     maxValue_(readScalar(pdfDict_.lookup("maxValue"))),
-    d_(pdfDict_.lookup("d")),
-    n_(pdfDict_.lookup("n")),
-    ls_(d_),
-    range_(maxValue_-minValue_)
+    d_(readScalar(pdfDict_.lookup("d"))),
+    n_(readScalar(pdfDict_.lookup("n")))
 {
-    if (minValue_<0)
-    {
-        FatalErrorIn
-        (
-            "RosinRammler::RosinRammler(const dictionary& dict)"
-        ) << " minValue = " << minValue_ << ", it must be >0." << abort(FatalError);
-    }
-
-    if (maxValue_<minValue_)
-    {
-        FatalErrorIn
-        (
-            "RosinRammler::RosinRammler(const dictionary& dict)"
-        ) << " maxValue is smaller than minValue." << abort(FatalError);
-    }
-
-    // find max value so that it can be normalized to 1.0
-    scalar sMax = 0;
-    label n = d_.size();
-    for (label i=0; i<n; i++)
-    {
-        scalar s = exp(-1.0);
-        for (label j=0; j<n; j++)
-        {
-            if (i!=j)
-            {
-                scalar xx = pow(d_[j]/d_[i], n_[j]);
-                scalar y = xx*exp(-xx);
-                s += y;
-            }
-        }
-
-        sMax = max(sMax, s);
-    }
-
-    for (label i=0; i<n; i++)
-    {
-        ls_[i] /= sMax;
-    }
+    check();
 }
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::RosinRammler::~RosinRammler()
+Foam::pdfs::RosinRammler::~RosinRammler()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::scalar Foam::RosinRammler::sample() const
+Foam::scalar Foam::pdfs::RosinRammler::sample() const
 {
-    scalar y = 0;
-    scalar x = 0;
-    label n = d_.size();
-    bool success = false;
 
-    while (!success)
-    {
-        x = minValue_ + range_*rndGen_.scalar01();
-        y = rndGen_.scalar01();
-        scalar p = 0.0;
-
-        for (label i=0; i<n; i++)
-        {
-            scalar xx = pow(x/d_[i], n_[i]);
-            p += ls_[i]*xx*exp(-xx);
-        }
-
-        if (y<p)
-        {
-            success = true;
-        }
-    }
-
+    scalar K = 1.0 - exp(-pow((maxValue_ - minValue_)/d_, n_));
+    scalar y = rndGen_.scalar01();
+    scalar x = minValue_ + d_*::pow(-log(1.0 - y*K), 1.0/n_);
     return x;
 }
 
 
-Foam::scalar Foam::RosinRammler::minValue() const
+Foam::scalar Foam::pdfs::RosinRammler::minValue() const
 {
     return minValue_;
 }
 
 
-Foam::scalar Foam::RosinRammler::maxValue() const
+Foam::scalar Foam::pdfs::RosinRammler::maxValue() const
 {
     return maxValue_;
 }

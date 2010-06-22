@@ -25,103 +25,96 @@ License
 
 #include "normal.H"
 #include "addToRunTimeSelectionTable.H"
+#include "mathematicalConstants.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    defineTypeNameAndDebug(normal, 0);
-    addToRunTimeSelectionTable(pdf, normal, dictionary);
+    namespace pdfs
+    {
+        defineTypeNameAndDebug(normal, 0);
+        addToRunTimeSelectionTable(pdf, normal, dictionary);
+    }
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::normal::normal(const dictionary& dict, Random& rndGen)
+Foam::pdfs::normal::normal(const dictionary& dict, Random& rndGen)
 :
-    pdf(dict, rndGen),
-    pdfDict_(dict.subDict(typeName + "PDF")),
+    pdf(typeName, dict, rndGen),
     minValue_(readScalar(pdfDict_.lookup("minValue"))),
     maxValue_(readScalar(pdfDict_.lookup("maxValue"))),
-    expectation_(pdfDict_.lookup("expectation")),
-    variance_(pdfDict_.lookup("variance")),
-    strength_(pdfDict_.lookup("strength")),
-    range_(maxValue_-minValue_)
+    expectation_(readScalar(pdfDict_.lookup("expectation"))),
+    variance_(readScalar(pdfDict_.lookup("variance"))),
+    a_(0.147)
 {
-    scalar sMax = 0;
-    label n = strength_.size();
-    for (label i=0; i<n; i++)
+    if (minValue_ < 0)
     {
-        scalar x = expectation_[i];
-        scalar s = strength_[i];
-        for (label j=0; j<n; j++)
-        {
-            if (i!=j)
-            {
-                scalar x2 = (x-expectation_[j])/variance_[j];
-                scalar y = exp(-0.5*x2*x2);
-                s += strength_[j]*y;
-            }
-        }
-
-        sMax = max(sMax, s);
+        FatalErrorIn("normal::normal(const dictionary&, Random&)")
+            << "Minimum value must be greater than zero. "
+            << "Supplied minValue = " << minValue_
+            << abort(FatalError);
     }
 
-    for (label i=0; i<n; i++)
+    if (maxValue_ < minValue_)
     {
-        strength_[i] /= sMax;
+        FatalErrorIn("normal::normal(const dictionary&, Random&)")
+            << "Maximum value is smaller than the minimum value:"
+            << "    maxValue = " << maxValue_ << ", minValue = " << minValue_
+            << abort(FatalError);
     }
 }
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::normal::~normal()
+Foam::pdfs::normal::~normal()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::scalar Foam::normal::sample() const
+Foam::scalar Foam::pdfs::normal::sample() const
 {
-    scalar y = 0;
-    scalar x = 0;
-    label n = expectation_.size();
-    bool success = false;
 
-    while (!success)
-    {
-        x = minValue_ + range_*rndGen_.scalar01();
-        y = rndGen_.scalar01();
-        scalar p = 0.0;
+    scalar a = erf((minValue_ - expectation_)/variance_);
+    scalar b = erf((maxValue_ - expectation_)/variance_);
 
-        for (label i=0; i<n; i++)
-        {
-            scalar nu = expectation_[i];
-            scalar sigma = variance_[i];
-            scalar s = strength_[i];
-            scalar v = (x-nu)/sigma;
-            p += s*exp(-0.5*v*v);
-        }
+    scalar y = rndGen_.scalar01();
+    scalar x = erfInv(y*(b - a) + a)*variance_ + expectation_;
 
-        if (y<p)
-        {
-            success = true;
-        }
-    }
+    // Note: numerical approximation of the inverse function yields slight
+    //       inaccuracies
+
+    x = min(max(x, minValue_), maxValue_);
 
     return x;
 }
 
 
-Foam::scalar Foam::normal::minValue() const
+Foam::scalar Foam::pdfs::normal::minValue() const
 {
     return minValue_;
 }
 
 
-Foam::scalar Foam::normal::maxValue() const
+Foam::scalar Foam::pdfs::normal::maxValue() const
 {
     return maxValue_;
+}
+
+
+Foam::scalar Foam::pdfs::normal::erfInv(const scalar y) const
+{
+    scalar k = 2.0/(mathematicalConstant::pi*a_) +  0.5*log(1.0 - y*y);
+    scalar h = log(1.0 - y*y)/a_;
+    scalar x = sqrt(-k + sqrt(k*k - h));
+    if (y < 0.0)
+    {
+        x *= -1.0;
+    }
+    return x;
 }
 
 

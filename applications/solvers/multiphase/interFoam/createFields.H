@@ -141,4 +141,5 @@
             p.dimensions(),
             pRefValue - getRefCellValue(p, pRefCell)
         );
+        p_rgh = p - rho*gh;
     }

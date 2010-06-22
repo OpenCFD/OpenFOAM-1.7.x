@@ -58,9 +58,10 @@ autoPtr<wallModel> wallModel::New
             << "wallModel::New(const dictionary&, const spray&) : " << endl
             << "    unknown wallModelType type "
             << wallModelType
-            << ", constructor not in hash table" << endl << endl
-            << "    Valid wallModel types are :" << endl;
-        Info<< dictionaryConstructorTablePtr_->toc() << abort(FatalError);
+            << ", constructor not in hash table" << nl << nl
+            << "    Valid wallModel types are :" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
+            << abort(FatalError);
     }
 
     return autoPtr<wallModel>(cstrIter()(dict, U, sm));

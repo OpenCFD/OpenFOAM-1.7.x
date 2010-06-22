@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    compressibleLesInterFoam
+    compressibleInterDyMFoam
 
 Description
     Solver for 2 compressible, isothermal immiscible fluids using a VOF
@@ -30,9 +30,10 @@ Description
     with optional mesh motion and mesh topology changes including adaptive
     re-meshing.
 
-    The momentum and other fluid properties are of the "mixture" and a
-    single momentum equation is solved.  Turbulence modelling is generic,
-    i.e. laminar, RAS or LES may be selected.
+    The momentum and other fluid properties are of the "mixture" and a single
+    momentum equation is solved.
+
+    Turbulence modelling is generic, i.e. laminar, RAS or LES may be selected.
 
 \*---------------------------------------------------------------------------*/
 
@@ -55,6 +56,7 @@ int main(int argc, char *argv[])
     #include "readControls.H"
     #include "initContinuityErrs.H"
     #include "createFields.H"
+    #include "createPcorrTypes.H"
     #include "CourantNo.H"
     #include "setInitialDeltaT.H"
 

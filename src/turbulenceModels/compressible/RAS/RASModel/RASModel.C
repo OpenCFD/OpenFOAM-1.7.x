@@ -140,7 +140,7 @@ autoPtr<RASModel> RASModel::New
         )   << "Unknown RASModel type " << modelName
             << endl << endl
             << "Valid RASModel types are :" << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

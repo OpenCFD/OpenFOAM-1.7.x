@@ -61,7 +61,7 @@ Foam::autoPtr<Foam::pointZone> Foam::pointZone::New
             dict
         )   << "Unknown pointZone type " << zoneType << endl << endl
             << "Valid pointZone types are :" << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

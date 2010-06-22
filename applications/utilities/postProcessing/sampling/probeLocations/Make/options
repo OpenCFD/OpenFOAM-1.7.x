@@ -10,4 +10,5 @@ EXE_LIBS = \
     -lmeshTools \
     -lsampling \
     -ltriSurface \
-    -llagrangian
+    -llagrangian \
+    -lgenericPatchFields

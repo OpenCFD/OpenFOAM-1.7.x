@@ -75,7 +75,7 @@ autoPtr<SRFModel> SRFModel::New
         )   << "Unknown SRFModel type " << SRFModelTypeName
             << nl << nl
             << "Valid SRFModel types are :" << nl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

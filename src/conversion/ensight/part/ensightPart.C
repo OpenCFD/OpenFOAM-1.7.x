@@ -141,7 +141,7 @@ Foam::autoPtr<Foam::ensightPart> Foam::ensightPart::New(Istream& is)
             is
         )   << "unknown ensightPart type " << partType << endl << endl
             << "Valid ensightPart types are :" << endl
-            << istreamConstructorTablePtr_->toc()
+            << istreamConstructorTablePtr_->sortedToc()
             << exit(FatalIOError);
     }
 

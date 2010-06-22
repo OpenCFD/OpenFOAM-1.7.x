@@ -59,7 +59,7 @@ autoPtr<energyScalingFunction> energyScalingFunction::New
         )   << "Unknown energyScalingFunction type "
             << energyScalingFunctionTypeName << nl << nl
             << "Valid  energyScalingFunctions are: " << nl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 

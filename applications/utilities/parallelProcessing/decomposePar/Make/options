@@ -8,4 +8,5 @@ EXE_LIBS = \
     -lfiniteVolume \
     -ldecompositionMethods \
     -llagrangian \
-    -lmeshTools
+    -lmeshTools \
+    -lgenericPatchFields

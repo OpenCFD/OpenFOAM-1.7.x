@@ -1,0 +1,23 @@
+/* Note: enable vtkPolyhedron when available */
+
+PARAVIEW_INC=$(ParaView_DIR)/include/paraview-$(ParaView_MAJOR)
+
+EXE_INC = \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/lagrangian/basic/lnInclude \
+    -I../../vtkPV3Readers/lnInclude \
+    -I../PV3FoamReader \
+    -I$(PARAVIEW_INC) \
+    $(shell \
+        test -f $(PARAVIEW_INC)/vtkPolyhedron.h && \
+        echo "-DHAS_VTK_POLYHEDRON" || echo "-UHAS_VTK_POLYHEDRON" \
+    )
+
+LIB_LIBS = \
+    -lvtkPV3Readers \
+    -lmeshTools \
+    -lfiniteVolume \
+    -lgenericPatchFields \
+    -llagrangian \
+    $(GLIBS)

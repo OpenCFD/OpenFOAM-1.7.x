@@ -59,7 +59,7 @@ autoPtr<viscosityModel> viscosityModel::New
         )   << "Unknown viscosityModel type "
             << viscosityModelTypeName << endl << endl
             << "Valid  viscosityModels are : " << endl
-            << dictionaryConstructorTablePtr_->toc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 
