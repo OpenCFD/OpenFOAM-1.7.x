@@ -102,6 +102,7 @@ public:
             const polyPatch& pp,
             const label faceId,
             bool& keepParticle,
+            bool& active,
             vector& U
         ) const;
 };
