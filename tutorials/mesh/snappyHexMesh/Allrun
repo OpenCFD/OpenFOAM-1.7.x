@@ -1,2 +1,3 @@
+#!/bin/sh
 # These cases are links to solver test cases and are run when the Allrun scripts of those solvers are run.
 # This empty Allrun script avoids the meshing of theses cases to be run twice.
