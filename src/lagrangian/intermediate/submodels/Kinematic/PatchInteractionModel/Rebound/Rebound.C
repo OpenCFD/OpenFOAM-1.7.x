@@ -61,10 +61,12 @@ bool Foam::Rebound<CloudType>::correct
     const polyPatch& pp,
     const label faceId,
     bool& keepParticle,
+    bool& active,
     vector& U
 ) const
 {
     keepParticle = true;
+    active = true;
 
     vector nw = pp.faceAreas()[pp.whichFace(faceId)];
     nw /= mag(nw);
