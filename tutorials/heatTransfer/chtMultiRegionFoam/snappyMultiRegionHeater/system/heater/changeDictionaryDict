@@ -16,57 +16,44 @@ FoamFile
 
 dictionaryReplacement
 {
+    boundary
+    {
+        minY
+        {
+            type            patch;
+        }
+        minZ
+        {
+            type            patch;
+        }
+        maxZ
+        {
+            type            patch;
+        }
+    }
+
     T
     {
         internalField   uniform 300;
 
         boundaryField
         {
+            ".*"
+            {
+                type            zeroGradient;
+                value           uniform 300;
+            }
+            "heater_to_.*"
+            {
+                type            compressible::turbulentTemperatureCoupledBaffle;
+                neighbourFieldName T;
+                K               K;
+                value           uniform 300;
+            }
             minY
             {
                 type            fixedValue;
                 value           uniform 500;
-            }
-
-            minZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-
-            heater_to_bottomAir
-            {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
-                value           $internalField;
-
-            }
-            heater_to_leftSolid
-            {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
-                value           $internalField;
-            }
-            heater_to_rightSolid
-            {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
-                value           $internalField;
-            }
-            heater_to_topAir
-            {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
-                value           $internalField;
             }
         }
     }
@@ -77,40 +64,10 @@ dictionaryReplacement
 
         boundaryField
         {
-            minY
+            ".*"
             {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            minZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_bottomAir
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_leftSolid
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_rightSolid
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_topAir
-            {
-                type            zeroGradient;
-                value           $internalField;
+                type            calculated;
+                value           uniform 8000;
             }
         }
     }
@@ -121,40 +78,10 @@ dictionaryReplacement
 
         boundaryField
         {
-            minY
+            ".*"
             {
                 type            zeroGradient;
-                value           $internalField;
-            }
-            minZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_bottomAir
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_leftSolid
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_rightSolid
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_topAir
-            {
-                type            zeroGradient;
-                value           $internalField;
+                value           uniform 80;
             }
         }
     }
@@ -165,40 +92,10 @@ dictionaryReplacement
 
         boundaryField
         {
-            minY
+            ".*"
             {
                 type            zeroGradient;
-                value           $internalField;
-            }
-            minZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_bottomAir
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_leftSolid
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_rightSolid
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            heater_to_topAir
-            {
-                type            zeroGradient;
-                value           $internalField;
+                value           uniform 450;
             }
         }
     }

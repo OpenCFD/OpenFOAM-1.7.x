@@ -16,47 +16,35 @@ FoamFile
 
 dictionaryReplacement
 {
+    boundary
+    {
+        minZ
+        {
+            type            patch;
+        }
+        maxZ
+        {
+            type            patch;
+        }
+    }
+
     T
     {
         internalField   uniform 300;
 
         boundaryField
         {
-            maxX
+            ".*"
             {
                 type            zeroGradient;
-                value           $internalField;
+                value           uniform 300;
             }
-            minZ
+            "rightSolid_to_.*"
             {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            rightSolid_to_heater
-            {
-                type            solidWallMixedTemperatureCoupled;
+                type            compressible::turbulentTemperatureCoupledBaffle;
                 neighbourFieldName T;
                 K               K;
-                value           $internalField;
-            }
-            rightSolid_to_bottomAir
-            {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
-                value           $internalField;
-            }
-            rightSolid_to_topAir
-            {
-                type            solidWallMixedTemperatureCoupled;
-                neighbourFieldName T;
-                K               K;
-                value           $internalField;
+                value           uniform 300;
             }
         }
     }
@@ -67,35 +55,10 @@ dictionaryReplacement
 
         boundaryField
         {
-            maxX
+            ".*"
             {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            minZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            rightSolid_to_bottomAir
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            rightSolid_to_heater
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            rightSolid_to_topAir
-            {
-                type            zeroGradient;
-                value           $internalField;
+                type            calculated;
+                value           uniform 8000;
             }
         }
     }
@@ -106,35 +69,10 @@ dictionaryReplacement
 
         boundaryField
         {
-            maxX
+            ".*"
             {
                 type            zeroGradient;
-                value           $internalField;
-            }
-            minZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            rightSolid_to_bottomAir
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            rightSolid_to_heater
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            rightSolid_to_topAir
-            {
-                type            zeroGradient;
-                value           $internalField;
+                value           uniform 80;
             }
         }
     }
@@ -145,35 +83,10 @@ dictionaryReplacement
 
         boundaryField
         {
-            maxX
+            ".*"
             {
                 type            zeroGradient;
-                value           $internalField;
-            }
-            minZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            maxZ
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            rightSolid_to_bottomAir
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            rightSolid_to_heater
-            {
-                type            zeroGradient;
-                value           $internalField;
-            }
-            rightSolid_to_topAir
-            {
-                type            zeroGradient;
-                value           $internalField;
+                value           uniform 450;
             }
         }
     }
