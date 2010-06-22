@@ -4,4 +4,4 @@ EXE_INC = \
     -I../decompositionMethods/lnInclude
 
 LIB_LIBS = \
-    -lscotch
+    -lscotch -lscotcherrexit
