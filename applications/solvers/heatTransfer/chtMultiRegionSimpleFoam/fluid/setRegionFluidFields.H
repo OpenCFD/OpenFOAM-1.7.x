@@ -5,7 +5,6 @@
     volScalarField& K = KFluid[i];
     volVectorField& U = UFluid[i];
     surfaceScalarField& phi = phiFluid[i];
-    const dimensionedVector& g = gFluid[i];
 
     compressible::turbulenceModel& turb = turbulence[i];
 
@@ -22,3 +21,7 @@
 
     const label pRefCell = pRefCellFluid[i];
     const scalar pRefValue = pRefValueFluid[i];
+
+    volScalarField& p_rgh = p_rghFluid[i];
+    const volScalarField& gh = ghFluid[i];
+    const surfaceScalarField& ghf = ghfFluid[i];
