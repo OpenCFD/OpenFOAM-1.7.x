@@ -20,13 +20,14 @@ solvers
     {
         solver          PCG
         preconditioner  DIC;
-        tolerance       1e-8;
+        tolerance       1e-7;
         relTol          0;
-    };
-    p
+    }
+
+    p_rgh
     {
         solver           GAMG;
-        tolerance        1e-8;
+        tolerance        1e-7;
         relTol           0.01;
 
         smoother         GaussSeidel;
@@ -35,11 +36,12 @@ solvers
         nCellsInCoarsestLevel 10;
         agglomerator     faceAreaPair;
         mergeLevels      1;
-    };
-    pFinal
+    }
+
+    p_rghFinal
     {
         solver           GAMG;
-        tolerance        1e-8;
+        tolerance        1e-7;
         relTol           0;
 
         smoother         GaussSeidel;
@@ -48,63 +50,66 @@ solvers
         nCellsInCoarsestLevel 10;
         agglomerator     faceAreaPair;
         mergeLevels      1;
-    };
+    }
+
     U
     {
         solver           PBiCG;
         preconditioner   DILU;
-        tolerance        1e-08;
+        tolerance        1e-7;
         relTol           0;
-    };
+    }
 
     h
     {
         solver           PBiCG;
         preconditioner   DILU;
-        tolerance        1e-08;
+        tolerance        1e-7;
         relTol           0.1;
-    };
+    }
+
     hFinal
     {
         solver           PBiCG;
         preconditioner   DILU;
-        tolerance        1e-08;
+        tolerance        1e-7;
         relTol           0;
-    };
+    }
 
     k
     {
         solver           PBiCG;
         preconditioner   DILU;
-        tolerance        1e-08;
+        tolerance        1e-7;
         relTol           0;
-    };
+    }
+
     epsilon
     {
         solver           PBiCG;
         preconditioner   DILU;
-        tolerance        1e-08;
+        tolerance        1e-7;
         relTol           0;
-    };
+    }
+
     R
     {
         solver           PBiCG;
         preconditioner   DILU;
-        tolerance        1e-08;
+        tolerance        1e-7;
         relTol           0;
-    };
+    }
 }
 
 PISO
 {
-    momentumPredictor   off;
+    momentumPredictor    off;
     nOuterCorrectors     1;
-    nCorrectors     2;
+    nCorrectors          2;
     nNonOrthogonalCorrectors 1;
-    pRefPoint       (-0.081 -0.0257 8.01);
-    pRefValue       1e5;
+    pRefPoint            (-0.081 -0.0257 8.01);
+    pRefValue            1e5;
 }
-
 
 PIMPLE
 {
@@ -113,11 +118,10 @@ PIMPLE
     nNonOrthogonalCorrectors 0;
 }
 
-
 relaxationFactors
 {
-//    h               0.9;
-//    U               0.9;
+    h               1;
+    U               1;
 }
 
 // ************************************************************************* //

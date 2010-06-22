@@ -18,7 +18,7 @@ runApplication splitMeshRegions -cellZones -overwrite
 # remove fluid fields from solid regions (important for post-processing)
 for i in heater leftSolid rightSolid
 do
-   rm -f 0*/$i/{mut,alphat,epsilon,k,p,p,U}
+   rm -f 0*/$i/{mut,alphat,epsilon,k,p_rgh,p,U}
 done
 
 # remove solid fields from fluid regions (important for post-processing)
