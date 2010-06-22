@@ -290,7 +290,8 @@ public:
             (
                 const fileName& dir,
                 const word& name = word::null,
-                const IOobject::readOption rOpt = IOobject::MUST_READ
+                const IOobject::readOption rOpt = IOobject::MUST_READ,
+                const word& stopInstance = word::null
             ) const;
 
             //- Search the case for valid time directories
