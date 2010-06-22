@@ -51,7 +51,7 @@ done
 
 
 # set VERSION and MAJOR (version) variables if not already set
-[ -n "$ParaView_VERSION" ] || ParaView_VERSION=3.6.1
+[ -n "$ParaView_VERSION" ] || ParaView_VERSION=3.8.0
 [ -n "$ParaView_MAJOR" ]   || ParaView_MAJOR=unknown
 
 # if needed, set MAJOR version to correspond to VERSION
