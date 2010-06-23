@@ -152,6 +152,8 @@ $(derivedFvPatchFields)/turbulentIntensityKineticEnergyInlet/turbulentIntensityK
 $(derivedFvPatchFields)/uniformFixedValue/uniformFixedValueFvPatchFields.C
 $(derivedFvPatchFields)/waveTransmissive/waveTransmissiveFvPatchFields.C
 $(derivedFvPatchFields)/uniformDensityHydrostaticPressure/uniformDensityHydrostaticPressureFvPatchScalarField.C
+$(derivedFvPatchFields)/swirlFlowRateInletVelocity/swirlFlowRateInletVelocityFvPatchVectorField.C
+$(derivedFvPatchFields)/cylindricalInletVelocity/cylindricalInletVelocityFvPatchVectorField.C
 
 fvsPatchFields = fields/fvsPatchFields
 $(fvsPatchFields)/fvsPatchField/fvsPatchFields.C
@@ -343,5 +345,14 @@ $(SRF)/derivedFvPatchFields/SRFVelocityFvPatchVectorField/SRFVelocityFvPatchVect
 fieldSources = $(general)/fieldSources
 $(fieldSources)/pressureGradientExplicitSource/pressureGradientExplicitSource.C
 $(fieldSources)/timeActivatedExplicitSource/timeActivatedExplicitSource.C
+
+basicSource = $(fieldSources)/basicSource
+$(basicSource)/basicSource/basicSource.C
+$(basicSource)/basicSource/basicSourceIO.C
+$(basicSource)/basicSource/basicSourceList.C
+$(basicSource)/basicSource/IObasicSourceList.C
+$(basicSource)/actuationDiskSource/actuationDiskSource.C
+$(basicSource)/explicitSource/explicitSource.C
+
 
 LIB = $(FOAM_LIBBIN)/libfiniteVolume

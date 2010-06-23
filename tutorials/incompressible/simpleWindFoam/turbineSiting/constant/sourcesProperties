@@ -1,0 +1,55 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.7                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.com               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      sourcesProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+disk1
+{
+    typeModel       actuationDiskSource;
+    active          on;            // on/off switch
+    timeStart       0.0;           // start time
+    duration        1000.0;         // duration
+    selectionMode   cellSet;       // cellSet // points //cellZone
+    cellSet         actuationDisk1; // cellSet name when selectionMode = cellSet
+    cellZone        actuationDisk1; // cellZone name when selectionMode = cellZone
+
+    actuationDiskSourceCoeffs
+    {
+        diskDir     (-1 0 0); // orientation of the disk
+        Cp          0.53;     // Cp
+        Ct          0.58;     // Ct
+        diskArea    40;       // disk area
+    }
+}
+
+disk2
+{
+    typeModel       actuationDiskSource;
+    active          on;            // on/off switch
+    timeStart       0.0;           // start time
+    duration        1000.0;         // duration
+    selectionMode   cellSet;       // cellSet // points //cellZone
+    cellSet         actuationDisk2; // cellSet name when selectionMode = cellSet
+    cellZone        actuationDisk2; // cellZone name when selectionMode = cellZone
+
+    actuationDiskSourceCoeffs
+    {
+        diskDir     (-1 0 0); // orientation of the disk
+        Cp          0.53;     // Cp
+        Ct          0.58;     // Ct
+        diskArea    40;       // disk area
+    }
+}
+// ************************************************************************* //
