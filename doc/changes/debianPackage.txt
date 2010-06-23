@@ -26,28 +26,86 @@ OpenFOAM building:
     sudo apt-get install libxt-dev (tecplot360 converter)
 
 Compile all.
-- metis will give warning about dummy version of metis.h
+- metis might give problems
 - parmetis might give problems
 - mgridgen might give problems
 
+- remove the .git directory
 
 Create a directory with a tar.gz pack of all:
 
     cd ~/OpenFOAM
-    tar czf openfoam_1.7.0.orig.tar.gz OpenFOAM-1.7.0
+    foamPackGeneral
+    mv OpenFOAM-1.7.0.General_2010-06-21.gtgz openfoam_1.7.0.orig.tar.gz
+    #tar czf openfoam_1.7.0.orig.tar.gz OpenFOAM-1.7.0
 
 Test packaging:
     # Clean build
-    fakeroot debian/clean
+    fakeroot debian/rules clean
     # Build : does Allwmake
-    fakeroot debian/build
+    fakeroot debian/rules build
     # Create .deb from build results
-    fakeroot debian/binary
+    fakeroot debian/rules binary
 or one one go:
-    dpdg-buildpackage -rfakeroot
+    debuild -uc -us
+    (does a dpdg-buildpackage -rfakeroot)
 
 
 
+
+
+-------------------------------------------------------
+** settings inside fakeroot:
+
+echo "PWD=/home/opencfd/OpenFOAM/OpenFOAM-1.7.0"
+PWD=/home/opencfd/OpenFOAM/OpenFOAM-1.7.0
+set
+CFLAGS='-g -O2'
+CPPFLAGS=''
+CXXFLAGS='-g -O2'
+DEB_BUILD_ARCH='i386'
+DEB_BUILD_ARCH_BITS='32'
+DEB_BUILD_ARCH_CPU='i386'
+DEB_BUILD_ARCH_ENDIAN='little'
+DEB_BUILD_ARCH_OS='linux'
+DEB_BUILD_GNU_CPU='i486'
+DEB_BUILD_GNU_SYSTEM='linux-gnu'
+DEB_BUILD_GNU_TYPE='i486-linux-gnu'
+DEB_HOST_ARCH='i386'
+DEB_HOST_ARCH_BITS='32'
+DEB_HOST_ARCH_CPU='i386'
+DEB_HOST_ARCH_ENDIAN='little'
+DEB_HOST_ARCH_OS='linux'
+DEB_HOST_GNU_CPU='i486'
+DEB_HOST_GNU_SYSTEM='linux-gnu'
+DEB_HOST_GNU_TYPE='i486-linux-gnu'
+DH_VERBOSE='1'
+FAKED_MODE='unknown-is-root'
+FAKEROOTKEY='1199783323'
+FFLAGS='-g -O2'
+HOME='/home/opencfd'
+IFS=' 	
+'
+LANG='en_GB.UTF-8'
+LDFLAGS='-Wl,-Bsymbolic-functions'
+LD_LIBRARY_PATH='/usr/lib/libfakeroot:/usr/lib64/libfakeroot:/usr/lib32/libfakeroot'
+LD_PRELOAD='libfakeroot-sysv.so'
+LOGNAME='opencfd'
+MAKEFLAGS=''
+MAKELEVEL='1'
+MFLAGS=''
+OPTIND='1'
+PATH='/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11'
+PPID='28953'
+PS1='# '
+PS2='> '
+PS4='+ '
+PWD='/home/opencfd/OpenFOAM/OpenFOAM-1.7.0'
+SHLVL='1'
+TERM='xterm'
+_='debian/rules'
+
+-------------------------------------------------------
 Packaging:
 
     dh_make -f openfoam-1.7.0.orig.tar.gz

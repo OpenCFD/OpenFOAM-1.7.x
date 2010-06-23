@@ -49,9 +49,9 @@
         }
     }
 
-    #include "continuityErrs.H"
-
     p = p_rgh + rho*gh;
+
+    #include "continuityErrs.H"
 
     // For closed-volume cases adjust the pressure level
     // to obey overall mass continuity

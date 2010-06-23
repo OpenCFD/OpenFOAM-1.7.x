@@ -1,1 +1,67 @@
-../topAir/fvSchemes
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.7.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    default steadyState;
+}
+
+gradSchemes
+{
+    default         Gauss linear;
+}
+
+divSchemes
+{
+    default         none;
+    div(phi,U)      Gauss upwind;
+    div(phi,h)      Gauss upwind;
+    div(phi,k)      Gauss upwind;
+    div(phi,epsilon) Gauss upwind;
+    div(phi,R)      Gauss upwind;
+    div(R)          Gauss linear;
+    div((muEff*dev2(grad(U).T()))) Gauss linear;
+    div(U,p)        Gauss upwind;
+}
+
+laplacianSchemes
+{
+    default         none;
+    laplacian(muEff,U) Gauss linear limited 0.333;
+    laplacian((rho*(1|A(U))),p_rgh) Gauss linear limited 0.333;
+    laplacian(alphaEff,h) Gauss linear limited 0.333;
+    laplacian(DkEff,k) Gauss linear limited 0.333;
+    laplacian(DepsilonEff,epsilon) Gauss linear limited 0.333;
+    laplacian(DREff,R) Gauss linear limited 0.333;
+}
+
+interpolationSchemes
+{
+    default         linear;
+}
+
+snGradSchemes
+{
+    default         limited 0.333;
+}
+
+fluxRequired
+{
+    default         no;
+    p_rgh;
+}
+
+// ************************************************************************* //

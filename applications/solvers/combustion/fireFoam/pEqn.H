@@ -21,7 +21,7 @@ for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
 
     fvScalarMatrix p_rghEqn
     (
-        fvm::ddt(psi, p_rgh)
+        fvm::ddt(psi, p_rgh) + fvc::ddt(psi, rho)*gh
       + fvc::div(phi)
       - fvm::laplacian(rhorUAf, p_rgh)
     );

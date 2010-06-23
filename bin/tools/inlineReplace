@@ -24,5 +24,5 @@ do
         rm -f "${f}"_bak
     #else
     #    echo "String $FROMSTRING not present in $f"
-    #fi
+    fi
 done

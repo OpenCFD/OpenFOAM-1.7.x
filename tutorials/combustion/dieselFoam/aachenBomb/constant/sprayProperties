@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.6                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|  \\    /   O peration     | Version:  1.7.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -127,15 +127,15 @@ hollowConeInjectorCoeffs
         {
             minValue        1e-06;
             maxValue        0.00015;
-            d               ( 0.00015 );
-            n               ( 3 );
+            d               0.00015;
+            n               3;
         }
 
         exponentialPDF
         {
             minValue        0.0001;
             maxValue        0.001;
-            lambda          ( 10000 );
+            lambda          10000;
         }
     }
 
