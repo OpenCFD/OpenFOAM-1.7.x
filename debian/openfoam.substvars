@@ -1,2 +1,0 @@
-shlibs:Depends=libc6 (>= 2.3.6-6~), libc6 (>= 2.11), libgcc1 (>= 1:4.1.1), libopenmpi1.3, libscotch-5.1, libstdc++6 (>= 4.4.0), zlib1g (>= 1:1.1.4)
-misc:Depends=

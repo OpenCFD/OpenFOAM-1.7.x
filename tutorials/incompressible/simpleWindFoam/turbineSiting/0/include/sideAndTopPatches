@@ -1,15 +1,19 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.6                                   |
-|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|  \\    /   O peration     | Version:  1.7                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.com               |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 
-flowVelocity         (20 0 0);
-pressure             0;
-turbulentKE          0.24;
-turbulentOmega       1.78;
-#inputMode           merge
+top
+{
+    type slip;
+}
+
+sides
+{
+    type slip;
+}
 
 // ************************************************************************* //

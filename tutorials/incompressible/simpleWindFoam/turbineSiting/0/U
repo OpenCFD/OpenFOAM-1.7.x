@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.6                                   |
-|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|  \\    /   O peration     | Version:  1.7                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.com               |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#include        "initialConditions"
+#include        "include/initialConditions"
 
 dimensions      [0 1 -1 0 0 0 0];
 
@@ -23,7 +23,7 @@ internalField   uniform $flowVelocity;
 
 boundaryField
 {
-    #include "fixedInlet"
+    #include "include/ABLConditions"
 
     outlet
     {
@@ -32,19 +32,31 @@ boundaryField
         value           $internalField;
     }
 
-    lowerWall
+    inlet
     {
-        type            fixedValue;
-        value           uniform (20 0 0);
+        type            atmBoundaryLayerInletVelocity;
+        Uref            $Uref;
+        Href            $Href;
+        n               $windDirection;
+        z               $zDirection;
+        z0              $z0;
+        value           $internalField;
+        zGround         $zGround;
     }
 
-    "motorBike_.*"
+    "terrain_.*"
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    #include "frontBackUpperPatches"
+    ground
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    #include "include/sideAndTopPatches"
 }
 
 

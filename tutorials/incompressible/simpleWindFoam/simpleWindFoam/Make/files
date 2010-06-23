@@ -1,0 +1,3 @@
+simpleWindFoam.C
+
+EXE = $(FOAM_APPBIN)/simpleWindFoam

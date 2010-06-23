@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.6                                   |
-|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|  \\    /   O peration     | Version:  1.7                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -10,40 +10,44 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volScalarField;
-    object      k;
+    location    "0";
+    object      nut;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#include        "initialConditions"
+dimensions      [0 2 -1 0 0 0 0];
 
-dimensions      [0 2 -2 0 0 0 0];
-
-internalField   uniform $turbulentKE;
+internalField   uniform 0;
 
 boundaryField
 {
-    #include "fixedInlet"
+    inlet
+    {
+        type            calculated;
+        value           uniform 0;
+    }
 
     outlet
     {
-        type            inletOutlet;
-        inletValue      $internalField;
-        value           $internalField;
+        type            calculated;
+        value           uniform 0;
     }
 
-    lowerWall
+    "terrain_.*"
     {
-        type            kqRWallFunction;
-        value           $internalField;
+        type            nutRoughWallFunction;
+        Ks              0.2; //Ks = 20 Z0
+        Cs              0.5;
+        value           uniform 0.0;
     }
 
-    "motorBike_.*"
+    ground
     {
-        type            kqRWallFunction;
-        value           $internalField;
+        type            calculated;
+        value           uniform 0;
     }
 
-    #include "frontBackUpperPatches"
+    #include "include/sideAndTopPatches"
 }
 
 
