@@ -209,14 +209,20 @@ case OPENMPI:
     breaksw
 
 case SYSTEMOPENMPI:
-    # use the system installed openmpi, get library directory via mpicc
+
+    # This uses the installed openmpi. It needs mpicc installed!
+
     set mpi_version=openmpi-system
-    set libDir=`mpicc --showme:link | sed -e 's/.*-L\([^ ]*\).*/\1/'`
+
+    # Set compilation flags here instead of in wmake/rules/../mplibSYSTEMOPENMPI
+    setenv PINC `mpicc --showme:compile`
+    setenv PLIBS `mpicc --showme:link`
+    set libDir=`echo "$PLIBS" | sed -e 's/.*-L\([^ ]*\).*/\1/'`
 
     if ($?FOAM_VERBOSE && $?prompt) then
-        echo "Using system installed OpenMPI:"
-        echo "    compile flags : `mpicc --showme:compile`"
-        echo "    link flags    : `mpicc --showme:link`"
+        echo "Using system installed MPI:"
+        echo "    compile flags : $PINC"
+        echo "    link flags    : $PLIBS"
         echo "    libmpi dir    : $libDir"
     endif
 

@@ -105,7 +105,7 @@ unset MPFR_ARCH_PATH
 # Select compiler installation
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # compilerInstall = OpenFOAM | system
-: ${compilerInstall:=OpenFOAM}
+: ${compilerInstall:=system}
 
 case "${compilerInstall:-OpenFOAM}" in
 OpenFOAM)
@@ -237,13 +237,17 @@ OPENMPI)
 SYSTEMOPENMPI)
     # use the system installed openmpi, get library directory via mpicc
     mpi_version=openmpi-system
-    libDir=`mpicc --showme:link | sed -e 's/.*-L\([^ ]*\).*/\1/'`
+
+    # Set compilation flags here instead of in wmake/rules/../mplibSYSTEMOPENMPI
+    export PINC=`mpicc --showme:compile`
+    export PLIBS=`mpicc --showme:link`
+    libDir=`echo "$PLIBS" | sed -e 's/.*-L\([^ ]*\).*/\1/'`
 
     if [ "$FOAM_VERBOSE" -a "$PS1" ]
     then
-        echo "Using system installed OpenMPI:"
-        echo "    compile flags : `mpicc --showme:compile`"
-        echo "    link flags    : `mpicc --showme:link`"
+        echo "Using system installed MPI:"
+        echo "    compile flags : $PINC"
+        echo "    link flags    : $PLIBS"
         echo "    libmpi dir    : $libDir"
     fi
 
