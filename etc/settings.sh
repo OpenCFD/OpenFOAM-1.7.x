@@ -105,7 +105,7 @@ unset MPFR_ARCH_PATH
 # Select compiler installation
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # compilerInstall = OpenFOAM | system
-: ${compilerInstall:=system}
+: ${compilerInstall:=OpenFOAM}
 
 case "${compilerInstall:-OpenFOAM}" in
 OpenFOAM)

@@ -1,5 +1,6 @@
 # the libraries are only used in the openfoam170 package, so we override the
 # warnigs:
-openfoam170 binary: binary-or-shlib-defines-rpath ./usr/bin/pvbatch /usr/lib/python2.5/config
-openfoam170 binary: binary-or-shlib-defines-rpath ./usr/lib/paraview/plugins/Moments/libMoments.so /usr/lib/python2.5/config
+openfoam170 dir-or-file-in-opt
+openfoam170 unstripped-binary-or-object
+openfoam170 wrong-path-for-interpreter ./opt/openfoam170/bin/tools/replaceAllShellSun
 
