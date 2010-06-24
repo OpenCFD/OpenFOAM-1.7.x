@@ -42,6 +42,14 @@ SiCortex*Gcc*/
 solaris*Gcc*/
 SunOS*Gcc*/
 
+# debian/ derived files
+build-stamp
+debian/files
+debian/openfoam170.debhelper.log
+debian/openfoam170.substvars
+debian/openfoam170/
+debian/stamp-patched
+
 # reinstate wmake/rules that might look like build folders
 !wmake/rules/*/
 
