@@ -48,9 +48,9 @@ foreach cmake ( cmake-2.8.1 cmake-2.8.0 cmake-2.6.4 )
     endif
 end
 
-# set VERSION and MAJOR (version) variables if not already set
-if ( ! $?ParaView_VERSION ) setenv ParaView_VERSION 3.8.0
-if ( ! $?ParaView_MAJOR ) setenv ParaView_MAJOR unknown
+# set VERSION and MAJOR (version) variables
+setenv ParaView_VERSION 3.8.0
+setenv ParaView_MAJOR unknown
 
 # if needed, set MAJOR version to correspond to VERSION
 # ParaView_MAJOR is "<digits>.<digits>" from ParaView_VERSION
