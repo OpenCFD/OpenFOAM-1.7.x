@@ -1,6 +1,0 @@
-# the libraries are only used in the openfoam170 package, so we override the
-# warnigs:
-openfoam170 dir-or-file-in-opt
-openfoam170 unstripped-binary-or-object
-openfoam170 wrong-path-for-interpreter ./opt/openfoam170/bin/tools/replaceAllShellSun
-
