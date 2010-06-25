@@ -82,7 +82,7 @@ unsetenv MPFR_ARCH_PATH
 # Select compiler installation
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # compilerInstall = OpenFOAM | system
-if ( ! $?compilerInstall ) set compilerInstall=OpenFOAM
+if ( ! $?compilerInstall ) set compilerInstall=system
 
 switch ("$compilerInstall")
 case OpenFOAM:
