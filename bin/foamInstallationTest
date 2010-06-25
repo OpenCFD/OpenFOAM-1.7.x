@@ -32,8 +32,7 @@
 #------------------------------------------------------------------------------
 
 # Base settings
-FOAM_VERSION=1.6
-SUPPLIED_VERSION_GCC=4.3.3
+FOAM_VERSION=1.7.0
 MIN_VERSION_GCC=4.3.1
 
 # General
@@ -253,13 +252,15 @@ reportExecutable () {
             VERSION=`$1 -v 2>&1                  \
                 | grep 'gcc version'                 \
                 | cut -d" " -f3`
-            if [ ! "$VERSION" = "$SUPPLIED_VERSION_GCC" ]; then
-                echo "WARNING: gcc version does not match gcc supplied" \
-                     "with this release of OpenFOAM"
-                echo "         Supplied version: $SUPPLIED_VERSION_GCC"
-                echo "         User version    : $VERSION"
-                echo "         Minimum required: $MIN_VERSION_GCC"
+            verNum=`echo "$VERSION" | sed s/[.]//g`
+            minVerNum=`echo "$MIN_VERSION_GCC" | sed s/[.]//g`
+
+            if [ $verNum -lt $minVerNum ]; then
+                echo "CRITICAL ERROR: gcc version lower than required"
+                echo "                Supplied version: $VERSION"
+                echo "                Minimum required: $MIN_VERSION_GCC"
                 echo ""
+                CRITICALERROR=`expr $CRITICALERROR + 1`
             fi
             ;;
         gtar)
@@ -510,7 +511,7 @@ COL3=`fixlen "Location" 10`
 hline
 echo "$COL1 $COL2 $COL3"
 hline
-reportExecutable gcc "${WM_COMPILER_DIR}/bin/gcc"
+reportExecutable gcc
 reportExecutable gzip
 if [ "$OS" = Linux ]  ; then
     reportExecutable tar
@@ -532,14 +533,13 @@ else
 fi
 echo ""
 if [ $CRITICALERROR -gt 0 ]; then
-    echo "The foam installation contains $CRITICALERROR critical error(s)."
+    echo "*** The foam installation contains $CRITICALERROR critical error(s)"
 else
     echo "Critical systems ok."
 fi
-echo ""
 if [ $CRITICALERROR -gt 0 ] || [ $FATALERROR -gt 0 ]; then
-    echo "Review the output for warning messages and consult "
-    echo "the installation guide for trouble shooting."
+    echo "***     Review the output for warning messages and consult "
+    echo "***     the installation guide for trouble shooting."
 fi
 echo ""
 
