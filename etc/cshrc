@@ -31,7 +31,7 @@
 #------------------------------------------------------------------------------
 
 setenv WM_PROJECT OpenFOAM
-if ( ! $?WM_PROJECT_VERSION ) setenv WM_PROJECT_VERSION 1.7
+setenv WM_PROJECT_VERSION 1.7.0
 
 ################################################################################
 # USER EDITABLE PART. Note changes made here may be lost with the next upgrade
