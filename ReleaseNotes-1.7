@@ -16,17 +16,18 @@
 
 * GNU/Linux version
   This release of OpenFOAM is distributed primarily in 2 ways: (1) as a Debian
-  pack containing binaries and source; (2) from a Git source code repository.
+  pack containing binaries and source; (2) from the SourceForge source code
+  repository (see [[./README][README]]).
 
   The Ubuntu/Debian pack is available for 32 and 64 bit versions of the 10.04
   LTS operating system using the system compiler and libraries that will be
   installed automatically from standard Debian packs.
 
-  To use the source version from the Git repository, we provide a source pack of
-  third-party packages that can be compiled on the user's system.  This does not
-  include =gcc=, since the system installed version is typically sufficient, but
-  includes =paraview-3.8.0=, =openmpi-1.4.1=, =scotch_5.1=, =metis-5.0pre2=,
-  =ParMetis-3.1= and =ParMGridGen-1.0=.
+  To use the source version from the SourceForge repository, we provide a source
+  pack of third-party packages that can be compiled on the user's system.  This
+  does not include =gcc=, since the system installed version is typically
+  sufficient, but includes =paraview-3.8.0=, =openmpi-1.4.1=, =scotch_5.1=,
+  =metis-5.0pre2=, =ParMetis-3.1= and =ParMGridGen-1.0=.
 
 * Library developments
   There have been a number of developments to the libraries to support the
@@ -49,8 +50,8 @@
 *** Thermo-physical Models
     There has been a set of developments to redefine the thermodynamics in some
     solvers in terms of sensible enthalpy instead of total (i.e. including
-    chemical) enthalpy.  This was done to avoid for improved handling of
-    thermodynamics is the case of partially-premixed or non-premixed combustion
+    chemical) enthalpy.  This was done to improve the handling of
+    thermodynamics in the case of partially-premixed or non-premixed combustion
     systems, or to handle systems with non-unity Lewis number.
     + *New* =hsPsiThermo= thermophysical model calculation based on sensible
        enthalpy =hs= and compressibility =psi=.
