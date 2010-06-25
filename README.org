@@ -1,74 +1,51 @@
 #                            -*- mode: org; -*-
 #
-#+TITLE:             OpenFOAM README for version 1.6
+#+TITLE:             OpenFOAM README for version 1.7
 #+AUTHOR:                      OpenCFD Ltd.
-#+DATE:                         April 2010
-#+LINK:                  http://www.opencfd.co.uk
+#+DATE:                        24 June 2010
+#+LINK:                   http://www.openfoam.com
 #+OPTIONS: author:nil ^:{}
+# Copyright (c) 2010 OpenCFD Ltd.
 
 * Copyright
   OpenFOAM is free software: you can redistribute it and/or modify it under the
   terms of the GNU General Public License as published by the Free Software
   Foundation, either version 3 of the License, or (at your option) any later
-  version.  See the file COPYING in this directory, for a description of the
+  version.  See the file [[./COPYING][COPYING]] in this directory, for a description of the
   GNU General Public License terms under which you can copy the files.
+
+* Downloading the source packs
+*** [[http://downloads.sourceforge.net/foam/OpenFOAM-1.7.0.gtgz?use_mirror=mesh][OpenFOAM-1.7.0]]
+    Complete source code for OpenFOAM-1.7.0 available from SourceForge:
+    http://downloads.sourceforge.net/foam/OpenFOAM-1.7.0.gtgz?use_mirror=mesh
+*** [[http://downloads.sourceforge.net/foam/ThirdParty-1.7.0.gtgz?use_mirror=mesh][ThirdParty]]
+    Source-pack containing additional software required to build and run
+    OpenFOAM-1.7.0 available from SourceForge:
+    http://downloads.sourceforge.net/foam/ThirdParty-1.7.0.gtgz?use_mirror=mesh
 
 * System requirements
   OpenFOAM is developed and tested on Linux, but should work with other POSIX
   systems.  To check your system setup, execute the foamSystemCheck script in
-  the bin/ directory of the OpenFOAM installation. If no problems are reported,
-  proceed to "3. Installation"; otherwise contact your system administrator.
+  the OpenFOAM-1.7.0/bin directory. If no problems are reported, proceed to
+  "4. Installation"; otherwise contact your system administrator.
 
-  If the user wishes to run OpenFOAM in 32/64-bit mode they should consult the
-  section "Running OpenFOAM in 32-bit mode".
-
-*** Qt (from http://trolltech.com/products/qt)
-    The ParaView 3.7.0 visualisation package requires Qt to be installed on the
-    system.  ParaView's producers state that ParaView is only officially
-    supported on Qt version 4.6.x.  However, we have found in limited tests that
-    ParaView works satisfactorily with Qt than 4.5.x.  To
-    check whether Qt4 is installed, and the version, type:
-    + qmake --version
-
-    Both 32-bit and 64-bit version of ParaView were compiled with Qt-4.4.3 (with
-    openSUSE-11.1).  If the user finds that a ParaView binary fails to run, then
-    it is almost certainly due to a conflict in compiled and installed Qt
-    versions and they will need to consult the section below on "Compiling
-    ParaView and the PV3FoamReader module."
-
-    The default versions of Qt used by some GNU/Linux releases are as follows.
-    + ubuntu-7.10:   Version 4.3.2
-    + ubuntu-8.04:   Version 4.3.4
-    + ubuntu-9.04:   Version 4.5.0
-    + openSUSE-10.2: Version 4.2.1 - too old
-    + openSUSE-10.3: Version 4.3.1
-    + openSUSE-11.0: Version 4.4.0
-    + openSUSE-11.1: Version 4.4.3
-    + openSUSE-11.2: Version 4.5.3
-
-    Compilation and running of ParaView has been successful using the libraries
-    downloaded in the "libqt4-dev" package on ubuntu.
-
-    If you don't have an appropriate version of Qt installed you can download
-    the sources e.g.:
-    http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.6.2.tar.gz
-    and compile and install in /usr/local or some other location that does not
-    conflict with the pre-installed version.
+  OpenFOAM-1.7.0 and ThirdParty-1.7.0 have been tested on standard Ubuntu 10.04
+  and SuSE 11.2 Linux distributions.  OpenFOAM-1.7.0 also builds on many other
+  and older Linux distributions but the ParaView-3.8.0 version supplied in
+  ThirdParty requires cmake-2.6.4 or higher and Qt-4.5 or higher which can be
+  obtained from various repositories for many Linux distributions.
 
 * Installation
-  Download and unpack the files in the $HOME/OpenFOAM directory as described in:
-  http://www.OpenFOAM.org/download.html
+  The environment variable settings are contained in files in an
+  OpenFOAM-1.7.0/etc/ directory in the OpenFOAM release. e.g. in
 
-  The environment variable settings are contained in files in an etc/ directory
-  in the OpenFOAM release. e.g. in
-
-  + $HOME/OpenFOAM/OpenFOAM-1.6/etc/
+  + $HOME/OpenFOAM/OpenFOAM-1.7.0/etc/
 
   1) EITHER, if running bash or ksh (if in doubt type 'echo $SHELL'), source the
     etc/bashrc file by adding the following line to the end of your
     $HOME/.bashrc file:
 
-    + . $HOME/OpenFOAM/OpenFOAM-1.6/etc/bashrc
+    + . $HOME/OpenFOAM/OpenFOAM-1.7.0/etc/bashrc
 
     Then update the environment variables by sourcing the $HOME/.bashrc file by
     typing in the terminal:
@@ -78,7 +55,7 @@
   2) OR, if running tcsh or csh, source the etc/cshrc file by adding the
     following line to the end of your $HOME/.cshrc file:
 
-    + source $HOME/OpenFOAM/OpenFOAM-1.6/etc/cshrc
+    + source $HOME/OpenFOAM/OpenFOAM-1.7.0/etc/cshrc
 
     Then update the environment variables by sourcing the $HOME/.cshrc file by
     typing in the terminal:
@@ -94,29 +71,24 @@
     appropriate resource file. Here is a bash/ksh/sh example:
 
     + export FOAM_INST_DIR=/data/app/OpenFOAM
-    + foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.6/etc/bashrc
+    + foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.0/etc/bashrc
     + [ -f $foamDotFile ] && . $foamDotFile
 
     and a csh/tcsh example:
 
     + setenv FOAM_INST_DIR /data/app/OpenFOAM
-    + foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.6/etc/cshrc
+    + foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.0/etc/cshrc
     + if ( -f $foamDotFile ) source $foamDotFile
 
     The value set in '$FOAM_INST_DIR' will be used to locate the remaining parts
     of the OpenFOAM installation.
 
-* Building from Sources (Optional)
-  If you cannot find an appropriate binary pack for your platform, you can build
-  the complete OpenFOAM from the source-pack.  You will first need to compile or
-  obtain a recent version of gcc (we recommend gcc-4.4.?) for your platform,
-  which may be obtained from http://gcc.gnu.org/.
+* Building the Sources
 
-  Install the compiler in
-  $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER_ARCH/gcc-<GCC_VERSION>
-  and change the gcc version number in $WM_PROJECT_DIR/etc/settings.sh and
-  $WM_PROJECT_DIR/etc/settings.csh appropriately and finally update the
-  environment variables as in section 3.
+  You will first need to check your system includes a recent version of gcc
+  (check with gcc --version, we recommend gcc-4.4.? but gcc-4.3.? is
+  sufficient).  If the installed version is not recent source pack for newer
+  versions are available from http://gcc.gnu.org/.
 
   Now go to the top-level source directory $WM_PROJECT_DIR and execute the
   top-level build script './Allwmake'.  In principle this will build everything,
@@ -125,19 +97,18 @@
 
   If you experience difficulties with building the source-pack, or your platform
   is not currently supported, please contact <enquiries@OpenCFD.co.uk> to
-  negotiate a support contract and we will do the port and maintain it for
-  future releases.
+  arrange a support contract and we will do the port and maintain it for future
+  releases.
 
 * Testing the installation
   To check your installation setup, execute the 'foamInstallationTest' script
-  (in the bin/ directory of the OpenFOAM installation). If no problems are
-  reported, proceed to getting started with OpenFOAM; otherwise, go back and
-  check you have installed the software correctly and/or contact your system
-  administrator.
+  (in the OpenFOAM-1.7.0/bin directory). If no problems are reported, proceed to
+  getting started with OpenFOAM; otherwise, go back and check you have installed
+  the software correctly and/or contact your system administrator.
 
 * Getting Started
   Create a project directory within the $HOME/OpenFOAM directory named
-  <USER>-1.6 (e.g. 'chris-1.6' for user chris and OpenFOAM version 1.6)
+  <USER>-1.7.0 (e.g. 'chris-1.7.0' for user chris and OpenFOAM version 1.7.0)
   and create a directory named 'run' within it, e.g. by typing:
 
   + mkdir -p $FOAM_RUN/run
@@ -155,19 +126,21 @@
   + icoFoam
   + paraFoam
 
-  Refer to the OpenFOAM User Guide at http://www.OpenFOAM.org/doc/user.html for
+  Refer to the OpenFOAM User Guide at http://www.OpenFOAM.com/docs/user for
   more information.
 
-* Compiling Paraview 3.7.0 and the PV3FoamReader module
-  If there are problems encountered with ParaView, then it may be necessary to
-  compile ParaView from sources.  The compilation
-  is a fairly simple process using the makeParaView script
-  (found in ThirdParty directory), which has worked in our tests with other
-  packages supplied in the ThirdParty directory, namely cmake-2.8.0 and
-  gcc-4.4.3.  Execute the following:
+* Running OpenFOAM in 32-bit mode on 64-bit machines
+  Linux users with a 64-bit machine may install either the OpenFOAM 32-bit
+  version (linux) or the OpenFOAM 64-bit version (linux64), or both.  The 64-bit
+  is the default mode on a 64-bit machine.  To use an installed 32-bit version,
+  the user must set the environment variable WM_ARCH_OPTION to 32 before
+  sourcing the OpenFOAM-1.7.0/etc/bashrc (or OpenFOAM-1.7.0/etc/cshrc) file.
+
+* Compiling Paraview 3.8.0 and the PV3FoamReader module
+  The compilation is a fairly simple process using the makeParaView script
+  (found in ThirdParty-1.7.0 directory).  Execute the following:
   + cd $WM_THIRD_PARTY_DIR
-  + rm -rf paraview-3.7.0/platforms
-  + rm -rf platforms/*/paraview-3.7.0
+  + ./Allclean
   + ./makeParaView
 
   The PV3blockMeshReader and the PV3FoamReader ParaView plugins are compiled
@@ -176,34 +149,11 @@
   + ./Allwclean
   + ./Allwmake
 
-*** Compiling Paraview with a local version of Qt
-    If the user still encounters problems with ParaView, it may relate to the
-    version of Qt, in which case, it is recommended that the user first
-    downloads a supported version of Qt /e.g./ 4.5.3 as described in the section
-    on "Qt".  The user should unpack the source pack in the $WM_THIRD_PARTY_DIR.
-    Then the user can build Qt by executing from within $WM_THIRD_PARTY_DIR:
-    + ./makeQt
-
-    The user should then compile ParaView using the local version of Qt by
-    executing makeParaView with the -qmake option, giving the full path of the
-    newly built qmake as an argument:
-    + ./makeParaView -qmake <path_to_qmake>
-
-    The user must then recompile the PV3blockMeshReader and the
-    PV3FoamReader plugins as usual (see above).
-
 * Documentation
-  http://www.OpenFOAM.org/doc
+  http://www.OpenFOAM.com/docs
 
-* Help
-  http://www.OpenFOAM.org http://www.OpenFOAM.org/discussion.html
+* Support and development contracts
+  http://www.OpenFOAM.com/support
 
 * Reporting Bugs in OpenFOAM
-  http://www.OpenFOAM.org/bugs.html
-
-* Running OpenFOAM in 32-bit mode on 64-bit machines
-  Linux users with a 64-bit machine may install either the OpenFOAM 32-bit
-  version (linux) or the OpenFOAM 64-bit version (linux64), or both.  The 64-bit
-  is the default mode on a 64-bit machine.  To use an installed 32-bit version,
-  the user must set the environment variable WM_ARCH_OPTION to 32 before
-  sourcing the etc/bashrc (or etc/cshrc) file.
+  http://www.OpenFOAM.com/bugs
