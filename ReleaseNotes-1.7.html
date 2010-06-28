@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en" xml:lang="en">
+<head>
+<title>OpenFOAM release notes for version 1.7.0</title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="24 June 2010"/>
+<meta name="author" content="OpenCFD Ltd."/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+
+<h1 class="title">OpenFOAM release notes for version 1.7.0</h1>
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Overview </a></li>
+<li><a href="#sec-2">2 GNU/Linux version </a></li>
+<li><a href="#sec-3">3 Library developments </a>
+<ul>
+<li><a href="#sec-3.1">3.1 Core library </a></li>
+<li><a href="#sec-3.2">3.2 Turbulence modelling </a></li>
+<li><a href="#sec-3.3">3.3 Thermo-physical Models </a></li>
+<li><a href="#sec-3.4">3.4 DSMC </a></li>
+<li><a href="#sec-3.5">3.5 Dynamic Mesh </a></li>
+<li><a href="#sec-3.6">3.6 Numerics </a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4 Solvers </a>
+<ul>
+<li><a href="#sec-4.1">4.1 <b>New</b> Solvers </a></li>
+<li><a href="#sec-4.2">4.2 Modifications to multiphase and buoyant solvers </a></li>
+<li><a href="#sec-4.3">4.3 Modifications to solvers for sensible enthalpy </a></li>
+<li><a href="#sec-4.4">4.4 Modifications to steady-state compressible solvers </a></li>
+<li><a href="#sec-4.5">4.5 Other modifications </a></li>
+</ul>
+</li>
+<li><a href="#sec-5">5 Boundary conditions </a></li>
+<li><a href="#sec-6">6 Utilities </a>
+<ul>
+<li><a href="#sec-6.1">6.1 <b>New</b> utilities </a></li>
+<li><a href="#sec-6.2">6.2 Updated utilities </a></li>
+</ul>
+</li>
+<li><a href="#sec-7">7 Post-processing </a></li>
+<li><a href="#sec-8">8 New tutorials </a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Overview </h2>
+<div class="outline-text-2" id="text-1">
+
+<p>OpenFOAM-1.7.0 is the latest release of OpenFOAM that contains new features
+both from OpenCFD's development version of OpenFOAM and the repository 1.6.x
+distribution.  This release passes our standard tests and the tutorials have
+been broadly checked.  Please report any bugs by following the link:
+<a href="http://www.openfoam.com/bugs">http://www.openfoam.com/bugs</a>.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> GNU/Linux version </h2>
+<div class="outline-text-2" id="text-2">
+
+<p>This release of OpenFOAM is distributed primarily in 2 ways: (1) as a Debian
+pack containing binaries and source; (2) from the SourceForge source code
+repository (see <a href="./README">README</a>).
+</p>
+<p>
+The Ubuntu/Debian pack is available for 32 and 64 bit versions of the 10.04
+LTS operating system using the system compiler and libraries that will be
+installed automatically from standard Debian packs.
+</p>
+<p>
+To use the source version from the SourceForge repository, we provide a source
+pack of third-party packages that can be compiled on the user's system.  This
+does not include <code>gcc</code>, since the system installed version is typically
+sufficient, but includes <code>paraview-3.8.0</code>, <code>openmpi-1.4.1</code>, <code>scotch_5.1</code>,
+<code>metis-5.0pre2</code>, <code>ParMetis-3.1</code> and <code>ParMGridGen-1.0</code>.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Library developments </h2>
+<div class="outline-text-2" id="text-3">
+
+<p>There have been a number of developments to the libraries to support the
+extension of functionality in solver and utility applications.
+</p>
+</div>
+
+<div id="outline-container-3.1" class="outline-3">
+<h3 id="sec-3.1"><span class="section-number-3">3.1</span> Core library </h3>
+<div class="outline-text-3" id="text-3.1">
+
+<ul>
+<li>
+Large number of code refinements and consistency improvements to support
+other developments.
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-3.2" class="outline-3">
+<h3 id="sec-3.2"><span class="section-number-3">3.2</span> Turbulence modelling </h3>
+<div class="outline-text-3" id="text-3.2">
+
+<ul>
+<li>
+Wall function boundary conditions:
+<ul>
+<li>
+<b>New</b> <code>mutWallFunction</code> continuous wall function,
+</li>
+<li>
+<b>New</b> <code>mutLowReWallFunction</code> continuous wall function,
+</li>
+<li>
+<b>New</b> <code>nutWallFunction</code> continuous wall function,
+</li>
+<li>
+<b>New</b> <code>nutLowReWallFunction</code> continuous wall function,
+</li>
+<li>
+Standard wall functions, based on k, now renamed  <code>nutkWallFunction</code> and
+<code>mutkWallFunction</code>
+</li>
+<li>
+<code>omegaWallFunction</code> now includes laminar blending function.
+</li>
+</ul>
+</li>
+<li>
+Conjugate heat transfer boundary conditions:
+<ul>
+<li>
+<b>New</b> <code>turbulentTemperatureCoupledBaffleMixed</code> BC,
+</li>
+<li>
+<b>New</b> <code>turbulentTemperatureCoupledBaffle</code>  BC.
+</li>
+</ul>
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-3.3" class="outline-3">
+<h3 id="sec-3.3"><span class="section-number-3">3.3</span> Thermo-physical Models </h3>
+<div class="outline-text-3" id="text-3.3">
+
+<p>There has been a set of developments to redefine the thermodynamics in some
+solvers in terms of sensible enthalpy instead of total (i.e. including
+chemical) enthalpy.  This was done to improve the handling of
+thermodynamics in the case of partially-premixed or non-premixed combustion
+systems, or to handle systems with non-unity Lewis number.
+</p><ul>
+<li>
+<b>New</b> <code>hsPsiThermo</code> thermophysical model calculation based on sensible
+enthalpy <code>hs</code> and compressibility <code>psi</code>.
+</li>
+<li>
+<b>New</b> <code>hsRhoThermo</code> thermophysical model calculation based on <code>hs</code> and
+density <code>rho</code>.
+</li>
+<li>
+<b>New</b> <code>hsCombustionThermo</code> thermophysical model calculation for a
+combustion mixture based on <code>hs</code> and <code>psi</code>.
+</li>
+<li>
+<b>New</b> <code>hsPsiMixtureThermo</code> thermophysical model calculation for a
+mixture based on <code>hs</code> and <code>psi</code>.
+</li>
+<li>
+<b>New</b> <code>hsReactionThermo</code> thermophysical model calculation for a complex
+reacting mixture based on <code>hs</code>.
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-3.4" class="outline-3">
+<h3 id="sec-3.4"><span class="section-number-3">3.4</span> DSMC </h3>
+<div class="outline-text-3" id="text-3.4">
+
+<ul>
+<li>
+1D and 2D planar simulations now possible by specifying empty patches in
+the usual way.
+</li>
+<li>
+<b>New</b> <code>MixedDiffuseSpecular</code> wall boundary condition added.
+</li>
+<li>
+<b>New</b> pressure field measurement.
+</li>
+<li>
+<b>New</b> measurement of velocity slip and temperature jump.
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-3.5" class="outline-3">
+<h3 id="sec-3.5"><span class="section-number-3">3.5</span> Dynamic Mesh </h3>
+<div class="outline-text-3" id="text-3.5">
+
+<ul>
+<li>
+<b>New</b> <code>sixDoFRigidBodyDisplacement</code> six degree-of-freedom, fluid coupled
+rigid body motion, applied as a boundary condition to a patch in the
+pointDisplacement field for dynamic mesh cases.  The motion may have any
+number of restraints (springs and dampers) and constraints (reductions in
+degrees-of-freedom) applied. Restraints include
+<code>linearAxialAngularSpring</code>, <code>linearSpring</code>, <code>sphericalAngularSpring</code> and
+<code>tabulatedAxialAngularSpring</code>.
+Constraints include <code>fixedAxis</code>, <code>fixedLine</code>, <code>fixedOrientation</code>,
+<code>fixedPlane</code> and <code>fixedPoint</code>.
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-3.6" class="outline-3">
+<h3 id="sec-3.6"><span class="section-number-3">3.6</span> Numerics </h3>
+<div class="outline-text-3" id="text-3.6">
+
+<ul>
+<li>
+MULES now supports sub-cycling on moving meshes for interface capturing
+VoF (volume of fluid) calculations.
+</li>
+<li>
+Developments to <code>TimeActivatedExplicitSource</code>, a class that allows a
+source to be applied to an equation according to an input dictionary at
+run-time, that can be switched on at particular times and within
+particular regions of the mesh, using <code>cellZones</code>.
+
+</li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Solvers </h2>
+<div class="outline-text-2" id="text-4">
+
+<p>A number of new solvers have been developed for a range of engineering
+applications.  There has been a set of improvements to certain classes of
+solver that are introduced in this release.
+</p>
+</div>
+
+<div id="outline-container-4.1" class="outline-3">
+<h3 id="sec-4.1"><span class="section-number-3">4.1</span> <b>New</b> Solvers </h3>
+<div class="outline-text-3" id="text-4.1">
+
+<ul>
+<li>
+<code>fireFoam</code>: Transient solver for fires and turbulent diffusion flames.
+</li>
+<li>
+<code>rhoPorousMRFPimpleFoam</code>: Transient solver for laminar or turbulent flow
+of compressible fluids with support for porous media and MRF for HVAC and
+similar applications.  Uses the flexible PIMPLE (PISO-SIMPLE) solution for
+time-resolved and pseudo-transient simulations.
+</li>
+<li>
+<code>chtMultiRegionSimpleFoam</code>: Steady-state version of <code>chtMultiRegionFoam</code>.
+</li>
+<li>
+<code>porousSimpleFoam</code>: Steady-state solver for incompressible, turbulent
+flow with implicit or explicit porosity treatment.
+</li>
+<li>
+<code>interMixingFoam</code>: Solver for 3 incompressible fluids, two of which are
+miscible, using a VoF method to capture the interface.
+</li>
+<li>
+<code>porousInterFoam</code>: Solver for 2 incompressible, isothermal immiscible
+fluids using a VoF phase-fraction based interface capturing approach.
+</li>
+<li>
+<code>simpleWindFoam</code>: Steady-state solver for incompressible, turbulent flow
+with external source in the momentum equation to approximate, e.g. wind
+turbines; located in tutorials, with associated <code>turbineSiting</code> test
+case.
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-4.2" class="outline-3">
+<h3 id="sec-4.2"><span class="section-number-3">4.2</span> Modifications to multiphase and buoyant solvers </h3>
+<div class="outline-text-3" id="text-4.2">
+
+<ul>
+<li>
+Multiphase and buoyant flow solvers now solve for <code>p_rgh</code> = <code>p - rho*g.h</code>,
+rather than the static pressure <code>p</code>.  This change is to avoid deficiencies
+in the handling of the pressure force / buoyant force balance on
+non-orthogonal and distorted meshes.
+</li>
+<li>
+Improvements to boundary conditions and pressure referencing in closed
+domains have been developed to avoid the problems encountered in previous
+attempts to decompose pressure for buoyant flow.
+</li>
+<li>
+The following solvers have been modified for <code>p_rgh</code>: <code>fireFoam</code>
+<code>buoyantBoussinesqPimpleFoam</code>, <code>buoyantBoussinesqSimpleFoam</code>,
+<code>buoyantPimpleFoam</code>, <code>buoyantSimpleFoam</code>, <code>chtMultiRegionFoam</code>,
+<code>chtMultiRegionSimpleFoam</code>, <code>compressibleInterDyMFoam</code>,
+<code>compressibleInterFoam</code>, <code>interDyMFoam</code>, <code>porousInterFoam</code>,
+<code>MRFInterFoam</code>, <code>interFoam</code>, <code>interPhaseChangeFoam</code>,
+<code>multiphaseInterFoam</code>, <code>settlingFoam</code>, <code>twoLiquidMixingFoam</code>.
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-4.3" class="outline-3">
+<h3 id="sec-4.3"><span class="section-number-3">4.3</span> Modifications to solvers for sensible enthalpy </h3>
+<div class="outline-text-3" id="text-4.3">
+
+<ul>
+<li>
+The following solvers have been modified to solve for <code>hs</code> (instead of
+<code>h</code>): <code>dieselEngineFoam</code>, <code>dieselFoam</code>, <code>reactingFoam</code>,
+<code>rhoReactingFoam</code>, <code>coalChemistryFoam</code>,
+<code>porousExplictSourceReactingParcelFoam</code>, <code>reactingParcelFoam</code>.
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-4.4" class="outline-3">
+<h3 id="sec-4.4"><span class="section-number-3">4.4</span> Modifications to steady-state compressible solvers </h3>
+<div class="outline-text-3" id="text-4.4">
+
+<ul>
+<li>
+Boundedness to the thermodynamics is ensured by limiting the density,
+rather than the pressure.  This improves convergence by maintaining
+consistency between the pressure gradient and momentum changes
+</li>
+<li>
+Removed the Sp "boundedness" correction in the convection term from the
+momentum equation.
+</li>
+<li>
+The following solvers have been modified with this change:
+<code>rhoSimpleFoam</code>, <code>buoyantSimpleFoam</code>, <code>chtMultiRegionSimpleFoam</code>
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-4.5" class="outline-3">
+<h3 id="sec-4.5"><span class="section-number-3">4.5</span> Other modifications </h3>
+<div class="outline-text-3" id="text-4.5">
+
+<ul>
+<li>
+Added diffusion number limit to the time-step correction in
+<code>chtMultiRegionFoam</code>.
+</li>
+<li>
+Reformulated pressure correction during phase change to maintain
+boundedness of pressure in <code>cavitatingFoam</code>.
+
+</li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Boundary conditions </h2>
+<div class="outline-text-2" id="text-5">
+
+<p>New boundary conditions have been introduced to support new applications in
+OpenFOAM.
+</p><ul>
+<li>
+Added new time varying boundary conditions.
+</li>
+<li>
+Added new velocity inlets and wall boundary conditions:
+<code>cylindricalInletVelocity</code>, <code>swirlFlowRateInletVelocity</code>,
+<code>translatingWallVelocity</code>.
+</li>
+<li>
+Added boundary conditions for wind/atmospheric simulation:
+<code>atmBoundaryLayerInletEpsilon</code>, <code>atmBoundaryLayerInletVelocity</code>,
+<code>fixedShearStress</code>.
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Utilities </h2>
+<div class="outline-text-2" id="text-6">
+
+<p>There have been some utilities added and updated in this release.
+</p>
+</div>
+
+<div id="outline-container-6.1" class="outline-3">
+<h3 id="sec-6.1"><span class="section-number-3">6.1</span> <b>New</b> utilities </h3>
+<div class="outline-text-3" id="text-6.1">
+
+<ul>
+<li>
+<code>foamToTecplot360</code>: Tecplot binary file format writer.
+</li>
+<li>
+<code>IFCLookUpTableGen</code>: Infinitely-fast chemistry (IFC) look-up table
+generator that calculates the infinitely-fast chemistry relationships as a
+function of <code>ft</code> for a given fuel.
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-6.2" class="outline-3">
+<h3 id="sec-6.2"><span class="section-number-3">6.2</span> Updated utilities </h3>
+<div class="outline-text-3" id="text-6.2">
+
+<ul>
+<li>
+<code>gmshToFoam</code>: adapted for msh2.1 and 2.2 format.
+</li>
+<li>
+<code>snappyHexMesh</code>: lower memory usage by pre-balancing and non-blocking
+transfers.
+</li>
+<li>
+<code>blockMesh</code>: proper spline edges.
+</li>
+<li>
+<code>setSet</code>: handling of faceZoneSet, cellZoneSet, pointZoneSet.
+</li>
+<li>
+<code>splitMeshRegions</code>: option to use existing cellZones only for split.
+</li>
+<li>
+<code>changeDictionary</code>: allow wildcards in changeDictionaryDict.
+
+</li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Post-processing </h2>
+<div class="outline-text-2" id="text-7">
+
+<p>Post-processing has been extended particularly to function objects, the
+on-the-fly post-processing system.
+</p><ul>
+<li>
+<b>New</b> <code>fieldValues</code> function object, allows spatial averaging, sum,
+min/max calculations to be made on fields in sets of cells or faces in the
+geometry
+</li>
+<li>
+<b>New</b> <code>surfaceInterpolateFields</code> function object to generate surface fields
+from volume fields where required
+</li>
+<li>
+<b>New</b> <code>sampledTriSurfaceMesh</code> surface type for surface sampling function
+object
+</li>
+<li>
+<b>New</b> <code>readFields</code> function object controls the loading of fields from time
+directories for further post-processing
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-8" class="outline-2">
+<h2 id="sec-8"><span class="section-number-2">8</span> New tutorials </h2>
+<div class="outline-text-2" id="text-8">
+
+<p>There is a large number of new tutorials to support the new solvers in the
+release.
+</p><ul>
+<li>
+<code>combustion/fireFoam/les/smallPoolFire2D</code>
+</li>
+<li>
+<code>combustion/reactingFoam/ras/counterFlowFlame2D</code>
+</li>
+<li>
+<code>compressible/rhoPorousMRFPimpleFoam/mixerVessel2D</code>
+</li>
+<li>
+<code>heatTransfer/chtMultiRegionSimpleFoam/multiRegionHeater</code>
+</li>
+<li>
+<code>incompressible/pimpleDyMFoam/wingMotion</code>
+</li>
+<li>
+<code>incompressible/porousSimpleFoam/angledDuctExplicit</code>
+</li>
+<li>
+<code>incompressible/porousSimpleFoam/angledDuctImplicit</code>
+</li>
+<li>
+<code>incompressible/simpleWindFoam/turbineSiting</code>
+</li>
+<li>
+<code>lagrangian/porousExplictSourceReactingParcelFoam/parcelInbox</code>
+</li>
+<li>
+<code>lagrangian/porousExplictSourceReactingParcelFoam/verticalChannel</code>
+</li>
+<li>
+<code>multiPhase/interDyMFoam/floatingObject</code>
+</li>
+<li>
+<code>multiPhase/interMixingFoam/laminar/damBreak</code>
+</li>
+<li>
+<code>multiPhase/interPhaseChangeFoam/cavitatingBullet</code>
+</li>
+</ul>
+</div>
+</div>
+<div id="postamble">
+<p class="date"> Date: 24 June 2010</p>
+<p class="creator">HTML generated by org-mode 6.34trans in emacs 23</p>
+</div>
+</div>
+</body>
+</html>
