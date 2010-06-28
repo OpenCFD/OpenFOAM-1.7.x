@@ -23,7 +23,7 @@
 #     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Script
-#     foamPackThirdPartyGeneral [outputDir]
+#     foamPackThirdParty [outputDir]
 #
 # Description
 #     Packs and compresses the OpenFOAM ThirdParty directory for release
@@ -33,7 +33,7 @@
 timeStamp=$(date +%Y-%m-%d)
 packDir=${WM_THIRD_PARTY_DIR:-ThirdParty}
 packDir=${packDir##*/}
-packFile=${packDir}.General_${timeStamp}.gtgz
+packFile=${packDir}_${timeStamp}.gtgz
 
 if [ ! -d $packDir ]
 then

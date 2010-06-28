@@ -67,6 +67,7 @@ find -H $packDir               \
  -e "\@$packDir/lib/@d"        \
  -e '\@/\.git/@d'              \
  -e '\@/\.tags/@d'             \
+ -e '\@/\README\.org@d'        \
  -e '\@applications/bin/@d'    \
  -e '\@wmake/bin/@d'           \
  -e '\@/t/@d'                  \
