@@ -1,0 +1,41 @@
+#                            -*- mode: org; -*-
+#
+#+TITLE:             OpenFOAM README for version 1.7
+#+AUTHOR:                      OpenCFD Ltd.
+#+DATE:                        24 June 2010
+#+LINK:                   http://www.openfoam.com
+#+OPTIONS: author:nil ^:{}
+# Copyright (c) 2010 OpenCFD Ltd.
+
+* About OpenFOAM
+  OpenFOAM is a free, open source computational fluid dynamcis (CFD) software
+  package produced by a commercial company, OpenCFD Ltd. It has a large user
+  base across most areas of engineering and science, from both commercial and
+  academic organisations. OpenFOAM has an extensive range of features to solve
+  anything from complex fluid flows involving chemical reactions, turbulence and
+  heat transfer, to solid dynamics and electromagnetics.
+
+* Copyright
+  OpenFOAM is free software: you can redistribute it and/or modify it under the
+  terms of the GNU General Public License as published by the Free Software
+  Foundation, either version 3 of the License, or (at your option) any later
+  version.  See the file [[./COPYING][COPYING]] in this directory, for a
+  description of the GNU General Public License terms under which you can copy
+  the files.
+
+* Download and installation instructions
+  + To install the Ubuntu/Debian (.deb) pack, see
+    http://www.OpenFOAM.com/download/ubuntu.php
+  + To install the source (.gtgz) pack, see
+    http://www.OpenFOAM.com/download/source.php
+  + To install from the Git repository, see
+    http://www.OpenFOAM.com/download/git.php
+
+* Documentation
+  http://www.OpenFOAM.com/docs
+
+* Support and development contracts
+  http://www.OpenFOAM.com/support
+
+* Reporting Bugs in OpenFOAM
+  http://www.OpenFOAM.com/bugs
