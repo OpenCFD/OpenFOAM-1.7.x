@@ -1,4 +1,4 @@
-CPP        = /lib/cpp $(GFLAGS)
+CPP        = /lib/cpp -traditional-cpp $(GFLAGS)
 LD         = ld
 
 PROJECT_LIBS = -l$(WM_PROJECT) -liberty -ldl
