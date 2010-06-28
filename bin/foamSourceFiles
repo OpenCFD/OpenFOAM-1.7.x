@@ -66,6 +66,7 @@ find -H $packDir               \
 | sed                          \
  -e "\@$packDir/lib/@d"        \
  -e '\@/\.git/@d'              \
+ -e '\@/\.gitignore@d'         \
  -e '\@/\.tags/@d'             \
  -e '\@/\README\.org@d'        \
  -e '\@applications/bin/@d'    \
