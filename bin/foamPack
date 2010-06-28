@@ -29,7 +29,6 @@
 #     Packs and compresses the OpenFOAM directory for release
 #
 #------------------------------------------------------------------------------
-tmpFile=${TMPDIR:-/tmp}/foamPackFiles.$$
 
 timeStamp=$(date +%Y-%m-%d)
 packDir=$WM_PROJECT-$WM_PROJECT_VERSION
@@ -37,7 +36,7 @@ packFile=${packDir}_${timeStamp}.gtgz
 
 if [ ! -d $packDir ]
 then
-    echo "Error: directory $packDir does not exist" 1>&2
+    echo "Error: directory $packDir does not exist"
     exit 1
 fi
 
@@ -49,7 +48,7 @@ fi
 
 if [ -f $packFile ]
 then
-    echo "Error: $packFile already exists" 1>&2
+    echo "Error: $packFile already exists"
     exit 1
 fi
 
@@ -58,54 +57,13 @@ fi
 
 echo $timeStamp 2>/dev/null > $packDir/.timeStamp
 
-# Clean up on termination and on Ctrl-C
-trap 'rm -f $tmpFile 2>/dev/null; exit 0' EXIT TERM INT
-
-
-# Pack and compress the packFile using GNU tar
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Pack and compress the packFile
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 echo
-echo "Packing foam version $packDir into $packFile"
+echo "Packing $packDir source files into $packFile"
 echo
-echo "finding and packing"
 
-find -H $packDir               \
-    ! -type d -type f          \
-    ! -name "*~"               \
- -a ! -name ".*~"              \
- -a ! -name "*.orig"           \
- -a ! -name "*.dep"            \
- -a ! -name "*.o"              \
- -a ! -name "*.so"             \
- -a ! -name "*.a"              \
- -a ! -name "core"             \
- -a ! -name "core.[1-9]*"      \
- -a ! -name "pvml.[1-9]*"      \
- -a ! -name "log[0-9]*"        \
- -a ! -name "so_locations"     \
-| sed                          \
- -e "\@$packDir/lib/@d"        \
- -e '\@/\.git/@d'              \
- -e '\@applications/bin/@d'    \
- -e '\@wmake/bin/@d'           \
- -e '\@/t/@d'                  \
- -e '\@Make[.A-Za-z]*/[^/]*/@d'   \
- -e '\@doc/[Dd]oxygen/html@d'     \
- -e '\@doc/[Dd]oxygen/latex@d'    \
- -e '\@doc/[Dd]oxygen/man@d'      \
- -e '\@/lnInclude@d'              \
- -e '\@/ii_files@d'               \
- | tee $tmpFile
-
-tar czpf $packFile --files-from $tmpFile
-
-if [ $? -eq 0 ]
-then
-    echo "Finished packing and compressing $packDir into file $packFile"
-else
-    echo "Error: failure packing $packDir into file $packFile" 1>&2
-    rm -f $packFile 2>/dev/null
-fi
+foamPackSource $packDir $packFile
 
 #------------------------------------------------------------------------------
