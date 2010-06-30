@@ -152,10 +152,10 @@ root directory (e.g. <code>$HOME/OpenFOAM</code>), the repository can be obtaine
 using either of
 </p><ul>
 <li>
-<code>git clone</code> <code>git@github.com:OpenCFD/OpenFOAM-1.7.x.git</code>
+<code>git clone git://github.com/OpenCFD/OpenFOAM-1.7.x.git</code>
 </li>
 <li>
-<code>git clone</code> <code>https://OpenCFD@github.com/OpenCFD/OpenFOAM-1.7.x.git</code>
+<code>git clone http://github.com/OpenCFD/OpenFOAM-1.7.x.git</code>
 
 </li>
 </ul>
@@ -164,7 +164,7 @@ using either of
 update to the latest published copy using
 </p><ul>
 <li>
-<code>cd</code> <code>OpenFOAM-1.7.x</code>
+<code>cd OpenFOAM-1.7.x</code>
 </li>
 <li>
 <code>git pull</code>
@@ -191,10 +191,10 @@ unpack the ThirdParty-1.7.0.gtgz file in the $HOME/OpenFOAM directory and
 rename the unpacked directory ThirdParty-1.7.x:
 <ul>
 <li>
-<code>tar xzf</code> <code>ThirdParty-1.7.0.gtgz</code>
+<code>tar xzf ThirdParty-1.7.0.gtgz</code>
 </li>
 <li>
-<code>mv</code> <code>ThirdParty-1.7.0 ThirdParty-1.7.x</code>
+<code>mv ThirdParty-1.7.0 ThirdParty-1.7.x</code>
 
 </li>
 </ul>
@@ -236,7 +236,7 @@ where the installation is in <code>$HOME/OpenFOAM</code>, in:
 
 </li>
 <li>
-EITHER, if running <code>bash</code> or <code>ksh</code> (if in doubt type <code>echo</code> <code>$SHELL</code>),
+EITHER, if running <code>bash</code> or <code>ksh</code> (if in doubt type <code>echo $SHELL</code>),
 source the <code>etc/bashrc</code> file by adding the following line to the end of your
 <code>$HOME/.bashrc</code> file:
 
@@ -263,7 +263,7 @@ following line to the end of your <code>$HOME/.cshrc</code> file:
 
 <ul>
 <li>
-<code>source</code> <code>$HOME/OpenFOAM/OpenFOAM-1.7.x/etc/cshrc</code>
+<code>source $HOME/OpenFOAM/OpenFOAM-1.7.x/etc/cshrc</code>
 
 </li>
 </ul>
@@ -273,7 +273,7 @@ typing in the terminal:
 </p>
 <ul>
 <li>
-<code>source</code> <code>$HOME/.cshrc</code>
+<code>source $HOME/.cshrc</code>
 
 </li>
 </ul>
@@ -296,7 +296,7 @@ appropriate resource file. Here is a <code>bash/ksh/sh</code> example:
 </p>
 <ul>
 <li>
-<code>export</code> <code>FOAM_INST_DIR=/data/app/OpenFOAM</code>
+<code>export FOAM_INST_DIR=/data/app/OpenFOAM</code>
 </li>
 <li>
 <code>foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.x/etc/bashrc</code>
@@ -311,7 +311,7 @@ appropriate resource file. Here is a <code>bash/ksh/sh</code> example:
 </p>
 <ul>
 <li>
-<code>setenv</code> <code>FOAM_INST_DIR /data/app/OpenFOAM</code>
+<code>setenv FOAM_INST_DIR /data/app/OpenFOAM</code>
 </li>
 <li>
 <code>foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.x/etc/cshrc</code>
@@ -385,10 +385,10 @@ components:
 all invocations can have an optional directory:<br/>
 <ul>
 <li>
-<code>wmake</code> <code>$FOAM_UTILITIES/mesh/manipulation/checkMesh</code>
+<code>wmake $FOAM_UTILITIES/mesh/manipulation/checkMesh</code>
 </li>
 <li>
-<code>wmake libso</code> <code>$FOAM_SRC/finiteVolume</code>
+<code>wmake libso $FOAM_SRC/finiteVolume</code>
 </li>
 </ul>
 </li>
@@ -399,7 +399,7 @@ recursively build all applications in current or specified directory:<br/>
 <code>wmake all</code>
 </li>
 <li>
-<code>wmake all</code> <code>&lt;dir&gt;</code>
+<code>wmake all &lt;dir&gt;</code>
 </li>
 </ul>
 </li>
@@ -407,7 +407,7 @@ recursively build all applications in current or specified directory:<br/>
 build any single object or executable:<br/>
 <ul>
 <li>
-<code>wmake</code> <code>Make/linux64Gcc4DPOpt/&lt;object&gt;.o</code>
+<code>wmake Make/linux64Gcc4DPOpt/&lt;object&gt;.o</code>
 </li>
 <li>
 <code>wmake &lt;executable&gt;</code>
@@ -490,7 +490,7 @@ that this is on your system.
 To install Paraview, execute the following:
 </p><ul>
 <li>
-<code>cd</code> <code>$WM_THIRD_PARTY_DIR</code>
+<code>cd $WM_THIRD_PARTY_DIR</code>
 </li>
 <li>
 <code>./Allclean</code>
@@ -505,7 +505,7 @@ To install Paraview, execute the following:
 as usual for OpenFOAM utilities:
 </p><ul>
 <li>
-<code>cd</code> <code>$FOAM_UTILITIES/postProcessing/graphics/PV3Readers</code>
+<code>cd $FOAM_UTILITIES/postProcessing/graphics/PV3Readers</code>
 </li>
 <li>
 <code>./Allwclean</code>
@@ -542,7 +542,7 @@ and create a directory named <code>run</code> within it, e.g. by typing:
 </p>
 <ul>
 <li>
-<code>mkdir -p</code> <code>$FOAM_RUN/run</code>
+<code>mkdir -p $FOAM_RUN/run</code>
 
 </li>
 </ul>
@@ -553,7 +553,7 @@ then the following command will be correct:
 </p>
 <ul>
 <li>
-<code>cp -r</code> <code>$WM_PROJECT_DIR/tutorials $FOAM_RUN</code>
+<code>cp -r $WM_PROJECT_DIR/tutorials $FOAM_RUN</code>
 
 </li>
 </ul>
@@ -562,7 +562,7 @@ then the following command will be correct:
 </p>
 <ul>
 <li>
-<code>cd</code> <code>$FOAM_RUN/tutorials/incompressible/icoFoam/cavity</code>
+<code>cd $FOAM_RUN/tutorials/incompressible/icoFoam/cavity</code>
 </li>
 <li>
 <code>blockMesh</code>
