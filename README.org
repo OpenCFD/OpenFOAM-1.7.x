@@ -19,25 +19,25 @@
   The user should choose a directory location to download and unpack the files,
   which will become the installation directory of OpenFOAM.  If the installation
   is for a single user only, or if the user does not have root access to the
-  machine, we would recommend the installation directory is ~$HOME/OpenFOAM~
-  (i.e. a directory ~OpenFOAM~ in the user's home directory).  If the installer
+  machine, we would recommend the installation directory is =$HOME/OpenFOAM=
+  (i.e. a directory =OpenFOAM= in the user's home directory).  If the installer
   has root permissions and the installation is for more than one user, one of
-  the 'standard' locations can be used, e.g. ~/usr/local/OpenFOAM~,
-  ~/opt/OpenFOAM~, or just ~/opt~.
+  the 'standard' locations can be used, e.g. =/usr/local/OpenFOAM=,
+  =/opt/OpenFOAM=, or just =/opt=.
 
   After the installation directory is chosen (and, if necessary, created)
-  download and unpack ~OpenFOAM-1.7.x~ and ~ThirdParty-1.7.x~:
+  download and unpack =OpenFOAM-1.7.x= and =ThirdParty-1.7.x=:
 ***  [[http://github.com/OpenCFD/OpenFOAM-1.7.x][OpenFOAM-1.7.x]]
      The OpenFOAM-1.7.x repository is available at
      http://github.com/OpenCFD/OpenFOAM-1.7.x. From the OpenFOAM installation
-     root directory (e.g. ~$HOME/OpenFOAM~), the repository can be obtained
+     root directory (e.g. =$HOME/OpenFOAM=), the repository can be obtained
      using either of
-     + =git clone= ~git@github.com:OpenCFD/OpenFOAM-1.7.x.git~
-     + =git clone= ~https://OpenCFD@github.com/OpenCFD/OpenFOAM-1.7.x.git~
+     + =git clone git://github.com/OpenCFD/OpenFOAM-1.7.x.git=
+     + =git clone http://github.com/OpenCFD/OpenFOAM-1.7.x.git=
 
      This will create an OpenFOAM-1.7.x directory that the user can subsequently
      update to the latest published copy using
-     + =cd= ~OpenFOAM-1.7.x~
+     + =cd OpenFOAM-1.7.x=
      + =git pull=
 
 *** [[http://downloads.sourceforge.net/foam/ThirdParty-1.7.0.gtgz?use_mirror=mesh][ThirdParty]]
@@ -47,8 +47,8 @@
     + create the $HOME/OpenFOAM directory if necessary;
     + unpack the ThirdParty-1.7.0.gtgz file in the $HOME/OpenFOAM directory and
       rename the unpacked directory ThirdParty-1.7.x:
-      - =tar xzf= ~ThirdParty-1.7.0.gtgz~
-      - =mv= ~ThirdParty-1.7.0 ThirdParty-1.7.x~
+      - =tar xzf ThirdParty-1.7.0.gtgz=
+      - =mv ThirdParty-1.7.0 ThirdParty-1.7.x=
 
 * System requirements
   OpenFOAM is developed and tested on Linux, but should work with other POSIX
@@ -62,56 +62,56 @@
 
 * Setting environment variables
   The environment variable settings are contained in files in an
-  ~OpenFOAM-1.7.x/etc~ directory in the OpenFOAM release. e.g. for the case
-  where the installation is in ~$HOME/OpenFOAM~, in:
+  =OpenFOAM-1.7.x/etc= directory in the OpenFOAM release. e.g. for the case
+  where the installation is in =$HOME/OpenFOAM=, in:
 
-  + ~$HOME/OpenFOAM/OpenFOAM-1.7.x/etc~
+  + =$HOME/OpenFOAM/OpenFOAM-1.7.x/etc=
 
-  1) EITHER, if running =bash= or =ksh= (if in doubt type =echo= ~$SHELL~),
-    source the ~etc/bashrc~ file by adding the following line to the end of your
-    ~$HOME/.bashrc~ file:
+  1) EITHER, if running =bash= or =ksh= (if in doubt type =echo $SHELL=),
+    source the =etc/bashrc= file by adding the following line to the end of your
+    =$HOME/.bashrc= file:
 
-    + . ~$HOME/OpenFOAM/OpenFOAM-1.7.x/etc/bashrc~
+    + . =$HOME/OpenFOAM/OpenFOAM-1.7.x/etc/bashrc=
 
-    Then update the environment variables by sourcing the ~$HOME/.bashrc~ file
+    Then update the environment variables by sourcing the =$HOME/.bashrc= file
     by typing in the terminal:
 
-    + . ~$HOME/.bashrc~
+    + . =$HOME/.bashrc=
 
-  2) OR, if running =tcsh= or =csh=, source the ~etc/cshrc~ file by adding the
-    following line to the end of your ~$HOME/.cshrc~ file:
+  2) OR, if running =tcsh= or =csh=, source the =etc/cshrc= file by adding the
+    following line to the end of your =$HOME/.cshrc= file:
 
-    + =source= ~$HOME/OpenFOAM/OpenFOAM-1.7.x/etc/cshrc~
+    + =source $HOME/OpenFOAM/OpenFOAM-1.7.x/etc/cshrc=
 
-    Then update the environment variables by sourcing the ~$HOME/.cshrc~ file by
+    Then update the environment variables by sourcing the =$HOME/.cshrc= file by
     typing in the terminal:
 
-    + =source= ~$HOME/.cshrc~
+    + =source $HOME/.cshrc=
 
 *** Setting environment variables for alternative locations
     OpenFOAM may also be installed in alternative locations. However, the
     installation directory should be network available (e.g., NFS) if parallel
     calculations are planned.
 
-    The environment variable ~FOAM_INST_DIR~ can be used to find and source the
+    The environment variable =FOAM_INST_DIR= can be used to find and source the
     appropriate resource file. Here is a =bash/ksh/sh= example:
 
-    + =export= ~FOAM_INST_DIR=/data/app/OpenFOAM~
-    + ~foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.x/etc/bashrc~
+    + =export FOAM_INST_DIR=/data/app/OpenFOAM=
+    + =foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.x/etc/bashrc=
     + =[ -f $foamDotFile ] && . $foamDotFile=
 
     and a =csh/tcsh= example:
 
-    + =setenv= ~FOAM_INST_DIR /data/app/OpenFOAM~
-    + ~foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.x/etc/cshrc~
+    + =setenv FOAM_INST_DIR /data/app/OpenFOAM=
+    + =foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.x/etc/cshrc=
     + =if ( -f $foamDotFile ) source $foamDotFile=
 
-    The value set in ~$FOAM_INST_DIR~ will be used to locate the remaining parts
+    The value set in =$FOAM_INST_DIR= will be used to locate the remaining parts
     of the OpenFOAM installation.
 
 * Checking the system
   To check your system is ready to build the sources, execute the
-  =foamSystemCheck= script (in the ~OpenFOAM-1.7.x/bin~ directory).  If any
+  =foamSystemCheck= script (in the =OpenFOAM-1.7.x/bin= directory).  If any
   critical software is missing, or needs updating to a newer version, please
   contact the system administrator to install the required software before
   proceeding to the build.
@@ -125,7 +125,7 @@
   system.  If that is missing (type =flex --version= to check), then install it.
 
 * Building the Sources
-  Go to the top-level source directory ~$WM_PROJECT_DIR~ and execute the
+  Go to the top-level source directory =$WM_PROJECT_DIR= and execute the
   top-level build script =./Allwmake=.  In principle this will build everything,
   but if problems occur with the build order it may be necessary to update the
   environment variables and re-execute =./Allwmake=.
@@ -141,13 +141,13 @@
     executed directly to update the compilation of any of the OpenFOAM
     components:
     - all invocations can have an optional directory:\\
-      + =wmake= ~$FOAM_UTILITIES/mesh/manipulation/checkMesh~
-      + =wmake libso= ~$FOAM_SRC/finiteVolume~
+      + =wmake $FOAM_UTILITIES/mesh/manipulation/checkMesh=
+      + =wmake libso $FOAM_SRC/finiteVolume=
     - recursively build all applications in current or specified directory:\\
       + =wmake all=
-      + =wmake all= ~<dir>~
+      + =wmake all <dir>=
     - build any single object or executable:\\
-      + =wmake= ~Make/linux64Gcc4DPOpt/<object>.o~
+      + =wmake Make/linux64Gcc4DPOpt/<object>.o=
       + =wmake <executable>=
     - build any single shared library:\\
       + =wmake libso=
@@ -156,11 +156,11 @@
     =wmake= comes with a parallel compilation scheduler, =wmakeScheduler=, which
     spawns compilation jobs on free machine.  It is set up with environment
     variables:
-    + ~WM_SCHEDULER~ : the name of the scheduler to use
-    + ~WM_HOSTS~     : the list of cores to use
-    + ~WM_NCOMPROCS~ : the number of parallel builds (usually the size of
-      ~WM_HOSTS~)
-    + ~WM_COLOURS~ : Optional list of colours for the compilation output from
+    + =WM_SCHEDULER= : the name of the scheduler to use
+    + =WM_HOSTS=     : the list of cores to use
+    + =WM_NCOMPROCS= : the number of parallel builds (usually the size of
+      =WM_HOSTS=)
+    + =WM_COLOURS= : Optional list of colours for the compilation output from
       the cores.
 
     For example to build on 1 processor of dm and 4 processors of noisy:
@@ -172,43 +172,43 @@
 * Compiling Paraview 3.8.0 and the PV3FoamReader module
   Paraview is the third-party software that we provide for graphical
   post-processing in OpenFOAM.  It's compilation is automated using a script
-  called makeParaView in the ~ThirdParty-1.7.x~ directory.  Paraview 3.8.0
+  called makeParaView in the =ThirdParty-1.7.x= directory.  Paraview 3.8.0
   requires a version of QT that is 3.5.? or newer to install, so again make sure
   that this is on your system.
 
   To install Paraview, execute the following:
-  + =cd= ~$WM_THIRD_PARTY_DIR~
+  + =cd $WM_THIRD_PARTY_DIR=
   + =./Allclean=
   + =./makeParaView=
 
   The =PV3blockMeshReader= and the =PV3FoamReader= ParaView plugins are compiled
   as usual for OpenFOAM utilities:
-  + =cd= ~$FOAM_UTILITIES/postProcessing/graphics/PV3Readers~
-  + ~./Allwclean~
-  + ~./Allwmake~
+  + =cd $FOAM_UTILITIES/postProcessing/graphics/PV3Readers=
+  + =./Allwclean=
+  + =./Allwmake=
 
 * Testing the installation
   To check your installation setup, execute the =foamInstallationTest= script
-  (in the ~OpenFOAM-1.7.x/bin~ directory). If no problems are reported, proceed
+  (in the =OpenFOAM-1.7.x/bin= directory). If no problems are reported, proceed
   to getting started with OpenFOAM; otherwise, go back and check you have
   installed the software correctly and/or contact your system administrator.
 
 * Getting Started
-  Create a project directory within the ~$HOME/OpenFOAM~ directory named
-  ~<USER>-1.7.x~ (e.g. ~chris-1.7.x~ for user chris and OpenFOAM version 1.7.x)
-  and create a directory named ~run~ within it, e.g. by typing:
+  Create a project directory within the =$HOME/OpenFOAM= directory named
+  =<USER>-1.7.x= (e.g. =chris-1.7.x= for user chris and OpenFOAM version 1.7.x)
+  and create a directory named =run= within it, e.g. by typing:
 
-  + =mkdir -p= ~$FOAM_RUN/run~
+  + =mkdir -p $FOAM_RUN/run=
 
-  Copy the ~tutorial~ examples directory in the OpenFOAM distribution to the
-  ~run~ directory.  If the OpenFOAM environment variables are set correctly,
+  Copy the =tutorial= examples directory in the OpenFOAM distribution to the
+  =run= directory.  If the OpenFOAM environment variables are set correctly,
   then the following command will be correct:
 
-  + =cp -r= ~$WM_PROJECT_DIR/tutorials $FOAM_RUN~
+  + =cp -r $WM_PROJECT_DIR/tutorials $FOAM_RUN=
 
   Run the first example case of incompressible laminar flow in a cavity:
 
-  + =cd= ~$FOAM_RUN/tutorials/incompressible/icoFoam/cavity~
+  + =cd $FOAM_RUN/tutorials/incompressible/icoFoam/cavity=
   + =blockMesh=
   + =icoFoam=
   + =paraFoam=
