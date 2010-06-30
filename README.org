@@ -16,11 +16,39 @@
   the files.
 
 * Downloading the sources
-***  Complete source code for OpenFOAM-1.7.x available from GitHub:
+  The user should choose a directory location to download and unpack the files,
+  which will become the installation directory of OpenFOAM.  If the installation
+  is for a single user only, or if the user does not have root access to the
+  machine, we would recommend the installation directory is ~$HOME/OpenFOAM~
+  (i.e. a directory ~OpenFOAM~ in the user's home directory).  If the installer
+  has root permissions and the installation is for more than one user, one of
+  the 'standard' locations can be used, e.g. ~/usr/local/OpenFOAM~,
+  ~/opt/OpenFOAM~, or just ~/opt~.
+
+  After the installation directory is chosen (and, if necessary, created)
+  download and unpack ~OpenFOAM-1.7.x~ and ~ThirdParty-1.7.x~:
+***  [[http://github.com/OpenCFD/OpenFOAM-1.7.x][OpenFOAM-1.7.x]]
+     The OpenFOAM-1.7.x repository is available at
+     http://github.com/OpenCFD/OpenFOAM-1.7.x. From the OpenFOAM installation
+     root directory (e.g. ~$HOME/OpenFOAM~), the repository can be obtained
+     using either of
+     + =git clone= ~git@github.com:OpenCFD/OpenFOAM-1.7.x.git~
+     + =git clone= ~https://OpenCFD@github.com/OpenCFD/OpenFOAM-1.7.x.git~
+
+     This will create an OpenFOAM-1.7.x directory that the user can subsequently
+     update to the latest published copy using
+     + =cd= ~OpenFOAM-1.7.x~
+     + =git pull=
+
 *** [[http://downloads.sourceforge.net/foam/ThirdParty-1.7.0.gtgz?use_mirror=mesh][ThirdParty]]
-    Source-pack containing additional software required to build and run
-    OpenFOAM-1.7.x available from SourceForge:
+    The source-pack containing additional software required to build and run
+    OpenFOAM-1.7.x is available from SourceForge:
     http://downloads.sourceforge.net/foam/ThirdParty-1.7.0.gtgz?use_mirror=mesh
+    + create the $HOME/OpenFOAM directory if necessary;
+    + unpack the ThirdParty-1.7.0.gtgz file in the $HOME/OpenFOAM directory and
+      rename the unpacked directory ThirdParty-1.7.x:
+      - =tar xzf= ~ThirdParty-1.7.0.gtgz~
+      - =mv= ~ThirdParty-1.7.0 ThirdParty-1.7.x~
 
 * System requirements
   OpenFOAM is developed and tested on Linux, but should work with other POSIX
@@ -31,23 +59,6 @@
   higher which can be obtained from various repositories for many Linux
   distributions.  To check your system setup, you can execute the
   =foamSystemCheck= script, described in "Checking the System" (below).
-
-* Unpacking the sources
-  The user should choose a directory location to unpack these files, which will
-  become the installation directory of OpenFOAM.  If the installation is for a
-  single user only, or if the user does not have root access to the machine, we
-  would recommend the installation directory is ~$HOME/OpenFOAM~ (i.e. a
-  directory ~OpenFOAM~ in the user's home directory).  If the installer has root
-  permissions and the installation is for more than one user, one of the
-  'standard' locations can be used, e.g. ~/usr/local/OpenFOAM~, ~/opt/OpenFOAM~,
-  or just ~/opt~.
-
-  After the installation directory is chosen (and, if necessary, created),
-  simply copy the 2 source pack files into the directory and unpack using =tar
-  xzf <filename>=, e.g. from the installation directory:
-
-  + =tar xzf= ~ThirdParty-1.7.0.gtgz~
-  + =mv= ~ThirdParty-1.7.0 ThirdParty-1.7.x~
 
 * Setting environment variables
   The environment variable settings are contained in files in an
