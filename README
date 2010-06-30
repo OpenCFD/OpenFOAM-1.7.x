@@ -1,8 +1,8 @@
 #                            -*- mode: org; -*-
 #
-#+TITLE:             OpenFOAM README for version 1.7
+#+TITLE:             OpenFOAM README for version 1.7.x
 #+AUTHOR:                      OpenCFD Ltd.
-#+DATE:                        24 June 2010
+#+DATE:                        30 June 2010
 #+LINK:                   http://www.openfoam.com
 #+OPTIONS: author:nil ^:{}
 # Copyright (c) 2010 OpenCFD Ltd.

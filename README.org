@@ -1,8 +1,8 @@
 #                            -*- mode: org; -*-
 #
-#+TITLE:             OpenFOAM README for version 1.7
+#+TITLE:             OpenFOAM README for version 1.7.x
 #+AUTHOR:                      OpenCFD Ltd.
-#+DATE:                        24 June 2010
+#+DATE:                        30 June 2010
 #+LINK:                   http://www.openfoam.com
 #+OPTIONS: author:nil ^:{}
 # Copyright (c) 2010 OpenCFD Ltd.
@@ -15,19 +15,17 @@
   description of the GNU General Public License terms under which you can copy
   the files.
 
-* Downloading the source packs
-*** [[http://downloads.sourceforge.net/foam/OpenFOAM-1.7.0.gtgz?use_mirror=mesh][OpenFOAM-1.7.0]]
-    Complete source code for OpenFOAM-1.7.0 available from SourceForge:
-    http://downloads.sourceforge.net/foam/OpenFOAM-1.7.0.gtgz?use_mirror=mesh
+* Downloading the sources
+***  Complete source code for OpenFOAM-1.7.x available from GitHub:
 *** [[http://downloads.sourceforge.net/foam/ThirdParty-1.7.0.gtgz?use_mirror=mesh][ThirdParty]]
     Source-pack containing additional software required to build and run
-    OpenFOAM-1.7.0 available from SourceForge:
+    OpenFOAM-1.7.x available from SourceForge:
     http://downloads.sourceforge.net/foam/ThirdParty-1.7.0.gtgz?use_mirror=mesh
 
 * System requirements
   OpenFOAM is developed and tested on Linux, but should work with other POSIX
-  systems.  OpenFOAM-1.7.0 and ThirdParty-1.7.0 have been tested on standard
-  Ubuntu 10.04 and OpenSuSE 11.2 Linux distributions.  OpenFOAM-1.7.0 also
+  systems.  OpenFOAM-1.7.x and ThirdParty-1.7.0 have been tested on standard
+  Ubuntu 10.04 and OpenSuSE 11.2 Linux distributions.  OpenFOAM-1.7.x also
   builds on many other and older Linux distributions but the ParaView-3.8.0
   version supplied in ThirdParty requires cmake-2.6.4 or higher and Qt-4.5 or
   higher which can be obtained from various repositories for many Linux
@@ -48,24 +46,21 @@
   simply copy the 2 source pack files into the directory and unpack using =tar
   xzf <filename>=, e.g. from the installation directory:
 
-  + =tar xzf= ~OpenFOAM-1.7.0.gtgz~
   + =tar xzf= ~ThirdParty-1.7.0.gtgz~
-
-  The files unpack to produce directories ~OpenFOAM-1.7.0~ and
-  ~ThirdParty-1.7.0~.
+  + =mv= ~ThirdParty-1.7.0 ThirdParty-1.7.x~
 
 * Setting environment variables
   The environment variable settings are contained in files in an
-  ~OpenFOAM-1.7.0/etc~ directory in the OpenFOAM release. e.g. for the case
+  ~OpenFOAM-1.7.x/etc~ directory in the OpenFOAM release. e.g. for the case
   where the installation is in ~$HOME/OpenFOAM~, in:
 
-  + ~$HOME/OpenFOAM/OpenFOAM-1.7.0/etc~
+  + ~$HOME/OpenFOAM/OpenFOAM-1.7.x/etc~
 
   1) EITHER, if running =bash= or =ksh= (if in doubt type =echo= ~$SHELL~),
     source the ~etc/bashrc~ file by adding the following line to the end of your
     ~$HOME/.bashrc~ file:
 
-    + . ~$HOME/OpenFOAM/OpenFOAM-1.7.0/etc/bashrc~
+    + . ~$HOME/OpenFOAM/OpenFOAM-1.7.x/etc/bashrc~
 
     Then update the environment variables by sourcing the ~$HOME/.bashrc~ file
     by typing in the terminal:
@@ -75,7 +70,7 @@
   2) OR, if running =tcsh= or =csh=, source the ~etc/cshrc~ file by adding the
     following line to the end of your ~$HOME/.cshrc~ file:
 
-    + =source= ~$HOME/OpenFOAM/OpenFOAM-1.7.0/etc/cshrc~
+    + =source= ~$HOME/OpenFOAM/OpenFOAM-1.7.x/etc/cshrc~
 
     Then update the environment variables by sourcing the ~$HOME/.cshrc~ file by
     typing in the terminal:
@@ -91,13 +86,13 @@
     appropriate resource file. Here is a =bash/ksh/sh= example:
 
     + =export= ~FOAM_INST_DIR=/data/app/OpenFOAM~
-    + ~foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.0/etc/bashrc~
+    + ~foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.x/etc/bashrc~
     + =[ -f $foamDotFile ] && . $foamDotFile=
 
     and a =csh/tcsh= example:
 
     + =setenv= ~FOAM_INST_DIR /data/app/OpenFOAM~
-    + ~foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.0/etc/cshrc~
+    + ~foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.x/etc/cshrc~
     + =if ( -f $foamDotFile ) source $foamDotFile=
 
     The value set in ~$FOAM_INST_DIR~ will be used to locate the remaining parts
@@ -105,7 +100,7 @@
 
 * Checking the system
   To check your system is ready to build the sources, execute the
-  =foamSystemCheck= script (in the ~OpenFOAM-1.7.0/bin~ directory).  If any
+  =foamSystemCheck= script (in the ~OpenFOAM-1.7.x/bin~ directory).  If any
   critical software is missing, or needs updating to a newer version, please
   contact the system administrator to install the required software before
   proceeding to the build.
@@ -166,7 +161,7 @@
 * Compiling Paraview 3.8.0 and the PV3FoamReader module
   Paraview is the third-party software that we provide for graphical
   post-processing in OpenFOAM.  It's compilation is automated using a script
-  called makeParaView in the ~ThirdParty-1.7.0~ directory.  Paraview 3.8.0
+  called makeParaView in the ~ThirdParty-1.7.x~ directory.  Paraview 3.8.0
   requires a version of QT that is 3.5.? or newer to install, so again make sure
   that this is on your system.
 
@@ -183,13 +178,13 @@
 
 * Testing the installation
   To check your installation setup, execute the =foamInstallationTest= script
-  (in the ~OpenFOAM-1.7.0/bin~ directory). If no problems are reported, proceed
+  (in the ~OpenFOAM-1.7.x/bin~ directory). If no problems are reported, proceed
   to getting started with OpenFOAM; otherwise, go back and check you have
   installed the software correctly and/or contact your system administrator.
 
 * Getting Started
   Create a project directory within the ~$HOME/OpenFOAM~ directory named
-  ~<USER>-1.7.0~ (e.g. ~chris-1.7.0~ for user chris and OpenFOAM version 1.7.0)
+  ~<USER>-1.7.x~ (e.g. ~chris-1.7.x~ for user chris and OpenFOAM version 1.7.x)
   and create a directory named ~run~ within it, e.g. by typing:
 
   + =mkdir -p= ~$FOAM_RUN/run~

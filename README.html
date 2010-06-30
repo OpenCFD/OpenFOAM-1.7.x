@@ -4,10 +4,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 lang="en" xml:lang="en">
 <head>
-<title>OpenFOAM README for version 1.7</title>
+<title>OpenFOAM README for version 1.7.x</title>
 <meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="24 June 2010"/>
+<meta name="generated" content="30 June 2010"/>
 <meta name="author" content="OpenCFD Ltd."/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -71,41 +71,47 @@ lang="en" xml:lang="en">
 <body>
 <div id="content">
 
-<h1 class="title">OpenFOAM README for version 1.7</h1>
+<h1 class="title">OpenFOAM README for version 1.7.x</h1>
 
 
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#sec-1">1 About OpenFOAM </a></li>
-<li><a href="#sec-2">2 Copyright </a></li>
-<li><a href="#sec-3">3 Download and installation instructions </a></li>
-<li><a href="#sec-4">4 Documentation </a></li>
-<li><a href="#sec-5">5 Support and development contracts </a></li>
-<li><a href="#sec-6">6 Reporting Bugs in OpenFOAM </a></li>
+<li><a href="#sec-1">1 Copyright </a></li>
+<li><a href="#sec-2">2 Downloading the sources </a>
+<ul>
+<li><a href="#sec-2.1">2.1 Complete source code for OpenFOAM-1.7.x available from GitHub: </a></li>
+<li><a href="#sec-2.2">2.2 ThirdParty </a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3 System requirements </a></li>
+<li><a href="#sec-4">4 Unpacking the sources </a></li>
+<li><a href="#sec-5">5 Setting environment variables </a>
+<ul>
+<li><a href="#sec-5.1">5.1 Setting environment variables for alternative locations </a></li>
+</ul>
+</li>
+<li><a href="#sec-6">6 Checking the system </a></li>
+<li><a href="#sec-7">7 Building the Sources </a>
+<ul>
+<li><a href="#sec-7.1">7.1 <code>wmake</code> </a></li>
+<li><a href="#sec-7.2">7.2 <code>wmakeScheduler</code> for faster compilation </a></li>
+</ul>
+</li>
+<li><a href="#sec-8">8 Compiling Paraview 3.8.0 and the PV3FoamReader module </a></li>
+<li><a href="#sec-9">9 Testing the installation </a></li>
+<li><a href="#sec-10">10 Getting Started </a></li>
+<li><a href="#sec-11">11 Documentation </a></li>
+<li><a href="#sec-12">12 Support and development contracts </a></li>
+<li><a href="#sec-13">13 Reporting Bugs in OpenFOAM </a></li>
 </ul>
 </div>
 </div>
 
 <div id="outline-container-1" class="outline-2">
-<h2 id="sec-1"><span class="section-number-2">1</span> About OpenFOAM </h2>
+<h2 id="sec-1"><span class="section-number-2">1</span> Copyright </h2>
 <div class="outline-text-2" id="text-1">
-
-<p>OpenFOAM is a free, open source computational fluid dynamcis (CFD) software
-package produced by a commercial company, OpenCFD Ltd. It has a large user
-base across most areas of engineering and science, from both commercial and
-academic organisations. OpenFOAM has an extensive range of features to solve
-anything from complex fluid flows involving chemical reactions, turbulence and
-heat transfer, to solid dynamics and electromagnetics.
-</p>
-</div>
-
-</div>
-
-<div id="outline-container-2" class="outline-2">
-<h2 id="sec-2"><span class="section-number-2">2</span> Copyright </h2>
-<div class="outline-text-2" id="text-2">
 
 <p>OpenFOAM is free software: you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
@@ -118,22 +124,74 @@ the files.
 
 </div>
 
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Downloading the sources </h2>
+<div class="outline-text-2" id="text-2">
+
+
+</div>
+
+<div id="outline-container-2.1" class="outline-3">
+<h3 id="sec-2.1"><span class="section-number-3">2.1</span> Complete source code for OpenFOAM-1.7.x available from GitHub: </h3>
+<div class="outline-text-3" id="text-2.1">
+
+</div>
+
+</div>
+
+<div id="outline-container-2.2" class="outline-3">
+<h3 id="sec-2.2"><span class="section-number-3">2.2</span> <a href="http://downloads.sourceforge.net/foam/ThirdParty-1.7.0.gtgz?use_mirror=mesh">ThirdParty</a> </h3>
+<div class="outline-text-3" id="text-2.2">
+
+<p>Source-pack containing additional software required to build and run
+OpenFOAM-1.7.x available from SourceForge:
+<a href="http://downloads.sourceforge.net/foam/ThirdParty-1.7.0.gtgz?use_mirror=mesh">http://downloads.sourceforge.net/foam/ThirdParty-1.7.0.gtgz?use_mirror=mesh</a>
+</p>
+</div>
+</div>
+
+</div>
+
 <div id="outline-container-3" class="outline-2">
-<h2 id="sec-3"><span class="section-number-2">3</span> Download and installation instructions </h2>
+<h2 id="sec-3"><span class="section-number-2">3</span> System requirements </h2>
 <div class="outline-text-2" id="text-3">
 
+<p>OpenFOAM is developed and tested on Linux, but should work with other POSIX
+systems.  OpenFOAM-1.7.x and ThirdParty-1.7.0 have been tested on standard
+Ubuntu 10.04 and OpenSuSE 11.2 Linux distributions.  OpenFOAM-1.7.x also
+builds on many other and older Linux distributions but the ParaView-3.8.0
+version supplied in ThirdParty requires cmake-2.6.4 or higher and Qt-4.5 or
+higher which can be obtained from various repositories for many Linux
+distributions.  To check your system setup, you can execute the
+<code>foamSystemCheck</code> script, described in "Checking the System" (below).
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Unpacking the sources </h2>
+<div class="outline-text-2" id="text-4">
+
+<p>The user should choose a directory location to unpack these files, which will
+become the installation directory of OpenFOAM.  If the installation is for a
+single user only, or if the user does not have root access to the machine, we
+would recommend the installation directory is <code>$HOME/OpenFOAM</code> (i.e. a
+directory <code>OpenFOAM</code> in the user's home directory).  If the installer has root
+permissions and the installation is for more than one user, one of the
+'standard' locations can be used, e.g. <code>/usr/local/OpenFOAM</code>, <code>/opt/OpenFOAM</code>,
+or just <code>/opt</code>.
+</p>
+<p>
+After the installation directory is chosen (and, if necessary, created),
+simply copy the 2 source pack files into the directory and unpack using <code>tar   xzf &lt;filename&gt;</code>, e.g. from the installation directory:
+</p>
 <ul>
 <li>
-To install the Ubuntu/Debian (.deb) pack, see
-<a href="http://www.OpenFOAM.com/download/ubuntu.php">http://www.OpenFOAM.com/download/ubuntu.php</a>
+<code>tar xzf</code> <code>ThirdParty-1.7.0.gtgz</code>
 </li>
 <li>
-To install the source (.gtgz) pack, see
-<a href="http://www.OpenFOAM.com/download/source.php">http://www.OpenFOAM.com/download/source.php</a>
-</li>
-<li>
-To install from the Git repository, see
-<a href="http://www.OpenFOAM.com/download/git.php">http://www.OpenFOAM.com/download/git.php</a>
+<code>mv</code> <code>ThirdParty-1.7.0 ThirdParty-1.7.x</code>
 
 </li>
 </ul>
@@ -141,9 +199,370 @@ To install from the Git repository, see
 
 </div>
 
-<div id="outline-container-4" class="outline-2">
-<h2 id="sec-4"><span class="section-number-2">4</span> Documentation </h2>
-<div class="outline-text-2" id="text-4">
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Setting environment variables </h2>
+<div class="outline-text-2" id="text-5">
+
+<p>The environment variable settings are contained in files in an
+<code>OpenFOAM-1.7.x/etc</code> directory in the OpenFOAM release. e.g. for the case
+where the installation is in <code>$HOME/OpenFOAM</code>, in:
+</p>
+<ul>
+<li>
+<code>$HOME/OpenFOAM/OpenFOAM-1.7.x/etc</code>
+
+</li>
+<li>
+EITHER, if running <code>bash</code> or <code>ksh</code> (if in doubt type <code>echo</code> <code>$SHELL</code>),
+source the <code>etc/bashrc</code> file by adding the following line to the end of your
+<code>$HOME/.bashrc</code> file:
+
+<ul>
+<li>
+. <code>$HOME/OpenFOAM/OpenFOAM-1.7.x/etc/bashrc</code>
+
+</li>
+</ul>
+
+<p>Then update the environment variables by sourcing the <code>$HOME/.bashrc</code> file
+by typing in the terminal:
+</p>
+<ul>
+<li>
+. <code>$HOME/.bashrc</code>
+
+</li>
+</ul>
+</li>
+<li>
+OR, if running <code>tcsh</code> or <code>csh</code>, source the <code>etc/cshrc</code> file by adding the
+following line to the end of your <code>$HOME/.cshrc</code> file:
+
+<ul>
+<li>
+<code>source</code> <code>$HOME/OpenFOAM/OpenFOAM-1.7.x/etc/cshrc</code>
+
+</li>
+</ul>
+
+<p>Then update the environment variables by sourcing the <code>$HOME/.cshrc</code> file by
+typing in the terminal:
+</p>
+<ul>
+<li>
+<code>source</code> <code>$HOME/.cshrc</code>
+
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+
+<div id="outline-container-5.1" class="outline-3">
+<h3 id="sec-5.1"><span class="section-number-3">5.1</span> Setting environment variables for alternative locations </h3>
+<div class="outline-text-3" id="text-5.1">
+
+<p>OpenFOAM may also be installed in alternative locations. However, the
+installation directory should be network available (e.g., NFS) if parallel
+calculations are planned.
+</p>
+<p>
+The environment variable <code>FOAM_INST_DIR</code> can be used to find and source the
+appropriate resource file. Here is a <code>bash/ksh/sh</code> example:
+</p>
+<ul>
+<li>
+<code>export</code> <code>FOAM_INST_DIR=/data/app/OpenFOAM</code>
+</li>
+<li>
+<code>foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.x/etc/bashrc</code>
+</li>
+<li>
+<code>[ -f $foamDotFile ] &amp;&amp; . $foamDotFile</code>
+
+</li>
+</ul>
+
+<p>and a <code>csh/tcsh</code> example:
+</p>
+<ul>
+<li>
+<code>setenv</code> <code>FOAM_INST_DIR /data/app/OpenFOAM</code>
+</li>
+<li>
+<code>foamDotFile=$FOAM_INST_DIR/OpenFOAM-1.7.x/etc/cshrc</code>
+</li>
+<li>
+<code>if ( -f $foamDotFile ) source $foamDotFile</code>
+
+</li>
+</ul>
+
+<p>The value set in <code>$FOAM_INST_DIR</code> will be used to locate the remaining parts
+of the OpenFOAM installation.
+</p>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Checking the system </h2>
+<div class="outline-text-2" id="text-6">
+
+<p>To check your system is ready to build the sources, execute the
+<code>foamSystemCheck</code> script (in the <code>OpenFOAM-1.7.x/bin</code> directory).  If any
+critical software is missing, or needs updating to a newer version, please
+contact the system administrator to install the required software before
+proceeding to the build.
+</p>
+<p>
+In particular your system will need to include a recent version of <code>gcc</code>
+(check with <code>gcc --version</code>, we recommend <code>gcc-4.4.?</code> but <code>gcc-4.3.?</code> is
+sufficient).  If the installed version is not recent source pack for newer
+versions are available from <a href="http://gcc.gnu.org/">http://gcc.gnu.org/</a>.
+</p>
+<p>
+To build OpenFOAM you will also need the <code>flex</code> software installed on your
+system.  If that is missing (type <code>flex --version</code> to check), then install it.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Building the Sources </h2>
+<div class="outline-text-2" id="text-7">
+
+<p>Go to the top-level source directory <code>$WM_PROJECT_DIR</code> and execute the
+top-level build script <code>./Allwmake</code>.  In principle this will build everything,
+but if problems occur with the build order it may be necessary to update the
+environment variables and re-execute <code>./Allwmake</code>.
+</p>
+<p>
+If you experience difficulties with building the source-pack, or your platform
+is not currently supported, please contact
+<a href="mailto:enquiries@OpenCFD.co.uk">Enquiries</a> to arrange a support contract
+and we will do the port and maintain it for future releases.
+</p>
+</div>
+
+<div id="outline-container-7.1" class="outline-3">
+<h3 id="sec-7.1"><span class="section-number-3">7.1</span> <code>wmake</code> </h3>
+<div class="outline-text-3" id="text-7.1">
+
+<p>OpenFOAM uses <code>wmake</code> to perform compilation (building, linking) of its C++
+source code into local assembly code. <code>wmake</code> is called from the <code>Allwmake</code>
+scripts during the initial build of the complete OpenFOAM project but can
+executed directly to update the compilation of any of the OpenFOAM
+components:
+</p><ul>
+<li>
+all invocations can have an optional directory:<br/>
+<ul>
+<li>
+<code>wmake</code> <code>$FOAM_UTILITIES/mesh/manipulation/checkMesh</code>
+</li>
+<li>
+<code>wmake libso</code> <code>$FOAM_SRC/finiteVolume</code>
+</li>
+</ul>
+</li>
+<li>
+recursively build all applications in current or specified directory:<br/>
+<ul>
+<li>
+<code>wmake all</code>
+</li>
+<li>
+<code>wmake all</code> <code>&lt;dir&gt;</code>
+</li>
+</ul>
+</li>
+<li>
+build any single object or executable:<br/>
+<ul>
+<li>
+<code>wmake</code> <code>Make/linux64Gcc4DPOpt/&lt;object&gt;.o</code>
+</li>
+<li>
+<code>wmake &lt;executable&gt;</code>
+</li>
+</ul>
+</li>
+<li>
+build any single shared library:<br/>
+<ul>
+<li>
+<code>wmake libso</code>
+</li>
+<li>
+<code>wmake libso &lt;lib dir&gt;</code>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-7.2" class="outline-3">
+<h3 id="sec-7.2"><span class="section-number-3">7.2</span> <code>wmakeScheduler</code> for faster compilation </h3>
+<div class="outline-text-3" id="text-7.2">
+
+<p><code>wmake</code> comes with a parallel compilation scheduler, <code>wmakeScheduler</code>, which
+spawns compilation jobs on free machine.  It is set up with environment
+variables:
+</p><ul>
+<li>
+<code>WM_SCHEDULER</code> : the name of the scheduler to use
+</li>
+<li>
+<code>WM_HOSTS</code>     : the list of cores to use
+</li>
+<li>
+<code>WM_NCOMPROCS</code> : the number of parallel builds (usually the size of
+<code>WM_HOSTS</code>)
+</li>
+<li>
+<code>WM_COLOURS</code> : Optional list of colours for the compilation output from
+the cores.
+
+</li>
+</ul>
+
+<p>For example to build on 1 processor of dm and 4 processors of noisy:
+</p><ul>
+<li>
+<code>export WM_SCHEDULER=wmakeScheduler</code>
+</li>
+<li>
+<code>export WM_HOSTS=</code>"dm:1 noisy:4"
+</li>
+<li>
+<code>export WM_NCOMPPROCS=$($WM_SCHEDULER -count)</code>
+</li>
+<li>
+<code>export WM_COLOURS=</code>"black blue green cyan red magenta yellow"
+
+</li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-8" class="outline-2">
+<h2 id="sec-8"><span class="section-number-2">8</span> Compiling Paraview 3.8.0 and the PV3FoamReader module </h2>
+<div class="outline-text-2" id="text-8">
+
+<p>Paraview is the third-party software that we provide for graphical
+post-processing in OpenFOAM.  It's compilation is automated using a script
+called makeParaView in the <code>ThirdParty-1.7.x</code> directory.  Paraview 3.8.0
+requires a version of QT that is 3.5.? or newer to install, so again make sure
+that this is on your system.
+</p>
+<p>
+To install Paraview, execute the following:
+</p><ul>
+<li>
+<code>cd</code> <code>$WM_THIRD_PARTY_DIR</code>
+</li>
+<li>
+<code>./Allclean</code>
+</li>
+<li>
+<code>./makeParaView</code>
+
+</li>
+</ul>
+
+<p>The <code>PV3blockMeshReader</code> and the <code>PV3FoamReader</code> ParaView plugins are compiled
+as usual for OpenFOAM utilities:
+</p><ul>
+<li>
+<code>cd</code> <code>$FOAM_UTILITIES/postProcessing/graphics/PV3Readers</code>
+</li>
+<li>
+<code>./Allwclean</code>
+</li>
+<li>
+<code>./Allwmake</code>
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-9" class="outline-2">
+<h2 id="sec-9"><span class="section-number-2">9</span> Testing the installation </h2>
+<div class="outline-text-2" id="text-9">
+
+<p>To check your installation setup, execute the <code>foamInstallationTest</code> script
+(in the <code>OpenFOAM-1.7.x/bin</code> directory). If no problems are reported, proceed
+to getting started with OpenFOAM; otherwise, go back and check you have
+installed the software correctly and/or contact your system administrator.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-10" class="outline-2">
+<h2 id="sec-10"><span class="section-number-2">10</span> Getting Started </h2>
+<div class="outline-text-2" id="text-10">
+
+<p>Create a project directory within the <code>$HOME/OpenFOAM</code> directory named
+<code>&lt;USER&gt;-1.7.x</code> (e.g. <code>chris-1.7.x</code> for user chris and OpenFOAM version 1.7.x)
+and create a directory named <code>run</code> within it, e.g. by typing:
+</p>
+<ul>
+<li>
+<code>mkdir -p</code> <code>$FOAM_RUN/run</code>
+
+</li>
+</ul>
+
+<p>Copy the <code>tutorial</code> examples directory in the OpenFOAM distribution to the
+<code>run</code> directory.  If the OpenFOAM environment variables are set correctly,
+then the following command will be correct:
+</p>
+<ul>
+<li>
+<code>cp -r</code> <code>$WM_PROJECT_DIR/tutorials $FOAM_RUN</code>
+
+</li>
+</ul>
+
+<p>Run the first example case of incompressible laminar flow in a cavity:
+</p>
+<ul>
+<li>
+<code>cd</code> <code>$FOAM_RUN/tutorials/incompressible/icoFoam/cavity</code>
+</li>
+<li>
+<code>blockMesh</code>
+</li>
+<li>
+<code>icoFoam</code>
+</li>
+<li>
+<code>paraFoam</code>
+
+</li>
+</ul>
+
+<p>Refer to the OpenFOAM User Guide at <a href="http://www.OpenFOAM.com/docs/user">http://www.OpenFOAM.com/docs/user</a> for
+more information.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-11" class="outline-2">
+<h2 id="sec-11"><span class="section-number-2">11</span> Documentation </h2>
+<div class="outline-text-2" id="text-11">
 
 <p><a href="http://www.OpenFOAM.com/docs">http://www.OpenFOAM.com/docs</a>
 </p>
@@ -151,9 +570,9 @@ To install from the Git repository, see
 
 </div>
 
-<div id="outline-container-5" class="outline-2">
-<h2 id="sec-5"><span class="section-number-2">5</span> Support and development contracts </h2>
-<div class="outline-text-2" id="text-5">
+<div id="outline-container-12" class="outline-2">
+<h2 id="sec-12"><span class="section-number-2">12</span> Support and development contracts </h2>
+<div class="outline-text-2" id="text-12">
 
 <p><a href="http://www.OpenFOAM.com/support">http://www.OpenFOAM.com/support</a>
 </p>
@@ -161,15 +580,15 @@ To install from the Git repository, see
 
 </div>
 
-<div id="outline-container-6" class="outline-2">
-<h2 id="sec-6"><span class="section-number-2">6</span> Reporting Bugs in OpenFOAM </h2>
-<div class="outline-text-2" id="text-6">
+<div id="outline-container-13" class="outline-2">
+<h2 id="sec-13"><span class="section-number-2">13</span> Reporting Bugs in OpenFOAM </h2>
+<div class="outline-text-2" id="text-13">
 
 <p><a href="http://www.OpenFOAM.com/bugs">http://www.OpenFOAM.com/bugs</a>
 </p></div>
 </div>
 <div id="postamble">
-<p class="date"> Date: 24 June 2010</p>
+<p class="date"> Date: 30 June 2010</p>
 <p class="creator">HTML generated by org-mode 6.34trans in emacs 23</p>
 </div>
 </div>
