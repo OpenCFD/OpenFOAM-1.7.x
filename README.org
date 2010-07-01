@@ -7,6 +7,14 @@
 #+OPTIONS: author:nil ^:{}
 # Copyright (c) 2010 OpenCFD Ltd.
 
+* About OpenFOAM
+  OpenFOAM is a free, open source computational fluid dynamcis (CFD) software
+  package produced by a commercial company, OpenCFD Ltd. It has a large user
+  base across most areas of engineering and science, from both commercial and
+  academic organisations. OpenFOAM has an extensive range of features to solve
+  anything from complex fluid flows involving chemical reactions, turbulence and
+  heat transfer, to solid dynamics and electromagnetics.
+
 * Copyright
   OpenFOAM is free software: you can redistribute it and/or modify it under the
   terms of the GNU General Public License as published by the Free Software
