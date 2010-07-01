@@ -31,6 +31,7 @@ License
 #include "cellModeller.H"
 #include "vtkOpenFOAMPoints.H"
 #include "Swap.H"
+#include "longLong.H"
 
 // VTK includes
 #include "vtkCellArray.h"
