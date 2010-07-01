@@ -25,17 +25,17 @@
 
 * Download and installation instructions
   + To install the Ubuntu/Debian (.deb) pack, see
-    http://www.OpenFOAM.com/download/ubuntu.php
+    [[http://www.OpenFOAM.com/download/ubuntu.php]]
   + To install the source (.gtgz) pack, see
-    http://www.OpenFOAM.com/download/source.php
+    [[http://www.OpenFOAM.com/download/source.php]]
   + To install from the Git repository, see
-    http://www.OpenFOAM.com/download/git.php
+    [[http://www.OpenFOAM.com/download/git.php]]
 
 * Documentation
-  http://www.OpenFOAM.com/docs
+  [[http://www.OpenFOAM.com/docs]]
 
 * Support and development contracts
-  http://www.OpenFOAM.com/support
+  [[http://www.OpenFOAM.com/support]]
 
 * Reporting Bugs in OpenFOAM
-  http://www.OpenFOAM.com/bugs
+  [[http://www.OpenFOAM.com/bugs]]
