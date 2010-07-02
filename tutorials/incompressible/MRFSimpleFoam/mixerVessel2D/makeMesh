@@ -2,4 +2,4 @@
 set -x
 
 m4 < constant/polyMesh/blockMeshDict.m4 > constant/polyMesh/blockMeshDict
-blockMesh >& log.blockMesh
+blockMesh > log.blockMesh 2>&1

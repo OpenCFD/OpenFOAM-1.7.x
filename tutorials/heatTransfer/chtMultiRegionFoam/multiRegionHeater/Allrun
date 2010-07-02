@@ -27,7 +27,7 @@ done
 
 for i in bottomAir topAir heater leftSolid rightSolid
 do
-   changeDictionary -region $i >& log.changeDictionary.$i
+   changeDictionary -region $i > log.changeDictionary.$i 2>&1
 done
 
 
@@ -37,7 +37,7 @@ done
 # Decompose
 for i in bottomAir topAir heater leftSolid rightSolid
 do
-   decomposePar -region $i >& log.decomposePar.$i
+   decomposePar -region $i > log.decomposePar.$i 2>&1
 done
 
 # Run
@@ -46,7 +46,7 @@ runParallel chtMultiRegionFoam 4
 # Reconstruct
 for i in bottomAir topAir heater leftSolid rightSolid
 do
-   reconstructPar -region $i >& log.reconstructPar.$i
+   reconstructPar -region $i > log.reconstructPar.$i 2>&1
 done
 
 

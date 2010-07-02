@@ -33,7 +33,7 @@ cd throttle3D
     refineMeshByCellSet 1 2 3
 
     echo "mapping fields from 2D throttle case"
-    mapFields ../throttle -sourceTime latestTime >& log.mapFields
+    mapFields ../throttle -sourceTime latestTime > log.mapFields 2>&1
 
     runApplication decomposePar
     runParallel $application 4

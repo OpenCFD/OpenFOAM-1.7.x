@@ -9,16 +9,16 @@ application=`getApplication`
 runApplication blockMesh
 
 # create sets
-setSet -batch system/sets.setSet >& log.setSet1
+setSet -batch system/sets.setSet > log.setSet1 2>&1
 
 # convert sets to zones
-setsToZones -noFlipMap >& log.setsToZones
+setsToZones -noFlipMap > log.setsToZones 2>&1
 
 # create the first cyclic - lhs of porous zone
 unset FOAM_SETNAN
-createBaffles cycLeft cycLeft -overwrite >& log.createBaffles1
+createBaffles cycLeft cycLeft -overwrite > log.createBaffles1 2>&1
 
 # create the second cyclic - rhs of porous zone
-createBaffles cycRight cycRight -overwrite >& log.createBaffles2
+createBaffles cycRight cycRight -overwrite > log.createBaffles2 2>&1
 
 runApplication $application
