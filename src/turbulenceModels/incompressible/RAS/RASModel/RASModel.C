@@ -87,6 +87,12 @@ RASModel::RASModel
 
     y_(mesh_)
 {
+    k0_.readIfPresent(*this);
+    epsilon0_.readIfPresent(*this);
+    epsilonSmall_.readIfPresent(*this);
+    omega0_.readIfPresent(*this);
+    omegaSmall_.readIfPresent(*this);
+
     // Force the construction of the mesh deltaCoeffs which may be needed
     // for the construction of the derived models and BCs
     mesh_.deltaCoeffs();
