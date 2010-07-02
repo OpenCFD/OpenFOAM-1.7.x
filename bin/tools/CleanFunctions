@@ -28,20 +28,6 @@
 #
 #------------------------------------------------------------------------------
 
-#cleanTimeDirectories ()
-#{
-#    echo "Cleaning $case case of $application application"
-#    TIME_DIRS=`foamInfoExec . $1 -times | sed '1,/constant/d'`
-#    for T in $TIME_DIRS
-#    do
-#        if [ $T != "0" ] ; then
-#            echo "Deleting directory $T"
-#            rm -rf ${T} > /dev/null 2>&1
-#        fi
-#    done
-#    rm -rf {log,log.*,log-*,logSummary.*,.fxLock,*.xml,ParaView*,paraFoam*,*.OpenFOAM} > /dev/null 2>&1
-#}
-
 cleanTimeDirectories ()
 {
     echo "Cleaning $PWD case"
@@ -54,7 +40,7 @@ cleanTimeDirectories ()
         zeros=`printf %0${nZeros}d 0`
         nZeros=$(($nZeros + 1))
     done
-    rm -rf ./{[1-9]*,-[1-9]*,log,log.*,log-*,logSummary.*,.fxLock,*.xml,ParaView*,paraFoam*,*.OpenFOAM} > /dev/null 2>&1
+    rm -rf [1-9]* ./-[1-9]* log log.* log-* logSummary.* *.xml ParaView* paraFoam* *.OpenFOAM > /dev/null 2>&1
 }
 
 cleanCase ()
@@ -63,15 +49,20 @@ cleanCase ()
     rm -rf processor* > /dev/null 2>&1
     rm -rf probes* > /dev/null 2>&1
     rm -rf forces* > /dev/null 2>&1
-
-    rm -rf system/machines \
-           constant/polyMesh/{allOwner*,cell*,face*,meshModifiers*} \
-           constant/polyMesh/{owner*,neighbour*,point*,edge*} \
-           constant/polyMesh/{cellLevel*,pointLevel*,refinementHistory*,surfaceIndex*} \
-           constant/{cellToRegion,cellLevel*,pointLevel*} \
-           constant/polyMesh/sets/ \
-           VTK \
-           > /dev/null 2>&1
+    rm -rf system/machines > /dev/null 2>&1
+    (cd constant/polyMesh && \
+        rm -rf \
+        allOwner* cell* face* meshModifiers* \
+        owner* neighbour* point* edge* \
+        cellLevel* pointLevel* refinementHistory* surfaceIndex* sets \
+        > /dev/null 2>&1 \
+    )
+    (cd constant && \
+        rm -rf \
+        cellToRegion cellLevel* pointLevel* \
+        > /dev/null 2>&1 \
+    )
+    rm -rf VTK > /dev/null 2>&1
 
     for f in `find . -name "*Dict"`
     do
@@ -88,12 +79,12 @@ removeCase ()
 
 cleanSamples ()
 {
-    rm -rf {sets,samples,sampleSurfaces} > /dev/null 2>&1
+    rm -rf sets samples sampleSurfaces > /dev/null 2>&1
 }
 
 cleanUcomponents ()
 {
-    rm -rf 0/{Ux,Uy,Uz} > /dev/null 2>&1
+    rm -rf 0/Ux 0/Uy 0/Uz > /dev/null 2>&1
 }
 
 cleanApplication ()
