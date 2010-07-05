@@ -73,6 +73,17 @@ void Foam::foamFileSurfaceWriter<Type>::write
 
     // Faces
     OFstream(surfaceDir/"faces")() << faces;
+
+    // Face centers. Not really necessary but very handy when reusing as inputs
+    // for e.g. timeVaryingMapped bc.
+    pointField faceCentres(faces.size(),point::zero);
+
+    forAll (faces, faceI)
+    {
+        faceCentres[faceI] = faces[faceI].centre(points);
+    }
+
+    OFstream(surfaceDir/"faceCentres")() << faceCentres;
 }
 
 
