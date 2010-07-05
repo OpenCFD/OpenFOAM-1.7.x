@@ -215,8 +215,8 @@ case SYSTEMOPENMPI:
     set mpi_version=openmpi-system
 
     # Set compilation flags here instead of in wmake/rules/../mplibSYSTEMOPENMPI
-    setenv PINC `mpicc --showme:compile`
-    setenv PLIBS `mpicc --showme:link`
+    setenv PINC "`mpicc --showme:compile`"
+    setenv PLIBS "`mpicc --showme:link`"
     set libDir=`echo "$PLIBS" | sed -e 's/.*-L\([^ ]*\).*/\1/'`
 
     if ($?FOAM_VERBOSE && $?prompt) then

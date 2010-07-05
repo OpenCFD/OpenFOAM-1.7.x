@@ -239,8 +239,8 @@ SYSTEMOPENMPI)
     mpi_version=openmpi-system
 
     # Set compilation flags here instead of in wmake/rules/../mplibSYSTEMOPENMPI
-    export PINC=`mpicc --showme:compile`
-    export PLIBS=`mpicc --showme:link`
+    export PINC="`mpicc --showme:compile`"
+    export PLIBS="`mpicc --showme:link`"
     libDir=`echo "$PLIBS" | sed -e 's/.*-L\([^ ]*\).*/\1/'`
 
     if [ "$FOAM_VERBOSE" -a "$PS1" ]
