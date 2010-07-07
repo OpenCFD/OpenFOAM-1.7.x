@@ -85,8 +85,17 @@ void surfaceSlipDisplacementPointPatchVectorField::calcProjection
     if (frozenPointsZone_.size() > 0)
     {
         const pointZoneMesh& pZones = mesh.pointZones();
+        label zoneID = pZones.findZoneID(frozenPointsZone_);
+        if (zoneID == -1)
+        {
+            FatalErrorIn
+            (
+                "surfaceSlipDisplacementPointPatchVectorField::calcProjection()"
+            )   << "Cannot find zone " << frozenPointsZone_ << endl
+                << "Valid zones are " << pZones.name() << exit(FatalError);
+        }
 
-        zonePtr = &pZones[pZones.findZoneID(frozenPointsZone_)];
+        zonePtr = &pZones[zoneID];
 
         Pout<< "surfaceSlipDisplacementPointPatchVectorField : Fixing all "
             << zonePtr->size() << " points in pointZone " << zonePtr->name()

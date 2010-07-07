@@ -362,7 +362,7 @@ void Foam::directMappedPatchBase::findSamples
                 "(const pointField&, labelList&"
                 ", labelList&, pointField&)"
             )   << "Did not find sample " << samples[sampleI]
-                << " on any processor of region" << sampleRegion_
+                << " on any processor of region " << sampleRegion_
                 << exit(FatalError);
         }
     }

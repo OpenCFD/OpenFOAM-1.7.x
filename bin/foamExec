@@ -35,6 +35,10 @@
 #     mpirun -np <nProcs> \
 #         foamExec -v <foamVersion> <foamCommand> ... -parallel
 #
+#     Note: - not consistent with foamEtcFiles - does not search 'site'
+#             directories
+#           - version switch -v will not work with the debian naming
+#             openfoamXXX
 #------------------------------------------------------------------------------
 usage() {
     while [ "$#" -ge 1 ]; do echo "$1"; shift; done
@@ -54,14 +58,39 @@ USAGE
 
 
 # This script should exist in <foamInstall>/OpenFOAM-<VERSION>/bin/
+# or <foamInstall>/openfoam<VERSION>/bin/ (for the debian version)
 # extract the <foamInstall> and <version> elements
 # using a function preserves the command args
 getDefaults() {
     set -- $(echo $0 | sed -e 's@/OpenFOAM-\([^/]*\)/bin/[^/]*$@ \1@')
     foamInstall=$1
-    version=$2
+    foamName='OpenFOAM-'
+    versionFile=$2
+    versionString=$2
+
+    if [ -z "$versionFile" ]
+    then
+        # Try debian package name
+        #echo "Assuming debian naming convention 'openfoam<version>'"
+        set -- $(echo $0 | sed -e 's@/openfoam\([0-9]*\)/bin/[^/]*$@ \1@')
+        foamInstall=$1
+        foamName='openfoam'
+        versionFile=$2
+        versionString=$WM_PROJECT_VERSION
+        #echo "foamInstall=$foamInstall"
+        #echo "foamName=$foamName"
+        #echo "versionFile=$versionFile"
+        #echo "versionString=$versionString"
+    fi
 }
 
+
+foamInstall=''      # path before OpenFOAM-1.7.0
+foamName=''         # OpenFOAM- or openfoam
+versionFile=''      # 170 so what the WM_PROJECT_INST_DIR exists as 
+versionString=''    # 1.7.0
+
+# Get above settings from $0
 getDefaults
 
 # parse options
@@ -73,7 +102,8 @@ do
         ;;
     -v)
         shift
-        version=$1
+        versionString=$1
+        versionFile=$1
         shift
         ;;
     --)
@@ -89,15 +119,18 @@ do
     esac
 done
 
+#echo "Detected version $versionString with path name $foamName$versionFile"
+
 if [ "$#" -lt 1 ]
 then
     usage "no application specified"
 fi
 
 unset foamDotFile
+args="$*"
 
 # Check user-specific OpenFOAM bashrc file
-foamDotFile="$HOME/.OpenFOAM/$version/bashrc"
+foamDotFile="$HOME/.OpenFOAM/$versionString/bashrc"
 if [ -f $foamDotFile ]
 then
     . $foamDotFile
@@ -106,7 +139,7 @@ else
     # Use the FOAM_INST_DIR variable for locating the installed version
     for FOAM_INST_DIR in $foamInstall $WM_PROJECT_INST_DIR
     do
-        foamDotFile="$FOAM_INST_DIR/OpenFOAM-$version/etc/bashrc"
+        foamDotFile="$FOAM_INST_DIR/$foamName$versionFile/etc/bashrc"
         if [ -f $foamDotFile ]
         then
             . $foamDotFile
@@ -119,11 +152,11 @@ fi
 
 if [ "$foamDotFile" != okay ]
 then
-    echo "Error : bashrc file could not be found for OpenFOAM-$version" 1>&2
+    echo "Error : bashrc file could not be found for OpenFOAM-$versionString" 1>&2
     exit 1
 fi
 
 # Pass on the rest of the arguments
-exec $*
+exec $args
 
 #------------------------------------------------------------------------------
