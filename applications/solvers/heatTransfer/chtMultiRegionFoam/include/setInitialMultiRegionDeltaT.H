@@ -33,13 +33,12 @@ if (adjustTimeStep)
 {
     if ((runTime.timeIndex() == 0) && ((CoNum > SMALL) || (DiNum > SMALL)))
     {
-
-        if (CoNum == -GREAT)
+        if (CoNum < SMALL)
         {
             CoNum = SMALL;
         }
 
-        if (DiNum == -GREAT)
+        if (DiNum < SMALL)
         {
             DiNum = SMALL;
         }
