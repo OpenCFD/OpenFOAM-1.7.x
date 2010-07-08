@@ -91,6 +91,9 @@ int main(int argc, char *argv[])
                 Info<< "Execution time for mesh.update() = "
                     << runTime.elapsedCpuTime() - timeBeforeMeshUpdate
                     << " s" << endl;
+
+                gh = g & mesh.C();
+                ghf = g & mesh.Cf();
             }
 
             if (mesh.changing() && correctPhi)
@@ -98,6 +101,9 @@ int main(int argc, char *argv[])
                 #include "correctPhi.H"
             }
         }
+
+        volScalarField gh = g & mesh.C();
+        surfaceScalarField ghf = g & mesh.Cf();
 
         // Make the fluxes relative to the mesh motion
         fvc::makeRelative(phi, U);
