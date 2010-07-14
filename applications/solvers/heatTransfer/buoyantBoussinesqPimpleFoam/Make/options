@@ -9,5 +9,6 @@ EXE_INC = \
 EXE_LIBS = \
     -lfiniteVolume \
     -lmeshTools \
+    -lincompressibleTurbulenceModel \
     -lincompressibleRASModels \
     -lincompressibleTransportModels
