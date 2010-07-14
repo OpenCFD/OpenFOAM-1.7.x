@@ -182,6 +182,9 @@ public:
         //- Return the cutting point between this plane and two other planes
         point planePlaneIntersect(const plane&, const plane&) const;
 
+        //- Write to dictionary
+        void writeDict(Ostream&) const;
+
 
     // friend Operators
 

@@ -427,6 +427,19 @@ Foam::point Foam::plane::planePlaneIntersect
 }
 
 
+void Foam::plane::writeDict(Ostream& os) const
+{
+    os.writeKeyword("planeType") << "pointAndNormal"
+        << token::END_STATEMENT << nl;
+    os  << indent << "pointAndNormalDict" << nl
+        << indent << token::BEGIN_BLOCK << incrIndent << nl;
+    os.writeKeyword("basePoint") << basePoint_ << token::END_STATEMENT << nl;
+    os.writeKeyword("normalVector") << unitVector_ << token::END_STATEMENT
+        << nl;
+    os << decrIndent << indent << token::END_BLOCK << endl;
+}
+
+
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
 bool Foam::operator==(const plane& a, const plane& b)
