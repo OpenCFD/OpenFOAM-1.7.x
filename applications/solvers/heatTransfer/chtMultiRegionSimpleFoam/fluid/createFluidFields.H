@@ -173,6 +173,7 @@
         setRefCell
         (
             thermoFluid[i].p(),
+            p_rghFluid[i],
             fluidRegions[i].solutionDict().subDict("SIMPLE"),
             pRefCellFluid[i],
             pRefValueFluid[i]

@@ -86,6 +86,7 @@
     setRefCell
     (
         p,
+        p_rgh,
         mesh.solutionDict().subDict("PIMPLE"),
         pRefCell,
         pRefValue

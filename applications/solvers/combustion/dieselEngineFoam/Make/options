@@ -18,6 +18,7 @@ EXE_INC = \
 
 EXE_LIBS = \
     -lengine \
+    -lcompressibleTurbulenceModel \
     -lcompressibleRASModels \
     -lcompressibleLESModels \
     -lreactionThermophysicalModels \

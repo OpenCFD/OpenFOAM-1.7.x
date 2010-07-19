@@ -13,6 +13,7 @@ EXE_LIBS = \
     -ldynamicMesh \
     -lmeshTools \
     -lincompressibleTransportModels \
+    -lincompressibleTurbulenceModel \
     -lincompressibleRASModels \
     -lincompressibleLESModels \
     -lfiniteVolume

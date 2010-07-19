@@ -12,6 +12,7 @@ EXE_LIBS = \
     -lbasicThermophysicalModels \
     -lspecie \
     -lradiation \
+    -lcompressibleTurbulenceModel \
     -lcompressibleRASModels \
     -lfiniteVolume \
     -lmeshTools

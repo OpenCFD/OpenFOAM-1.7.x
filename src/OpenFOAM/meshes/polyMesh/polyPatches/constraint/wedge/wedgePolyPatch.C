@@ -42,59 +42,62 @@ namespace Foam
 
 void Foam::wedgePolyPatch::initTransforms()
 {
-    const pointField& points = this->points();
-
-    patchNormal_ = operator[](0).normal(points);
-    patchNormal_ /= mag(patchNormal_);
-
-    centreNormal_ =
-        vector
-        (
-            sign(patchNormal_.x())*(max(mag(patchNormal_.x()), 0.5) - 0.5),
-            sign(patchNormal_.y())*(max(mag(patchNormal_.y()), 0.5) - 0.5),
-            sign(patchNormal_.z())*(max(mag(patchNormal_.z()), 0.5) - 0.5)
-        );
-    centreNormal_ /= mag(centreNormal_);
-
-    if
-    (
-        mag(centreNormal_.x() + centreNormal_.y() + centreNormal_.z())
-        < (1 - SMALL)
-    )
+    if (size() > 0)
     {
-        FatalErrorIn
+        const pointField& points = this->points();
+
+        patchNormal_ = operator[](0).normal(points);
+        patchNormal_ /= mag(patchNormal_);
+
+        centreNormal_ =
+            vector
+            (
+                sign(patchNormal_.x())*(max(mag(patchNormal_.x()), 0.5) - 0.5),
+                sign(patchNormal_.y())*(max(mag(patchNormal_.y()), 0.5) - 0.5),
+                sign(patchNormal_.z())*(max(mag(patchNormal_.z()), 0.5) - 0.5)
+            );
+        centreNormal_ /= mag(centreNormal_);
+
+        if
         (
-            "wedgePolyPatch::wedgePolyPatch(const polyPatch&, "
-            "const fvBoundaryMesh&)"
-        )   << "wedge " << name()
-            << " centre plane does not align with a coordinate plane by "
-            << 1
-             - mag(centreNormal_.x() + centreNormal_.y() + centreNormal_.z())
-            << exit(FatalError);
+            mag(centreNormal_.x() + centreNormal_.y() + centreNormal_.z())
+            < (1 - SMALL)
+        )
+        {
+            FatalErrorIn
+            (
+                "wedgePolyPatch::wedgePolyPatch(const polyPatch&, "
+                "const fvBoundaryMesh&)"
+            )   << "wedge " << name()
+                << " centre plane does not align with a coordinate plane by "
+                << 1
+                 - mag(centreNormal_.x()+centreNormal_.y()+centreNormal_.z())
+                << exit(FatalError);
+        }
+
+        axis_ = centreNormal_ ^ patchNormal_;
+        scalar magAxis = mag(axis_);
+        axis_ /= magAxis;
+
+        if (magAxis < SMALL)
+        {
+            FatalErrorIn
+            (
+                "wedgePolyPatch::initTransforms()"
+            )   << "wedge " << name()
+                << " plane aligns with a coordinate plane." << nl
+                << "    The wedge plane should make a small angle (~2.5deg)"
+                   " with the coordinate plane" << nl
+                << "    and the the pair of wedge planes should be symmetric"
+                << " about the coordinate plane." << nl
+                << "    Normal of face " << 0 << " is " << patchNormal_
+                << " , implied coordinate plane direction is " << centreNormal_
+                << exit(FatalError);
+        }
+
+        faceT_ = rotationTensor(centreNormal_, patchNormal_);
+        cellT_ = faceT_ & faceT_;
     }
-
-    axis_ = centreNormal_ ^ patchNormal_;
-    scalar magAxis = mag(axis_);
-    axis_ /= magAxis;
-
-    if (magAxis < SMALL)
-    {
-        FatalErrorIn
-        (
-            "wedgePolyPatch::initTransforms()"
-        )   << "wedge " << name()
-            << " plane aligns with a coordinate plane." << nl
-            << "    The wedge plane should make a small angle (~2.5deg)"
-               " with the coordinate plane" << nl
-            << "    and the the pair of wedge planes should be symmetric"
-            << " about the coordinate plane." << nl
-            << "    Normal of face " << 0 << " is " << patchNormal_
-            << " , implied coordinate plane direction is " << centreNormal_
-            << exit(FatalError);
-    }
-
-    faceT_ = rotationTensor(centreNormal_, patchNormal_);
-    cellT_ = faceT_ & faceT_;
 }
 
 

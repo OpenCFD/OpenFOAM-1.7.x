@@ -12,7 +12,7 @@ EXE_INC = \
 EXE_LIBS = \
     -linterfaceProperties \
     -lincompressibleTransportModels \
-    -lincompressibleTransportModels \
+    -lincompressibleTurbulenceModel \
     -lincompressibleRASModels \
     -lincompressibleLESModels \
     -lfiniteVolume
