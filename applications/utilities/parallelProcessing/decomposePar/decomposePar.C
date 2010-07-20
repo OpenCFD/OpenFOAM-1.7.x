@@ -84,6 +84,8 @@ Usage
 
 int main(int argc, char *argv[])
 {
+    // enable -constant
+    timeSelector::addOptions(true, false);
     argList::noParallel();
 #   include "addRegionOption.H"
     argList::validOptions.insert("cellDist", "");
@@ -114,6 +116,20 @@ int main(int argc, char *argv[])
     bool ifRequiredDecomposition = args.optionFound("ifRequired");
 
 #   include "createTime.H"
+
+    // Allow -constant to override controlDict settings.
+    if (args.optionFound("constant"))
+    {
+        instantList timeDirs = timeSelector::select0(runTime, args);
+        if (runTime.timeName() != runTime.constant())
+        {
+            FatalErrorIn(args.executable())
+                << "No '" << runTime.constant() << "' time present." << endl
+                << "Valid times are " << runTime.times()
+                << exit(FatalError);
+        }
+    }
+
 
     Info<< "Time = " << runTime.timeName() << endl;
 
