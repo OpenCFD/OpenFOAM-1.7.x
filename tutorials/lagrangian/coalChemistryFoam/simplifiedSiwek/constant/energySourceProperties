@@ -20,10 +20,10 @@ FoamFile
     {
         active          true;
         timeStart       0.15;
-        duration        0.1;
+        duration        0.20;
         selectionMode   cellSet;
         volumeMode      absolute;
-        fieldData       10000;
+        fieldData       5000;
         cellSet         ignitionCells;
     }
 );

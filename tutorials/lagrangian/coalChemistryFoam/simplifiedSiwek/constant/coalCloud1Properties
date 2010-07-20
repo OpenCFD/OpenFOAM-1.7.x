@@ -33,7 +33,7 @@ PhaseChangeModel LiquidEvaporation;
 
 DevolatilisationModel ConstantRateDevolatilisation;
 
-SurfaceReactionModel COxidationDiffusionLimitedRate;
+SurfaceReactionModel COxidationKineticDiffusionLimitedRate; // COxidationDiffusionLimitedRate;
 
 PostProcessingModel none;
 
@@ -163,8 +163,16 @@ ConstantRateDevolatilisationCoeffs
 
 COxidationDiffusionLimitedRateCoeffs
 {
-    Sb              Sb [ 0 0 0 0 0 ] 1;
+    Sb              Sb [ 0 0 0 0 0 ] 2.667;
     D               D [ 0 2 -1 0 0 ] 1.5e-05;
+}
+
+COxidationKineticDiffusionLimitedRateCoeffs
+{
+    Sb              Sb [ 0 0 0 0 0 ] 2.667;
+    C1              C1 [ 0 0 0 0 0] 5.0E-12;
+    C2              C2 [ 0 0 0 0 0] 0.002;
+    E               E  [ 0 0 0 0 0] 7.9E+07;
 }
 
 
