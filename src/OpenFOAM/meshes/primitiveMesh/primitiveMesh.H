@@ -542,7 +542,8 @@ public:
                 (
                     const bool report = false,
                     labelHashSet* setPtr = NULL,
-                    labelHashSet* highAspectSetPtr = NULL
+                    labelHashSet* highAspectSetPtr = NULL,
+                    const Vector<label>& solutionD = Vector<label>::one
                 ) const;
 
                 //- Check for negative face areas
@@ -636,7 +637,8 @@ public:
                 bool checkCellDeterminant
                 (
                     const bool report = false,
-                    labelHashSet* setPtr = NULL
+                    labelHashSet* setPtr = NULL,
+                    const Vector<label>& solutionD = Vector<label>::one
                 ) const;
 
 

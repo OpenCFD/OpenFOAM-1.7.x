@@ -1,10 +1,265 @@
 #include "checkGeometry.H"
 #include "polyMesh.H"
-#include "globalMeshData.H"
 #include "cellSet.H"
 #include "faceSet.H"
 #include "pointSet.H"
 #include "EdgeMap.H"
+#include "wedgePolyPatch.H"
+#include "mathematicalConstants.H"
+
+
+// Find wedge with opposite orientation. Note: does not actually check that
+// it is opposite, only that it has opposite normal and same axis
+Foam::label Foam::findOppositeWedge
+(
+    const polyMesh& mesh,
+    const wedgePolyPatch& wpp
+)
+{
+    const polyBoundaryMesh& patches = mesh.boundaryMesh();
+
+    scalar wppCosAngle = wpp.centreNormal()&wpp.patchNormal();
+
+    forAll(patches, patchI)
+    {
+        if
+        (
+            patchI != wpp.index()
+         && patches[patchI].size()
+         && isA<wedgePolyPatch>(patches[patchI])
+        )
+        {
+            const wedgePolyPatch& pp = refCast<const wedgePolyPatch>
+            (
+                patches[patchI]
+            );
+
+            // Calculate (cos of) angle to wpp (not pp!) centre normal
+            scalar ppCosAngle = wpp.centreNormal()&pp.patchNormal();
+
+            if
+            (
+                pp.size() == wpp.size()
+             && mag(pp.axis() & wpp.axis()) >= (1-1E-3)
+             && mag(ppCosAngle - wppCosAngle) >= 1E-3
+            )
+            {
+                return patchI;
+            }
+        }
+    }
+    return -1;
+}
+
+
+bool Foam::checkWedges
+(
+    const polyMesh& mesh,
+    const bool report,
+    const Vector<label>& directions,
+    labelHashSet* setPtr
+)
+{
+    // To mark edges without calculating edge addressing
+    EdgeMap<label> edgesInError;
+
+    const pointField& p = mesh.points();
+    const faceList& fcs = mesh.faces();
+
+
+    const polyBoundaryMesh& patches = mesh.boundaryMesh();
+    forAll(patches, patchI)
+    {
+        if (patches[patchI].size() && isA<wedgePolyPatch>(patches[patchI]))
+        {
+            const wedgePolyPatch& pp = refCast<const wedgePolyPatch>
+            (
+                patches[patchI]
+            );
+
+            scalar wedgeAngle = acos(pp.centreNormal()&pp.patchNormal());
+
+            if (report)
+            {
+                Info<< "    Wedge " << pp.name() << " with angle "
+                    << 180/mathematicalConstant::pi*wedgeAngle << " degrees"
+                    << endl;                
+            }
+
+            // Find opposite
+            label oppositePatchI = findOppositeWedge(mesh, pp);
+
+            if (oppositePatchI == -1)
+            {
+                if (report)
+                {
+                    Info<< " ***Cannot find opposite wedge for wedge "
+                        << pp.name() << endl;
+                }
+                return true;
+            }
+
+            const wedgePolyPatch& opp = refCast<const wedgePolyPatch>
+            (
+                patches[oppositePatchI]
+            );
+
+
+            if (mag(opp.axis() & pp.axis()) < (1-1E-3))
+            {
+                if (report)
+                {
+                    Info<< " ***Wedges do not have the same axis."
+                        << " Encountered " << pp.axis()
+                        << " on patch " << pp.name()
+                        << " which differs from " << opp.axis()
+                        << " on opposite wedge patch" << opp.axis()
+                        << endl;
+                }
+                return true;
+            }
+
+
+
+            // Mark edges on wedgePatches
+            forAll(pp, i)
+            {
+                const face& f = pp[i];
+                forAll(f, fp)
+                {
+                    label p0 = f[fp];
+                    label p1 = f.nextLabel(fp);
+                    edgesInError.insert(edge(p0, p1), -1);  // non-error value
+                }
+            }
+
+
+            // Check that wedge patch is flat
+            const point& p0 = p[pp.meshPoints()[0]];
+            forAll(pp.meshPoints(), i)
+            {
+                const point& pt = p[pp.meshPoints()[i]];
+                scalar d = mag((pt-p0) & pp.patchNormal());
+
+                if (d > sqrt(SMALL))
+                {
+                    if (report)
+                    {
+                        Info<< " ***Wedge patch " << pp.name() << " not planar."
+                            << " Point " << pt << " is not in patch plane by "
+                            << d << " meter."
+                            << endl;
+                    }
+                    return true;
+                }
+            }
+        }
+    }
+
+
+
+    // Check all non-wedge faces
+    label nEdgesInError = 0;
+
+    forAll(fcs, faceI)
+    {
+        const face& f = fcs[faceI];
+
+        forAll(f, fp)
+        {
+            label p0 = f[fp];
+            label p1 = f.nextLabel(fp);
+            if (p0 < p1)
+            {
+                vector d(p[p1]-p[p0]);
+                scalar magD = mag(d);
+
+                if (magD > ROOTVSMALL)
+                {
+                    d /= magD;
+
+                    // Check how many empty directions are used by the edge.
+                    label nEmptyDirs = 0;
+                    label nNonEmptyDirs = 0;
+                    for (direction cmpt=0; cmpt<vector::nComponents; cmpt++)
+                    {
+                        if (mag(d[cmpt]) > 1e-6)
+                        {
+                            if (directions[cmpt] == 0)
+                            {
+                                nEmptyDirs++;
+                            }
+                            else
+                            {
+                                nNonEmptyDirs++;
+                            }
+                        }
+                    }
+
+                    if (nEmptyDirs == 0)
+                    {
+                        // Purely in ok directions.
+                    }
+                    else if (nEmptyDirs == 1)
+                    {
+                        // Ok if purely in empty directions.
+                        if (nNonEmptyDirs > 0)
+                        {
+                            if (edgesInError.insert(edge(p0, p1), faceI))
+                            {
+                                nEdgesInError++;
+                            }
+                        }
+                    }
+                    else if (nEmptyDirs > 1)
+                    {
+                        // Always an error
+                        if (edgesInError.insert(edge(p0, p1), faceI))
+                        {
+                            nEdgesInError++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    label nErrorEdges = returnReduce(nEdgesInError, sumOp<label>());
+
+    if (nErrorEdges > 0)
+    {
+        if (report)
+        {
+            Info<< " ***Number of edges not aligned with or perpendicular to "
+                << "non-empty directions: " << nErrorEdges << endl;
+        }
+
+        if (setPtr)
+        {
+            setPtr->resize(2*nEdgesInError);
+            forAllConstIter(EdgeMap<label>, edgesInError, iter)
+            {
+                if (iter() >= 0)
+                {
+                    setPtr->insert(iter.key()[0]);
+                    setPtr->insert(iter.key()[1]);
+                }
+            }
+        }
+
+        return true;
+    }
+    else
+    {
+        if (report)
+        {
+            Info<< "    All edges aligned with or perpendicular to "
+                << "non-empty directions." << endl;
+        }
+        return false;
+    }
+}
+
 
 Foam::label Foam::checkGeometry(const polyMesh& mesh, const bool allGeometry)
 {
@@ -33,7 +288,17 @@ Foam::label Foam::checkGeometry(const polyMesh& mesh, const bool allGeometry)
     {
         pointSet nonAlignedPoints(mesh, "nonAlignedEdges", mesh.nPoints()/100);
 
-        if (mesh.checkEdgeAlignment(true, validDirs, &nonAlignedPoints))
+        if
+        (
+            (
+                validDirs != solDirs
+             && checkWedges(mesh, true, validDirs, &nonAlignedPoints)
+            )
+         || (
+                validDirs == solDirs
+             && mesh.checkEdgeAlignment(true, validDirs, &nonAlignedPoints)
+            )
+        )
         {
             noFailedChecks++;
             label nNonAligned = returnReduce
@@ -57,7 +322,16 @@ Foam::label Foam::checkGeometry(const polyMesh& mesh, const bool allGeometry)
     {
         cellSet cells(mesh, "nonClosedCells", mesh.nCells()/100+1);
         cellSet aspectCells(mesh, "highAspectRatioCells", mesh.nCells()/100+1);
-        if (mesh.checkClosedCells(true, &cells, &aspectCells))
+        if
+        (
+            mesh.checkClosedCells
+            (
+                true,
+                &cells,
+                &aspectCells,
+                mesh.geometricD()
+            )
+        )
         {
             noFailedChecks++;
 
@@ -247,7 +521,7 @@ Foam::label Foam::checkGeometry(const polyMesh& mesh, const bool allGeometry)
     if (allGeometry)
     {
         cellSet cells(mesh, "underdeterminedCells", mesh.nCells()/100);
-        if (mesh.checkCellDeterminant(true, &cells))
+        if (mesh.checkCellDeterminant(true, &cells, mesh.geometricD()))
         {
             noFailedChecks++;
 
