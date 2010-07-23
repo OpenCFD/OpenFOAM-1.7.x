@@ -53,7 +53,8 @@ unset FOAM_ABORT
 
 
 # Hack: change all locale to 'C' i.e. using '.' for decimal point. This is
-# only needed temporarily until paraview is locale aware.
+# only needed temporarily until paraview is locale aware. (git version is
+# already 2010-07)
 export LC_ALL=C
 
 
