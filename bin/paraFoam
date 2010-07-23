@@ -51,6 +51,12 @@ unset regionName touchOnly
 # to clean up
 unset FOAM_ABORT
 
+
+# Hack: change all locale to 'C' i.e. using '.' for decimal point. This is
+# only needed temporarily until paraview is locale aware.
+export LC_ALL=C
+
+
 # parse options
 while [ "$#" -gt 0 ]
 do
