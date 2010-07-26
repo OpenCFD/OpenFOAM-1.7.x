@@ -117,10 +117,10 @@ PDRkEpsilon::PDRkEpsilon
             "k",
             runTime_.timeName(),
             mesh_,
-            IOobject::MUST_READ,
+            IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        mesh_
+        autoCreateK("k", mesh_)
     ),
 
     epsilon_
@@ -130,10 +130,10 @@ PDRkEpsilon::PDRkEpsilon
             "epsilon",
             runTime_.timeName(),
             mesh_,
-            IOobject::MUST_READ,
+            IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        mesh_
+        autoCreateEpsilon("epsilon", mesh_)
     ),
 
     mut_
@@ -144,9 +144,9 @@ PDRkEpsilon::PDRkEpsilon
             runTime_.timeName(),
             mesh_,
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
-        Cmu_*rho_*sqr(k_)/(epsilon_ + epsilonSmall_)
+        autoCreateMut("mut", mesh_)
     ),
 
     alphat_
@@ -269,7 +269,7 @@ void PDRkEpsilon::correct()
     }
 
     tmp<volTensorField> tgradU = fvc::grad(U_);
-    volScalarField G = 2*mut_*(tgradU() && dev(symm(tgradU())));
+    volScalarField G("RASModel::G", mut_*(tgradU() && dev(twoSymm(tgradU()))));
     tgradU.clear();
 
     // Update espsilon and G at the wall
