@@ -4,7 +4,7 @@
 
 application=`getApplication`
 
-compileApplication ../../buoyantPisoFoam/hotRoom/setHotRoom
+compileApplication ../../buoyantPimpleFoam/hotRoom/setHotRoom
 runApplication blockMesh
 runApplication setHotRoom
 runApplication $application
