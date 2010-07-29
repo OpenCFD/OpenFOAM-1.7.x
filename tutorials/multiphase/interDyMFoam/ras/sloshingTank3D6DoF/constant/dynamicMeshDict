@@ -23,7 +23,7 @@ solidBodyMotionFvMeshCoeffs
     SKACoeffs
     {
         CofG            ( 0 0 0 );
-        timeDataFileName "constant/6DoF.dat";
+        timeDataFileName "$FOAM_CASE/constant/6DoF.dat";
     }
 }
 
