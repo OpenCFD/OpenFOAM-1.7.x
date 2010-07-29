@@ -96,13 +96,15 @@ bool Foam::primitiveMesh::checkClosedCells
 (
     const bool report,
     labelHashSet* setPtr,
-    labelHashSet* aspectSetPtr
+    labelHashSet* aspectSetPtr,
+    const Vector<label>& meshD
 ) const
 {
     if (debug)
     {
         Info<< "bool primitiveMesh::checkClosedCells("
-            << "const bool, labelHashSet*, labelHashSet*) const: "
+            << "const bool, labelHashSet*, labelHashSet*"
+            << ", const Vector<label>&) const: "
             << "checking whether cells are closed" << endl;
     }
 
@@ -169,8 +171,18 @@ bool Foam::primitiveMesh::checkClosedCells
 
     const scalarField& vols = cellVolumes();
 
+    label nDims = 0;
+    for (direction dir = 0; dir < vector::nComponents; dir++)
+    {
+        if (meshD[dir] == 1)
+        {
+            nDims++;
+        }
+    }
+
+
     // Check the sums
-    forAll (sumClosed, cellI)
+    forAll(sumClosed, cellI)
     {
         scalar maxOpenness = 0;
 
@@ -198,12 +210,26 @@ bool Foam::primitiveMesh::checkClosedCells
 
         // Calculate the aspect ration as the maximum of Cartesian component
         // aspect ratio to the total area hydraulic area aspect ratio
-        scalar aspectRatio = max
-        (
-            cmptMax(sumMagClosed[cellI])
-           /(cmptMin(sumMagClosed[cellI]) + VSMALL),
-            1.0/6.0*cmptSum(sumMagClosed[cellI])/pow(vols[cellI], 2.0/3.0)
-        );
+        scalar minCmpt = VGREAT;
+        scalar maxCmpt = -VGREAT;
+        for (direction dir = 0; dir < vector::nComponents; dir++)
+        {
+            if (meshD[dir] == 1)
+            {
+                minCmpt = min(minCmpt, sumMagClosed[cellI][dir]);
+                maxCmpt = max(maxCmpt, sumMagClosed[cellI][dir]);
+            }
+        }
+
+        scalar aspectRatio = maxCmpt/(minCmpt + VSMALL);
+        if (nDims == 3)
+        {
+            aspectRatio = max
+            (
+                aspectRatio,
+                1.0/6.0*cmptSum(sumMagClosed[cellI])/pow(vols[cellI], 2.0/3.0)
+            );
+        }
 
         maxAspectRatio = max(maxAspectRatio, aspectRatio);
 
@@ -1867,7 +1893,8 @@ bool Foam::primitiveMesh::checkFaceFaces
 bool Foam::primitiveMesh::checkCellDeterminant
 (
     const bool report,    // report,
-    labelHashSet* setPtr  // setPtr
+    labelHashSet* setPtr, // setPtr
+    const Vector<label>& meshD
 ) const
 {
     if (debug)
@@ -1877,6 +1904,22 @@ bool Foam::primitiveMesh::checkCellDeterminant
             << "checking for under-determined cells" << endl;
     }
 
+    // Determine number of dimensions and (for 2D) missing dimension
+    label nDims = 0;
+    label twoD = -1;
+    for (direction dir = 0; dir < vector::nComponents; dir++)
+    {
+        if (meshD[dir] == 1)
+        {
+            nDims++;
+        }
+        else
+        {
+            twoD = dir;
+        }
+    }
+
+
     const cellList& c = cells();
 
     label nErrorCells = 0;
@@ -1885,55 +1928,34 @@ bool Foam::primitiveMesh::checkCellDeterminant
     scalar sumDet = 0;
     label nSummed = 0;
 
-    forAll (c, cellI)
+    if (nDims == 1)
     {
-        const labelList& curFaces = c[cellI];
-
-        // Calculate local normalization factor
-        scalar avgArea = 0;
-
-        label nInternalFaces = 0;
-
-        forAll(curFaces, i)
+        minDet = 1;
+        sumDet = c.size()*minDet;
+        nSummed = c.size();
+    }
+    else
+    {
+        forAll (c, cellI)
         {
-            if (isInternalFace(curFaces[i]))
-            {
-                avgArea += mag(faceAreas()[curFaces[i]]);
+            const labelList& curFaces = c[cellI];
 
-                nInternalFaces++;
-            }
-        }
+            // Calculate local normalization factor
+            scalar avgArea = 0;
 
-        if (nInternalFaces == 0)
-        {
-            if (setPtr)
-            {
-                setPtr->insert(cellI);
-            }
-
-            nErrorCells++;
-        }
-        else
-        {
-            avgArea /= nInternalFaces;
-
-            symmTensor areaTensor(symmTensor::zero);
+            label nInternalFaces = 0;
 
             forAll(curFaces, i)
             {
                 if (isInternalFace(curFaces[i]))
                 {
-                    areaTensor += sqr(faceAreas()[curFaces[i]]/avgArea);
+                    avgArea += mag(faceAreas()[curFaces[i]]);
+
+                    nInternalFaces++;
                 }
             }
 
-            scalar determinant = mag(det(areaTensor));
-
-            minDet = min(determinant, minDet);
-            sumDet += determinant;
-            nSummed++;
-
-            if (determinant < 1e-3)
+            if (nInternalFaces == 0)
             {
                 if (setPtr)
                 {
@@ -1941,6 +1963,54 @@ bool Foam::primitiveMesh::checkCellDeterminant
                 }
 
                 nErrorCells++;
+            }
+            else
+            {
+                avgArea /= nInternalFaces;
+
+                symmTensor areaTensor(symmTensor::zero);
+
+                forAll(curFaces, i)
+                {
+                    if (isInternalFace(curFaces[i]))
+                    {
+                        areaTensor += sqr(faceAreas()[curFaces[i]]/avgArea);
+                    }
+                }
+
+                if (nDims == 2)
+                {
+                    // Add the missing eigenvector (such that it does not
+                    // affect the determinant)
+                    if (twoD == 0)
+                    {
+                        areaTensor.xx() = 1;
+                    }
+                    else if (twoD == 1)
+                    {
+                        areaTensor.yy() = 1;
+                    }
+                    else
+                    {
+                        areaTensor.zz() = 1;
+                    }
+                }
+
+                scalar determinant = mag(det(areaTensor));
+
+                minDet = min(determinant, minDet);
+                sumDet += determinant;
+                nSummed++;
+
+                if (determinant < 1e-3)
+                {
+                    if (setPtr)
+                    {
+                        setPtr->insert(cellI);
+                    }
+
+                    nErrorCells++;
+                }
             }
         }
     }

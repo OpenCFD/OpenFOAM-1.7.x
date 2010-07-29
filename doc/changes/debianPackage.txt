@@ -48,7 +48,19 @@ or in one go:
     (does a dpdg-buildpackage -rfakeroot)
 This will build e.g. a ../openfoam170_0-1ubuntu1_i386.deb
 
-- build rpm:
+
+
+Building rpm
+------------
     cd ..
     alien -r openfoam170_0-1ubuntu1_i386.deb
+Installing it:
+    - ignore the dependency on /usr/xpg4/bin/sh
+      (comes from the bin/tools/replaceAllShellSun script)
+    - On Suse11.3 : default openmpi-1.2.8 does not work?
+      install newer mpi e.g. from science repo.
+      (e.g. http://software.opensuse.org : search for openmpi)
+    - find a repository for scotch (decomposition library)
+      or remove $FOAM_LIBBIN/libscotchDecomp.so
+      (so the $FOAM_LIBBIN/dummy/libscotchDecomp.so is picked up instead)
 -------------------------------------------------------
