@@ -245,7 +245,7 @@ Foam::tmp<Foam::GeometricField<Type, Foam::pointPatchField, Foam::pointMesh> >
         else
         {
             res[pointI] /= sumWeight[pointI];
-        }        
+        }
     }
 
     res.correctBoundaryConditions();
