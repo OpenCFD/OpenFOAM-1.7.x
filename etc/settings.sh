@@ -307,11 +307,6 @@ HPMPI)
     export FOAM_MPI_LIBBIN=$FOAM_LIBBIN/hpmpi
     ;;
 
-GAMMA)
-    export MPI_ARCH_PATH=/usr
-    export FOAM_MPI_LIBBIN=$FOAM_LIBBIN/gamma
-    ;;
-
 MPI)
     export MPI_ARCH_PATH=/opt/mpi
     export FOAM_MPI_LIBBIN=$FOAM_LIBBIN/mpi

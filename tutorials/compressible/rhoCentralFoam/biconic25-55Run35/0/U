@@ -32416,7 +32416,7 @@ boundaryField
         Uwall           uniform (0 0 0);
         thermalCreep    on;
         curvature       on;
-        refValue        
+        refValue        nonuniform List<vector>
 255
 (
 (3.37115877925426 1.5719971556227 1.63068197702874e-10)
@@ -32676,7 +32676,7 @@ boundaryField
 (0.103666873607679 0 -6.64100738660639e-16)
 )
 ;
-        valueFraction   
+        valueFraction  nonuniform List<scalar> 
 255
 (
 0.00388739013936794
