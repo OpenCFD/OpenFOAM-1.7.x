@@ -47,25 +47,31 @@ const Foam::scalar Foam::interfaceProperties::convertToRad =
 
 void Foam::interfaceProperties::correctContactAngle
 (
-    surfaceVectorField::GeometricBoundaryField& nHatb
+    surfaceVectorField::GeometricBoundaryField& nHatb,
+    surfaceVectorField::GeometricBoundaryField& gradAlphaf
 ) const
 {
     const fvMesh& mesh = alpha1_.mesh();
-    const volScalarField::GeometricBoundaryField& gbf = alpha1_.boundaryField();
+    const volScalarField::GeometricBoundaryField& abf = alpha1_.boundaryField();
 
     const fvBoundaryMesh& boundary = mesh.boundary();
 
     forAll(boundary, patchi)
     {
-        if (isA<alphaContactAngleFvPatchScalarField>(gbf[patchi]))
+        if (isA<alphaContactAngleFvPatchScalarField>(abf[patchi]))
         {
-            const alphaContactAngleFvPatchScalarField& gcap =
-                refCast<const alphaContactAngleFvPatchScalarField>
-                (gbf[patchi]);
+            alphaContactAngleFvPatchScalarField& acap =
+                const_cast<alphaContactAngleFvPatchScalarField&>
+                (
+                    refCast<const alphaContactAngleFvPatchScalarField>
+                    (
+                        abf[patchi]
+                    )
+                );
 
             fvsPatchVectorField& nHatp = nHatb[patchi];
             scalarField theta =
-                convertToRad*gcap.theta(U_.boundaryField()[patchi], nHatp);
+                convertToRad*acap.theta(U_.boundaryField()[patchi], nHatp);
 
             vectorField nf = boundary[patchi].nf();
 
@@ -90,6 +96,8 @@ void Foam::interfaceProperties::correctContactAngle
             nHatp = a*nf + b*nHatp;
 
             nHatp /= (mag(nHatp) + deltaN_.value());
+
+            acap.gradient() = (nf & nHatp)*mag(gradAlphaf[patchi]);
         }
     }
 }
@@ -111,7 +119,7 @@ void Foam::interfaceProperties::calculateK()
 
     // Face unit interface normal
     surfaceVectorField nHatfv = gradAlphaf/(mag(gradAlphaf) + deltaN_);
-    correctContactAngle(nHatfv.boundaryField());
+    correctContactAngle(nHatfv.boundaryField(), gradAlphaf.boundaryField());
 
     // Face unit interface normal flux
     nHatf_ = nHatfv & Sf;

@@ -71,7 +71,7 @@ timeVaryingAlphaContactAngleFvPatchScalarField
     const dictionary& dict
 )
 :
-    alphaContactAngleFvPatchScalarField(p, iF),
+    alphaContactAngleFvPatchScalarField(p, iF, dict),
     t0_(readScalar(dict.lookup("t0"))),
     thetaT0_(readScalar(dict.lookup("thetaT0"))),
     te_(readScalar(dict.lookup("te"))),
@@ -130,7 +130,7 @@ void Foam::timeVaryingAlphaContactAngleFvPatchScalarField::write
     Ostream& os
 ) const
 {
-    fvPatchScalarField::write(os);
+    alphaContactAngleFvPatchScalarField::write(os);
     os.writeKeyword("t0") << t0_ << token::END_STATEMENT << nl;
     os.writeKeyword("thetaT0") << thetaT0_ << token::END_STATEMENT << nl;
     os.writeKeyword("te") << te_ << token::END_STATEMENT << nl;

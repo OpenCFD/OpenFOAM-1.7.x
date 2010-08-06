@@ -38,7 +38,7 @@ SourceFiles
 #ifndef alphaContactAngleFvPatchScalarField_H
 #define alphaContactAngleFvPatchScalarField_H
 
-#include "zeroGradientFvPatchFields.H"
+#include "fixedGradientFvPatchFields.H"
 #include "fvsPatchFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -52,7 +52,7 @@ namespace Foam
 
 class alphaContactAngleFvPatchScalarField
 :
-    public zeroGradientFvPatchScalarField
+    public fixedGradientFvPatchScalarField
 {
 
 public:
@@ -60,6 +60,17 @@ public:
     //- Runtime type information
     TypeName("alphaContactAngle");
 
+    //- Alpha limit options
+    enum limitControls
+    {
+        lcNone,
+        lcGradient,
+        lcZeroGradient,
+        lcAlpha
+    };
+
+    static const NamedEnum<limitControls, 4> limitControlNames_;
+    limitControls limit_;
 
     // Constructors
 
@@ -110,6 +121,15 @@ public:
             const fvPatchVectorField& Up,
             const fvsPatchVectorField& nHat
         ) const = 0;
+
+        //- Evaluate the patch field
+        virtual void evaluate
+        (
+            const Pstream::commsTypes commsType=Pstream::blocking
+        );
+
+        //- Write
+        virtual void write(Ostream&) const;
 };
 
 
