@@ -30,6 +30,31 @@ Description
     Derived classes must implement the theta() fuction which returns the
     wall contact angle field.
 
+    The essential entry "limit" controls the gradient of alpha1 on the wall:
+
+    limit none;         // Calculate the gradient from the contact-angle without
+                        // limiter
+
+    limit gradient;     // Limit the wall-gradient such that alpha1 remains
+                        // bounded on the wall
+
+    limit alpha;        // Bound the calculated alpha1 on the wall
+
+    limit zeroGradient; // Set the gradient of alpha1 to 0 on the wall
+                        // i.e. reproduce previous behaviour
+
+    Note that if any of the first three options are used the boundary condition
+    on p_rgh must set to guarantee that the flux is corrected to be zero at the
+    wall e.g.
+
+        walls
+        {
+            type            fixedFluxPressure;
+            adjoint         no;
+        }
+
+    If "limit zeroGradient;" is used the pressure BCs can be left as before.
+
 SourceFiles
     alphaContactAngleFvPatchScalarField.C
 
