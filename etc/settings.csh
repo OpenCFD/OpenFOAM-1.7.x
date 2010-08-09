@@ -281,11 +281,6 @@ case HPMPI:
     setenv FOAM_MPI_LIBBIN $FOAM_LIBBIN/hpmpi
     breaksw
 
-case GAMMA:
-    setenv MPI_ARCH_PATH /usr
-    setenv FOAM_MPI_LIBBIN $FOAM_LIBBIN/gamma
-    breaksw
-
 case MPI:
     setenv MPI_ARCH_PATH /opt/mpi
     setenv FOAM_MPI_LIBBIN $FOAM_LIBBIN/mpi

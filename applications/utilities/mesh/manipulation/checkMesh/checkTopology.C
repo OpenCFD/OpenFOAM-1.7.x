@@ -331,20 +331,18 @@ Foam::label Foam::checkTopology
                 const pointField& pts = pp.points();
                 const labelList& mp = pp.meshPoints();
 
-                boundBox bb;   // zero-sized
                 if (returnReduce(mp.size(), sumOp<label>()) > 0)
                 {
-                    bb.min() = pts[mp[0]];
-                    bb.max() = pts[mp[0]];
-                    for (label i = 1; i < mp.size(); i++)
+                    boundBox bb(point::max, point::min);
+                    forAll(mp, i)
                     {
                         bb.min() = min(bb.min(), pts[mp[i]]);
                         bb.max() = max(bb.max(), pts[mp[i]]);
                     }
                     reduce(bb.min(), minOp<vector>());
                     reduce(bb.max(), maxOp<vector>());
+                    Pout<< ' ' << bb;
                 }
-                Pout<< ' ' << bb;
             }
             Pout<< endl;
         }

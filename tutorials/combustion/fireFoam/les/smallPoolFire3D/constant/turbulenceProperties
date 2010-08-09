@@ -1,31 +1,22 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.7.0                                 |
-|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|  \\    /   O peration     | Version:  1.7                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
-    format      ascii;
+    format      binary;
     class       dictionary;
     location    "constant";
-    object      dynamicMeshDict;
+    object      turbulenceProperties;
 }
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dynamicFvMesh   solidBodyMotionFvMesh;
-
-solidBodyMotionFvMeshCoeffs
-{
-    solidBodyMotionFunction SKA;
-    SKACoeffs
-    {
-        CofG            ( 0 0 0 );
-        timeDataFileName "$FOAM_CASE/constant/6DoF.dat";
-    }
-}
+simulationType  LESModel;
 
 
 // ************************************************************************* //

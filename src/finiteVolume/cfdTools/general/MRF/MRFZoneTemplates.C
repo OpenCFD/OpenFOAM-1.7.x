@@ -71,7 +71,7 @@ void Foam::MRFZone::relativeRhoFlux
 
             phi.boundaryField()[patchi][patchFacei] -=
                 rho.boundaryField()[patchi][patchFacei]
-               *(Omega ^ (Cf.boundaryField()[patchi][patchFacei] - origin))
+              * (Omega ^ (Cf.boundaryField()[patchi][patchFacei] - origin))
               & Sf.boundaryField()[patchi][patchFacei];
         }
     }
@@ -95,7 +95,7 @@ void Foam::MRFZone::absoluteRhoFlux
     forAll(internalFaces_, i)
     {
         label facei = internalFaces_[i];
-        phi[facei] += (Omega ^ (Cf[facei] - origin)) & Sf[facei];
+        phi[facei] += rho[facei]*(Omega ^ (Cf[facei] - origin)) & Sf[facei];
     }
 
     // Included patches
@@ -106,7 +106,8 @@ void Foam::MRFZone::absoluteRhoFlux
             label patchFacei = includedFaces_[patchi][i];
 
             phi.boundaryField()[patchi][patchFacei] +=
-                (Omega ^ (Cf.boundaryField()[patchi][patchFacei] - origin))
+                rho.boundaryField()[patchi][patchFacei]
+              * (Omega ^ (Cf.boundaryField()[patchi][patchFacei] - origin))
               & Sf.boundaryField()[patchi][patchFacei];
         }
     }
@@ -119,7 +120,8 @@ void Foam::MRFZone::absoluteRhoFlux
             label patchFacei = excludedFaces_[patchi][i];
 
             phi.boundaryField()[patchi][patchFacei] +=
-                (Omega ^ (Cf.boundaryField()[patchi][patchFacei] - origin))
+                rho.boundaryField()[patchi][patchFacei]
+              * (Omega ^ (Cf.boundaryField()[patchi][patchFacei] - origin))
               & Sf.boundaryField()[patchi][patchFacei];
         }
     }

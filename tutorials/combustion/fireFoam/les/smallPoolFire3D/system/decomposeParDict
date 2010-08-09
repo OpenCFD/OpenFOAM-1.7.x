@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.7.0                                 |
-|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|  \\    /   O peration     | Version:  1.7                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -10,21 +10,35 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "constant";
-    object      dynamicMeshDict;
+    location    "system";
+    object      decomposeParDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dynamicFvMesh   solidBodyMotionFvMesh;
+numberOfSubdomains 4;
 
-solidBodyMotionFvMeshCoeffs
+method          hierarchical;
+
+simpleCoeffs
 {
-    solidBodyMotionFunction SKA;
-    SKACoeffs
-    {
-        CofG            ( 0 0 0 );
-        timeDataFileName "$FOAM_CASE/constant/6DoF.dat";
-    }
+    n               ( 1 2 2 );
+    delta           0.001;
+}
+
+hierarchicalCoeffs
+{
+    n               ( 1 2 2 );
+    delta           0.001;
+    order           xyz;
+}
+
+manualCoeffs
+{
+    dataFile        "cellDecomposition";
+}
+
+metisCoeffs
+{
 }
 
 

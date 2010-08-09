@@ -70,7 +70,7 @@ dynamicAlphaContactAngleFvPatchScalarField
     const dictionary& dict
 )
 :
-    alphaContactAngleFvPatchScalarField(p, iF),
+    alphaContactAngleFvPatchScalarField(p, iF, dict),
     theta0_(readScalar(dict.lookup("theta0"))),
     uTheta_(readScalar(dict.lookup("uTheta"))),
     thetaA_(readScalar(dict.lookup("thetaA"))),
@@ -145,7 +145,7 @@ Foam::dynamicAlphaContactAngleFvPatchScalarField::theta
 
 void Foam::dynamicAlphaContactAngleFvPatchScalarField::write(Ostream& os) const
 {
-    fvPatchScalarField::write(os);
+    alphaContactAngleFvPatchScalarField::write(os);
     os.writeKeyword("theta0") << theta0_ << token::END_STATEMENT << nl;
     os.writeKeyword("uTheta") << uTheta_ << token::END_STATEMENT << nl;
     os.writeKeyword("thetaA") << thetaA_ << token::END_STATEMENT << nl;
