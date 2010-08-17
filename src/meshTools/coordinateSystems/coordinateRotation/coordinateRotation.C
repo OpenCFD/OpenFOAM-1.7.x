@@ -62,7 +62,7 @@ void Foam::coordinateRotation::calcTransform
     vector c = a ^ b;
 
     // the global -> local transformation
-    tensor Rtr;
+    tensor Rtr(tensor::zero);
     switch (order)
     {
         case e1e2:
