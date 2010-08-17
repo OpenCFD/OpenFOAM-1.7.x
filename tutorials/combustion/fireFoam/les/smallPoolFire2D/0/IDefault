@@ -24,7 +24,7 @@ boundaryField
     {
         type            greyDiffusiveRadiation;
         T               T;
-        emissivity      1.0
+        emissivity      1.0;
         value           uniform 0;
     }
 }

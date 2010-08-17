@@ -35,6 +35,25 @@ namespace Foam
     defineTypeNameAndDebug(alphaContactAngleFvPatchScalarField, 0);
 }
 
+template<>
+const char* Foam::NamedEnum
+<
+    Foam::alphaContactAngleFvPatchScalarField::limitControls,
+    4
+>::names[] =
+{
+    "none",
+    "gradient",
+    "zeroGradient",
+    "alpha"
+};
+
+const Foam::NamedEnum
+<
+    Foam::alphaContactAngleFvPatchScalarField::limitControls,
+    4
+> Foam::alphaContactAngleFvPatchScalarField::limitControlNames_;
+
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -44,19 +63,21 @@ Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    zeroGradientFvPatchScalarField(p, iF)
+    fixedGradientFvPatchScalarField(p, iF),
+    limit_(lcZeroGradient)
 {}
 
 
 Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
 (
-    const alphaContactAngleFvPatchScalarField& gcpsf,
+    const alphaContactAngleFvPatchScalarField& acpsf,
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF,
     const fvPatchFieldMapper& mapper
 )
 :
-    zeroGradientFvPatchScalarField(gcpsf, p, iF, mapper)
+    fixedGradientFvPatchScalarField(acpsf, p, iF, mapper),
+    limit_(acpsf.limit_)
 {}
 
 
@@ -67,29 +88,74 @@ Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
     const dictionary& dict
 )
 :
-    zeroGradientFvPatchScalarField(p, iF)
-{
-    evaluate();
-}
-
-
-Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
-(
-    const alphaContactAngleFvPatchScalarField& gcpsf
-)
-:
-    zeroGradientFvPatchScalarField(gcpsf)
+    fixedGradientFvPatchScalarField(p, iF),
+    limit_(limitControlNames_.read(dict.lookup("limit")))
 {}
 
 
 Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
 (
-    const alphaContactAngleFvPatchScalarField& gcpsf,
+    const alphaContactAngleFvPatchScalarField& acpsf
+)
+:
+    fixedGradientFvPatchScalarField(acpsf),
+    limit_(acpsf.limit_)
+{}
+
+
+Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
+(
+    const alphaContactAngleFvPatchScalarField& acpsf,
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    zeroGradientFvPatchScalarField(gcpsf, iF)
+    fixedGradientFvPatchScalarField(acpsf, iF),
+    limit_(acpsf.limit_)
 {}
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+void Foam::alphaContactAngleFvPatchScalarField::evaluate
+(
+    const Pstream::commsTypes
+)
+{
+    if (limit_ == lcGradient)
+    {
+        gradient() =
+        patch().deltaCoeffs()
+       *(
+           max(min
+           (
+               *this + gradient()/patch().deltaCoeffs(),
+               scalar(1)), scalar(0)
+           ) - *this
+       );
+    }
+    else if (limit_ == lcZeroGradient)
+    {
+        gradient() = 0.0;
+    }
+
+    fixedGradientFvPatchScalarField::evaluate();
+
+    if (limit_ == lcAlpha)
+    {
+        scalarField::operator=(max(min(*this, scalar(1)), scalar(0)));
+    }
+}
+
+
+void Foam::alphaContactAngleFvPatchScalarField::write
+(
+    Ostream& os
+) const
+{
+    fvPatchScalarField::write(os);
+    os.writeKeyword("limit")
+        << limitControlNames_[limit_] << token::END_STATEMENT << nl;
+}
 
 
 // ************************************************************************* //
