@@ -27,7 +27,7 @@ regions
 (
     boxToCell
     {
-        box ( 0 0 -1 ) ( 0.1461 0.292 1 );
+        box (0 0 -1) (1 1 1);
         fieldValues
         (
             volScalarFieldValue alphawater 1
@@ -38,7 +38,7 @@ regions
     }
     boxToCell
     {
-        box ( 0.1461 0 -1 ) ( 0.2922 0.292 1 );
+        box (0 -1 -1) (1 0 1);
         fieldValues
         (
             volScalarFieldValue alphawater 0
@@ -49,7 +49,7 @@ regions
     }
     boxToCell
     {
-        box ( 0 0 -1 ) ( 0.1461 0.1 1 );
+        box (-1 -1 -1) (0 0 1);
         fieldValues
         (
             volScalarFieldValue alphawater 0

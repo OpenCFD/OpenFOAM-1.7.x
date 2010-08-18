@@ -11,51 +11,15 @@ FoamFile
     format      ascii;
     class       dictionary;
     location    "system";
-    object      fvSchemes;
+    object      faceSetDict_noBoundaryFaces;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-ddtSchemes
-{
-    default         Euler;
-}
+name            rotor;
 
-gradSchemes
-{
-    default         Gauss linear;
-    grad(U)         Gauss linear;
-    grad(gamma)     Gauss linear;
-}
+action          delete;
 
-divSchemes
-{
-    div(rho*phi,U)  Gauss upwind;
-    div(phi,alpha)  Gauss vanLeer;
-    div(phirb,alpha) Gauss interfaceCompression;
-}
-
-laplacianSchemes
-{
-    default         Gauss linear corrected;
-}
-
-interpolationSchemes
-{
-    default         linear;
-}
-
-snGradSchemes
-{
-    default         corrected;
-}
-
-fluxRequired
-{
-    default         no;
-    pcorr;
-    p_rgh;
-    "alpha.*";
-}
+topoSetSources  ( boundaryToFace { } );
 
 
 // ************************************************************************* //

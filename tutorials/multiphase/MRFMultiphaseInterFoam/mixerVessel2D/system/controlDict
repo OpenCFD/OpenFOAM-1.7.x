@@ -11,51 +11,46 @@ FoamFile
     format      ascii;
     class       dictionary;
     location    "system";
-    object      fvSchemes;
+    object      controlDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-ddtSchemes
-{
-    default         Euler;
-}
+application     MRFMultiphaseInterFoam;
 
-gradSchemes
-{
-    default         Gauss linear;
-    grad(U)         Gauss linear;
-    grad(gamma)     Gauss linear;
-}
+startFrom       startTime;
 
-divSchemes
-{
-    div(rho*phi,U)  Gauss upwind;
-    div(phi,alpha)  Gauss vanLeer;
-    div(phirb,alpha) Gauss interfaceCompression;
-}
+startTime       0;
 
-laplacianSchemes
-{
-    default         Gauss linear corrected;
-}
+stopAt          endTime;
 
-interpolationSchemes
-{
-    default         linear;
-}
+endTime         4;
 
-snGradSchemes
-{
-    default         corrected;
-}
+deltaT          1e-3;
 
-fluxRequired
-{
-    default         no;
-    pcorr;
-    p_rgh;
-    "alpha.*";
-}
+writeControl    adjustableRunTime;
+
+writeInterval   0.125;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression uncompressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
+
+adjustTimeStep  yes;
+
+maxCo           0.5;
+maxAlphaCo      0.5;
+
+maxDeltaT       1;
 
 
 // ************************************************************************* //
