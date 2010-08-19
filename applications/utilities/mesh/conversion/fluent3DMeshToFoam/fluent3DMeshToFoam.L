@@ -321,7 +321,7 @@ endOfSection               {space}")"{space}
         pointGroupEndIndex.append(strtol(endPtr, &endPtr, 16) - 1);
 
         // point group type skipped
-        strtol(endPtr, &endPtr, 16);
+        (void)strtol(endPtr, &endPtr, 16);
 
         pointi = pointGroupStartIndex[pointGroupStartIndex.size()-1];
 
@@ -435,7 +435,7 @@ endOfSection               {space}")"{space}
         faceGroupEndIndex.append(strtol(endPtr, &endPtr, 16) - 1);
 
         // face group type
-        strtol(endPtr, &endPtr, 16);
+        (void)strtol(endPtr, &endPtr, 16);
 
         faceGroupElementType = strtol(endPtr, &endPtr, 16);
 
@@ -583,7 +583,7 @@ endOfSection               {space}")"{space}
         cellGroupType.append(strtol(endPtr, &endPtr, 16));
 
         // Note. Potentially skip cell set if type is zero.
-        strtol(endPtr, &endPtr, 16);
+        (void)strtol(endPtr, &endPtr, 16);
 
         Info<< "CellGroup: "
             << cellGroupZoneID[cellGroupZoneID.size()-1]
