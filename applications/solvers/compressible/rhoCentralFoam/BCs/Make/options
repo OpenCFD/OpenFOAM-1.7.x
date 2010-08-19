@@ -6,5 +6,5 @@ EXE_INC = \
 EXE_LIBS = \
     -lfiniteVolume \
     -lbasicThermophysicalModels \
-	-lspecie
+    -lspecie
 
