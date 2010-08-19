@@ -51,6 +51,8 @@
         incompressible::turbulenceModel::New(U, phi, mixture)
     );
 
+    #include "readGravitationalAcceleration.H"
+
     Info<< "Calculating field g.h\n" << endl;
     volScalarField gh("gh", g & mesh.C());
     surfaceScalarField ghf("ghf", g & mesh.Cf());

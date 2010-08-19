@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
         twoPhaseProperties.correct();
 
         #include "alphaEqnSubCycle.H"
+        #include "zonePhaseVolumes.H"
 
         #include "UEqn.H"
 

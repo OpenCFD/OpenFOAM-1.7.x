@@ -496,7 +496,7 @@ void Foam::multiphaseMixture::solveAlphas
     nSolves++;
 
     word alphaScheme("div(phi,alpha)");
-    word alphacScheme("div(phic,alpha)");
+    word alphacScheme("div(phirb,alpha)");
 
     tmp<fv::convectionScheme<scalar> > mvConvection
     (

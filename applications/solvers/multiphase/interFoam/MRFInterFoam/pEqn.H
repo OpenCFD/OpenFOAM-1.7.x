@@ -3,7 +3,12 @@
     surfaceScalarField rAUf = fvc::interpolate(rAU);
 
     U = rAU*UEqn.H();
-    surfaceScalarField phiU("phiU", (fvc::interpolate(U) & mesh.Sf()));
+    surfaceScalarField phiU
+    (
+        "phiU",
+        (fvc::interpolate(U) & mesh.Sf())
+      + fvc::ddtPhiCorr(rAU, rho, U, phi)
+    );
     mrfZones.relativeFlux(phiU);
 
     adjustPhi(phiU, U, p_rgh);

@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    multiphaseInterFoam
+    MRFMultiphaseInterFoam
 
 Description
     Solver for n incompressible fluids which captures the interfaces and
@@ -35,6 +35,7 @@ Description
 #include "fvCFD.H"
 #include "multiphaseMixture.H"
 #include "turbulenceModel.H"
+#include "MRFZones.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -46,6 +47,7 @@ int main(int argc, char *argv[])
     #include "readPISOControls.H"
     #include "initContinuityErrs.H"
     #include "createFields.H"
+    #include "createMRFZones.H"
     #include "readTimeControls.H"
     #include "correctPhi.H"
     #include "CourantNo.H"
@@ -69,6 +71,7 @@ int main(int argc, char *argv[])
 
         mixture.solve();
         rho = mixture.rho();
+        #include "zonePhaseVolumes.H"
 
         #include "UEqn.H"
 

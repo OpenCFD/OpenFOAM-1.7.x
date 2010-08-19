@@ -1,0 +1,11 @@
+#!/bin/sh
+
+m4 < constant/polyMesh/blockMeshDict.m4 > constant/polyMesh/blockMeshDict
+blockMesh
+cellSet
+#- MRF determines its own faceZone if not supplied
+#cp system/faceSetDict_rotorFaces system/faceSetDict
+#faceSet
+#cp system/faceSetDict_noBoundaryFaces system/faceSetDict
+#faceSet
+setsToZones -noFlipMap

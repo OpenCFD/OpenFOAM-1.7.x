@@ -20,70 +20,33 @@ solvers
     pcorr
     {
         solver          PCG;
-        preconditioner
-        {
-            preconditioner  GAMG;
-            tolerance       1e-05;
-            relTol          0;
-            smoother        GaussSeidel;
-            nPreSweeps      0;
-            nPostSweeps     2;
-            nBottomSweeps   2;
-            cacheAgglomeration off;
-            nCellsInCoarsestLevel 10;
-            agglomerator    faceAreaPair;
-            mergeLevels     2;
-        }
-        tolerance       1e-05;
+        preconditioner  DIC;
+        tolerance       1e-10;
         relTol          0;
-        maxIter         100;
     }
 
     p_rgh
     {
-        solver          GAMG;
+        solver          PCG;
+        preconditioner  DIC;
         tolerance       1e-07;
         relTol          0.05;
-        smoother        GaussSeidel;
-        nPreSweeps      0;
-        nPostSweeps     2;
-        nFinestSweeps   2;
-        cacheAgglomeration on;
-        nCellsInCoarsestLevel 10;
-        agglomerator    faceAreaPair;
-        mergeLevels     1;
     }
 
     p_rghFinal
     {
         solver          PCG;
-        preconditioner
-        {
-            preconditioner  GAMG;
-            tolerance       1e-07;
-            relTol          0;
-            nVcycles        2;
-            smoother        GaussSeidel;
-            nPreSweeps      0;
-            nPostSweeps     2;
-            nFinestSweeps   2;
-            cacheAgglomeration on;
-            nCellsInCoarsestLevel 10;
-            agglomerator    faceAreaPair;
-            mergeLevels     1;
-        }
+        preconditioner  DIC;
         tolerance       1e-07;
         relTol          0;
-        maxIter         20;
     }
 
     "(U|alpha)"
     {
-        solver          smoothSolver;
-        smoother        GaussSeidel;
-        tolerance       1e-9;
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-06;
         relTol          0;
-        nSweeps         1;
     }
 }
 
@@ -96,6 +59,8 @@ PISO
     nAlphaSubCycles 4;
     cycleAlpha      yes;
     cAlpha          2;
+    pRefCell        0;
+    pRefValue       0;
 }
 
 relaxationFactors
