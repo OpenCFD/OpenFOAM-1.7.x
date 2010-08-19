@@ -64,6 +64,21 @@ inline Tensor<Cmpt>::Tensor(const SymmTensor<Cmpt>& st)
 }
 
 
+//- Construct given the three vector components
+template <class Cmpt>
+inline Tensor<Cmpt>::Tensor
+(
+    const Vector<Cmpt>& x,
+    const Vector<Cmpt>& y,
+    const Vector<Cmpt>& z
+)
+{
+    this->v_[XX] = x.x(); this->v_[XY] = x.y(); this->v_[XZ] = x.z();
+    this->v_[YX] = y.x(); this->v_[YY] = y.y(); this->v_[YZ] = y.z();
+    this->v_[ZX] = z.x(); this->v_[ZY] = z.y(); this->v_[ZZ] = z.z();
+}
+
+
 //- Construct from components
 template <class Cmpt>
 inline Tensor<Cmpt>::Tensor
@@ -90,40 +105,21 @@ inline Tensor<Cmpt>::Tensor(Istream& is)
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template <class Cmpt>
-inline const Vector<Cmpt>&  Tensor<Cmpt>::x() const
+inline const Vector<Cmpt> Tensor<Cmpt>::x() const
 {
-    return reinterpret_cast<const Vector<Cmpt>&>(this->v_[XX]);
+    return Vector<Cmpt>(this->v_[XX], this->v_[XY], this->v_[XZ]);
 }
 
 template <class Cmpt>
-inline const Vector<Cmpt>&  Tensor<Cmpt>::y() const
+inline const Vector<Cmpt> Tensor<Cmpt>::y() const
 {
-    return reinterpret_cast<const Vector<Cmpt>&>(this->v_[YX]);
+    return Vector<Cmpt>(this->v_[YX], this->v_[YY], this->v_[YZ]);
 }
 
 template <class Cmpt>
-inline const Vector<Cmpt>&  Tensor<Cmpt>::z() const
+inline const Vector<Cmpt>  Tensor<Cmpt>::z() const
 {
-    return reinterpret_cast<const Vector<Cmpt>&>(this->v_[ZX]);
-}
-
-
-template <class Cmpt>
-inline Vector<Cmpt>&  Tensor<Cmpt>::x()
-{
-    return reinterpret_cast<Vector<Cmpt>&>(this->v_[XX]);
-}
-
-template <class Cmpt>
-inline Vector<Cmpt>&  Tensor<Cmpt>::y()
-{
-    return reinterpret_cast<Vector<Cmpt>&>(this->v_[YX]);
-}
-
-template <class Cmpt>
-inline Vector<Cmpt>&  Tensor<Cmpt>::z()
-{
-    return reinterpret_cast<Vector<Cmpt>&>(this->v_[ZX]);
+    return Vector<Cmpt>(this->v_[ZX], this->v_[ZY], this->v_[ZZ]);
 }
 
 

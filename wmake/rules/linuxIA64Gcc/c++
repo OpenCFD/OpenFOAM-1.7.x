@@ -1,12 +1,12 @@
 .SUFFIXES: .C .cxx .cc .cpp
 
-c++WARN     = -Wall -Wno-strict-aliasing -Wextra -Wno-unused-parameter -Wold-style-cast
+c++WARN     = -Wall -Wextra -Wno-unused-parameter -Wold-style-cast
 
 CC          = g++
 
 include $(RULES)/c++$(WM_COMPILE_OPTION)
 
-ptFLAGS     = -DNoRepository -ftemplate-depth-30
+ptFLAGS     = -DNoRepository -ftemplate-depth-40
 
 c++FLAGS    = $(GFLAGS) $(c++WARN) $(c++OPT) $(c++DBUG) $(ptFLAGS) $(LIB_HEADER_DIRS) -fPIC
 

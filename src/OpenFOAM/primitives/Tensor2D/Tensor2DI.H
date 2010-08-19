@@ -53,6 +53,18 @@ inline Tensor2D<Cmpt>::Tensor2D(const SphericalTensor2D<Cmpt>& st)
 template <class Cmpt>
 inline Tensor2D<Cmpt>::Tensor2D
 (
+    const Vector2D<Cmpt>& x,
+    const Vector2D<Cmpt>& y
+)
+{
+    this->v_[XX] = x.x(); this->v_[XY] = x.y();
+    this->v_[YX] = y.x(); this->v_[YY] = y.y();
+}
+
+
+template <class Cmpt>
+inline Tensor2D<Cmpt>::Tensor2D
+(
     const Cmpt txx, const Cmpt txy,
     const Cmpt tyx, const Cmpt tyy
 )
@@ -72,51 +84,38 @@ inline Tensor2D<Cmpt>::Tensor2D(Istream& is)
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template <class Cmpt>
-inline const Vector2D<Cmpt>&  Tensor2D<Cmpt>::x() const
+inline const Vector2D<Cmpt> Tensor2D<Cmpt>::x() const
 {
-    return reinterpret_cast<const Vector2D<Cmpt>&>(this->v_[XX]);
+    return Vector2D<Cmpt>(this->v_[XX], this->v_[XY]);
 }
 
 template <class Cmpt>
-inline const Vector2D<Cmpt>&  Tensor2D<Cmpt>::y() const
+inline const Vector2D<Cmpt> Tensor2D<Cmpt>::y() const
 {
-    return reinterpret_cast<const Vector2D<Cmpt>&>(this->v_[YX]);
-}
-
-
-template <class Cmpt>
-inline Vector2D<Cmpt>&  Tensor2D<Cmpt>::x()
-{
-    return reinterpret_cast<Vector2D<Cmpt>&>(this->v_[XX]);
-}
-
-template <class Cmpt>
-inline Vector2D<Cmpt>&  Tensor2D<Cmpt>::y()
-{
-    return reinterpret_cast<Vector2D<Cmpt>&>(this->v_[YX]);
+    return Vector2D<Cmpt>(this->v_[YX], this->v_[YY]);
 }
 
 
 template <class Cmpt>
-inline const Cmpt&  Tensor2D<Cmpt>::xx() const
+inline const Cmpt& Tensor2D<Cmpt>::xx() const
 {
     return this->v_[XX];
 }
 
 template <class Cmpt>
-inline const Cmpt&  Tensor2D<Cmpt>::xy() const
+inline const Cmpt& Tensor2D<Cmpt>::xy() const
 {
     return this->v_[XY];
 }
 
 template <class Cmpt>
-inline const Cmpt&  Tensor2D<Cmpt>::yx() const
+inline const Cmpt& Tensor2D<Cmpt>::yx() const
 {
     return this->v_[YX];
 }
 
 template <class Cmpt>
-inline const Cmpt&  Tensor2D<Cmpt>::yy() const
+inline const Cmpt& Tensor2D<Cmpt>::yy() const
 {
     return this->v_[YY];
 }

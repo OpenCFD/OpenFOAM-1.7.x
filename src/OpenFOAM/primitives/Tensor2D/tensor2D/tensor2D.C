@@ -159,9 +159,11 @@ tensor2D eigenVectors(const tensor2D& t)
 {
     vector2D evals(eigenValues(t));
 
-    tensor2D evs;
-    evs.x() = eigenVector(t, evals.x());
-    evs.y() = eigenVector(t, evals.y());
+    tensor2D evs
+    (
+        eigenVector(t, evals.x()),
+        eigenVector(t, evals.y())
+    );
 
     return evs;
 }
