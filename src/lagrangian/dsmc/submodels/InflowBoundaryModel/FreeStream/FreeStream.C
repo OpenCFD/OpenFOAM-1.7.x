@@ -217,6 +217,7 @@ void Foam::FreeStream<CloudType>::inflow()
 
             // Cumulative triangle area fractions
             List<scalar> cTriAFracs(nVertices);
+            cTriAFracs[0] = 0.0;
 
             for (label v = 0; v < nVertices - 1; v++)
             {
