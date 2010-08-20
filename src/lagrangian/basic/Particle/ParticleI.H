@@ -58,8 +58,14 @@ inline Foam::scalar Foam::Particle<ParticleType>::lambda
               > static_cast<const ParticleType&>(*this).wallImpactDistance(Sf)
             )
             {
-                Cf -= static_cast<const ParticleType&>(*this)
-                    .wallImpactDistance(Sf)*Sf;
+                label patchi = patch(facei);
+                const polyPatch& patch = mesh.boundaryMesh()[patchi];
+
+                if (isA<wallPolyPatch>(patch))
+                {
+                    Cf -= static_cast<const ParticleType&>(*this)
+                        .wallImpactDistance(Sf)*Sf;
+                }
             }
         }
 
@@ -202,8 +208,14 @@ inline Foam::scalar Foam::Particle<ParticleType>::lambda
           > static_cast<const ParticleType&>(*this).wallImpactDistance(Sf)
         )
         {
-            Cf -= static_cast<const ParticleType&>(*this)
-                .wallImpactDistance(Sf)*Sf;
+            label patchi = patch(facei);
+            const polyPatch& patch = mesh.boundaryMesh()[patchi];
+
+            if (isA<wallPolyPatch>(patch))
+            {
+                Cf -= static_cast<const ParticleType&>(*this)
+                    .wallImpactDistance(Sf)*Sf;
+            }
         }
     }
 
