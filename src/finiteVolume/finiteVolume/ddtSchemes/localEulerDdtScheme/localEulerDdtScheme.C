@@ -477,7 +477,13 @@ localEulerDdtScheme<Type>::fvcDdtPhiCorr
                 new fluxFieldType
                 (
                     ddtIOobject,
+//                     (
+//                         scalar(1)
+//                       - (min(rDeltaT)/fvc::interpolate(rDeltaT))
+//                        *(scalar(1) - fvcDdtPhiCoeff(U.oldTime(), phi.oldTime()))
+//                     )
                     fvcDdtPhiCoeff(U.oldTime(), phi.oldTime())
+                    //0.95
                    *(
                         fvc::interpolate(rDeltaT*rA*rho.oldTime())*phi.oldTime()
                       - (fvc::interpolate(rDeltaT*rA*rho.oldTime()*U.oldTime())
