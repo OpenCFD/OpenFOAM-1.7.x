@@ -1,28 +1,29 @@
 {
-    volScalarField rUA = 1.0/UEqn.A();
-    surfaceScalarField rUAf = fvc::interpolate(rUA);
+    volScalarField rAU = 1.0/UEqn.A();
+    surfaceScalarField rAUf = fvc::interpolate(rAU);
 
-    U = rUA*UEqn.H();
+    U = rAU*UEqn.H();
 
     surfaceScalarField phiU
     (
         "phiU",
-        (fvc::interpolate(U) & mesh.Sf()) + fvc::ddtPhiCorr(rUA, rho, U, phi)
+        (fvc::interpolate(U) & mesh.Sf())
+      + fvc::ddtPhiCorr(rAU, rho, U, phi)
     );
 
     adjustPhi(phiU, U, p_rgh);
 
     phi = phiU +
-        (
-            mixture.surfaceTensionForce()
-          - ghf*fvc::snGrad(rho)
-        )*mesh.magSf()*rUAf;
+    (
+        mixture.surfaceTensionForce()
+      - ghf*fvc::snGrad(rho)
+    )*rAUf*mesh.magSf();
 
     for(int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
     {
         fvScalarMatrix p_rghEqn
         (
-            fvm::laplacian(rUAf, p_rgh) == fvc::div(phi)
+            fvm::laplacian(rAUf, p_rgh) == fvc::div(phi)
         );
 
         p_rghEqn.setReference(pRefCell, getRefCellValue(p_rgh, pRefCell));
@@ -41,7 +42,7 @@
         }
     }
 
-    U += rUA*fvc::reconstruct((phi - phiU)/rUAf);
+    U += rAU*fvc::reconstruct((phi - phiU)/rAUf);
     U.correctBoundaryConditions();
 
     #include "continuityErrs.H"

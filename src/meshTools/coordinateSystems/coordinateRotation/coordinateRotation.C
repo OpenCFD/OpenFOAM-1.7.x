@@ -66,27 +66,23 @@ void Foam::coordinateRotation::calcTransform
     switch (order)
     {
         case e1e2:
-            Rtr.x() = a;
-            Rtr.y() = b;
-            Rtr.z() = c;
+            Rtr = tensor(a, b, c);
             break;
 
         case e2e3:
-            Rtr.x() = c;
-            Rtr.y() = a;
-            Rtr.z() = b;
+            Rtr = tensor(c, a, b);
             break;
 
         case e3e1:
-            Rtr.x() = b;
-            Rtr.y() = c;
-            Rtr.z() = a;
+            Rtr = tensor(b, c, a);
             break;
 
         default:
             FatalErrorIn("coordinateRotation::calcTransform()")
                 << "programmer error" << endl
                 << abort(FatalError);
+            // To satisfy compiler warnings
+            Rtr = tensor::zero;
             break;
     }
 
@@ -159,7 +155,8 @@ Foam::autoPtr<Foam::coordinateRotation> Foam::coordinateRotation::New
         (
             "coordinateRotation::New(const dictionary&)",
             dict
-        )   << "Unknown coordinateRotation type " << rotType << nl << nl
+        )   << "Unknown coordinateRotation type "
+            << rotType << nl << nl
             << "Valid coordinateRotation types are :" <<  nl
             << "[default: axes " << typeName_() << "]"
             << dictionaryConstructorTablePtr_->sortedToc()

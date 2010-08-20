@@ -389,9 +389,12 @@ tmp<volTensorField> cellLimitedGrad<vector>::grad
 
     forAll(gIf, celli)
     {
-        gIf[celli].x() = cmptMultiply(limiter[celli], gIf[celli].x());
-        gIf[celli].y() = cmptMultiply(limiter[celli], gIf[celli].y());
-        gIf[celli].z() = cmptMultiply(limiter[celli], gIf[celli].z());
+        gIf[celli] = tensor
+        (
+            cmptMultiply(limiter[celli], gIf[celli].x()),
+            cmptMultiply(limiter[celli], gIf[celli].y()),
+            cmptMultiply(limiter[celli], gIf[celli].z())
+        );
     }
 
     g.correctBoundaryConditions();

@@ -100,6 +100,14 @@ public:
         //- Construct given SymmTensor
         inline Tensor(const SymmTensor<Cmpt>&);
 
+        //- Construct given the three vectors
+        inline Tensor
+        (
+            const Vector<Cmpt>& x,
+            const Vector<Cmpt>& y,
+            const Vector<Cmpt>& z
+        );
+
         //- Construct given the nine components
         inline Tensor
         (
@@ -115,14 +123,6 @@ public:
     // Member Functions
 
         // Access
-
-            inline const Vector<Cmpt>& x() const;
-            inline const Vector<Cmpt>& y() const;
-            inline const Vector<Cmpt>& z() const;
-
-            inline Vector<Cmpt>& x();
-            inline Vector<Cmpt>& y();
-            inline Vector<Cmpt>& z();
 
             inline const Cmpt& xx() const;
             inline const Cmpt& xy() const;
@@ -143,6 +143,13 @@ public:
             inline Cmpt& zx();
             inline Cmpt& zy();
             inline Cmpt& zz();
+
+            // Access vector components.
+            // Note: returning const only to find out lhs usage
+
+            inline const Vector<Cmpt> x() const;
+            inline const Vector<Cmpt> y() const;
+            inline const Vector<Cmpt> z() const;
 
         //- Transpose
         inline Tensor<Cmpt> T() const;

@@ -81,6 +81,8 @@ protected:
         //- Length scale
         virtual tmp<volScalarField> dTilda(const volScalarField& S) const;
 
+        virtual tmp<volScalarField> S(const volTensorField& gradU) const;
+
 
 public:
 

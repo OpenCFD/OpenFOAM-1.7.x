@@ -31,7 +31,7 @@ divSchemes
 {
     div(rho*phi,U)  Gauss upwind;
     div(phi,alpha)  Gauss vanLeer;
-    div(phic,alpha) Gauss interfaceCompression;
+    div(phirb,alpha) Gauss interfaceCompression;
 }
 
 laplacianSchemes

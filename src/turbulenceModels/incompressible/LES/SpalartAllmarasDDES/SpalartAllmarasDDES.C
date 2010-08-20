@@ -75,6 +75,12 @@ tmp<volScalarField> SpalartAllmarasDDES::fd(const volScalarField& S) const
 }
 
 
+tmp<volScalarField> SpalartAllmarasDDES::S(const volTensorField& gradU) const
+{
+    return sqrt(2.0)*mag(symm(gradU));
+}
+
+
 tmp<volScalarField> SpalartAllmarasDDES::dTilda(const volScalarField& S) const
 {
     return max

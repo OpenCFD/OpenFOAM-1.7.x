@@ -1088,7 +1088,11 @@ int main(int argc, char *argv[])
                       + "_"
                       + procFile.name()
                     );
-                    system(cmd.c_str());
+                    if (system(cmd.c_str()) == -1)
+                    {
+                        WarningIn(args.executable())
+                            << "Could not execute command " << cmd << endl;
+                    }
                 }
             }
         }

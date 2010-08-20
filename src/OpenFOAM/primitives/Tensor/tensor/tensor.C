@@ -265,10 +265,12 @@ tensor eigenVectors(const tensor& t)
 {
     vector evals(eigenValues(t));
 
-    tensor evs;
-    evs.x() = eigenVector(t, evals.x());
-    evs.y() = eigenVector(t, evals.y());
-    evs.z() = eigenVector(t, evals.z());
+    tensor evs
+    (
+        eigenVector(t, evals.x()),
+        eigenVector(t, evals.y()),
+        eigenVector(t, evals.z())
+    );
 
     return evs;
 }
@@ -460,10 +462,12 @@ tensor eigenVectors(const symmTensor& t)
 {
     vector evals(eigenValues(t));
 
-    tensor evs;
-    evs.x() = eigenVector(t, evals.x());
-    evs.y() = eigenVector(t, evals.y());
-    evs.z() = eigenVector(t, evals.z());
+    tensor evs
+    (
+        eigenVector(t, evals.x()),
+        eigenVector(t, evals.y()),
+        eigenVector(t, evals.z())
+    );
 
     return evs;
 }

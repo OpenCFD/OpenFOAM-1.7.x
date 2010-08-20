@@ -101,10 +101,6 @@ int main(int argc, char *argv[])
             #include "meshCourantNo.H"
         }
 
-        Info<< "V = " << gSum(mesh.V()) - 71.04 << endl;
-        Info<< "dV = " << sum(mesh.V()) - sum(mesh.V0()) << endl;
-        Info<< "dVphi = " << runTime.deltaT()* sum(fvc::surfaceIntegrate(mesh.phi())()) << endl;
-
         twoPhaseProperties.correct();
 
         #include "alphaEqnSubCycle.H"

@@ -172,19 +172,19 @@ public:
         }
 
         //- Return local Cartesian x-axis
-        vector& e1() const
+        const vector e1() const
         {
             return tensor::T().x();
         }
 
         //- Return local Cartesian y-axis
-        vector& e2() const
+        const vector e2() const
         {
             return tensor::T().y();
         }
 
         //- Return local Cartesian z-axis
-        vector& e3() const
+        const vector e3() const
         {
             return tensor::T().z();
         }

@@ -92,7 +92,14 @@ public:
         //- Construct given SphericalTensor2D
         inline Tensor2D(const SphericalTensor2D<Cmpt>&);
 
-        //- Construct given the nine components
+        //- Construct given the two vectors
+        inline Tensor2D
+        (
+            const Vector2D<Cmpt>& x,
+            const Vector2D<Cmpt>& y
+        );
+
+        //- Construct given the four components
         inline Tensor2D
         (
             const Cmpt txx, const Cmpt txy,
@@ -107,12 +114,6 @@ public:
 
         // Access
 
-            inline const Vector2D<Cmpt>& x() const;
-            inline const Vector2D<Cmpt>& y() const;
-
-            inline Vector2D<Cmpt>& x();
-            inline Vector2D<Cmpt>& y();
-
             inline const Cmpt& xx() const;
             inline const Cmpt& xy() const;
             inline const Cmpt& yx() const;
@@ -122,6 +123,12 @@ public:
             inline Cmpt& xy();
             inline Cmpt& yx();
             inline Cmpt& yy();
+
+            // Access vector components.
+            // Note: returning const only to find out lhs usage                                                                                                                                      
+ 
+            inline const Vector2D<Cmpt> x() const;
+            inline const Vector2D<Cmpt> y() const;
 
         //- Transpose
         inline Tensor2D<Cmpt> T() const;

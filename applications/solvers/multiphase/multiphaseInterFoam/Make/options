@@ -1,8 +1,6 @@
 EXE_INC = \
     -I../interFoam \
-    -ImultiphaseMixture \
-    -ImultiphaseMixture/phase \
-    -ImultiphaseMixture/alphaContactAngle \
+    -ImultiphaseMixture/lnInclude \
     -I$(LIB_SRC)/transportModels \
     -I$(LIB_SRC)/transportModels/incompressible/lnInclude \
     -I$(LIB_SRC)/transportModels/interfaceProperties/lnInclude \
@@ -10,6 +8,7 @@ EXE_INC = \
     -I$(LIB_SRC)/finiteVolume/lnInclude
 
 EXE_LIBS = \
+    -lmultiphaseInterFoam \
     -linterfaceProperties \
     -lincompressibleTransportModels \
     -lincompressibleTurbulenceModel \

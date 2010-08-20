@@ -187,8 +187,8 @@ Foam::porousZone::porousZone
             "Foam::porousZone::porousZone"
             "(const fvMesh&, const word&, const dictionary&)",
             dict_
-        )   << "neither powerLaw (C0/C1) "
-               "nor Darcy-Forchheimer law (d/f) specified"
+        )   << "neither powerLaw (powerLaw C0/C1) "
+               "nor Darcy-Forchheimer law (Darcy d/f) specified"
             << exit(FatalIOError);
     }
 }

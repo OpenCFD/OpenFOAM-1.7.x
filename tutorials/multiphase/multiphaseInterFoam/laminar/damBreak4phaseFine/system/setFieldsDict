@@ -21,7 +21,6 @@ defaultFieldValues
     volScalarFieldValue alphawater 0
     volScalarFieldValue alphaoil 0
     volScalarFieldValue alphamercury 0
-    volVectorFieldValue U ( 0 0 0 )
 );
 
 regions
@@ -59,7 +58,7 @@ regions
             volScalarFieldValue alphaair 0
         );
     }
- );
+);
 
 
 // ************************************************************************* //
