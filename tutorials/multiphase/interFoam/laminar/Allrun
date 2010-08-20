@@ -45,3 +45,10 @@ cd damBreakFine
     runParallel $application 4
     runApplication reconstructPar
 cd ..
+
+# Do capilaryRise
+cd capilaryRise
+    runApplication blockMesh
+    runApplication setFields
+    runApplication $application
+cd ..
