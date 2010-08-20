@@ -48,18 +48,22 @@ inline Foam::scalar Foam::Particle<ParticleType>::lambda
         // move reference point for wall
         if (!cloud_.internalFace(facei))
         {
-            const vector& C = mesh.cellCentres()[celli_];
-            scalar CCf = mag((C - Cf) & Sf);
-            // check if distance between cell centre and face centre
-            // is larger than wallImpactDistance
-            if
-            (
-                CCf
-              > static_cast<const ParticleType&>(*this).wallImpactDistance(Sf)
-            )
+            label patchi = patch(facei);
+            const polyPatch& patch = mesh.boundaryMesh()[patchi];
+
+            // move reference point for wall
+            if (isA<wallPolyPatch>(patch))
             {
-                Cf -= static_cast<const ParticleType&>(*this)
-                    .wallImpactDistance(Sf)*Sf;
+                const vector& C = mesh.cellCentres()[celli_];
+                scalar CCf = mag((C - Cf) & Sf);
+                // check if distance between cell centre and face centre
+                // is larger than wallImpactDistance
+                const ParticleType& p =
+                    static_cast<const ParticleType&>(*this);
+                if (CCf > p.wallImpactDistance(Sf))
+                {
+                    Cf -=p.wallImpactDistance(Sf)*Sf;
+                }
             }
         }
 
@@ -192,18 +196,21 @@ inline Foam::scalar Foam::Particle<ParticleType>::lambda
     // move reference point for wall
     if (!cloud_.internalFace(facei))
     {
-        const vector& C = mesh.cellCentres()[celli_];
-        scalar CCf = mag((C - Cf) & Sf);
-        // check if distance between cell centre and face centre
-        // is larger than wallImpactDistance
-        if
-        (
-            CCf
-          > static_cast<const ParticleType&>(*this).wallImpactDistance(Sf)
-        )
+        label patchi = patch(facei);
+        const polyPatch& patch = mesh.boundaryMesh()[patchi];
+
+        // move reference point for wall
+        if (isA<wallPolyPatch>(patch))
         {
-            Cf -= static_cast<const ParticleType&>(*this)
-                .wallImpactDistance(Sf)*Sf;
+            const vector& C = mesh.cellCentres()[celli_];
+            scalar CCf = mag((C - Cf) & Sf);
+            // check if distance between cell centre and face centre
+            // is larger than wallImpactDistance
+            const ParticleType& p = static_cast<const ParticleType&>(*this);
+            if (CCf > p.wallImpactDistance(Sf))
+            {
+                Cf -=p.wallImpactDistance(Sf)*Sf;
+            }
         }
     }
 

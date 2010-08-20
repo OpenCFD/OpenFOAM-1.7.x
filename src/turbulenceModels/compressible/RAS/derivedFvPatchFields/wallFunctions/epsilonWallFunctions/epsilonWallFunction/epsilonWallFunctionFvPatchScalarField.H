@@ -67,9 +67,6 @@ class epsilonWallFunctionFvPatchScalarField
         //- Name of turbulence generation field
         word GName_;
 
-        //- Name of density field
-        word rhoName_;
-
         //- Name of laminar viscosity field
         word muName_;
 

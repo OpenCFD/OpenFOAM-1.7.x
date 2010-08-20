@@ -67,7 +67,6 @@ epsilonWallFunctionFvPatchScalarField::epsilonWallFunctionFvPatchScalarField
     UName_("U"),
     kName_("k"),
     GName_("RASModel::G"),
-    rhoName_("rho"),
     muName_("mu"),
     mutName_("mut"),
     Cmu_(0.09),
@@ -90,7 +89,6 @@ epsilonWallFunctionFvPatchScalarField::epsilonWallFunctionFvPatchScalarField
     UName_(ptf.UName_),
     kName_(ptf.kName_),
     GName_(ptf.GName_),
-    rhoName_(ptf.rhoName_),
     muName_(ptf.muName_),
     mutName_(ptf.mutName_),
     Cmu_(ptf.Cmu_),
@@ -112,7 +110,6 @@ epsilonWallFunctionFvPatchScalarField::epsilonWallFunctionFvPatchScalarField
     UName_(dict.lookupOrDefault<word>("U", "U")),
     kName_(dict.lookupOrDefault<word>("k", "k")),
     GName_(dict.lookupOrDefault<word>("G", "RASModel::G")),
-    rhoName_(dict.lookupOrDefault<word>("rho", "rho")),
     muName_(dict.lookupOrDefault<word>("mu", "mu")),
     mutName_(dict.lookupOrDefault<word>("mut", "mut")),
     Cmu_(dict.lookupOrDefault<scalar>("Cmu", 0.09)),
@@ -132,7 +129,6 @@ epsilonWallFunctionFvPatchScalarField::epsilonWallFunctionFvPatchScalarField
     UName_(ewfpsf.UName_),
     kName_(ewfpsf.kName_),
     GName_(ewfpsf.GName_),
-    rhoName_(ewfpsf.rhoName_),
     muName_(ewfpsf.muName_),
     mutName_(ewfpsf.mutName_),
     Cmu_(ewfpsf.Cmu_),
@@ -153,7 +149,6 @@ epsilonWallFunctionFvPatchScalarField::epsilonWallFunctionFvPatchScalarField
     UName_(ewfpsf.UName_),
     kName_(ewfpsf.kName_),
     GName_(ewfpsf.GName_),
-    rhoName_(ewfpsf.rhoName_),
     muName_(ewfpsf.muName_),
     mutName_(ewfpsf.mutName_),
     Cmu_(ewfpsf.Cmu_),
@@ -187,9 +182,6 @@ void epsilonWallFunctionFvPatchScalarField::updateCoeffs()
         (db().lookupObject<volScalarField>(dimensionedInternalField().name()));
 
     const volScalarField& k = db().lookupObject<volScalarField>(kName_);
-
-    const scalarField& rhow =
-        patch().lookupPatchField<volScalarField, scalar>(rhoName_);
 
     const scalarField& muw =
         patch().lookupPatchField<volScalarField, scalar>(muName_);
@@ -237,7 +229,6 @@ void epsilonWallFunctionFvPatchScalarField::write(Ostream& os) const
     writeEntryIfDifferent<word>(os, "U", "U", UName_);
     writeEntryIfDifferent<word>(os, "k", "k", kName_);
     writeEntryIfDifferent<word>(os, "G", "RASModel::G", GName_);
-    writeEntryIfDifferent<word>(os, "rho", "rho", rhoName_);
     writeEntryIfDifferent<word>(os, "mu", "mu", muName_);
     writeEntryIfDifferent<word>(os, "mut", "mut", mutName_);
     os.writeKeyword("Cmu") << Cmu_ << token::END_STATEMENT << nl;
