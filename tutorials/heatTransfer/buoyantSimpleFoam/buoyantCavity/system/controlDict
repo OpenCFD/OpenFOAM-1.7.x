@@ -16,7 +16,7 @@ FoamFile
 
 application     buoyantSimpleFoam;
 
-startFrom       startTime;
+startFrom       latestTime;
 
 startTime       0;
 

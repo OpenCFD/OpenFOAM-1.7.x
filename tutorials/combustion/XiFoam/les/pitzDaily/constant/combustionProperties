@@ -76,8 +76,8 @@ ignitionSites
         location (0.005 -0.02 0);
         diameter 0.003;
         start 0;
-        duration 0.05;
-        strength 20;
+        duration 0.1;
+        strength 100;
     }
 );
 

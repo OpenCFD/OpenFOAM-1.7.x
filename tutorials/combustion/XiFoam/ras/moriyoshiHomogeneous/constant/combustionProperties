@@ -70,7 +70,7 @@ GuldersCoeffs
 
 ignite          yes;
 
-ignitionSites   ( { location ( 0 0 0.0005 ) ; diameter 0.003 ; start 0 ; duration 0.001 ; strength 1 ; } );
+ignitionSites   ( { location ( 0 0 0.0005 ) ; diameter 0.003 ; start 0 ; duration 0.003 ; strength 2 ; } );
 
 ignitionSphereFraction 1;
 
