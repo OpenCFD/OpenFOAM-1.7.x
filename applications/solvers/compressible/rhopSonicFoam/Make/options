@@ -1,7 +1,0 @@
-EXE_INC = \
-    -I$(LIB_SRC)/finiteVolume/lnInclude \
-    -IBCs/lnInclude
-
-EXE_LIBS = \
-    -lfiniteVolume \
-    -lrhopSonicFoam

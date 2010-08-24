@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.7.0                                 |
+|  \\    /   O peration     | Version:  1.7.1                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -47,11 +47,11 @@ patches
         (0 2 6 0)
     )
 
-   patch outlet
+    patch outlet
     (
 	(1 3 7 1)
         (3 5 9 7)
-   )
+    )
 
     patch freestreamInlet
     (
@@ -63,20 +63,20 @@ patches
         (4 8 9 5)
     )
 
-    wedge wedge1 
+    wedge wedge1
     (
         (0 2 3 1)
         (2 4 5 3)
     )
 
-    wedge wedge2 
+    wedge wedge2
     (
         (0 1 7 6)
         (6 7 9 8)
     )
 );
 
-mergePatchPairs 
+mergePatchPairs
 (
 );
 

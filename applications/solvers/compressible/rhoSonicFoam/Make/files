@@ -1,3 +1,0 @@
-rhoSonicFoam.C
-
-EXE = $(FOAM_APPBIN)/rhoSonicFoam

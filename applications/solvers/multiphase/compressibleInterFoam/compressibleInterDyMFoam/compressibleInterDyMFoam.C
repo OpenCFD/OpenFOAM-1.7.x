@@ -102,9 +102,6 @@ int main(int argc, char *argv[])
             }
         }
 
-        volScalarField gh = g & mesh.C();
-        surfaceScalarField ghf = g & mesh.Cf();
-
         // Make the fluxes relative to the mesh motion
         fvc::makeRelative(phi, U);
 

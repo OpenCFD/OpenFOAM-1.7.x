@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.7.0                                 |
+|  \\    /   O peration     | Version:  1.7.1                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -28,10 +28,10 @@ interpolationSchemes
 divSchemes
 {
     default         none;
-    div(phiv,rho)   Gauss limitedLinear 0.2;
-    div(phi,U)      Gauss limitedLinearV 0.2;
-    div(phiv,omega) Gauss limitedLinear 0.2;
-    div(phiv,k)     Gauss limitedLinear 0.2;
+    div(phiv,rho)   Gauss limitedLinear 1;
+    div(phi,U)      Gauss limitedLinearV 1;
+    div(phiv,omega) Gauss limitedLinear 1;
+    div(phiv,k)     Gauss limitedLinear 1;
 }
 
 gradSchemes

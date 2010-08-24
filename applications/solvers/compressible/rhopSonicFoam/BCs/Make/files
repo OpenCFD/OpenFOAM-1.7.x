@@ -1,8 +1,0 @@
-rho/fixedRhoFvPatchScalarField.C
-rho/gradientRhoFvPatchScalarField.C
-rhoE/fixedRhoEFvPatchScalarField.C
-rhoE/mixedRhoEFvPatchScalarField.C
-rhoU/fixedRhoUFvPatchVectorField.C
-p/inviscidWallPFvPatchScalarField.C
-
-LIB = $(FOAM_LIBBIN)/librhopSonicFoam
