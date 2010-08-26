@@ -54,7 +54,7 @@ options:
   -prefix <dir>     specify an alternative installation prefix
   -quiet            suppress all normal output
   -version <ver>    specify an alternative OpenFOAM version
-                    in the form Maj.Min.Rev (eg, 1.7.0)
+                    in the form Maj.Min.Rev (eg, 1.7.x)
   -help             print the usage
 
   Locate user/group/shipped file with semantics similar to the
