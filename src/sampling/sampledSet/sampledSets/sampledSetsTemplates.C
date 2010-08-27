@@ -157,13 +157,32 @@ void Foam::sampledSets::writeSampleFile
         timeDir/formatter.getFileName(masterSampleSet, valueSetNames)
     );
 
-    formatter.write
-    (
-        masterSampleSet,
-        valueSetNames,
-        valueSets,
-        OFstream(fName)()
-    );
+    OFstream ofs(fName);
+    if (ofs.opened())
+    {
+        formatter.write
+        (
+            masterSampleSet,
+            valueSetNames,
+            valueSets,
+            ofs
+        );
+    }
+    else
+    {
+        WarningIn
+        (
+            "void Foam::sampledSets::writeSampleFile"
+            "("
+                "const coordSet&, "
+                "const PtrList<volFieldSampler<Type> >&, "
+                "const label, "
+                "const fileName&, "
+                "const writer<Type>&"
+            ")"
+        )   << "File " << ofs.name() << " could not be opened. "
+            << "No data will be written" << endl;
+    }
 }
 
 
