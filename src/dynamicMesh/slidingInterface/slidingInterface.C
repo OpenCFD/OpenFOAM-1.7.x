@@ -706,12 +706,12 @@ void Foam::slidingInterface::setTolerances(const dictionary&dict, bool report)
         "edgeMergeTol",
         edgeMergeTol_
     );
-    nFacesPerSlaveEdge_ = dict.lookupOrDefault<scalar>
+    nFacesPerSlaveEdge_ = dict.lookupOrDefault<label>
     (
         "nFacesPerSlaveEdge",
         nFacesPerSlaveEdge_
     );
-    edgeFaceEscapeLimit_ = dict.lookupOrDefault<scalar>
+    edgeFaceEscapeLimit_ = dict.lookupOrDefault<label>
     (
         "edgeFaceEscapeLimit",
         edgeFaceEscapeLimit_
