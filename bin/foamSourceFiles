@@ -70,6 +70,7 @@ find -H $packDir               \
  -e '\@/\.tags/@d'             \
  -e '\@/\README\.org@d'        \
  -e '\@applications/bin/@d'    \
+ -e '\@tutorialsTest/@d'       \
  -e '\@wmake/bin/@d'           \
  -e '\@/t/@d'                  \
  -e '\@/Make[.A-Za-z]*/[^/]*/@d'\

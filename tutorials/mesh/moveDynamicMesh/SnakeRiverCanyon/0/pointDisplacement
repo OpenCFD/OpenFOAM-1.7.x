@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.7.0                                 |
+|  \\    /   O peration     | Version:  1.7.1                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -84,22 +84,26 @@ boundaryField
 
     maxX
     {
-        type            slip;
+        type            fixedNormalSlip;
+        n               (1 0 0);
     }
 
     minX
     {
-        type            slip;
+        type            fixedNormalSlip;
+        n               (1 0 0);
     }
 
     minY
     {
-        type            slip;
+        type            fixedNormalSlip;
+        n               (0 1 0);
     }
 
     maxY
     {
-        type            slip;
+        type            fixedNormalSlip;
+        n               (0 1 0);
     }
 }
 

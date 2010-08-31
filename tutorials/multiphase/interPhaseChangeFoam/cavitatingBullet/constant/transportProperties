@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.7.0                                 |
+|  \\    /   O peration     | Version:  1.7.1                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -54,7 +54,7 @@ MerkleCoeffs
 
 SchnerrSauerCoeffs
 {
-    n               n      [0 -3 0 0 0 0 0]     1.6e+09;
+    n               n      [0 -3 0 0 0 0 0]     1.6e+13;
     dNuc            dNuc   [0 1 0 0 0 0 0]      2.0e-06;
     Cc              Cc     [0 0 0 0 0 0 0]      1;
     Cv              Cv     [0 0 0 0 0 0 0]      1;

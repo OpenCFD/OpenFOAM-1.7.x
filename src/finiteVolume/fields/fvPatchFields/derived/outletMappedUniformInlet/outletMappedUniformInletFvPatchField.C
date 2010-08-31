@@ -135,8 +135,10 @@ void outletMappedUniformInletFvPatchField<Type>::updateCoeffs()
     const fvPatchField<Type>& outletPatchField =
         f.boundaryField()[outletPatchID];
 
+    const fvPatch& outletPatch = p.boundaryMesh()[outletPatchID];
+
     Type averageOutletField =
-        gSum(p.magSf()*outletPatchField)/gSum(this->patch().magSf());
+        gSum(outletPatch.magSf()*outletPatchField)/gSum(outletPatch.magSf());
 
     this->operator==(averageOutletField);
 

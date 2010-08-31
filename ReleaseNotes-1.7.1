@@ -1,0 +1,42 @@
+#                            -*- mode: org; -*-
+#
+#+TITLE:  OpenFOAM release notes for version 1.7.1
+#+AUTHOR:                      OpenCFD Ltd.
+#+DATE:                     26th August 2010
+#+LINK:                  http://www.openfoam.com
+#+OPTIONS: author:nil ^:{}
+# Copyright (c) 2010 OpenCFD Ltd.
+
+* Overview
+  OpenFOAM-1.7.1 is the latest release of OpenFOAM derived from OpenFOAM-1.7.0
+  including a number of bug-fixes and new developments.  This release passes our
+  standard tests and the tutorials have been broadly checked.  Please report any
+  bugs by following the link: http://www.openfoam.com/bugs.
+
+* GNU/Linux version
+  This release of OpenFOAM is distributed primarily in 2 ways: (1) as a Debian
+  pack containing binaries and source; (2) from the SourceForge source code
+  repository (see [[./README.org][README]]).
+
+  The Ubuntu/Debian pack is available for 32 and 64 bit versions of the 10.04
+  LTS operating system using the system compiler and libraries that will be
+  installed automatically from standard Debian packs.
+
+  To use the source version from the SourceForge repository, we provide a source
+  pack of third-party packages that can be compiled on the user's system.  This
+  does not include =gcc=, since the system installed version is typically
+  sufficient, but includes =paraview-3.8.0=, =openmpi-1.4.1=, =scotch_5.1=,
+  =metis-5.0pre2=, =ParMetis-3.1= and =ParMGridGen-1.0=.
+
+* Compiler Support
+  OpenFOAM-1.7.1 now compiles and optimises correctly using gcc-4.5.0 following
+  the resolution of memory aliasing issues.
+
+* Operating System Support
+  OpenFOAM-1.7.1 has been verified to run on OpenSuSE-11.3 using the system
+  gcc-4.5.0 compiler.
+
+* Developments and Bug-fixes
+  See http://github.com/OpenCFD/OpenFOAM-1.7.x/commits/master
+
+* See also [[http://www.openfoam.com/archive/1.7.0/docs/release-notes.php][ReleaseNotes-1.7.0]]

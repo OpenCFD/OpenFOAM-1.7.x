@@ -32,7 +32,7 @@
 #------------------------------------------------------------------------------
 
 # Base settings
-FOAM_VERSION=1.7.0
+FOAM_VERSION=1.7.x
 MIN_VERSION_GCC=4.3.1
 
 # General

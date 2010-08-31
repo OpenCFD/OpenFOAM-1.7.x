@@ -6,6 +6,13 @@ if [ -d "$ParaView_DIR" -a -r "$ParaView_DIR" ]
 then
     case "$ParaView_VERSION" in
     3* | git)
+
+        if [ ! "${PV_PLUGIN_PATH}" ]
+        then
+            echo "$0 : PV_PLUGIN_PATH not a valid directory."
+            exit 1
+        fi
+
         wmake libso vtkPV3Foam
         (
             cd PV3FoamReader
