@@ -423,23 +423,21 @@ void Foam::sixDoFRigidBodyMotion::updateForce
     scalar deltaT
 )
 {
-    vector a = vector::zero;
+    vector fGlobal = vector::zero;
 
-    vector tau = vector::zero;
+    vector tauGlobal = vector::zero;
 
     if (Pstream::master())
     {
+        fGlobal = sum(forces);
+
         forAll(positions, i)
         {
-            const vector& f = forces[i];
-
-            a += f/mass_;
-
-            tau += Q().T() & ((positions[i] - centreOfMass()) ^ f);
+            tauGlobal += (positions[i] - centreOfMass()) ^ forces[i];
         }
     }
 
-    updateForce(a, tau, deltaT);
+    updateForce(fGlobal, tauGlobal, deltaT);
 }
 
 
