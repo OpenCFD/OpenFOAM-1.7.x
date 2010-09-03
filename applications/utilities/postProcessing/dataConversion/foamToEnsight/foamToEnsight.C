@@ -97,6 +97,7 @@ int main(int argc, char *argv[])
     argList::validOptions.insert("noPatches", "");
 
 #   include "addTimeOptions.H"
+#   include "addRegionOption.H"
 #   include "setRootCase.H"
 
     // Check options
