@@ -14,4 +14,4 @@ ctoo        = $(WM_SCHEDULER) $(cc) $(cFLAGS) -c $$SOURCE -o $@
 LINK_LIBS   = $(cDBUG)
 
 LINKLIBSO   = $(cc) -shared
-LINKEXE     = $(cc) -Xlinker -z -Xlinker nodefs
+LINKEXE     = $(cc) -Xlinker --add-needed -Xlinker -z -Xlinker nodefs

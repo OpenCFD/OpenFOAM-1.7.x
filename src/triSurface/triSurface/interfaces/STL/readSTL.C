@@ -55,7 +55,7 @@ bool triSurface::readSTL(const fileName& STLfileName)
             firstWord[i] = std::toupper(firstWord[i]);
         }
 
-        if (firstWord == "SOLID")
+        if (firstWord == "SOLID" || firstWord(5) == "SOLID")
         {
             return readSTLASCII(STLfileName);
         }
