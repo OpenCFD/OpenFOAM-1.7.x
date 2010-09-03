@@ -99,7 +99,7 @@ Foam::tmp<Foam::volScalarField> Foam::SchaefferFrictionalStress::muf
     const volScalarField& alpha,
     const dimensionedScalar& alphaMax,
     const volScalarField& pf,
-    const volTensorField& D,
+    const volSymmTensorField& D,
     const dimensionedScalar& phi
 ) const
 {
@@ -126,7 +126,7 @@ Foam::tmp<Foam::volScalarField> Foam::SchaefferFrictionalStress::muf
 
     forAll (D, celli)
     {
-        if (alpha[celli] > alphaMax.value()-5e-2)
+        if (alpha[celli] > alphaMax.value() - 5e-2)
         {
             muff[celli] =
                 0.5*pf[celli]*sin(phi.value())

@@ -92,11 +92,6 @@ int main(int argc, char *argv[])
 
         #include "kEpsilon.H"
 
-        if (kineticTheory.on())
-        {
-            kineticTheory.solve();
-            nuEffa += kineticTheory.mua()/rhoa;
-        }
         #include "write.H"
 
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"

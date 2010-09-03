@@ -12,6 +12,16 @@ fvVectorMatrix UbEqn(Ub, Ub.dimensions()*dimVol/dimTime);
 
         if (kineticTheory.on())
         {
+            kineticTheory.solve(gradUaT);
+            nuEffa = kineticTheory.mua()/rhoa;
+        }
+        else // If not using kinetic theory is using Ct model
+        {
+            nuEffa = sqr(Ct)*nutb + nua;
+        }
+
+        if (kineticTheory.on())
+        {
             Rca -= ((kineticTheory.lambda()/rhoa)*tr(gradUaT))*tensor(I);
         }
 
@@ -56,7 +66,7 @@ fvVectorMatrix UbEqn(Ub, Ub.dimensions()*dimVol/dimTime);
             -fvc::interpolate(nuEffb)*mesh.magSf()*fvc::snGrad(beta)
             /fvc::interpolate(beta + scalar(0.001));
 
-        UbEqn = 
+        UbEqn =
         (
             (scalar(1) + Cvm*rhob*alpha/rhob)*
             (

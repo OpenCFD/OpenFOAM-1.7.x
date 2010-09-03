@@ -62,6 +62,7 @@ Foam::kineticTheoryModel::kineticTheoryModel
     ),
     kineticTheory_(kineticTheoryProperties_.lookup("kineticTheory")),
     equilibrium_(kineticTheoryProperties_.lookup("equilibrium")),
+
     viscosityModel_
     (
         kineticTheoryModels::viscosityModel::New
@@ -192,24 +193,19 @@ Foam::kineticTheoryModel::~kineticTheoryModel()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void Foam::kineticTheoryModel::solve()
+void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 {
     if (!kineticTheory_)
     {
         return;
     }
 
-    word scheme("div(phi,Theta)");
-
-    volScalarField alpha = alpha_;
-    alpha.max(1.0e-6);
     const scalar sqrtPi = sqrt(mathematicalConstant::pi);
 
     surfaceScalarField phi = 1.5*rhoa_*phia_*fvc::interpolate(alpha_);
 
-    volTensorField dU = fvc::grad(Ua_);
-    volTensorField dUT = dU.T();
-    volTensorField D = 0.5*(dU + dUT);
+    volTensorField dU = gradUat.T();//fvc::grad(Ua_);
+    volSymmTensorField D = symm(dU);
 
     // NB, drag = K*alpha*beta,
     // (the alpha and beta has been extracted from the drag function for
@@ -220,45 +216,52 @@ void Foam::kineticTheoryModel::solve()
     // Calculating the radial distribution function (solid volume fraction is
     //  limited close to the packing limit, but this needs improvements)
     //  The solution is higly unstable close to the packing limit.
-    gs0_ = radialModel_->g0(min(alpha, alphaMax_-1.0e-2), alphaMax_);
+    gs0_ = radialModel_->g0
+    (
+        min(max(alpha_, 1e-6), alphaMax_ - 0.01),
+        alphaMax_
+    );
 
     // particle pressure - coefficient in front of Theta (Eq. 3.22, p. 45)
-    volScalarField PsCoeff =
-        granularPressureModel_->granularPressureCoeff(alpha_,gs0_,rhoa_,e_ );
+    volScalarField PsCoeff = granularPressureModel_->granularPressureCoeff
+    (
+        alpha_,
+        gs0_,
+        rhoa_,
+        e_
+    );
+
+    // 'thermal' conductivity (Table 3.3, p. 49)
+    kappa_ = conductivityModel_->kappa(alpha_, Theta_, gs0_, rhoa_, da_, e_);
+
+    // particle viscosity (Table 3.2, p.47)
+    mua_ = viscosityModel_->mua(alpha_, Theta_, gs0_, rhoa_, da_, e_);
 
     dimensionedScalar Tsmall
     (
         "small",
-        dimensionSet(0,2,-2,0,0,0,0),
+        dimensionSet(0 , 2 ,-2 ,0 , 0, 0, 0),
         1.0e-6
     );
 
     dimensionedScalar TsmallSqrt = sqrt(Tsmall);
     volScalarField ThetaSqrt = sqrt(Theta_);
 
-    // 'thermal' conductivity (Table 3.3, p. 49)
-    kappa_ = conductivityModel_->kappa(alpha, Theta_, gs0_, rhoa_, da_, e_);
-
-    // particle viscosity (Table 3.2, p.47)
-    mua_ = viscosityModel_->mua(alpha, Theta_, gs0_, rhoa_, da_, e_);
-
     // dissipation (Eq. 3.24, p.50)
     volScalarField gammaCoeff =
-        12.0*(1.0 - e_*e_)*sqr(alpha)*rhoa_*gs0_*(1.0/da_)
-       *ThetaSqrt/sqrtPi;
+        12.0*(1.0 - sqr(e_))*sqr(alpha_)*rhoa_*gs0_*(1.0/da_)*ThetaSqrt/sqrtPi;
 
     // Eq. 3.25, p. 50 Js = J1 - J2
     volScalarField J1 = 3.0*betaPrim;
     volScalarField J2 =
         0.25*sqr(betaPrim)*da_*sqr(Ur)
-       /(alpha*rhoa_*sqrtPi*(ThetaSqrt + TsmallSqrt));
+       /(max(alpha_, 1e-6)*rhoa_*sqrtPi*(ThetaSqrt + TsmallSqrt));
 
     // bulk viscosity  p. 45 (Lun et al. 1984).
     lambda_ = (4.0/3.0)*sqr(alpha_)*rhoa_*da_*gs0_*(1.0+e_)*ThetaSqrt/sqrtPi;
 
-
     // stress tensor, Definitions, Table 3.1, p. 43
-    volTensorField tau = 2.0*mua_*D + (lambda_ - (2.0/3.0)*mua_)*tr(D)*I;
+    volSymmTensorField tau = 2.0*mua_*D + (lambda_ - (2.0/3.0)*mua_)*tr(D)*I;
 
     if (!equilibrium_)
     {
@@ -268,8 +271,8 @@ void Foam::kineticTheoryModel::solve()
         // wrong sign infront of laplacian
         fvScalarMatrix ThetaEqn
         (
-            fvm::ddt(1.5*alpha*rhoa_, Theta_)
-          + fvm::div(phi, Theta_, scheme)
+            fvm::ddt(1.5*alpha_*rhoa_, Theta_)
+          + fvm::div(phi, Theta_, "div(phi,Theta)")
          ==
             fvm::SuSp(-((PsCoeff*I) && dU), Theta_)
           + (tau && dU)
@@ -290,33 +293,31 @@ void Foam::kineticTheoryModel::solve()
         volScalarField K3 = 0.5*da_*rhoa_*
             (
                 (sqrtPi/(3.0*(3.0-e_)))
-               *(1.0 + 0.4*(1.0 + e_)*(3.0*e_ - 1.0)*alpha*gs0_)
-              + 1.6*alpha*gs0_*(1.0 + e_)/sqrtPi
+               *(1.0 + 0.4*(1.0 + e_)*(3.0*e_ - 1.0)*alpha_*gs0_)
+               +1.6*alpha_*gs0_*(1.0 + e_)/sqrtPi
             );
 
         volScalarField K2 =
-            4.0*da_*rhoa_*(1.0 + e_)*alpha*gs0_/(3.0*sqrtPi) - 2.0*K3/3.0;
+            4.0*da_*rhoa_*(1.0 + e_)*alpha_*gs0_/(3.0*sqrtPi) - 2.0*K3/3.0;
 
-        volScalarField K4 = 12.0*(1.0 - e_*e_)*rhoa_*gs0_/(da_*sqrtPi);
+        volScalarField K4 = 12.0*(1.0 - sqr(e_))*rhoa_*gs0_/(da_*sqrtPi);
 
         volScalarField trD = tr(D);
-        volTensorField D2 = D & D;
-        volScalarField tr2D = trD*trD;
-        volScalarField trD2 = tr(D2);
+        volScalarField tr2D = sqr(trD);
+        volScalarField trD2 = tr(D & D);
 
-        volScalarField t1 = K1*alpha + rhoa_;
+        volScalarField t1 = K1*alpha_ + rhoa_;
         volScalarField l1 = -t1*trD;
         volScalarField l2 = sqr(t1)*tr2D;
-        volScalarField l3 = 4.0*K4*alpha*(2.0*K3*trD2 + K2*tr2D);
+        volScalarField l3 = 4.0*K4*max(alpha_, 1e-6)*(2.0*K3*trD2 + K2*tr2D);
 
-        Theta_ = sqr((l1 + sqrt(l2 + l3))/(2.0*(alpha + 1.0e-4)*K4));
+        Theta_ = sqr((l1 + sqrt(l2 + l3))/(2.0*(alpha_ + 1.0e-4)*K4));
     }
 
     Theta_.max(1.0e-15);
     Theta_.min(1.0e+3);
 
-    volScalarField pf =
-        frictionalStressModel_->frictionalPressure
+    volScalarField pf = frictionalStressModel_->frictionalPressure
     (
         alpha_,
         alphaMinFriction_,
@@ -344,12 +345,10 @@ void Foam::kineticTheoryModel::solve()
         phi_
     );
 
-    // add frictional stress for alpha > alphaMinFriction
-    mua_ = viscosityModel_->mua(alpha, Theta_, gs0_, rhoa_, da_, e_) + muf;
+   // add frictional stress
+    mua_ += muf;
     mua_.min(1.0e+2);
     mua_.max(0.0);
-
-    lambda_ = (4.0/3.0)*sqr(alpha_)*rhoa_*da_*gs0_*(1.0 + e_)*ThetaSqrt/sqrtPi;
 
     Info<< "kinTheory: max(Theta) = " << max(Theta_).value() << endl;
 

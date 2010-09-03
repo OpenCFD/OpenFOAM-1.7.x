@@ -93,7 +93,7 @@ public:
             const volScalarField& alpha,
             const dimensionedScalar& alphaMax,
             const volScalarField& pf,
-            const volTensorField& D,
+            const volSymmTensorField& D,
             const dimensionedScalar& phi
         ) const;
 };
