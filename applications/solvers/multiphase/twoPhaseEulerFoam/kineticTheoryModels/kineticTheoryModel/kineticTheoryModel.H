@@ -156,7 +156,7 @@ public:
 
     // Member Functions
 
-        void solve();
+        void solve(const volTensorField& gradUat);
 
         bool on() const
         {

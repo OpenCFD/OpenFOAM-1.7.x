@@ -5,6 +5,9 @@
     volScalarField rUaA = 1.0/UaEqn.A();
     volScalarField rUbA = 1.0/UbEqn.A();
 
+    phia == (fvc::interpolate(Ua) & mesh.Sf());
+    phib == (fvc::interpolate(Ub) & mesh.Sf());
+
     rUaAf = fvc::interpolate(rUaA);
     surfaceScalarField rUbAf = fvc::interpolate(rUbA);
 
@@ -42,7 +45,7 @@
 
     phib = (fvc::interpolate(Ub) & mesh.Sf()) + fvc::ddtPhiCorr(rUbA, Ub, phib)
          + phiDragb;
-    
+
     phi = alphaf*phia + betaf*phib;
 
     surfaceScalarField Dp("(rho*(1|A(U)))", alphaf*rUaAf/rhoa + betaf*rUbAf/rhob);

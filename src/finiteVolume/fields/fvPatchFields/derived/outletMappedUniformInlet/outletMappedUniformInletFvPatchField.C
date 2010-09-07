@@ -25,6 +25,7 @@ License
 
 #include "outletMappedUniformInletFvPatchField.H"
 #include "volFields.H"
+#include "surfaceFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -42,7 +43,8 @@ outletMappedUniformInletFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(p, iF),
-    outletPatchName_()
+    outletPatchName_(),
+    phiName_("phi")
 {}
 
 
@@ -57,7 +59,8 @@ outletMappedUniformInletFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(ptf, p, iF, mapper),
-    outletPatchName_(ptf.outletPatchName_)
+    outletPatchName_(ptf.outletPatchName_),
+    phiName_(ptf.phiName_)
 {}
 
 
@@ -71,7 +74,8 @@ outletMappedUniformInletFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(p, iF, dict),
-    outletPatchName_(dict.lookup("outletPatchName"))
+    outletPatchName_(dict.lookup("outletPatchName")),
+    phiName_(dict.lookupOrDefault<word>("phi", "phi"))
 {}
 
 
@@ -83,7 +87,8 @@ outletMappedUniformInletFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(ptf),
-    outletPatchName_(ptf.outletPatchName_)
+    outletPatchName_(ptf.outletPatchName_),
+    phiName_(ptf.phiName_)
 {}
 
 
@@ -97,7 +102,8 @@ outletMappedUniformInletFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(ptf, iF),
-    outletPatchName_(ptf.outletPatchName_)
+    outletPatchName_(ptf.outletPatchName_),
+    phiName_(ptf.phiName_)
 {}
 
 
@@ -132,15 +138,32 @@ void outletMappedUniformInletFvPatchField<Type>::updateCoeffs()
             << abort(FatalError);
     }
 
+    const fvPatch& outletPatch = p.boundaryMesh()[outletPatchID];
+
     const fvPatchField<Type>& outletPatchField =
         f.boundaryField()[outletPatchID];
 
-    const fvPatch& outletPatch = p.boundaryMesh()[outletPatchID];
+    const surfaceScalarField& phi =
+        this->db().objectRegistry::lookupObject<surfaceScalarField>(phiName_);
+    const scalarField& outletPatchPhi = phi.boundaryField()[outletPatchID];
+    scalar sumOutletPatchPhi = gSum(outletPatchPhi);
 
-    Type averageOutletField =
-        gSum(outletPatch.magSf()*outletPatchField)/gSum(outletPatch.magSf());
+    if (sumOutletPatchPhi > SMALL)
+    {
+        Type averageOutletField =
+            gSum(outletPatchPhi*outletPatchField)
+           /sumOutletPatchPhi;
 
-    this->operator==(averageOutletField);
+        this->operator==(averageOutletField);
+    }
+    else
+    {
+        Type averageOutletField =
+            gSum(outletPatch.magSf()*outletPatchField)
+           /gSum(outletPatch.magSf());
+
+        this->operator==(averageOutletField);
+    }
 
     fixedValueFvPatchField<Type>::updateCoeffs();
 }
@@ -152,6 +175,10 @@ void outletMappedUniformInletFvPatchField<Type>::write(Ostream& os) const
     fvPatchField<Type>::write(os);
     os.writeKeyword("outletPatchName")
         << outletPatchName_ << token::END_STATEMENT << nl;
+    if (phiName_ != "phi")
+    {
+        os.writeKeyword("phi") << phiName_ << token::END_STATEMENT << nl;
+    }
     this->writeEntry("value", os);
 }
 

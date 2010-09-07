@@ -4,6 +4,17 @@ fvVectorMatrix UbEqn(Ub, Ub.dimensions()*dimVol/dimTime);
 {
     {
         volTensorField gradUaT = fvc::grad(Ua)().T();
+
+        if (kineticTheory.on())
+        {
+            kineticTheory.solve(gradUaT);
+            nuEffa = kineticTheory.mua()/rhoa;
+        }
+        else // If not using kinetic theory is using Ct model
+        {
+            nuEffa = sqr(Ct)*nutb + nua;
+        }
+
         volTensorField Rca
         (
             "Rca",
@@ -56,7 +67,7 @@ fvVectorMatrix UbEqn(Ub, Ub.dimensions()*dimVol/dimTime);
             -fvc::interpolate(nuEffb)*mesh.magSf()*fvc::snGrad(beta)
             /fvc::interpolate(beta + scalar(0.001));
 
-        UbEqn = 
+        UbEqn =
         (
             (scalar(1) + Cvm*rhob*alpha/rhob)*
             (
