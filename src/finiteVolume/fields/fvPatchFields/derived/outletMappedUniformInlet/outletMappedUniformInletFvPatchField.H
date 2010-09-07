@@ -58,6 +58,9 @@ class outletMappedUniformInletFvPatchField
         //- Name of the outlet patch to be mapped
         word outletPatchName_;
 
+       //- Name of the flux transporting the field
+        word phiName_;
+
 
 public:
 

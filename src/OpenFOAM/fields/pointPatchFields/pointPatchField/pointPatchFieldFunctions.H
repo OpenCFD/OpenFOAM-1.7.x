@@ -126,8 +126,6 @@ BINARY_FUNCTION(min)
 BINARY_FUNCTION(cmptMultiply)
 BINARY_FUNCTION(cmptDivide)
 
-#undef BINARY_FUNCTION
-
 
 /* * * * * * * * * * * * * * * * Global operators  * * * * * * * * * * * * * */
 
@@ -143,10 +141,7 @@ inline void opFunc                                                            \
 
 UNARY_OPERATOR(-, negate)
 
-#undef UNARY_OPERATOR
-
-
-#define BINARY_OPERATOR_FF(Type1, Type2, op, opFunc)                          \
+#define BINARY_OPERATOR(Type1, Type2, op, opFunc)                             \
                                                                               \
 template<class Type>                                                          \
 inline void opFunc                                                            \
@@ -157,25 +152,11 @@ inline void opFunc                                                            \
 )                                                                             \
 {}
 
-#define BINARY_OPERATOR_R(Type1, Type2, op, opFunc)                           \
-    BINARY_OPERATOR_FF(Type1, Type2, op, opFunc)
+BINARY_OPERATOR(scalar, Type, *, multiply)
+BINARY_OPERATOR(Type, scalar, *, multiply)
+BINARY_OPERATOR(Type, scalar, /, divide)
 
-BINARY_OPERATOR_R(Type, Type, +, add)
-BINARY_OPERATOR_R(Type, Type, -, subtract)
-BINARY_OPERATOR_FF(scalar, Type, *, multiply)
-BINARY_OPERATOR_FF(Type, scalar, /, divide)
-
-#undef BINARY_OPERATOR_R
-#undef BINARY_OPERATOR_FF
-#undef BINARY_OPERATOR_FTR
-#undef BINARY_OPERATOR_TF
-#undef BINARY_OPERATOR_TTR
-#undef BINARY_OPERATOR_FT
-#undef BINARY_OPERATOR_TRF
-#undef BINARY_OPERATOR_TRT
-
-
-#define BINARY_TYPE_OPERATOR_TF(TYPE, op, opFunc)                             \
+#define BINARY_TYPE_OPERATOR_SF(TYPE, op, opFunc)                             \
                                                                               \
 template<class Type>                                                          \
 inline void opFunc                                                            \
@@ -187,7 +168,7 @@ inline void opFunc                                                            \
 {}
 
 
-#define BINARY_TYPE_OPERATOR_FT(TYPE, op, opFunc)                             \
+#define BINARY_TYPE_OPERATOR_FS(TYPE, op, opFunc)                             \
                                                                               \
 template<class Type>                                                          \
 inline void opFunc                                                            \
@@ -199,19 +180,9 @@ inline void opFunc                                                            \
 {}
 
 
-#define BINARY_TYPE_OPERATOR(TYPE, op, opFunc)                                \
-    BINARY_TYPE_OPERATOR_TF(TYPE, op, opFunc)                                 \
-    BINARY_TYPE_OPERATOR_FT(TYPE, op, opFunc)
-
-BINARY_TYPE_OPERATOR(Type, +, add)
-BINARY_TYPE_OPERATOR(Type, -, subtract)
-
-BINARY_TYPE_OPERATOR(scalar, *, multiply)
-BINARY_TYPE_OPERATOR_FT(scalar, /, divide)
-
-#undef BINARY_TYPE_OPERATOR
-#undef BINARY_TYPE_OPERATOR_TF
-#undef BINARY_TYPE_OPERATOR_FT
+BINARY_TYPE_OPERATOR_SF(scalar, *, multiply)
+BINARY_TYPE_OPERATOR_FS(scalar, *, multiply)
+BINARY_TYPE_OPERATOR_FS(scalar, /, divide)
 
 
 #define PRODUCT_OPERATOR(product, op, opFunc)                                 \
@@ -261,6 +232,9 @@ inline void opFunc                                                            \
     const pointPatchField<Type>& f1                                           \
 )                                                                             \
 {}
+
+PRODUCT_OPERATOR(typeOfSum, +, add)
+PRODUCT_OPERATOR(typeOfSum, -, subtract)
 
 PRODUCT_OPERATOR(outerProduct, *, outer)
 PRODUCT_OPERATOR(crossProduct, ^, cross)
@@ -367,3 +341,7 @@ inline void eigenVectors
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "undefFieldFunctionsM.H"
+
+// ************************************************************************* //
