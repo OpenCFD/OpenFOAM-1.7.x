@@ -47,7 +47,7 @@ void Foam::pressureGradientExplicitSource::writeGradP() const
             )
         );
         propsDict.add("gradient", gradP_);
-        propsDict.regIOobject::write();
+        propsDict.write();
     }
 }
 
