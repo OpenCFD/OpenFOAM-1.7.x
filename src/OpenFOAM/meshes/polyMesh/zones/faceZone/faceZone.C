@@ -184,16 +184,24 @@ void Foam::faceZone::calcCellLayers() const
 
         forAll (mf, faceI)
         {
+            label ownCellI = own[mf[faceI]];
+            label neiCellI =
+            (
+                zoneMesh().mesh().isInternalFace(mf[faceI])
+              ? nei[mf[faceI]]
+              : -1
+            );
+
             if (!faceFlip[faceI])
             {
                 // Face is oriented correctly, no flip needed
-                mc[faceI] = nei[mf[faceI]];
-                sc[faceI] = own[mf[faceI]];
+                mc[faceI] = neiCellI;
+                sc[faceI] = ownCellI;
             }
             else
             {
-                mc[faceI] = own[mf[faceI]];
-                sc[faceI] = nei[mf[faceI]];
+                mc[faceI] = ownCellI;
+                sc[faceI] = neiCellI;
             }
         }
         //Info << "masterCells: " << mc << endl;
