@@ -1,11 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-<<<<<<< HEAD:tutorials/heatTransfer/buoyantSimpleFoam/hotRoom/constant/polyMesh/boundary
 |  \\    /   O peration     | Version:  1.7.x                                 |
-=======
-|  \\    /   O peration     | Version:  1.7.1                                 |
->>>>>>> 55d75172e4cd33036e9980597b11b6ffc4036f86:tutorials/heatTransfer/buoyantSimpleFoam/hotRoom/constant/polyMesh/boundary
 |   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
