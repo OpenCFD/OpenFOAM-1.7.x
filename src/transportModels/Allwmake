@@ -4,6 +4,7 @@ set -x
 
 wmake libso incompressible
 wmake libso interfaceProperties
+wmake libso twoPhaseInterfaceProperties
 # wmake libso compressible
 
 # ----------------------------------------------------------------- end-of-file

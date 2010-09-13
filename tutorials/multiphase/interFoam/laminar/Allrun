@@ -46,8 +46,8 @@ cd damBreakFine
     runApplication reconstructPar
 cd ..
 
-# Do capilaryRise
-cd capilaryRise
+# Do capillaryRise
+cd capillaryRise
     runApplication blockMesh
     runApplication setFields
     runApplication $application
