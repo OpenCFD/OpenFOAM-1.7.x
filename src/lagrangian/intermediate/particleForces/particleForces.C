@@ -118,7 +118,7 @@ void Foam::particleForces::cacheFields(const bool store)
 {
     if (store && pressureGradient_)
     {
-        const volVectorField U = mesh_.lookupObject<volVectorField>(UName_);
+        const volVectorField& U = mesh_.lookupObject<volVectorField>(UName_);
         gradUPtr_ = fvc::grad(U).ptr();
     }
     else
