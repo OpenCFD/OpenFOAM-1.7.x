@@ -46,4 +46,11 @@ bool Foam::IOdictionary::writeData(Ostream& os) const
     return os.good();
 }
 
+
+bool Foam::IOdictionary::write() const
+{
+    return regIOobject::write();
+}
+
+
 // ************************************************************************* //

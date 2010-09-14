@@ -88,6 +88,9 @@ public:
         //- WriteData function required for regIOobject write operation
         bool writeData(Ostream&) const;
 
+        //- Write using setting from DB
+        virtual bool write() const;
+
 
     // Member operators
 

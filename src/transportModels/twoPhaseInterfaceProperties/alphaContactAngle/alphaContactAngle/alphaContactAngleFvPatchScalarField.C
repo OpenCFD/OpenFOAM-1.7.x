@@ -90,7 +90,19 @@ Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
 :
     fixedGradientFvPatchScalarField(p, iF),
     limit_(limitControlNames_.read(dict.lookup("limit")))
-{}
+{
+    if (dict.found("gradient"))
+    {
+        gradient() = scalarField("gradient", dict, p.size());
+        fixedGradientFvPatchScalarField::updateCoeffs();
+        fixedGradientFvPatchScalarField::evaluate();
+    }
+    else
+    {
+        fvPatchField<scalar>::operator=(patchInternalField());
+        gradient() = 0.0;
+    }
+}
 
 
 Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
@@ -152,7 +164,7 @@ void Foam::alphaContactAngleFvPatchScalarField::write
     Ostream& os
 ) const
 {
-    fvPatchScalarField::write(os);
+    fixedGradientFvPatchScalarField::write(os);
     os.writeKeyword("limit")
         << limitControlNames_[limit_] << token::END_STATEMENT << nl;
 }

@@ -620,6 +620,11 @@ double* Foam::vtkPV3Foam::findTimes(int& nTimeSteps)
 
 void Foam::vtkPV3Foam::renderPatchNames(vtkRenderer* renderer, const bool show)
 {
+    if (!meshPtr_)
+    {
+        return;
+    }
+
     // always remove old actors first
 
     forAll(patchTextActorsPtrs_, patchI)
