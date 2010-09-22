@@ -6,24 +6,26 @@
         IOobject::NO_READ
     );
 
-
-    surfaceScalarField* phibPtr;
+    autoPtr<surfaceScalarField> phibPtr(NULL);
 
     if (phibHeader.headerOk())
     {
         Info<< "Reading face flux field phib\n" << endl;
 
-        phibPtr = new surfaceScalarField
+        phibPtr.reset
         (
-            IOobject
+            new surfaceScalarField
             (
-                "phib",
-                runTime.timeName(),
-                mesh,
-                IOobject::MUST_READ,
-                IOobject::AUTO_WRITE
-            ),
-            mesh
+                IOobject
+                (
+                    "phib",
+                    runTime.timeName(),
+                    mesh,
+                    IOobject::MUST_READ,
+                    IOobject::AUTO_WRITE
+                ),
+                mesh
+            )
         );
     }
     else
@@ -44,19 +46,22 @@
             }
         }
 
-        phibPtr = new surfaceScalarField
+        phibPtr.reset
         (
-            IOobject
+            new surfaceScalarField
             (
-                "phib",
-                runTime.timeName(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::AUTO_WRITE
-            ),
-            fvc::interpolate(Ub) & mesh.Sf(),
-            phiTypes
+                IOobject
+                (
+                    "phib",
+                    runTime.timeName(),
+                    mesh,
+                    IOobject::NO_READ,
+                    IOobject::AUTO_WRITE
+                ),
+                fvc::interpolate(Ub) & mesh.Sf(),
+                phiTypes
+            )
         );
     }
 
-    surfaceScalarField& phib = *phibPtr;
+    surfaceScalarField& phib = phibPtr();

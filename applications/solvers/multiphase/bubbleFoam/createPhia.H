@@ -6,24 +6,26 @@
         IOobject::NO_READ
     );
 
-
-    surfaceScalarField* phiaPtr;
+    autoPtr<surfaceScalarField> phiaPtr(NULL);
 
     if (phiaHeader.headerOk())
     {
         Info<< "Reading face flux field phia\n" << endl;
 
-        phiaPtr = new surfaceScalarField
+        phiaPtr.reset
         (
-            IOobject
+            new surfaceScalarField
             (
-                "phia",
-                runTime.timeName(),
-                mesh,
-                IOobject::MUST_READ,
-                IOobject::AUTO_WRITE
-            ),
-            mesh
+                IOobject
+                (
+                    "phia",
+                    runTime.timeName(),
+                    mesh,
+                    IOobject::MUST_READ,
+                    IOobject::AUTO_WRITE
+                ),
+                mesh
+            )
         );
     }
     else
@@ -44,19 +46,22 @@
             }
         }
 
-        phiaPtr = new surfaceScalarField
+        phiaPtr.reset
         (
-            IOobject
+            new surfaceScalarField
             (
-                "phia",
-                runTime.timeName(),
-                mesh,
-                IOobject::NO_READ,
-                IOobject::AUTO_WRITE
-            ),
-            fvc::interpolate(Ua) & mesh.Sf(),
-            phiTypes
+                IOobject
+                (
+                    "phia",
+                    runTime.timeName(),
+                    mesh,
+                    IOobject::NO_READ,
+                    IOobject::AUTO_WRITE
+                ),
+                fvc::interpolate(Ua) & mesh.Sf(),
+                phiTypes
+            )
         );
     }
 
-    surfaceScalarField& phia = *phiaPtr;
+    surfaceScalarField& phia = phiaPtr();
