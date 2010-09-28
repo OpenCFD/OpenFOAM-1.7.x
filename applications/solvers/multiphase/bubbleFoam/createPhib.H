@@ -38,7 +38,7 @@
             calculatedFvPatchScalarField::typeName
         );
 
-        for (label i=0; i<Ub.boundaryField().size(); i++)
+        forAll(Ub.boundaryField(), i)
         {
             if (isA<fixedValueFvPatchVectorField>(Ub.boundaryField()[i]))
             {
