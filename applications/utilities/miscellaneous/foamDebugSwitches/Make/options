@@ -18,6 +18,7 @@ EXE_LIBS = \
     -lcompressibleRASModels \
     -lincompressibleRASModels \
     -linterfaceProperties \
+    -ltwoPhaseInterfaceProperties \
     -llagrangianIntermediate \
     -llagrangian \
     -llaminarFlameSpeedModels \
