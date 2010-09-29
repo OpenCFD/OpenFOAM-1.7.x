@@ -40,6 +40,10 @@ void Foam::sixDoFRigidBodyMotion::write(Ostream& os) const
         << momentOfInertia_ << token::END_STATEMENT << nl;
     os.writeKeyword("mass")
         << mass_ << token::END_STATEMENT << nl;
+    os.writeKeyword("accelerationDampingCoeff")
+        << cDamp_ << token::END_STATEMENT << nl;
+    os.writeKeyword("accelerationLimit")
+        << aLim_ << token::END_STATEMENT << nl;
     os.writeKeyword("report")
         << report_ << token::END_STATEMENT << nl;
 
