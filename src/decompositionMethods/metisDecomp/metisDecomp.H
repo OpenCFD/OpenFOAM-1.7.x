@@ -121,6 +121,21 @@ public:
             const scalarField& regionWeights
         );
 
+        //- Same but with uniform weights
+        virtual labelList decompose
+        (
+            const labelList& agglom,
+            const pointField& regionPoints
+        )
+        {
+            return decompose
+            (
+                agglom,
+                regionPoints,
+                scalarField(regionPoints.size(), 1.0)
+            );
+        }
+
         //- Return for every coordinate the wanted processor number. Explicitly
         //  provided mesh connectivity.
         //  The connectivity is equal to mesh.cellCells() except for
