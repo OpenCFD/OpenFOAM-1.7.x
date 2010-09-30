@@ -81,7 +81,7 @@ Foam::threePhaseMixture::threePhaseMixture
         viscosityModel::New
         (
             "nu3",
-            subDict(phase2Name_),
+            subDict(phase3Name_),
             U,
             phi
         )

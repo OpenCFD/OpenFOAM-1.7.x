@@ -174,6 +174,8 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion()
     initialQ_(I),
     momentOfInertia_(diagTensor::one*VSMALL),
     mass_(VSMALL),
+    cDamp_(0.0),
+    aLim_(VGREAT),
     report_(false)
 {}
 
@@ -190,6 +192,8 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion
     const point& initialCentreOfMass,
     const tensor& initialQ,
     const diagTensor& momentOfInertia,
+    scalar cDamp,
+    scalar aLim,
     bool report
 )
 :
@@ -211,6 +215,8 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion
     initialQ_(initialQ),
     momentOfInertia_(momentOfInertia),
     mass_(mass),
+    cDamp_(cDamp),
+    aLim_(aLim),
     report_(report)
 {}
 
@@ -233,6 +239,8 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion(const dictionary& dict)
     ),
     momentOfInertia_(dict.lookup("momentOfInertia")),
     mass_(readScalar(dict.lookup("mass"))),
+    cDamp_(dict.lookupOrDefault<scalar>("accelerationDampingCoeff", 0.0)),
+    aLim_(dict.lookupOrDefault<scalar>("accelerationLimit", VGREAT)),
     report_(dict.lookupOrDefault<Switch>("report", false))
 {
     addRestraints(dict);
@@ -246,17 +254,19 @@ Foam::sixDoFRigidBodyMotion::sixDoFRigidBodyMotion
     const sixDoFRigidBodyMotion& sDoFRBM
 )
 :
-    motionState_(sDoFRBM.motionState()),
-    restraints_(sDoFRBM.restraints()),
-    restraintNames_(sDoFRBM.restraintNames()),
-    constraints_(sDoFRBM.constraints()),
-    constraintNames_(sDoFRBM.constraintNames()),
-    maxConstraintIterations_(sDoFRBM.maxConstraintIterations()),
-    initialCentreOfMass_(sDoFRBM.initialCentreOfMass()),
-    initialQ_(sDoFRBM.initialQ()),
-    momentOfInertia_(sDoFRBM.momentOfInertia()),
-    mass_(sDoFRBM.mass()),
-    report_(sDoFRBM.report())
+    motionState_(sDoFRBM.motionState_),
+    restraints_(sDoFRBM.restraints_),
+    restraintNames_(sDoFRBM.restraintNames_),
+    constraints_(sDoFRBM.constraints_),
+    constraintNames_(sDoFRBM.constraintNames_),
+    maxConstraintIterations_(sDoFRBM.maxConstraintIterations_),
+    initialCentreOfMass_(sDoFRBM.initialCentreOfMass_),
+    initialQ_(sDoFRBM.initialQ_),
+    momentOfInertia_(sDoFRBM.momentOfInertia_),
+    mass_(sDoFRBM.mass_),
+    cDamp_(sDoFRBM.cDamp_),
+    aLim_(sDoFRBM.aLim_),
+    report_(sDoFRBM.report_)
 {}
 
 
@@ -358,7 +368,8 @@ void Foam::sixDoFRigidBodyMotion::addConstraints
 
 void Foam::sixDoFRigidBodyMotion::updatePosition
 (
-    scalar deltaT
+    scalar deltaT,
+    scalar deltaT0
 )
 {
     // First leapfrog velocity adjust and motion part, required before
@@ -366,15 +377,37 @@ void Foam::sixDoFRigidBodyMotion::updatePosition
 
     if (Pstream::master())
     {
-        v() += 0.5*deltaT*a();
+        vector aClip = a();
+        scalar aMag = mag(aClip);
 
-        pi() += 0.5*deltaT*tau();
+        if (aMag > SMALL)
+        {
+            aClip /= aMag;
+        }
+
+        if (aMag > aLim_)
+        {
+            WarningIn
+            (
+                "void Foam::sixDoFRigidBodyMotion::updatePosition"
+                "("
+                    "scalar deltaT, "
+                    "scalar deltaT0"
+                ")"
+            )
+                << "Limited acceleration " << a()
+                << " to " << aClip*aLim_
+                << endl;
+        }
+
+        v() += 0.5*(1 - cDamp_)*deltaT0*aClip*min(aMag, aLim_);
+
+        pi() += 0.5*(1 - cDamp_)*deltaT0*tau();
 
         // Leapfrog move part
         centreOfMass() += deltaT*v();
 
         // Leapfrog orientation adjustment
-
         rotate(Q(), pi(), deltaT);
     }
 
@@ -402,9 +435,33 @@ void Foam::sixDoFRigidBodyMotion::updateForce
 
         applyConstraints(deltaT);
 
-        v() += 0.5*deltaT*a();
+        vector aClip = a();
+        scalar aMag = mag(aClip);
 
-        pi() += 0.5*deltaT*tau();
+        if (aMag > SMALL)
+        {
+            aClip /= aMag;
+        }
+
+        if (aMag > aLim_)
+        {
+            WarningIn
+            (
+                "void Foam::sixDoFRigidBodyMotion::updateForce"
+                "("
+                    "const vector& fGlobal, "
+                    "const vector& tauGlobal, "
+                    "scalar deltaT"
+                ")"
+            )
+                << "Limited acceleration " << a()
+                << " to " << aClip*aLim_
+                << endl;
+        }
+
+        v() += 0.5*(1 - cDamp_)*deltaT*aClip*min(aMag, aLim_);
+
+        pi() += 0.5*(1 - cDamp_)*deltaT*tau();
 
         if(report_)
         {

@@ -147,7 +147,7 @@ void uncoupledSixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
     const polyMesh& mesh = this->dimensionedInternalField().mesh()();
     const Time& t = mesh.time();
 
-    motion_.updatePosition(t.deltaTValue());
+    motion_.updatePosition(t.deltaTValue(), t.deltaT0Value());
 
     vector gravity = vector::zero;
 
