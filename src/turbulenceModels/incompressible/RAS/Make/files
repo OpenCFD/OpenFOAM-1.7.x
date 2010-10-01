@@ -38,6 +38,9 @@ $(omegaWallFunctions)/omegaWallFunction/omegaWallFunctionFvPatchScalarField.C
 kqRWallFunctions = $(wallFunctions)/kqRWallFunctions
 $(kqRWallFunctions)/kqRWallFunction/kqRWallFunctionFvPatchFields.C
 
+kappatWallFunctions = $(wallFunctions)/kappatWallFunctions
+$(kappatWallFunctions)/kappatJayatillekeWallFunction/kappatJayatillekeWallFunctionFvPatchScalarField.C
+
 
 /* Patch fields */
 derivedFvPatchFields/turbulentHeatFluxTemperature/turbulentHeatFluxTemperatureFvPatchScalarField.C
