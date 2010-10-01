@@ -1,0 +1,274 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
+#include "kappatJayatillekeWallFunctionFvPatchScalarField.H"
+#include "RASModel.H"
+#include "fvPatchFieldMapper.H"
+#include "volFields.H"
+#include "wallFvPatch.H"
+#include "addToRunTimeSelectionTable.H"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace incompressible
+{
+namespace RASModels
+{
+
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+scalar kappatJayatillekeWallFunctionFvPatchScalarField::tolerance_ = 0.01;
+label kappatJayatillekeWallFunctionFvPatchScalarField::maxIters_ = 10;
+
+// * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
+
+void kappatJayatillekeWallFunctionFvPatchScalarField::checkType()
+{
+    if (!isA<wallFvPatch>(patch()))
+    {
+        FatalErrorIn
+        (
+            "kappatJayatillekeWallFunctionFvPatchScalarField::checkType()"
+        )   << "Invalid wall function specification" << nl
+            << "    Patch type for patch " << patch().name()
+            << " must be wall" << nl
+            << "    Current patch type is " << patch().type() << nl << endl
+            << abort(FatalError);
+    }
+}
+
+
+scalar kappatJayatillekeWallFunctionFvPatchScalarField::Psmooth
+(
+    const scalar Prat
+) const
+{
+    return 9.24*(pow(Prat, 0.75) - 1.0)*(1.0 + 0.28*exp(-0.007*Prat));
+}
+
+
+scalar kappatJayatillekeWallFunctionFvPatchScalarField::yPlusTherm
+(
+    const scalar P,
+    const scalar Prat
+) const
+{
+    scalar ypt = 11.0;
+
+    for (int i=0; i<maxIters_; i++)
+    {
+        scalar f = ypt - (log(E_*ypt)/kappa_ + P)/Prat;
+        scalar df = 1.0 - 1.0/(ypt*kappa_*Prat);
+        scalar yptNew = ypt - f/df;
+
+        if (yptNew < VSMALL)
+        {
+            return 0;
+        }
+        else if (mag(yptNew - ypt) < tolerance_)
+        {
+            return yptNew;
+        }
+        else
+        {
+            ypt = yptNew;
+        }
+     }
+
+    return ypt;
+}
+
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+kappatJayatillekeWallFunctionFvPatchScalarField::
+kappatJayatillekeWallFunctionFvPatchScalarField
+(
+    const fvPatch& p,
+    const DimensionedField<scalar, volMesh>& iF
+)
+:
+    fixedValueFvPatchScalarField(p, iF),
+    Prt_(0.85),
+    Cmu_(0.09),
+    kappa_(0.41),
+    E_(9.8)
+{
+    checkType();
+}
+
+
+kappatJayatillekeWallFunctionFvPatchScalarField::
+kappatJayatillekeWallFunctionFvPatchScalarField
+(
+    const kappatJayatillekeWallFunctionFvPatchScalarField& ptf,
+    const fvPatch& p,
+    const DimensionedField<scalar, volMesh>& iF,
+    const fvPatchFieldMapper& mapper
+)
+:
+    fixedValueFvPatchScalarField(ptf, p, iF, mapper),
+    Prt_(ptf.Prt_),
+    Cmu_(ptf.Cmu_),
+    kappa_(ptf.kappa_),
+    E_(ptf.E_)
+{
+    checkType();
+}
+
+
+kappatJayatillekeWallFunctionFvPatchScalarField::
+kappatJayatillekeWallFunctionFvPatchScalarField
+(
+    const fvPatch& p,
+    const DimensionedField<scalar, volMesh>& iF,
+    const dictionary& dict
+)
+:
+    fixedValueFvPatchScalarField(p, iF, dict),
+    Prt_(readScalar(dict.lookup("Prt"))), // force read to avoid ambiguity
+    Cmu_(dict.lookupOrDefault<scalar>("Cmu", 0.09)),
+    kappa_(dict.lookupOrDefault<scalar>("kappa", 0.41)),
+    E_(dict.lookupOrDefault<scalar>("E", 9.8))
+{
+    checkType();
+}
+
+
+kappatJayatillekeWallFunctionFvPatchScalarField::
+kappatJayatillekeWallFunctionFvPatchScalarField
+(
+    const kappatJayatillekeWallFunctionFvPatchScalarField& wfpsf
+)
+:
+    fixedValueFvPatchScalarField(wfpsf),
+    Prt_(wfpsf.Prt_),
+    Cmu_(wfpsf.Cmu_),
+    kappa_(wfpsf.kappa_),
+    E_(wfpsf.E_)
+{
+    checkType();
+}
+
+
+kappatJayatillekeWallFunctionFvPatchScalarField::
+kappatJayatillekeWallFunctionFvPatchScalarField
+(
+    const kappatJayatillekeWallFunctionFvPatchScalarField& wfpsf,
+    const DimensionedField<scalar, volMesh>& iF
+)
+:
+    fixedValueFvPatchScalarField(wfpsf, iF),
+    Prt_(wfpsf.Prt_),
+    Cmu_(wfpsf.Cmu_),
+    kappa_(wfpsf.kappa_),
+    E_(wfpsf.E_)
+{
+    checkType();
+}
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+void kappatJayatillekeWallFunctionFvPatchScalarField::updateCoeffs()
+{
+    if (updated())
+    {
+        return;
+    }
+
+    const label patchI = patch().index();
+
+    // Retrieve turbulence properties from model
+    const RASModel& rasModel = db().lookupObject<RASModel>("RASProperties");
+    const scalar Cmu25 = pow(Cmu_, 0.25);
+    const scalarField& y = rasModel.y()[patchI];
+    const scalarField& nuw = rasModel.nu().boundaryField()[patchI];
+    const tmp<volScalarField> tk = rasModel.k();
+    const volScalarField& k = tk();
+
+    // Molecular Prandtl number
+    const scalar
+        Pr(dimensionedScalar(rasModel.transport().lookup("Pr")).value());
+
+    // Populate boundary values
+    scalarField& kappatw = *this;
+    forAll(kappatw, faceI)
+    {
+        label faceCellI = patch().faceCells()[faceI];
+
+        // y+
+        scalar yPlus = Cmu25*sqrt(k[faceCellI])*y[faceI]/nuw[faceI];
+
+        // Molecular-to-turbulent Prandtl number ratio
+        scalar Prat = Pr/Prt_;
+
+        // Thermal sublayer thickness
+        scalar P = Psmooth(Prat);
+        scalar yPlusTherm = this->yPlusTherm(P, Prat);
+
+        // Evaluate new effective thermal diffusivity
+        scalar kappaEff = 0.0;
+        if (yPlus < yPlusTherm)
+        {
+            kappaEff = Pr*yPlus;
+        }
+        else
+        {
+            kappaEff = nuw[faceI]*yPlus/(Prt_/kappa_*log(E_*yPlusTherm) + P);
+        }
+
+        // Update turbulent thermal diffusivity
+        kappatw[faceI] = max(0.0, kappaEff - nuw[faceI]/Pr);
+    }
+
+    fixedValueFvPatchField<scalar>::updateCoeffs();
+}
+
+
+void kappatJayatillekeWallFunctionFvPatchScalarField::write(Ostream& os) const
+{
+    fvPatchField<scalar>::write(os);
+    os.writeKeyword("Prt") << Prt_ << token::END_STATEMENT << nl;
+    os.writeKeyword("Cmu") << Cmu_ << token::END_STATEMENT << nl;
+    os.writeKeyword("kappa") << kappa_ << token::END_STATEMENT << nl;
+    os.writeKeyword("E") << E_ << token::END_STATEMENT << nl;
+    writeEntry("value", os);
+}
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+makePatchTypeField(fvPatchScalarField, kappatJayatillekeWallFunctionFvPatchScalarField);
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace RASModels
+} // End namespace incompressible
+} // End namespace Foam
+
+// ************************************************************************* //
