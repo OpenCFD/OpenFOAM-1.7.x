@@ -683,6 +683,8 @@ void Foam::fvMeshSubset::setCellSubset
     }
 
 
+    // Delete any old one
+    fvMeshSubsetPtr_.clear();
     // Make a new mesh
     fvMeshSubsetPtr_.reset
     (

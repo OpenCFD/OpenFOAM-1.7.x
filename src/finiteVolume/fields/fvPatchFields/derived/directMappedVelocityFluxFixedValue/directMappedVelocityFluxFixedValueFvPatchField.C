@@ -191,8 +191,8 @@ void directMappedVelocityFluxFixedValueFvPatchField::updateCoeffs()
 
                 forAll(Upf, faceI)
                 {
-                    allUValues[faceStart++] = Upf[faceI];
-                    allPhiValues[faceStart] = phipf[faceI];
+                    allUValues[faceStart + faceI] = Upf[faceI];
+                    allPhiValues[faceStart + faceI] = phipf[faceI];
                 }
             }
 
@@ -205,7 +205,7 @@ void directMappedVelocityFluxFixedValueFvPatchField::updateCoeffs()
                 distMap.constructMap(),
                 allUValues
             );
-            newUValues = patch().patchSlice(newUValues);
+            newUValues = patch().patchSlice(allUValues);
 
             mapDistribute::distribute
             (
@@ -214,9 +214,9 @@ void directMappedVelocityFluxFixedValueFvPatchField::updateCoeffs()
                 distMap.constructSize(),
                 distMap.subMap(),
                 distMap.constructMap(),
-                newPhiValues
+                allPhiValues
             );
-            newPhiValues = patch().patchSlice(newPhiValues);
+            newPhiValues = patch().patchSlice(allPhiValues);
 
             break;
         }

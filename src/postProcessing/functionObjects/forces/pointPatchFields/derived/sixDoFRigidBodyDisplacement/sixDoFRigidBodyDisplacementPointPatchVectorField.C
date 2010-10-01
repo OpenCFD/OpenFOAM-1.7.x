@@ -205,7 +205,7 @@ void sixDoFRigidBodyDisplacementPointPatchVectorField::updateCoeffs()
     // calculate the forces on the motion object from this data, then
     // update the positions
 
-    motion_.updatePosition(t.deltaTValue());
+    motion_.updatePosition(t.deltaTValue(), t.deltaT0Value());
 
     dictionary forcesDict;
 
