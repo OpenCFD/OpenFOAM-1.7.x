@@ -257,8 +257,13 @@ _foamSource $WM_PROJECT_DIR/etc/aliases.sh
 
 # Source user setup files for optional packages
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-_foamSource $WM_PROJECT_DIR/etc/apps/paraview3/bashrc
-_foamSource $WM_PROJECT_DIR/etc/apps/ensight/bashrc
+paraview3=`$WM_PROJECT_DIR/bin/foamEtcFile apps/paraview3/bashrc` \
+    && _foamSource $paraview3
+unset paraview3
+
+ensight=`$WM_PROJECT_DIR/bin/foamEtcFile apps/ensight/bashrc` \
+    && _foamSource $ensight
+unset ensight
 
 
 # Clean environment paths again. Only remove duplicates
