@@ -64,6 +64,21 @@
         1.0 - beta*(T - TRef)
     );
 
+    // kinematic turbulent thermal thermal conductivity m2/s
+    Info<< "Reading field kappat\n" << endl;
+    volScalarField kappat
+    (
+        IOobject
+        (
+            "kappat",
+            runTime.timeName(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh
+    );
+
     Info<< "Calculating field g.h\n" << endl;
     volScalarField gh("gh", g & mesh.C());
     surfaceScalarField ghf("ghf", g & mesh.Cf());
