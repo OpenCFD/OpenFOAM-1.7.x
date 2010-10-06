@@ -112,13 +112,6 @@ directMappedVelocityFluxFixedValueFvPatchField
             << " in file " << dimensionedInternalField().objectPath()
             << exit(FatalError);
     }
-
-    // Force calculation of schedule (uses parallel comms)
-    const directMappedPolyPatch& mpp = refCast<const directMappedPolyPatch>
-    (
-        patch().patch()
-    );
-    (void)mpp.map().schedule();
 }
 
 
