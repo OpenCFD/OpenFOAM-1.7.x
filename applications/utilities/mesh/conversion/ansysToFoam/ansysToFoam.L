@@ -62,10 +62,15 @@ label maxNodei = 0;
 
 SLPtrList<labelList> slCellLabels;
 SLList<label> slCellMap;
+SLList<label> slCellType;
 label maxCelli = 0;
 
 PtrList<SLList<label> > slPatchCells;
 PtrList<SLList<label> > slPatchCellFaces;
+
+// Cell types
+Map<word> cellTypes;
+label currentTypei = -1;
 
 
 // Dummy yywrap to keep yylex happy at compile time.
@@ -110,6 +115,8 @@ value                 {double}
 node                  ^{space}"N"{cspace}
 element               ^{space}"EN"{cspace}
 bface                 ^{space}"SFE"{cspace}
+elementTypeName       ^{space}"ET"{cspace}
+elementType           ^{space}"TYPE"{cspace}
 
 
 %%
@@ -162,6 +169,7 @@ bface                 ^{space}"SFE"{cspace}
 
         slCellMap.append(celli);
         slCellLabels.append(new labelList(labels));
+        slCellType.append(currentTypei);
     }
 
 
@@ -212,6 +220,37 @@ bface                 ^{space}"SFE"{cspace}
     }
 
 
+{elementTypeName}{label}{cspace}{identifier}{space}\n {
+
+        IStringStream elementStream(YYText());
+        char tag,c;
+        label cellTypei;
+        word cellTypeName;
+        elementStream
+            >> tag >> tag           // skip 'ET'
+            >> c >> cellTypei
+            >> c >> cellTypeName;
+
+        Info<< "Read typeName " << cellTypeName
+            << " for type " << cellTypei << endl;
+
+        cellTypes.insert(cellTypei, cellTypeName);
+    }
+
+
+{elementType}{label}{space}\n {
+        IStringStream elementStream(YYText());
+        char tag,c;
+        label cellTypei;
+        elementStream
+            >> tag >> tag >> tag >> tag     // skip 'TYPE'
+            >> c >> cellTypei;
+
+        currentTypei = cellTypei;
+    }
+
+
+
  /* ------------------------------------------------------------------------- *\
     ------ Ignore remaining space and \n s.  Any other characters are errors.
  \* ------------------------------------------------------------------------- */
@@ -232,6 +271,29 @@ bface                 ^{space}"SFE"{cspace}
 #include "fileName.H"
 #include <fstream>
 using std::ifstream;
+
+
+label findFace(const polyMesh& mesh, const face& f)
+{
+    const labelList& pFaces = mesh.pointFaces()[f[0]];
+
+    forAll(pFaces, i)
+    {
+        label faceI = pFaces[i];
+
+        if (mesh.faces()[faceI] == f)
+        {
+            return faceI;
+        }
+    }
+
+    FatalErrorIn("findFace(const polyMesh&, const face&)")
+        << "Cannot find a face matching " << f
+        << exit(FatalError);
+
+    return -1;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -395,6 +457,34 @@ int main(int argc, char *argv[])
         }
     }
 
+
+    const word defaultFacesName = "defaultFaces";
+    word defaultFacesType = emptyPolyPatch::typeName;
+
+    // Create dummy mesh just to find out what are internal/external
+    // faces
+    autoPtr<polyMesh> dummyMesh
+    (
+        new polyMesh
+        (
+            IOobject
+            (
+                "dummyMesh",
+                runTime.constant(),
+                runTime
+            ),
+            xferCopy(points),
+            cellShapes,
+            faceListList(0),
+            wordList(0),
+            wordList(0),
+            defaultFacesName,
+            defaultFacesType,
+            wordList(0)
+        )
+    );
+
+
     // Warning: tet face order has changed between version 1.9.6 and 2.0
     //
     label faceIndex[7][6] =
@@ -403,7 +493,7 @@ int main(int argc, char *argv[])
         {-1, -1, -1, -1, -1, -1}, // 1
         {-1, -1, -1, -1, -1, -1}, // 2
         {-1, -1, -1, -1, -1, -1}, // 3
-        {-1,  2,  0,  3,  1, -1}, // tet (version 2.0)
+        { 3,  2,  0, -1,  1, -1}, // tet (version 2.0)
         { 0,  4,  3, -1,  2,  1}, // prism
         { 4,  2,  1,  3,  0,  5}, // hex
     };
@@ -428,12 +518,14 @@ int main(int argc, char *argv[])
             ++cellIter, ++faceIter
         )
         {
+            const cellShape& shape = cellShapes[cellMap[cellIter()]];
+
             patchFaces.append
             (
-                cellShapes[cellMap[cellIter()] ].faces()
+                shape.faces()
                 [
                     faceIndex
-                        [cellShapes[cellMap[cellIter()] ].nFaces()]
+                        [shape.nFaces()]
                         [faceIter()-1]
                 ]
             );
@@ -441,9 +533,52 @@ int main(int argc, char *argv[])
 
         boundary[patchI] = patchFaces;
         patchNames[patchI] = word("patch") + name(patchI + 1);
+    }
+
+
+    //
+    // Lookup the face labels for all the boundary faces
+    //
+    labelListList boundaryFaceLabels(boundary.size());
+    forAll(boundary, patchI)
+    {
+        const faceList& bFaces = boundary[patchI];
+        labelList& bFaceLabels = boundaryFaceLabels[patchI];
+        bFaceLabels.setSize(bFaces.size());
+        forAll(bFaces, i)
+        {
+            bFaceLabels[i] = findFace(dummyMesh(), bFaces[i]);
+        }
+    }
+
+
+    // Now split the boundary faces into external and internal faces. All
+    // faces go into faceZones and external faces go into patches.
+    List<faceList> patchFaces(slPatchCells.size());
+    labelList patchNFaces(slPatchCells.size(), 0);
+    forAll(boundary, patchI)
+    {
+        const faceList& bFaces = boundary[patchI];
+        const labelList& bFaceLabels = boundaryFaceLabels[patchI];
+
+        patchFaces[patchI].setSize(bFaces.size());
+
+        forAll(bFaces, i)
+        {
+            if (!dummyMesh().isInternalFace(bFaceLabels[i]))
+            {
+                patchFaces[patchI][patchNFaces[patchI]++] = bFaces[i];
+            }
+        }
+        patchFaces[patchI].setSize(patchNFaces[patchI]);
+
         Info << "Patch " << patchI << " named " << patchNames[patchI]
             << ": " << boundary[patchI].size() << " faces" << endl;
     }
+
+    // We no longer need the dummyMesh
+    dummyMesh.clear();
+
 
     Info << "ansysToFoam: " << endl
         << "Ansys file format does not provide information about the type of "
@@ -452,10 +587,8 @@ int main(int argc, char *argv[])
         << "as type patch. Please reset after mesh conversion as necessary."
         << endl;
 
-    wordList patchTypes(boundary.size(), polyPatch::typeName);
-    word defaultFacesName = "defaultFaces";
-    word defaultFacesType = emptyPolyPatch::typeName;
-    wordList patchPhysicalTypes(boundary.size());
+    wordList patchTypes(patchFaces.size(), polyPatch::typeName);
+    wordList patchPhysicalTypes(patchFaces.size());
 
     preservePatchTypes
     (
@@ -479,13 +612,97 @@ int main(int argc, char *argv[])
         ),
         xferMove(points),
         cellShapes,
-        boundary,
+        patchFaces,
         patchNames,
         patchTypes,
         defaultFacesName,
         defaultFacesType,
         patchPhysicalTypes
     );
+
+
+    if (cellTypes.size() > 0 || patchNames.size() > 0)
+    {
+        DynamicList<pointZone*> pz;
+        DynamicList<faceZone*> fz;
+        DynamicList<cellZone*> cz;
+
+        // FaceZones
+        forAll(boundaryFaceLabels, patchI)
+        {
+            if (boundaryFaceLabels[patchI].size())
+            {
+                // Re-do the boundaryFaceLabels since the boundary face
+                // labels will be different on the pShapeMesh.
+                const faceList& bFaces = boundary[patchI];
+                labelList& bFaceLabels = boundaryFaceLabels[patchI];
+                forAll(bFaceLabels, i)
+                {
+                    bFaceLabels[i] = findFace(pShapeMesh, bFaces[i]);
+                }
+
+                Info<< "Creating faceZone " <<  patchNames[patchI]
+                    << " with " << bFaceLabels.size() << " faces" << endl;
+
+                fz.append
+                (
+                    new faceZone
+                    (
+                        patchNames[patchI],
+                        bFaceLabels,
+                        boolList(bFaceLabels.size(), false),
+                        fz.size(),
+                        pShapeMesh.faceZones()
+                    )
+                );
+            }
+        }
+
+
+        // CellZones
+        labelList types = cellTypes.sortedToc();
+
+        forAll(types, j)
+        {
+            label cellType = types[j];
+
+            // Pick up cells in zone
+            DynamicList<label> addr;
+
+            SLList<label>::iterator cellMapIter = slCellMap.begin();
+            SLList<label>::iterator typeIter = slCellType.begin();
+
+            for
+            (
+                ;
+                typeIter != slCellType.end();
+                ++typeIter, ++cellMapIter
+            )
+            {
+                if (typeIter() == cellType)
+                {
+                    addr.append(cellMap[cellMapIter()]);
+                }
+            }
+
+            Info<< "Creating cellZone " << cellTypes[cellType]
+                << " with " << addr.size() << " cells" << endl;
+
+            cz.append
+            (
+                new cellZone
+                (
+                    cellTypes[cellType],
+                    addr,
+                    j,
+                    pShapeMesh.cellZones()
+                )
+            );
+        }
+
+        pShapeMesh.addZones(pz, fz, cz);
+    }
+
 
     // Set the precision of the points data to 10
     IOstream::defaultPrecision(10);
