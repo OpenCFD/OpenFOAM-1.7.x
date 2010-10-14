@@ -27,7 +27,7 @@ solvers
     p_rgh
     {
         solver           GAMG;
-        tolerance        1e-7;
+        tolerance        2e-7;
         relTol           0.01;
 
         smoother         GaussSeidel;
@@ -41,7 +41,7 @@ solvers
     p_rghFinal
     {
         solver           GAMG;
-        tolerance        1e-7;
+        tolerance        2e-7;
         relTol           0;
 
         smoother         GaussSeidel;
@@ -101,21 +101,11 @@ solvers
     }
 }
 
-PISO
-{
-    momentumPredictor    off;
-    nOuterCorrectors     1;
-    nCorrectors          2;
-    nNonOrthogonalCorrectors 1;
-    pRefPoint            (-0.081 -0.0257 8.01);
-    pRefValue            1e5;
-}
-
 PIMPLE
 {
     momentumPredictor   on;
     nCorrectors         2;
-    nNonOrthogonalCorrectors 0;
+    nNonOrthogonalCorrectors 1;
 }
 
 relaxationFactors
