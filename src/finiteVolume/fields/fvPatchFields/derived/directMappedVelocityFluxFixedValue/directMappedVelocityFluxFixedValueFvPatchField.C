@@ -198,7 +198,7 @@ void directMappedVelocityFluxFixedValueFvPatchField::updateCoeffs()
                 distMap.constructMap(),
                 allUValues
             );
-            newUValues = patch().patchSlice(allUValues);
+            newUValues.transfer(allUValues);
 
             mapDistribute::distribute
             (
@@ -209,7 +209,7 @@ void directMappedVelocityFluxFixedValueFvPatchField::updateCoeffs()
                 distMap.constructMap(),
                 allPhiValues
             );
-            newPhiValues = patch().patchSlice(allPhiValues);
+            newPhiValues.transfer(allPhiValues);
 
             break;
         }
