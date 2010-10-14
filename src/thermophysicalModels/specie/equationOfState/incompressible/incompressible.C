@@ -21,89 +21,32 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Description
-    Mixture instantiation
-
 \*---------------------------------------------------------------------------*/
 
-#include "error.H"
-
-#include "basicMixture.H"
-#include "makeBasicMixture.H"
-
-#include "perfectGas.H"
 #include "incompressible.H"
+#include "IOstreams.H"
 
-#include "eConstThermo.H"
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-#include "hConstThermo.H"
-#include "janafThermo.H"
-#include "specieThermo.H"
-
-#include "constTransport.H"
-#include "sutherlandTransport.H"
-
-#include "pureMixture.H"
-
-#include "addToRunTimeSelectionTable.H"
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
+Foam::incompressible::incompressible(Istream& is)
+:
+    specie(is),
+    rho_(readScalar(is))
 {
+    is.check("incompressible::incompressible(Istream& is)");
+}
 
-/* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
 
-makeBasicMixture
-(
-    pureMixture,
-    constTransport,
-    hConstThermo,
-    perfectGas
-);
+// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
 
-makeBasicMixture
-(
-    pureMixture,
-    sutherlandTransport,
-    hConstThermo,
-    perfectGas
-);
+Foam::Ostream& Foam::operator<<(Ostream& os, const incompressible& ico)
+{
+    os  << static_cast<const specie&>(ico)
+        << token::SPACE << ico.rho_;
 
-makeBasicMixture
-(
-    pureMixture,
-    constTransport,
-    eConstThermo,
-    perfectGas
-);
+    os.check("Ostream& operator<<(Ostream& os, const incompressible& st)");
+    return os;
+}
 
-makeBasicMixture
-(
-    pureMixture,
-    sutherlandTransport,
-    eConstThermo,
-    perfectGas
-);
-
-makeBasicMixture
-(
-    pureMixture,
-    sutherlandTransport,
-    janafThermo,
-    perfectGas
-);
-
-makeBasicMixture
-(
-    pureMixture,
-    constTransport,
-    hConstThermo,
-    incompressible
-);
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //
