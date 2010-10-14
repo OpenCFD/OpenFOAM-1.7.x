@@ -145,8 +145,8 @@ Foam::plane::plane(const point& basePoint, const vector& normalVector)
     else
     {
         FatalErrorIn("plane::plane(const point&, const vector&)")
-        << "plane normal has got zero length"
-        << abort(FatalError);
+            << "plane normal has zero length"
+            << abort(FatalError);
     }
 }
 
@@ -216,8 +216,8 @@ Foam::plane::plane(const dictionary& dict)
             "plane::plane(const dictionary&)",
             dict
         )
-        << "Invalid plane type: " << planeType
-        << abort(FatalIOError);
+            << "Invalid plane type: " << planeType
+            << abort(FatalIOError);
     }
 }
 
@@ -237,7 +237,7 @@ Foam::plane::plane(Istream& is)
     else
     {
         FatalErrorIn("plane::plane(Istream& is)")
-            << "plane normal has got zero length"
+            << "plane normal has zero length"
             << abort(FatalError);
     }
 }
@@ -259,10 +259,10 @@ const Foam::point& Foam::plane::refPoint() const
 }
 
 
-// Return coefficcients for plane equation: ax + by + cz + d = 0
-Foam::scalarList Foam::plane::planeCoeffs() const
+// Return coefficients for plane equation: ax + by + cz + d = 0
+Foam::FixedList<Foam::scalar, 4> Foam::plane::planeCoeffs() const
 {
-    scalarList C(4);
+    FixedList<scalar, 4> C(4);
 
     scalar magX = mag(unitVector_.x());
     scalar magY = mag(unitVector_.y());
@@ -278,8 +278,8 @@ Foam::scalarList Foam::plane::planeCoeffs() const
         }
         else
         {
-            C[0] = 0;
-            C[1] = 0;
+            C[0] = unitVector_.x()/unitVector_.z();
+            C[1] = unitVector_.y()/unitVector_.z();
             C[2] = 1;
         }
     }
@@ -287,14 +287,14 @@ Foam::scalarList Foam::plane::planeCoeffs() const
     {
         if (magY > magZ)
         {
-            C[0] = 0;
+            C[0] = unitVector_.x()/unitVector_.y();
             C[1] = 1;
             C[2] = unitVector_.z()/unitVector_.y();
         }
         else
         {
-            C[0] = 0;
-            C[1] = 0;
+            C[0] = unitVector_.x()/unitVector_.z();
+            C[1] = unitVector_.y()/unitVector_.z();
             C[2] = 1;
         }
     }
@@ -409,19 +409,18 @@ Foam::point Foam::plane::planePlaneIntersect
     const plane& plane3
 ) const
 {
-    List<scalarList> pcs(3);
-    pcs[0]= planeCoeffs();
-    pcs[1]= plane2.planeCoeffs();
-    pcs[2]= plane3.planeCoeffs();
+    FixedList<scalar, 4> coeffs1(planeCoeffs());
+    FixedList<scalar, 4> coeffs2(plane2.planeCoeffs());
+    FixedList<scalar, 4> coeffs3(plane3.planeCoeffs());
 
     tensor a
     (
-        pcs[0][0],pcs[0][1],pcs[0][2],
-        pcs[1][0],pcs[1][1],pcs[1][2],
-        pcs[2][0],pcs[2][1],pcs[2][2]
+        coeffs1[0],coeffs1[1],coeffs1[2],
+        coeffs2[0],coeffs2[1],coeffs2[2],
+        coeffs3[0],coeffs3[1],coeffs3[2]
     );
 
-    vector b(pcs[0][3],pcs[1][3],pcs[2][3]);
+    vector b(coeffs1[3],coeffs2[3],coeffs3[3]);
 
     return (inv(a) & (-b));
 }

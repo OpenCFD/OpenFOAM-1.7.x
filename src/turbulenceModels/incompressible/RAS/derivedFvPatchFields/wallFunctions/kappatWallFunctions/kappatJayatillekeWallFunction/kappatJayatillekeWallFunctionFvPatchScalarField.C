@@ -231,19 +231,17 @@ void kappatJayatillekeWallFunctionFvPatchScalarField::updateCoeffs()
         scalar P = Psmooth(Prat);
         scalar yPlusTherm = this->yPlusTherm(P, Prat);
 
-        // Evaluate new effective thermal diffusivity
-        scalar kappaEff = 0.0;
-        if (yPlus < yPlusTherm)
+        // Update turbulent thermal conductivity
+        if (yPlus > yPlusTherm)
         {
-            kappaEff = Pr*yPlus;
+            scalar nu = nuw[faceI];
+            scalar kt = nu*(yPlus/(Prt_/kappa_*log(E_*yPlusTherm) + P) - 1/Pr);
+            kappatw[faceI] = max(0.0, kt);
         }
         else
         {
-            kappaEff = nuw[faceI]*yPlus/(Prt_/kappa_*log(E_*yPlusTherm) + P);
+            kappatw[faceI] = 0.0;
         }
-
-        // Update turbulent thermal diffusivity
-        kappatw[faceI] = max(0.0, kappaEff - nuw[faceI]/Pr);
     }
 
     fixedValueFvPatchField<scalar>::updateCoeffs();
