@@ -1,5 +1,7 @@
 {
     bool closedVolume = p_rgh.needReference();
+    dimensionedScalar compressibility = fvc::domainIntegrate(psi);
+    bool compressible = (compressibility.value() > SMALL);
 
     rho = thermo.rho();
 
@@ -19,34 +21,48 @@
 
     phi = phiU - rhorUAf*ghf*fvc::snGrad(rho)*mesh.magSf();
 
-    for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
     {
-        fvScalarMatrix p_rghEqn
+        fvScalarMatrix p_rghDDtEqn
         (
-            fvm::ddt(psi, p_rgh) + fvc::ddt(psi, rho)*gh
+            fvc::ddt(rho) + psi*correction(fvm::ddt(p_rgh))
           + fvc::div(phi)
-          - fvm::laplacian(rhorUAf, p_rgh)
         );
 
-        p_rghEqn.solve
-        (
-            mesh.solver
+        // Thermodynamic density needs to be updated by psi*d(p) after the
+        // pressure solution - done in 2 parts. Part 1:
+        thermo.rho() -= psi*p_rgh;
+
+        for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
+        {
+            fvScalarMatrix p_rghEqn
             (
-                p_rgh.select
+                p_rghDDtEqn
+              - fvm::laplacian(rhorUAf, p_rgh)
+            );
+
+            p_rghEqn.solve
+            (
+                mesh.solver
                 (
+                    p_rgh.select
                     (
-                        oCorr == nOuterCorr-1
-                     && corr == nCorr-1
-                     && nonOrth == nNonOrthCorr
+                        (
+                            oCorr == nOuterCorr-1
+                         && corr == nCorr-1
+                         && nonOrth == nNonOrthCorr
+                        )
                     )
                 )
-            )
-        );
+            );
 
-        if (nonOrth == nNonOrthCorr)
-        {
-            phi += p_rghEqn.flux();
+            if (nonOrth == nNonOrthCorr)
+            {
+                phi += p_rghEqn.flux();
+            }
         }
+
+        // Second part of thermodynamic density update
+        thermo.rho() += psi*p_rgh;
     }
 
     // Correct velocity field
@@ -66,10 +82,10 @@
 
     // For closed-volume cases adjust the pressure and density levels
     // to obey overall mass continuity
-    if (closedVolume)
+    if (closedVolume && compressible)
     {
-        p += (initialMass - fvc::domainIntegrate(psi*p))
-            /fvc::domainIntegrate(psi);
+        p += (initialMass - fvc::domainIntegrate(thermo.rho()))
+            /compressibility;
         rho = thermo.rho();
         p_rgh = p - rho*gh;
     }
