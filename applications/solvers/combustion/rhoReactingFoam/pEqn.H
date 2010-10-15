@@ -1,10 +1,6 @@
 {
     rho = thermo.rho();
 
-    // Thermodynamic density needs to be updated by psi*d(p) after the
-    // pressure solution - done in 2 parts. Part 1:
-    thermo.rho() -= psi*p;
-
     volScalarField rUA = 1.0/UEqn.A();
     U = rUA*UEqn.H();
 
@@ -22,13 +18,21 @@
             fvc::interpolate(thermo.psi())*phiv
         );
 
+        fvScalarMatrix pDDtEqn
+        (
+            fvc::ddt(rho) + fvc::div(phi)
+          + correction(fvm::ddt(psi, p) + fvm::div(phid, p))
+        );
+
+        // Thermodynamic density needs to be updated by psi*d(p) after the
+        // pressure solution - done in 2 parts. Part 1:
+        thermo.rho() -= psi*p;
+
         for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
         {
             fvScalarMatrix pEqn
             (
-                fvc::ddt(rho) + fvc::div(phi)
-              + correction(fvm::ddt(psi, p) + fvm::div(phid, p))
-              - fvm::laplacian(rho*rUA, p)
+                pDDtEqn - fvm::laplacian(rho*rUA, p)
             );
 
             if (ocorr == nOuterCorr && corr == nCorr && nonOrth == nNonOrthCorr)
@@ -45,6 +49,9 @@
                 phi += pEqn.flux();
             }
         }
+
+        // Second part of thermodynamic density update
+        thermo.rho() += psi*p;
     }
     else
     {
@@ -55,13 +62,21 @@
               + fvc::ddtPhiCorr(rUA, rho, U, phi)
             );
 
+        fvScalarMatrix pDDtEqn
+        (
+            fvc::ddt(rho) + psi*correction(fvm::ddt(p))
+          + fvc::div(phi)
+        );
+
+        // Thermodynamic density needs to be updated by psi*d(p) after the
+        // pressure solution - done in 2 parts. Part 1:
+        thermo.rho() -= psi*p;
+
         for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
         {
             fvScalarMatrix pEqn
             (
-                fvc::ddt(rho) + psi*correction(fvm::ddt(p))
-              + fvc::div(phi)
-              - fvm::laplacian(rho*rUA, p)
+                pDDtEqn - fvm::laplacian(rho*rUA, p)
             );
 
             if (ocorr == nOuterCorr && corr == nCorr && nonOrth == nNonOrthCorr)
@@ -78,10 +93,10 @@
                 phi += pEqn.flux();
             }
         }
-    }
 
-    // Second part of thermodynamic density update
-    thermo.rho() += psi*p;
+        // Second part of thermodynamic density update
+        thermo.rho() += psi*p;
+    }
 
     #include "rhoEqn.H"
     #include "compressibleContinuityErrs.H"
