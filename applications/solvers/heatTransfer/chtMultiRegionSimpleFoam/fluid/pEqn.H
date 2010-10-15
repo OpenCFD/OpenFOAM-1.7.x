@@ -12,6 +12,8 @@
 
     phi = fvc::interpolate(rho)*(fvc::interpolate(U) & mesh.Sf());
     bool closedVolume = adjustPhi(phi, U, p_rgh);
+    dimensionedScalar compressibility = fvc::domainIntegrate(psi);
+    bool compressible = (compressibility.value() > SMALL);
 
     surfaceScalarField buoyancyPhi = rhorUAf*ghf*fvc::snGrad(rho)*mesh.magSf();
     phi -= buoyancyPhi;
@@ -24,7 +26,11 @@
             fvm::laplacian(rhorUAf, p_rgh) == fvc::div(phi)
         );
 
-        p_rghEqn.setReference(pRefCell, getRefCellValue(p_rgh, pRefCell));
+        p_rghEqn.setReference
+        (
+            pRefCell,
+            compressible ? getRefCellValue(p_rgh, pRefCell) : pRefValue
+        );
 
         eqnResidual = p_rghEqn.solve().initialResidual();
 
@@ -55,10 +61,10 @@
 
     // For closed-volume cases adjust the pressure level
     // to obey overall mass continuity
-    if (closedVolume)
+    if (closedVolume && compressible)
     {
-        p += (initialMass - fvc::domainIntegrate(psi*p))
-            /fvc::domainIntegrate(psi);
+        p += (initialMass - fvc::domainIntegrate(thermo.rho()))
+            /compressibility;
         p_rgh = p - rho*gh;
     }
 

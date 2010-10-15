@@ -15,8 +15,6 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-libs            ("libcompressibleTurbulenceModel.so" "libcompressibleRASModels.so");
-
 application     chtMultiRegionFoam;
 
 startFrom       latestTime;
@@ -54,5 +52,11 @@ maxDi           10.0;
 
 adjustTimeStep  yes;
 
+libs
+(
+    "libOpenFOAM.so"
+    "libcompressibleTurbulenceModel.so"
+    "libcompressibleRASModels.so"
+);
 
 // ************************************************************************* //

@@ -101,16 +101,6 @@ solvers
     }
 }
 
-PISO
-{
-    momentumPredictor    off;
-    nOuterCorrectors     1;
-    nCorrectors          2;
-    nNonOrthogonalCorrectors 1;
-    pRefPoint            (-0.081 -0.0257 8.01);
-    pRefValue            1e5;
-}
-
 PIMPLE
 {
     momentumPredictor   on;

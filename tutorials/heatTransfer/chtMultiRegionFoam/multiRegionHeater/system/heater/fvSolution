@@ -25,14 +25,9 @@ solvers
     };
 }
 
-PISO
-{
-    nNonOrthogonalCorrectors 1;
-}
-
 PIMPLE
 {
-    nNonOrthogonalCorrectors 1;
+    nNonOrthogonalCorrectors 0;
 }
 
 // ************************************************************************* //

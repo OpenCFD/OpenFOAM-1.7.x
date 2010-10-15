@@ -26,6 +26,7 @@ License
 #include "makeBasicRhoThermo.H"
 
 #include "perfectGas.H"
+#include "incompressible.H"
 
 #include "hConstThermo.H"
 #include "janafThermo.H"
@@ -71,6 +72,14 @@ makeBasicRhoThermo
     perfectGas
 );
 
+makeBasicRhoThermo
+(
+    hRhoThermo,
+    pureMixture,
+    constTransport,
+    hConstThermo,
+    incompressible
+);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
