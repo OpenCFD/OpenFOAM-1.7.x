@@ -66,9 +66,9 @@ public:
         //- Mesh items to sample
         enum sampleMode
         {
-            NEARESTCELL,
-            NEARESTPATCHFACE,
-            NEARESTFACE
+            NEARESTCELL,        // nearest cell
+            NEARESTPATCHFACE,   // faces on selected patch
+            NEARESTFACE         // nearest face
         };
 
 private:
@@ -193,7 +193,7 @@ public:
             return sampleRegion_;
         }
 
-        //- Patch (only if NEARESTBOUNDARY)
+        //- Patch (only if NEARESTPATCHFACE)
         const word& samplePatch() const
         {
             return samplePatch_;
