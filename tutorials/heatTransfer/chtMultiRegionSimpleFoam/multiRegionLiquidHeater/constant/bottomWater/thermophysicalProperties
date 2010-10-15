@@ -23,7 +23,7 @@ mixture         water 1 18 1000 4181 0 959e-6 6.62;
 //     rhoPolynomial (1000 0 0)
 //     0
 //     0
-//     cpPolynomial (4181 0 0)
+//     CpPolynomial (4181 0 0)
 //     muPolynomial (959e-6 0 0)
 //     kappaPolynomial (145e-6 0 0)
 // ;

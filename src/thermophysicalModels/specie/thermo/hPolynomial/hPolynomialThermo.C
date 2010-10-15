@@ -37,16 +37,16 @@ Foam::hPolynomialThermo<EquationOfState, PolySize>::hPolynomialThermo
     EquationOfState(is),
     Hf_(readScalar(is)),
     Sf_(readScalar(is)),
-    cpPolynomial_("cpPolynomial", is),
+    CpPolynomial_("CpPolynomial", is),
     hPolynomial_(),
     sPolynomial_()
 {
     Hf_ *= this->W();
     Sf_ *= this->W();
-    cpPolynomial_ *= this->W();
+    CpPolynomial_ *= this->W();
 
-    hPolynomial_ = cpPolynomial_.integrate();
-    sPolynomial_ = cpPolynomial_.integrateMinus1();
+    hPolynomial_ = CpPolynomial_.integrate();
+    sPolynomial_ = CpPolynomial_.integrateMinus1();
 
     // Offset h poly so that it is relative to the enthalpy at Tstd
     hPolynomial_[0] += Hf_ - hPolynomial_.evaluate(specie::Tstd);
@@ -68,7 +68,7 @@ Foam::Ostream& Foam::operator<<
     os  << static_cast<const EquationOfState&>(pt) << tab
         << pt.Hf_/pt.W() << tab
         << pt.Sf_ << tab
-        << "cpPolynomial" << tab << pt.cpPolynomial_/pt.W();
+        << "CpPolynomial" << tab << pt.CpPolynomial_/pt.W();
 
     os.check
     (

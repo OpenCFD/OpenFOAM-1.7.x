@@ -13,7 +13,7 @@ N2 N2   1   28.0134
     )
     0.0                                 // Heat of formation
     0.0                                 // Standard entropy
-    cpPolynomial
+    CpPolynomial
     (
         9.7908E+02
         4.1787E-01
@@ -60,7 +60,7 @@ O2 O2   1   31.9988
     )
     0.0                                 // Heat of formation
     0.0                                 // Standard entropy
-    cpPolynomial
+    CpPolynomial
     (
         8.3484E+02
         2.9297E-01
@@ -107,7 +107,7 @@ H2O H2O 1   18.0153
     )
    -1.3423e07                                // Heat of formation [J/kg]
     1.0482e04                                // Standard entropy [J/kg/K]
-    cpPolynomial
+    CpPolynomial
     (
         1.5631E+03
         1.6040E+00
@@ -154,7 +154,7 @@ air air 1   28.85
     )
     0.0
     0.0
-    cpPolynomial
+    CpPolynomial
     (
         9.4876E+02
         3.9171E-01
