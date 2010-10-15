@@ -43,6 +43,10 @@ Description
 #include "constTransport.H"
 #include "sutherlandTransport.H"
 
+#include "icoPolynomial.H"
+#include "hPolynomialThermo.H"
+#include "polynomialTransport.H"
+
 #include "pureMixture.H"
 
 #include "addToRunTimeSelectionTable.H"
@@ -100,6 +104,12 @@ makeBasicMixture
     constTransport,
     hConstThermo,
     incompressible
+);
+
+makeBasicPolyMixture
+(
+    pureMixture,
+    3
 );
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

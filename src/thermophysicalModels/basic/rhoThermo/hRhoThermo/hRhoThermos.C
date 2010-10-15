@@ -35,6 +35,10 @@ License
 #include "constTransport.H"
 #include "sutherlandTransport.H"
 
+#include "icoPolynomial.H"
+#include "hPolynomialThermo.H"
+#include "polynomialTransport.H"
+
 #include "hRhoThermo.H"
 #include "pureMixture.H"
 
@@ -79,6 +83,13 @@ makeBasicRhoThermo
     constTransport,
     hConstThermo,
     incompressible
+);
+
+makeBasicRhoPolyThermo
+(
+    hRhoThermo,
+    pureMixture,
+    3
 );
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
