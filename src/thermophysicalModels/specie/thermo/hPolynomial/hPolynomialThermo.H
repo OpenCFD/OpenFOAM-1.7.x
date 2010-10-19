@@ -108,7 +108,7 @@ class hPolynomialThermo
         scalar Sf_;
 
         //- Specific heat at constant pressure [J/(kg.K)]
-        Polynomial<PolySize> cpPolynomial_;
+        Polynomial<PolySize> CpPolynomial_;
 
         //- Enthalpy - derived from cp [J/kg] - relative to Tstd
         typename Polynomial<PolySize>::intPolyType hPolynomial_;

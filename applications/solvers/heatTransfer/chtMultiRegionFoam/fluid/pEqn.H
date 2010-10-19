@@ -47,9 +47,9 @@
                     p_rgh.select
                     (
                         (
-                            oCorr == nOuterCorr-1
-                         && corr == nCorr-1
-                         && nonOrth == nNonOrthCorr
+                           oCorr == nOuterCorr-1
+                        && corr == nCorr-1
+                        && nonOrth == nNonOrthCorr
                         )
                     )
                 )

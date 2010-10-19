@@ -58,6 +58,39 @@ addToRunTimeSelectionTable                                                    \
 )
 
 
+#define makeBasicRhoPolyThermo(Cthermo,Mixture,Order)                         \
+                                                                              \
+typedef polynomialTransport                                                   \
+<                                                                             \
+    specieThermo                                                              \
+    <                                                                         \
+        hPolynomialThermo                                                     \
+        <                                                                     \
+            icoPolynomial<Order>,                                             \
+            Order                                                             \
+            >                                                                 \
+    >,                                                                        \
+    Order                                                                     \
+> icoPoly##Order##ThermoPhysics;                                              \
+                                                                              \
+typedef Cthermo<Mixture<icoPoly##Order##ThermoPhysics> >                      \
+    Cthermo##Mixture##icoPoly##Order##ThermoPhysics;                          \
+                                                                              \
+defineTemplateTypeNameAndDebugWithName                                        \
+(                                                                             \
+    Cthermo##Mixture##icoPoly##Order##ThermoPhysics,                          \
+    #Cthermo"<"#Mixture"<icoPoly"#Order"ThermoPhysics>>",                     \
+    0                                                                         \
+);                                                                            \
+                                                                              \
+addToRunTimeSelectionTable                                                    \
+(                                                                             \
+    basicRhoThermo,                                                           \
+    Cthermo##Mixture##icoPoly##Order##ThermoPhysics,                          \
+    fvMesh                                                                    \
+)
+
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #endif

@@ -54,18 +54,17 @@ namespace Foam
         constGasThermoPhysics;
 
     typedef polynomialTransport
+    <
+        specieThermo
         <
-            specieThermo
+            hPolynomialThermo
             <
-                hPolynomialThermo
-                <
-                    icoPolynomial<8>,
-                    8
-                >
-            >,
-            8
-        >
-        icoPoly8ThermoPhysics;
+                icoPolynomial<8>,
+                8
+            >
+        >,
+        8
+    > icoPoly8ThermoPhysics;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -73,4 +72,3 @@ namespace Foam
 #endif
 
 // ************************************************************************* //
-

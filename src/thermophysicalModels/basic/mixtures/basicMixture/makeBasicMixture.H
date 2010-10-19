@@ -24,8 +24,6 @@ License
 InClass
     Foam::basicMixture
 
-Description
-
 \*---------------------------------------------------------------------------*/
 
 #ifndef makeBasicMixture_H
@@ -43,6 +41,30 @@ typedef Mixture<Transport<specieThermo<Thermo<EqnOfState> > > >               \
 defineTemplateTypeNameAndDebugWithName                                        \
     (Mixture##Transport##Thermo##EqnOfState,                                  \
     #Mixture"<"#Transport"<specieThermo<"#Thermo"<"#EqnOfState">>>>", 0)
+
+
+#define makeBasicPolyMixture(Mixture,Order)                                   \
+                                                                              \
+typedef polynomialTransport                                                   \
+<                                                                             \
+    specieThermo                                                              \
+    <                                                                         \
+        hPolynomialThermo                                                     \
+        <                                                                     \
+            icoPolynomial<Order>,                                             \
+            Order                                                             \
+            >                                                                 \
+    >,                                                                        \
+    Order                                                                     \
+> icoPoly##Order##ThermoPhysics;                                              \
+                                                                              \
+typedef Mixture<icoPoly##Order##ThermoPhysics>                                \
+    Mixture##icoPoly##Order##ThermoPhysics;                                   \
+                                                                              \
+defineTemplateTypeNameAndDebugWithName                                        \
+    (Mixture##icoPoly##Order##ThermoPhysics,                                  \
+    #Mixture"<icoPoly"#Order"ThermoPhysics>", 0)
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
