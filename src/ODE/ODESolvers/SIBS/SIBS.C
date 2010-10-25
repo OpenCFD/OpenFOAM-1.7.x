@@ -37,8 +37,11 @@ namespace Foam
     const label SIBS::nSeq_[iMaxX_] = {2, 6, 10, 14, 22, 34, 50, 70};
 
     const scalar
-        SIBS::safe1 = 0.25, SIBS::safe2 = 0.7,
-        SIBS::redMax = 1.0e-5, SIBS::redMin = 0.0, SIBS::scaleMX = 0.1;
+        SIBS::safe1 = 0.25,
+        SIBS::safe2 = 0.7,
+        SIBS::redMax = 1.0e-5,
+        SIBS::redMin = 0.7,
+        SIBS::scaleMX = 0.1;
 };
 
 
