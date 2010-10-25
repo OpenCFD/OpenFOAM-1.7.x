@@ -50,6 +50,9 @@
 #-------------------------------------------------------------------------------
 lockDir=$HOME/.wmakeScheduler
 
+# csh sets HOST, bash sets HOSTNAME
+: ${HOST:=$HOSTNAME}
+
 # fallback - 1 core on current host
 : ${WM_HOSTS:=$HOST:1}
 

@@ -46,6 +46,17 @@ USAGE
 }
 
 
+# Function to do replacement on file. Checks if any replacement has been done.
+# inlineSed <file> <sedCommand> <description>
+_inlineSed()
+{
+    backup=`tempfile`
+    cp $1 $backup
+    sed -i -e "$2" $1
+    cmp $1 $backup || usage "Failed : $3"
+}
+
+
 [ -f etc/bashrc -a -f etc/settings.sh ] || usage "Please run from top-level directory of installation"
 
 unset foamInstall projectName archOption paraviewInstall
@@ -60,29 +71,39 @@ do
     --foamInstall)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
 	foamInstall="$2"
-	echo "Replacing foamInstall setting by $foamInstall"
-	sed -i -e '/^[^#]/s@foamInstall=.*@foamInstall='"$foamInstall@" etc/bashrc
+        echo "** foamInstall:$foamInstall"
+
+        _inlineSed \
+            etc/bashrc \
+            '/^[^#]/s@foamInstall=.*@foamInstall='"$foamInstall@" \
+            "Replacing foamInstall setting by $foamInstall"
         shift 2
         ;;
    --projectName)
        	[ "$#" -ge 2 ] || usage "'$1' option requires an argument"
 	projectName="$2"
-	echo "Replacing WM_PROJECT_DIR setting by $projectName"
-	sed -i -e '/^[^#]/s@WM_PROJECT_DIR=.*@WM_PROJECT_DIR=$WM_PROJECT_INST_DIR/'"$projectName@" etc/bashrc
+        _inlineSed \
+            etc/bashrc \
+            '/^[^#]/s@WM_PROJECT_DIR=.*@WM_PROJECT_DIR=$WM_PROJECT_INST_DIR/'"$projectName@" \
+            "Replacing WM_PROJECT_DIR setting by $projectName"
        	shift 2
        	;;
     --archOption)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
 	archOption="$2"
-	echo "Replacing WM_ARCH_OPTION setting by $archOption"
-	sed -i -e '/^[^#]/s@: ${WM_ARCH_OPTION:=64}@WM_ARCH_OPTION='"$archOption@" etc/bashrc
+        _inlineSed \
+            etc/bashrc \
+            '/^[^#]/s@: ${WM_ARCH_OPTION:=64}@WM_ARCH_OPTION='"$archOption@" \
+             "Replacing WM_ARCH_OPTION setting by $archOption"
         shift 2
         ;;
     --paraviewInstall)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
 	paraviewInstall="$2"
-	echo "Replacing ParaView_DIR setting by $paraviewInstall"
-	sed -i -e '/^[^#]/s@ParaView_DIR=.*@ParaView_DIR='"$paraviewInstall@" etc/apps/paraview3/bashrc
+        _inlineSed \
+            etc/apps/paraview3/bashrc \
+            '/^[^#]/s@ParaView_DIR=.*@ParaView_DIR='"$paraviewInstall@" \
+             "Replacing ParaView_DIR setting by $paraviewInstall"
         shift 2
         ;;
     *)
@@ -97,12 +118,14 @@ done
 #sed -i -e 's@WM_PROJECT=.*@WM_PROJECT='"$projectName@" etc/bashrc
 
 # Replace the WM_MPLIB always
-echo "Replacing WM_MPLIB setting by SYSTEMOPENMPI"
-sed -i -e '/^[^#]/s@: ${WM_MPLIB:=.*}@WM_MPLIB=SYSTEMOPENMPI@' etc/bashrc
+_inlineSed \
+    etc/bashrc \
+    '/^[^#]/s@: ${WM_MPLIB:=.*}@WM_MPLIB=SYSTEMOPENMPI@' \
+    "Replacing WM_MPLIB setting by SYSTEMOPENMPI"
 # Replace the compilerInstall always
-echo "Replacing compilerInstall setting by system"
-sed -i -e '/^[^#]/s@: ${compilerInstall:=.*}@compilerInstall=system@' etc/settings.sh
-
-
+_inlineSed \
+    etc/settings.sh \
+    '/^[^#]/s@: ${compilerInstall:=.*}@compilerInstall=system@' \
+    "Replacing compilerInstall setting by system"
 
 #------------------------------------------------------------------------------
