@@ -55,7 +55,7 @@
     (
         dimensionedScalar::lookupOrAddToDict
         (
-            "alphaEps",
+            "alphak",
             kEpsilonDict,
             1.0
         )
