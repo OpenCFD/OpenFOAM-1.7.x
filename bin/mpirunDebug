@@ -157,11 +157,14 @@ do
     procCmdFile="$PWD/processor${proc}.sh"
     procLog="processor${proc}.log"
     geom="-geometry 120x20+$xpos+$ypos"
-    node=""
 
-    if [ .$WM_MPLIB = .OPENMPI ]; then
+    case "$WM_MPLIB" in
+    *OPENMPI)
         node="-np 1 "
-    fi
+        ;;
+    *)
+        node=""
+    esac
 
     echo "#!/bin/sh" > $procCmdFile
     if [ "$method" -eq 0 ]; then
@@ -172,7 +175,7 @@ do
         #echo "$sourceFoam; cd $PWD; $exec $args; read dummy" >> $procCmdFile
         echo "${node}xterm -font fixed -title 'processor'$proc $geom -e $procCmdFile" >> $PWD/mpirun.schema
     elif [ "$method" -eq 2 ]; then
-        echo "$sourceFoam; cd $PWD; gdb -command $PWD/gdbCommands >& $procLog" >> $procCmdFile
+        echo "$sourceFoam; cd $PWD; gdb -command $PWD/gdbCommands $exec >& $procLog" >> $procCmdFile
         echo "${node}$procCmdFile" >> $PWD/mpirun.schema
     elif [ "$method" -eq 3 ]; then
         echo "$sourceFoam; cd $PWD; $exec $args >& $procLog" >> $procCmdFile
