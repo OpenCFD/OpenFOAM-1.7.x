@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 #---------------------------------*- sh -*-------------------------------------
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
@@ -53,7 +53,8 @@ _inlineSed()
     backup=`tempfile`
     cp $1 $backup
     sed -i -e "$2" $1
-    cmp  --quiet $1 $backup && usage "Failed : $3"
+    cmp --quiet $1 $backup && usage "Failed : $3"
+    return 0
 }
 
 
