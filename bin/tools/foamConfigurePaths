@@ -72,8 +72,6 @@ do
     --foamInstall)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
         foamInstall="$2"
-        echo "** foamInstall:$foamInstall"
-
         _inlineSed \
             etc/bashrc \
             '/^[^#]/s@foamInstall=.*@foamInstall='"$foamInstall@" \
