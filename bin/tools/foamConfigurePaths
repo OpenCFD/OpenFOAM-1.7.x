@@ -34,10 +34,10 @@ usage() {
     cat<<USAGE
 
 usage: ${0##*/}
-  --foamInstall dir   		specify installation directory (e.g. /opt)
-  --projectName name 		specify project name (e.g. openfoam170)
-  --archOption  arch		specify architecture option (only 32 or 64 applicable)
-  --paraviewInstall dir 	specify ParaView_DIR (e.g. /opt/paraviewopenfoam380)
+  --foamInstall dir         specify installation directory (e.g. /opt)
+  --projectName name        specify project name (e.g. openfoam170)
+  --archOption  arch        specify architecture option (only 32 or 64 applicable)
+  --paraviewInstall dir     specify ParaView_DIR (e.g. /opt/paraviewopenfoam380)
 
 * hardcode paths to installation
 
@@ -53,7 +53,8 @@ _inlineSed()
     backup=`tempfile`
     cp $1 $backup
     sed -i -e "$2" $1
-    cmp $1 $backup || usage "Failed : $3"
+    cmp --quiet $1 $backup && usage "Failed : $3"
+    return 0
 }
 
 
@@ -70,9 +71,7 @@ do
         ;;
     --foamInstall)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
-	foamInstall="$2"
-        echo "** foamInstall:$foamInstall"
-
+        foamInstall="$2"
         _inlineSed \
             etc/bashrc \
             '/^[^#]/s@foamInstall=.*@foamInstall='"$foamInstall@" \
@@ -80,17 +79,17 @@ do
         shift 2
         ;;
    --projectName)
-       	[ "$#" -ge 2 ] || usage "'$1' option requires an argument"
-	projectName="$2"
+        [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
+        projectName="$2"
         _inlineSed \
             etc/bashrc \
             '/^[^#]/s@WM_PROJECT_DIR=.*@WM_PROJECT_DIR=$WM_PROJECT_INST_DIR/'"$projectName@" \
             "Replacing WM_PROJECT_DIR setting by $projectName"
-       	shift 2
-       	;;
+        shift 2
+        ;;
     --archOption)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
-	archOption="$2"
+        archOption="$2"
         _inlineSed \
             etc/bashrc \
             '/^[^#]/s@: ${WM_ARCH_OPTION:=64}@WM_ARCH_OPTION='"$archOption@" \
@@ -99,7 +98,7 @@ do
         ;;
     --paraviewInstall)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
-	paraviewInstall="$2"
+        paraviewInstall="$2"
         _inlineSed \
             etc/apps/paraview3/bashrc \
             '/^[^#]/s@ParaView_DIR=.*@ParaView_DIR='"$paraviewInstall@" \
@@ -122,10 +121,10 @@ _inlineSed \
     etc/bashrc \
     '/^[^#]/s@: ${WM_MPLIB:=.*}@WM_MPLIB=SYSTEMOPENMPI@' \
     "Replacing WM_MPLIB setting by SYSTEMOPENMPI"
-# Replace the compilerInstall always
-_inlineSed \
-    etc/settings.sh \
-    '/^[^#]/s@: ${compilerInstall:=.*}@compilerInstall=system@' \
-    "Replacing compilerInstall setting by system"
+## Replace the compilerInstall always
+#_inlineSed \
+#    etc/settings.sh \
+#    '/^[^#]/s@: ${compilerInstall:=.*}@compilerInstall=system@' \
+#    "Replacing compilerInstall setting by system"
 
 #------------------------------------------------------------------------------
