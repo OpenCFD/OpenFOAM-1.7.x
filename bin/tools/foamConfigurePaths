@@ -36,6 +36,7 @@ usage() {
 usage: ${0##*/}
   --foamInstall dir         specify installation directory (e.g. /opt)
   --projectName name        specify project name (e.g. openfoam170)
+  --projectVersion ver      specify project version (e.g. 1.7.x)
   --archOption  arch        specify architecture option (only 32 or 64 applicable)
   --paraviewInstall dir     specify ParaView_DIR (e.g. /opt/paraviewopenfoam380)
 
@@ -60,7 +61,7 @@ _inlineSed()
 
 [ -f etc/bashrc -a -f etc/settings.sh ] || usage "Please run from top-level directory of installation"
 
-unset foamInstall projectName archOption paraviewInstall
+unset foamInstall projectName projectVersion archOption paraviewInstall
 
 # parse options
 while [ "$#" -gt 0 ]
@@ -87,6 +88,15 @@ do
             "Replacing WM_PROJECT_DIR setting by $projectName"
         shift 2
         ;;
+   --projectVersion)
+        [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
+        projectVersion="$2"
+        _inlineSed \
+            etc/bashrc \
+            '/^[^#]/s@WM_PROJECT_VERSION=.*@WM_PROJECT_VERSION='"$projectVersion@" \
+            "Replacing WM_PROJECT_VERSION setting by $projectVersion"
+        shift 2
+        ;;
     --archOption)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
         archOption="$2"
@@ -111,7 +121,7 @@ do
     esac
 done
 
-[ -n "$foamInstall" -o -n "$projectName" -o -n "$archOption"  -o -n "$paraviewInstall" ] || usage "Please specify at least one configure option"
+[ -n "$foamInstall" -o -n "$projectName" -o -n "$projectVersion" -o -n "$archOption"  -o -n "$paraviewInstall" ] || usage "Please specify at least one configure option"
 
 #echo "Replacing WM_PROJECT setting by $projectName"
 #sed -i -e 's@WM_PROJECT=.*@WM_PROJECT='"$projectName@" etc/bashrc
