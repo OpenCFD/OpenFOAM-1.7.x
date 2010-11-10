@@ -152,7 +152,8 @@ public:
 
     // Member functions
 
-        // Acces functions
+         // Acces functions
+
             scalarField& Ks()
             {
                 return Ks_;

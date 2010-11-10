@@ -114,8 +114,6 @@ class timeVaryingMappedFixedValueFvPatchField
         //  faceCentres
         void readSamplePoints();
 
-        //- Find boundary data inbetween current time and interpolate
-        void checkTable();
 
         //- Do actual interpolation using current weights
         tmp<Field<Type> > interpolate(const Field<Type>&) const;
@@ -191,6 +189,9 @@ public:
 
     // Member functions
 
+        //- Find boundary data inbetween current time and interpolate
+        void checkTable();
+
         // Access
 
             //- Return the coordinateSystem
@@ -199,6 +200,11 @@ public:
                 return referenceCS_;
             }
 
+
+            const Field<Type> startSampledValues()
+            {
+                return startSampledValues_;
+            }
 
         // Mapping functions
 
