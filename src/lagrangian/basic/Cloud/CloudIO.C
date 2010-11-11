@@ -121,10 +121,14 @@ void Foam::Cloud<ParticleType>::initCloud(const bool checkClass)
     }
     else
     {
-        WarningIn("Cloud<ParticleType>::initCloud(const bool checkClass)")
-            << "Cannot read particle positions file " << nl
-            << "    " << ioP.path() << nl
-            << "    assuming the initial cloud contains 0 particles." << endl;
+        if (debug)
+        {
+            WarningIn("Cloud<ParticleType>::initCloud(const bool checkClass)")
+                << "Cannot read particle positions file " << nl
+                << "    " << ioP.objectPath() << nl
+                << "    assuming the initial cloud contains 0 particles."
+                << endl;
+        }
     }
 }
 
