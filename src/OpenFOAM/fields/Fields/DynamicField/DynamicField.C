@@ -25,87 +25,53 @@ License
 
 #include "DynamicField.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
 
-namespace Foam
-{
-
-// * * * * * * * * * * * * * * * Static Members  * * * * * * * * * * * * * * //
-
-template<class Type>
-const char* const DynamicField<Type>::typeName("DynamicField");
-
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-template<class Type>
-DynamicField<Type>::DynamicField(Istream& is)
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::DynamicField(Istream& is)
 :
-    Field<Type>(is),
-    capacity_(Field<Type>::size())
+    Field<T>(is),
+    capacity_(Field<T>::size())
 {}
 
 
-template<class Type>
-tmp<DynamicField<Type> > DynamicField<Type>::clone() const
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+Foam::tmp<Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv> >
+Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::clone() const
 {
-    return tmp<DynamicField<Type> >(new DynamicField<Type>(*this));
+    return tmp<DynamicField<T, SizeInc, SizeMult, SizeDiv> >
+    (
+        new DynamicField<T, SizeInc, SizeMult, SizeDiv>(*this)
+    );
 }
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-template<class Type>
-void DynamicField<Type>::setSize(const label nElem)
-{
-    // allocate more capacity?
-    if (nElem > capacity_)
-    {
-        capacity_ = max(nElem, label(1 + capacity_*2));
-
-        Field<Type>::setSize(capacity_);
-    }
-
-    // adjust addressed size
-    Field<Type>::size(nElem);
-}
-
-
-// * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
 
 // * * * * * * * * * * * * * * * IOstream Operator * * * * * * * * * * * * * //
 
-template<class Type>
-Ostream& operator<<(Ostream& os, const DynamicField<Type>& f)
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+Foam::Ostream& Foam::operator<<
+(
+    Ostream& os,
+    const DynamicField<T, SizeInc, SizeMult, SizeDiv>& lst
+)
 {
-    os << static_cast<const Field<Type>&>(f);
+    os << static_cast<const Field<T>&>(lst);
     return os;
 }
 
 
-template<class Type>
-Ostream& operator<<(Ostream& os, const tmp<DynamicField<Type> >& tf)
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+Foam::Istream& Foam::operator>>
+(
+    Istream& is,
+    DynamicField<T, SizeInc, SizeMult, SizeDiv>& lst
+)
 {
-    os << tf();
-    tf.clear();
-    return os;
-}
-
-
-template<class Type>
-Istream& operator>>(Istream& is, DynamicField<Type>& lst)
-{
-    is >> static_cast<Field<Type>&>(lst);
-    lst.capacity_ = lst.Field<Type>::size();
+    is >> static_cast<Field<T>&>(lst);
+    lst.capacity_ = lst.Field<T>::size();
 
     return is;
 }
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 
 // ************************************************************************* //

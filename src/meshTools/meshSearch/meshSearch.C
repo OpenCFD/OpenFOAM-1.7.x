@@ -573,30 +573,25 @@ bool Foam::meshSearch::pointInCell(const point& p, label cellI) const
         {
             label faceI = cFaces[i];
 
-            const face& f = mesh_.faces()[faceI];
+            pointHit inter = mesh_.faces()[faceI].ray
+            (
+                ctr,
+                dir,
+                mesh_.points(),
+                intersection::HALF_RAY,
+                intersection::VECTOR
+            );
 
-            forAll(f, fp)
+            if (inter.hit())
             {
-                pointHit inter = f.ray
-                (
-                    ctr,
-                    dir,
-                    mesh_.points(),
-                    intersection::HALF_RAY,
-                    intersection::VECTOR
-                );
+                scalar dist = inter.distance();
 
-                if (inter.hit())
+                if (dist < magDir)
                 {
-                    scalar dist = inter.distance();
+                    // Valid hit. Hit face so point is not in cell.
+                    intersection::setPlanarTol(oldTol);
 
-                    if (dist < magDir)
-                    {
-                        // Valid hit. Hit face so point is not in cell.
-                        intersection::setPlanarTol(oldTol);
-
-                        return false;
-                    }
+                    return false;
                 }
             }
         }

@@ -41,7 +41,7 @@ dictionaryReplacement
             }
             "rightSolid_to_.*"
             {
-                type            compressible::turbulentTemperatureCoupledBaffle;
+                type            compressible::turbulentTemperatureCoupledBaffleMixed;
                 neighbourFieldName T;
                 K               K;
                 value           uniform 300;

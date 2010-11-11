@@ -152,6 +152,17 @@ public:
 
     // Member functions
 
+         // Acces functions
+            scalarField& Ks()
+            {
+                return Ks_;
+            }
+
+            scalarField& Cs()
+            {
+                return Cs_;
+            }
+
         // Mapping functions
 
             //- Map (and resize as needed) from self given a mapping object

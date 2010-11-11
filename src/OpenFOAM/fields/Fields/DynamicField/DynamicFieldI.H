@@ -23,198 +23,441 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "DynamicField.H"
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Type>
-DynamicField<Type>::DynamicField()
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::DynamicField()
 :
-    Field<Type>(),
-    capacity_(0)
+    Field<T>(0),
+    capacity_(Field<T>::size())
 {}
 
 
-template<class Type>
-DynamicField<Type>::DynamicField(const label size)
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::DynamicField
+(
+    const label nElem
+)
 :
-    Field<Type>(size),
-    capacity_(Field<Type>::size())
+    Field<T>(nElem),
+    capacity_(Field<T>::size())
 {
-    Field<Type>::size(0);
+    // we could also enforce SizeInc granularity when (!SizeMult || !SizeDiv)
+    Field<T>::size(0);
 }
 
 
-template<class Type>
-inline Foam::DynamicField<Type>::DynamicField
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::DynamicField
 (
-    const UList<Type>& lst
+    const UList<T>& lst
 )
 :
-    Field<Type>(lst),
-    capacity_(Field<Type>::size())
+    Field<T>(lst),
+    capacity_(Field<T>::size())
 {}
 
 
-template<class Type>
-inline Foam::DynamicField<Type>::DynamicField
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::DynamicField
 (
-    const Xfer<List<Type> >& lst
+    const Xfer<List<T> >& lst
 )
 :
-    Field<Type>(lst),
-    capacity_(Field<Type>::size())
+    Field<T>(lst),
+    capacity_(Field<T>::size())
 {}
 
 
-template<class Type>
-DynamicField<Type>::DynamicField
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::DynamicField
 (
-    const UList<Type>& mapF,
+    const UList<T>& mapF,
     const labelList& mapAddressing
 )
 :
-    Field<Type>(mapF, mapAddressing),
-    capacity_(Field<Type>::size())
+    Field<T>(mapF, mapAddressing),
+    capacity_(Field<T>::size())
 {}
 
 
-template<class Type>
-DynamicField<Type>::DynamicField
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::DynamicField
 (
-    const UList<Type>& mapF,
+    const UList<T>& mapF,
     const labelListList& mapAddressing,
     const scalarListList& weights
 )
 :
-    Field<Type>(mapF, mapAddressing, weights),
-    capacity_(Field<Type>::size())
+    Field<T>(mapF, mapAddressing, weights),
+    capacity_(Field<T>::size())
 {}
 
 
 //- Construct by mapping from the given field
-template<class Type>
-DynamicField<Type>::DynamicField
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::DynamicField
 (
-    const UList<Type>& mapF,
+    const UList<T>& mapF,
     const FieldMapper& map
 )
 :
-    DynamicField<Type>(mapF, map),
-    capacity_(Field<Type>::size())
+    Field<T>(mapF, map),
+    capacity_(Field<T>::size())
 {}
 
 
-template<class Type>
-DynamicField<Type>::DynamicField(const DynamicField<Type>& f)
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::DynamicField
+(
+    const DynamicField<T, SizeInc, SizeMult, SizeDiv>& lst
+)
 :
-    Field<Type>(f),
-    capacity_(Field<Type>::size())
+    Field<T>(lst),
+    capacity_(lst.capacity())
 {}
 
 
-template<class Type>
-DynamicField<Type>::DynamicField(DynamicField<Type>& f, bool reUse)
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::DynamicField
+(
+    const Xfer<DynamicField<T, SizeInc, SizeMult, SizeDiv> >& lst
+)
 :
-    Field<Type>(f, reUse),
-    capacity_(Field<Type>::size())
-{}
-
-
-template<class Type>
-DynamicField<Type>::DynamicField(const Xfer<DynamicField<Type> >& f)
-:
-    Field<Type>(f),
-    capacity_(Field<Type>::size())
+    Field<T>(lst),
+    capacity_(Field<T>::size())
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Type>
-Foam::label DynamicField<Type>::capacity() const
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::label Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::capacity()
+const
 {
     return capacity_;
 }
 
 
-template<class Type>
-void DynamicField<Type>::append(const Type& t)
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline void Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::setCapacity
+(
+    const label nElem
+)
 {
-    label elemI = Field<Type>::size();
+    label nextFree = Field<T>::size();
+    capacity_ = nElem;
+
+    if (nextFree > capacity_)
+    {
+        // truncate addressed sizes too
+        nextFree = capacity_;
+    }
+    // we could also enforce SizeInc granularity when (!SizeMult || !SizeDiv)
+
+    Field<T>::setSize(capacity_);
+    Field<T>::size(nextFree);
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline void Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::reserve
+(
+    const label nElem
+)
+{
+    // allocate more capacity?
+    if (nElem > capacity_)
+    {
+// TODO: convince the compiler that division by zero does not occur
+//        if (SizeInc && (!SizeMult || !SizeDiv))
+//        {
+//            // resize with SizeInc as the granularity
+//            capacity_ = nElem;
+//            unsigned pad = SizeInc - (capacity_ % SizeInc);
+//            if (pad != SizeInc)
+//            {
+//                capacity_ += pad;
+//            }
+//        }
+//        else
+        {
+            capacity_ = max
+            (
+                nElem,
+                label(SizeInc + capacity_ * SizeMult / SizeDiv)
+            );
+        }
+
+        // adjust allocated size, leave addressed size untouched
+        label nextFree = Field<T>::size();
+        Field<T>::setSize(capacity_);
+        Field<T>::size(nextFree);
+    }
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline void Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::setSize
+(
+    const label nElem
+)
+{
+    // allocate more capacity?
+    if (nElem > capacity_)
+    {
+// TODO: convince the compiler that division by zero does not occur
+//        if (SizeInc && (!SizeMult || !SizeDiv))
+//        {
+//            // resize with SizeInc as the granularity
+//            capacity_ = nElem;
+//            unsigned pad = SizeInc - (capacity_ % SizeInc);
+//            if (pad != SizeInc)
+//            {
+//                capacity_ += pad;
+//            }
+//        }
+//        else
+        {
+            capacity_ = max
+            (
+                nElem,
+                label(SizeInc + capacity_ * SizeMult / SizeDiv)
+            );
+        }
+
+        Field<T>::setSize(capacity_);
+    }
+
+    // adjust addressed size
+    Field<T>::size(nElem);
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline void Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::setSize
+(
+    const label nElem,
+    const T& t
+)
+{
+    label nextFree = Field<T>::size();
+    setSize(nElem);
+
+    // set new elements to constant value
+    while (nextFree < nElem)
+    {
+        this->operator[](nextFree++) = t;
+    }
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline void Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::resize
+(
+    const label nElem
+)
+{
+    this->setSize(nElem);
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline void Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::resize
+(
+    const label nElem,
+    const T& t
+)
+{
+    this->setSize(nElem, t);
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline void Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::clear()
+{
+    Field<T>::size(0);
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline void Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::clearStorage()
+{
+    Field<T>::clear();
+    capacity_ = 0;
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>&
+Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::shrink()
+{
+    label nextFree = Field<T>::size();
+    if (capacity_ > nextFree)
+    {
+        // use the full list when resizing
+        Field<T>::size(capacity_);
+
+        // the new size
+        capacity_ = nextFree;
+        Field<T>::setSize(capacity_);
+        Field<T>::size(nextFree);
+    }
+    return *this;
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::Xfer<Foam::List<T> >
+Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::xfer()
+{
+    return xferMoveTo< List<T> >(*this);
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>&
+Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::append
+(
+    const T& t
+)
+{
+    const label elemI = List<T>::size();
     setSize(elemI + 1);
 
     this->operator[](elemI) = t;
+    return *this;
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>&
+Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::append
+(
+    const UList<T>& lst
+)
+{
+    if (this == &lst)
+    {
+        FatalErrorIn
+        (
+            "DynamicField<T, SizeInc, SizeMult, SizeDiv>::append"
+            "(const UList<T>&)"
+        )   << "attempted appending to self" << abort(FatalError);
+    }
+
+    label nextFree = List<T>::size();
+    setSize(nextFree + lst.size());
+
+    forAll(lst, elemI)
+    {
+        this->operator[](nextFree++) = lst[elemI];
+    }
+    return *this;
+}
+
+
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline T Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::remove()
+{
+    const label elemI = List<T>::size() - 1;
+
+    if (elemI < 0)
+    {
+        FatalErrorIn
+        (
+            "Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::remove()"
+        )   << "List is empty" << abort(FatalError);
+    }
+
+    const T& val = List<T>::operator[](elemI);
+
+    List<T>::size(elemI);
+
+    return val;
 }
 
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
-template<class Type>
-void DynamicField<Type>::operator=(const DynamicField<Type>& rhs)
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline T& Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::operator()
+(
+    const label elemI
+)
 {
-    if (this == &rhs)
+    if (elemI >= Field<T>::size())
     {
-        FatalErrorIn("DynamicField<Type>::operator=(const DynamicField<Type>&)")
-            << "attempted assignment to self"
-            << abort(FatalError);
+        setSize(elemI + 1);
     }
 
-    Field<Type>::operator=(rhs);
-    capacity_ = Field<Type>::size();
+    return this->operator[](elemI);
 }
 
 
-template<class Type>
-void DynamicField<Type>::operator=(const UList<Type>& rhs)
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline void Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::operator=
+(
+    const T& t
+)
 {
-    Field<Type>::operator=(rhs);
-    capacity_ = Field<Type>::size();
+    UList<T>::operator=(t);
 }
 
 
-template<class Type>
-void DynamicField<Type>::operator=(const tmp<DynamicField>& rhs)
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline void Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::operator=
+(
+    const DynamicField<T, SizeInc, SizeMult, SizeDiv>& lst
+)
 {
-    if (this == &(rhs()))
+    if (this == &lst)
     {
-        FatalErrorIn("DynamicField<Type>::operator=(const tmp<DynamicField>&)")
-            << "attempted assignment to self"
-            << abort(FatalError);
+        FatalErrorIn
+        (
+            "DynamicField<T, SizeInc, SizeMult, SizeDiv>::operator="
+            "(const DynamicField<T, SizeInc, SizeMult, SizeDiv>&)"
+        )   << "attempted assignment to self" << abort(FatalError);
     }
 
-    // This is dodgy stuff, don't try it at home.
-    DynamicField* fieldPtr = rhs.ptr();
-    List<Type>::transfer(*fieldPtr);
-    delete fieldPtr;
-    capacity_ = Field<Type>::size();
+    if (capacity_ >= lst.size())
+    {
+        // can copy w/o reallocating, match initial size to avoid reallocation
+        Field<T>::size(lst.size());
+        Field<T>::operator=(lst);
+    }
+    else
+    {
+        // make everything available for the copy operation
+        Field<T>::size(capacity_);
+
+        Field<T>::operator=(lst);
+        capacity_ = Field<T>::size();
+    }
 }
 
 
-template<class Type>
-Type& DynamicField<Type>::operator[](const label i)
+template<class T, unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
+inline void Foam::DynamicField<T, SizeInc, SizeMult, SizeDiv>::operator=
+(
+    const UList<T>& lst
+)
 {
-    return Field<Type>::operator[](i);
+    if (capacity_ >= lst.size())
+    {
+        // can copy w/o reallocating, match initial size to avoid reallocation
+        Field<T>::size(lst.size());
+        Field<T>::operator=(lst);
+    }
+    else
+    {
+        // make everything available for the copy operation
+        Field<T>::size(capacity_);
+
+        Field<T>::operator=(lst);
+        capacity_ = Field<T>::size();
+    }
 }
 
-
-template<class Type>
-const Type& DynamicField<Type>::operator[](const label i) const
-{
-    return Field<Type>::operator[](i);
-}
-
-
-// * * * * * * * * * * * * * * * IOstream Operator * * * * * * * * * * * * * //
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //

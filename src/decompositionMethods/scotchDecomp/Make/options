@@ -1,4 +1,7 @@
+include $(RULES)/mplib$(WM_MPLIB)
+
 EXE_INC = \
+    $(PFLAGS) $(PINC) \
     -I$(WM_THIRD_PARTY_DIR)/scotch_5.1/include \
     -I/usr/include/scotch \
     -I../decompositionMethods/lnInclude

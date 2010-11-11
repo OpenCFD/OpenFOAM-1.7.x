@@ -5,7 +5,7 @@ EXE_INC = \
     -I$(LIB_SRC)/transportModels/interfaceProperties/lnInclude \
     -I$(LIB_SRC)/finiteVolume/lnInclude
 
-EXE_LIBS = \
+LIB_LIBS = \
     -linterfaceProperties \
     -lincompressibleTransportModels \
     -lfiniteVolume
