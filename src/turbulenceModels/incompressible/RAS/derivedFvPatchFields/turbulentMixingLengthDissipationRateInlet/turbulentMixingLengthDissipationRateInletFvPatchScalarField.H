@@ -46,7 +46,7 @@ SourceFiles
 #ifndef incompressibleturbulentMixingLengthDissipationRateInlet_H
 #define incompressibleturbulentMixingLengthDissipationRateInlet_H
 
-#include "fixedValueFvPatchFields.H"
+#include "mixedFvPatchFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -61,12 +61,19 @@ namespace incompressible
 
 class turbulentMixingLengthDissipationRateInletFvPatchScalarField
 :
-    public fixedValueFvPatchScalarField
+    public mixedFvPatchScalarField
 {
     // Private data
 
         //- turbulent length scale
         scalar mixingLength_;
+
+        //- Name of the flux field
+        word phiName_;
+
+        //- Name of the turbulent kinetic energy field
+        word kName_;
+
 
 public:
 

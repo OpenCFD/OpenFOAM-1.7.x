@@ -46,9 +46,15 @@ turbulentMixingLengthDissipationRateInletFvPatchScalarField
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    fixedValueFvPatchField<scalar>(p, iF),
-    mixingLength_(0.001)
-{}
+    mixedFvPatchScalarField(p, iF),
+    mixingLength_(0.0),
+    phiName_("undefined-phi"),
+    kName_("undefined-k")
+{
+    this->refValue() = 0.0;
+    this->refGrad() = 0.0;
+    this->valueFraction() = 0.0;
+}
 
 turbulentMixingLengthDissipationRateInletFvPatchScalarField::
 turbulentMixingLengthDissipationRateInletFvPatchScalarField
@@ -59,8 +65,10 @@ turbulentMixingLengthDissipationRateInletFvPatchScalarField
     const fvPatchFieldMapper& mapper
 )
 :
-    fixedValueFvPatchField<scalar>(ptf, p, iF, mapper),
-    mixingLength_(ptf.mixingLength_)
+    mixedFvPatchScalarField(ptf, p, iF, mapper),
+    mixingLength_(ptf.mixingLength_),
+    phiName_(ptf.phiName_),
+    kName_(ptf.kName_)
 {}
 
 turbulentMixingLengthDissipationRateInletFvPatchScalarField::
@@ -71,9 +79,17 @@ turbulentMixingLengthDissipationRateInletFvPatchScalarField
     const dictionary& dict
 )
 :
-    fixedValueFvPatchField<scalar>(p, iF, dict),
-    mixingLength_(readScalar(dict.lookup("mixingLength")))
-{}
+    mixedFvPatchScalarField(p, iF),
+    mixingLength_(readScalar(dict.lookup("mixingLength"))),
+    phiName_(dict.lookupOrDefault<word>("phi", "phi")),
+    kName_(dict.lookupOrDefault<word>("k", "k"))
+{
+    fvPatchScalarField::operator=(scalarField("value", dict, p.size()));
+
+    this->refValue() = 0.0;
+    this->refGrad() = 0.0;
+    this->valueFraction() = 0.0;
+}
 
 turbulentMixingLengthDissipationRateInletFvPatchScalarField::
 turbulentMixingLengthDissipationRateInletFvPatchScalarField
@@ -81,8 +97,10 @@ turbulentMixingLengthDissipationRateInletFvPatchScalarField
     const turbulentMixingLengthDissipationRateInletFvPatchScalarField& ptf
 )
 :
-    fixedValueFvPatchField<scalar>(ptf),
-    mixingLength_(ptf.mixingLength_)
+    mixedFvPatchScalarField(ptf),
+    mixingLength_(ptf.mixingLength_),
+    phiName_(ptf.phiName_),
+    kName_(ptf.kName_)
 {}
 
 turbulentMixingLengthDissipationRateInletFvPatchScalarField::
@@ -92,8 +110,10 @@ turbulentMixingLengthDissipationRateInletFvPatchScalarField
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    fixedValueFvPatchField<scalar>(ptf, iF),
-    mixingLength_(ptf.mixingLength_)
+    mixedFvPatchScalarField(ptf, iF),
+    mixingLength_(ptf.mixingLength_),
+    phiName_(ptf.phiName_),
+    kName_(ptf.kName_)
 {}
 
 
@@ -114,12 +134,16 @@ void turbulentMixingLengthDissipationRateInletFvPatchScalarField::updateCoeffs()
 
     const scalar Cmu75 = pow(Cmu, 0.75);
 
-    const fvPatchField<scalar>& kp =
-        patch().lookupPatchField<volScalarField, scalar>("k");
+    const fvPatchScalarField& kp =
+        patch().lookupPatchField<volScalarField, scalar>(kName_);
 
-    operator==(Cmu75*kp*sqrt(kp)/mixingLength_);
+    const fvsPatchScalarField& phip =
+        patch().lookupPatchField<surfaceScalarField, scalar>(phiName_);
 
-    fixedValueFvPatchField<scalar>::updateCoeffs();
+    this->refValue() = Cmu75*kp*sqrt(kp)/mixingLength_;
+    this->valueFraction() = 1.0 - pos(phip);
+
+    mixedFvPatchScalarField::updateCoeffs();
 }
 
 
@@ -128,9 +152,11 @@ void turbulentMixingLengthDissipationRateInletFvPatchScalarField::write
     Ostream& os
 ) const
 {
-    fvPatchField<scalar>::write(os);
+    fvPatchScalarField::write(os);
     os.writeKeyword("mixingLength")
         << mixingLength_ << token::END_STATEMENT << nl;
+    os.writeKeyword("phi") << phiName_ << token::END_STATEMENT << nl;
+    os.writeKeyword("k") << kName_ << token::END_STATEMENT << nl;
     writeEntry("value", os);
 }
 

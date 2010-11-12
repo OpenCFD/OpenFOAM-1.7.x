@@ -46,7 +46,7 @@ SourceFiles
 #ifndef turbulentIntensityKineticEnergyInletFvPatchScalarField_H
 #define turbulentIntensityKineticEnergyInletFvPatchScalarField_H
 
-#include "fixedValueFvPatchFields.H"
+#include "mixedFvPatchFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -59,12 +59,19 @@ namespace Foam
 
 class turbulentIntensityKineticEnergyInletFvPatchScalarField
 :
-    public fixedValueFvPatchScalarField
+    public mixedFvPatchScalarField
 {
     // Private data
 
         //- Turbulent intensity as fraction of mean velocity
         scalar intensity_;
+
+        //- Name of the velocity field
+        word UName_;
+
+        //- Name of the flux field
+        word phiName_;
+
 
 public:
 
