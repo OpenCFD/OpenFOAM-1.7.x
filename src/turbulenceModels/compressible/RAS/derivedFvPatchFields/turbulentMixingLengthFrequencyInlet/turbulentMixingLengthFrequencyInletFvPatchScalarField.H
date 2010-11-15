@@ -46,7 +46,7 @@ SourceFiles
 #ifndef compressibleturbulentMixingLengthFrequencyInletFvPatchScalarField_H
 #define compressibleturbulentMixingLengthFrequencyInletFvPatchScalarField_H
 
-#include "fixedValueFvPatchFields.H"
+#include "mixedFvPatchFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -61,12 +61,15 @@ namespace compressible
 
 class turbulentMixingLengthFrequencyInletFvPatchScalarField
 :
-    public fixedValueFvPatchScalarField
+    public mixedFvPatchScalarField
 {
     // Private data
 
         //- Turbulent length scale
         scalar mixingLength_;
+
+        //- Name of the flux field
+        word phiName_;
 
         //- Name of the turbulent kinetic energy field
         word kName_;

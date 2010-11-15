@@ -66,7 +66,7 @@ Foam::scalar Foam::EulerImplicit<CompType, ThermoType>::solve
     label lRef, rRef;
 
     label nSpecie = this->model_.nSpecie();
-    simpleMatrix<scalar> RR(nSpecie);
+    simpleMatrix<scalar> RR(nSpecie, 0.0, 0.0);
 
     for (label i=0; i<nSpecie; i++)
     {

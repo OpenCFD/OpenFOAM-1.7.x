@@ -274,7 +274,7 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
             maxDist = magE1;
         }
     }
-
+    e1 = samplePoints[index1] - p0;
     // Find point that is furthest away from line p0-p1
     const point& p1 = samplePoints[index1];
 
@@ -296,6 +296,7 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
             }
         }
     }
+
     if (index2 == -1)
     {
         FatalErrorIn
@@ -311,6 +312,7 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
     }
 
     vector n = e1^(samplePoints[index2]-p0);
+
     n /= mag(n);
 
     if (debug)

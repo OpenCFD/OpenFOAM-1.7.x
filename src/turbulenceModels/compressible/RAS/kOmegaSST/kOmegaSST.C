@@ -259,7 +259,15 @@ kOmegaSST::kOmegaSST
 {
     bound(omega_, omega0_);
 
-    mut_ = a1_*rho_*k_/max(a1_*omega_, F2()*sqrt(magSqr(symm(fvc::grad(U_)))));
+    mut_ =
+    (
+        a1_*rho_*k_
+      / max
+        (
+            a1_*omega_,
+            F2()*sqrt(2.0*magSqr(symm(fvc::grad(U_))))
+        )
+    );
     mut_.correctBoundaryConditions();
 
     alphat_ = mut_/Prt_;
@@ -354,7 +362,7 @@ void kOmegaSST::correct()
         // Re-calculate viscosity
         mut_ =
             a1_*rho_*k_
-           /max(a1_*omega_, F2()*sqrt(magSqr(symm(fvc::grad(U_)))));
+           /max(a1_*omega_, F2()*sqrt(2.0*magSqr(symm(fvc::grad(U_)))));
         mut_.correctBoundaryConditions();
 
         // Re-calculate thermal diffusivity
@@ -435,7 +443,7 @@ void kOmegaSST::correct()
 
 
     // Re-calculate viscosity
-    mut_ = a1_*rho_*k_/max(a1_*omega_, F2()*sqrt(S2));
+    mut_ = a1_*rho_*k_/max(a1_*omega_, F2()*sqrt(2.0*S2));
     mut_.correctBoundaryConditions();
 
     // Re-calculate thermal diffusivity
