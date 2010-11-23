@@ -296,13 +296,13 @@ Foam::polyMesh::polyMesh(const IOobject& io)
     // Calculate the geometry for the patches (transformation tensors etc.)
     boundary_.calcGeometry();
 
-    // Warn if global empty mesh (constructs globalData!)
-    if (globalData().nTotalPoints() == 0)
+    // Warn if global empty mesh
+    if (returnReduce(nPoints(), sumOp<label>()) == 0)
     {
         WarningIn("polyMesh(const IOobject&)")
             << "no points in mesh" << endl;
     }
-    if (globalData().nTotalCells() == 0)
+    if (returnReduce(nCells(), sumOp<label>()) == 0)
     {
         WarningIn("polyMesh(const IOobject&)")
             << "no cells in mesh" << endl;
@@ -745,8 +745,12 @@ void Foam::polyMesh::resetPrimitives
         // Calculate the geometry for the patches (transformation tensors etc.)
         boundary_.calcGeometry();
 
-        // Warn if global empty mesh (constructs globalData!)
-        if (globalData().nTotalPoints() == 0 || globalData().nTotalCells() == 0)
+        // Warn if global empty mesh
+        if
+        (
+            (returnReduce(nPoints(), sumOp<label>()) == 0)
+         || (returnReduce(nCells(), sumOp<label>()) == 0)
+        )
         {
             FatalErrorIn
             (
@@ -758,9 +762,9 @@ void Foam::polyMesh::resetPrimitives
                 "    const Xfer<labelList>& neighbour,\n"
                 "    const labelList& patchSizes,\n"
                 "    const labelList& patchStarts\n"
+                "    const bool validBoundary\n"
                 ")\n"
-            )
-                << "no points or no cells in mesh" << endl;
+            )   << "no points or no cells in mesh" << endl;
         }
     }
 }

@@ -1421,7 +1421,7 @@ void Foam::polyTopoChange::calcCellInflationMaps
     {
         label nCellsFromFaces = 0;
 
-        labelList cellsAroundFace(2, -1);
+        labelList twoCells(2);
 
         // Collect all still existing faces connected to this point.
         forAllConstIter(Map<label>, cellFromFace_, iter)
@@ -1430,20 +1430,22 @@ void Foam::polyTopoChange::calcCellInflationMaps
 
             if (mesh.isInternalFace(oldFaceI))
             {
-                cellsAroundFace[0] = mesh.faceOwner()[oldFaceI];
-                cellsAroundFace[1] = mesh.faceNeighbour()[oldFaceI];
+                twoCells[0] = mesh.faceOwner()[oldFaceI];
+                twoCells[1] = mesh.faceNeighbour()[oldFaceI];
+                cellsFromFaces[nCellsFromFaces++] = objectMap
+                (
+                    iter.key(),
+                    twoCells
+                );
             }
             else
             {
-                cellsAroundFace[0] = mesh.faceOwner()[oldFaceI];
-                cellsAroundFace[1] = -1;
+                cellsFromFaces[nCellsFromFaces++] = objectMap
+                (
+                    iter.key(),
+                    labelList(1, mesh.faceOwner()[oldFaceI])
+                );
             }
-
-            cellsFromFaces[nCellsFromFaces++] = objectMap
-            (
-                iter.key(),
-                cellsAroundFace
-            );
         }
     }
 

@@ -264,14 +264,14 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
 
     for (label i = 1; i < samplePoints.size(); i++)
     {
-        e1 = samplePoints[i] - p0;
-        scalar magE1 = mag(e1);
+        const vector d = samplePoints[i] - p0;
+        scalar magD = mag(d);
 
-        if (magE1 > maxDist)
+        if (magD > maxDist)
         {
-            e1 /= magE1;
+            e1 = d/magD;
             index1 = i;
-            maxDist = magE1;
+            maxDist = magD;
         }
     }
 
@@ -296,6 +296,7 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
             }
         }
     }
+
     if (index2 == -1)
     {
         FatalErrorIn
@@ -311,6 +312,7 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
     }
 
     vector n = e1^(samplePoints[index2]-p0);
+
     n /= mag(n);
 
     if (debug)
