@@ -235,7 +235,7 @@ void kappatJayatillekeWallFunctionFvPatchScalarField::updateCoeffs()
         if (yPlus > yPlusTherm)
         {
             scalar nu = nuw[faceI];
-            scalar kt = nu*(yPlus/(Prt_/kappa_*log(E_*yPlusTherm) + P) - 1/Pr);
+            scalar kt = nu*(yPlus/(Prt_*(log(E_*yPlus)/kappa_ + P)) - 1/Pr)
             kappatw[faceI] = max(0.0, kt);
         }
         else
