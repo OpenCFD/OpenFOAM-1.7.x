@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     #include "initContinuityErrs.H"
 
 
-    while (runTime.run())
+    while (runTime.loop())
     {
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
@@ -79,8 +79,6 @@ int main(int argc, char *argv[])
             #include "solveSolid.H"
             #include "convergenceCheck.H"
         }
-
-        runTime++;
 
         runTime.write();
 
