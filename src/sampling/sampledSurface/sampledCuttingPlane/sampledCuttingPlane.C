@@ -61,6 +61,8 @@ void Foam::sampledCuttingPlane::createGeometry()
     pointDistance_.clear();
     cellDistancePtr_.clear();
 
+    // Clear derived data
+    clearGeom();
 
     // Get any subMesh
     if (zoneID_.index() != -1 && !subMeshPtr_.valid())
@@ -312,6 +314,9 @@ bool Foam::sampledCuttingPlane::expire()
 
     // Clear any stored topologies
     facesPtr_.clear();
+
+    // Clear derived data
+    clearGeom();
 
     // already marked as expired
     if (needsUpdate_)

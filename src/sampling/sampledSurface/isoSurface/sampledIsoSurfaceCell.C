@@ -56,6 +56,9 @@ bool Foam::sampledIsoSurfaceCell::updateGeometry() const
     // Clear any stored topo
     facesPtr_.clear();
 
+    // Clear derived data
+    sampledSurface::clearGeom();
+
     // Optionally read volScalarField
     autoPtr<volScalarField> readFieldPtr_;
 
@@ -236,6 +239,9 @@ bool Foam::sampledIsoSurfaceCell::needsUpdate() const
 bool Foam::sampledIsoSurfaceCell::expire()
 {
     facesPtr_.clear();
+
+    // Clear derived data
+    sampledSurface::clearGeom();
 
     // already marked as expired
     if (prevTimeIndex_ == -1)

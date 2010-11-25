@@ -124,6 +124,8 @@ bool Foam::sampledThresholdCellFaces::updateGeometry() const
     ).MeshedSurface<face>::transfer(surf);
     meshCells_.transfer(surf.meshCells());
 
+    // clear derived data
+    sampledSurface::clearGeom();
 
     if (debug)
     {
