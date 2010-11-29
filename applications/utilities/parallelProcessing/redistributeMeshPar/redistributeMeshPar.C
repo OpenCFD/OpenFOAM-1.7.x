@@ -44,6 +44,10 @@ Description
         # Distribute
         mpirun -np ddd redistributeMeshPar -parallel
 
+    Note: you might want to unset FOAM_SIGFPE and FOAM_SETNAN since
+    patchfields that hold additional data might not be initialised
+    (since mapped from 0 faces)
+
 \*---------------------------------------------------------------------------*/
 
 #include "fvMesh.H"
