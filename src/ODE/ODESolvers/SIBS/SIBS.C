@@ -50,17 +50,17 @@ namespace Foam
 Foam::SIBS::SIBS(const ODE& ode)
 :
     ODESolver(ode),
-    a_(iMaxX_),
-    alpha_(kMaxX_, kMaxX_),
-    d_p_(n_, kMaxX_),
-    x_p_(kMaxX_),
-    err_(kMaxX_),
+    a_(iMaxX_, 0.0),
+    alpha_(kMaxX_, kMaxX_, 0.0),
+    d_p_(n_, kMaxX_, 0.0),
+    x_p_(kMaxX_, 0.0),
+    err_(kMaxX_, 0.0),
 
-    yTemp_(n_),
-    ySeq_(n_),
-    yErr_(n_),
-    dfdx_(n_),
-    dfdy_(n_, n_),
+    yTemp_(n_, 0.0),
+    ySeq_(n_, 0.0),
+    yErr_(n_, 0.0),
+    dfdx_(n_, 0.0),
+    dfdy_(n_, n_, 0.0),
     first_(1),
     epsOld_(-1.0)
 {}

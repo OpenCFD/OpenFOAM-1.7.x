@@ -58,14 +58,14 @@ const scalar
 Foam::RK::RK(const ODE& ode)
 :
     ODESolver(ode),
-    yTemp_(n_),
-    ak2_(n_),
-    ak3_(n_),
-    ak4_(n_),
-    ak5_(n_),
-    ak6_(n_),
-    yErr_(n_),
-    yTemp2_(n_)
+    yTemp_(n_, 0.0),
+    ak2_(n_, 0.0),
+    ak3_(n_, 0.0),
+    ak4_(n_, 0.0),
+    ak5_(n_, 0.0),
+    ak6_(n_, 0.0),
+    yErr_(n_, 0.0),
+    yTemp2_(n_, 0.0)
 {}
 
 
@@ -131,7 +131,7 @@ void Foam::RK::solve
 
     forAll(yerr, i)
     {
-    	yerr[i] = 
+    	yerr[i] =
             h*
             (
                 dc1*dydx[i] + dc3*ak3_[i] + dc4*ak4_[i]

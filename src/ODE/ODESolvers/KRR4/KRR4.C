@@ -58,17 +58,17 @@ const scalar
 Foam::KRR4::KRR4(const ODE& ode)
 :
     ODESolver(ode),
-    yTemp_(n_),
-    dydxTemp_(n_),
-    g1_(n_),
-    g2_(n_),
-    g3_(n_),
-    g4_(n_),
-    yErr_(n_),
-    dfdx_(n_),
-    dfdy_(n_, n_),
-    a_(n_, n_),
-    pivotIndices_(n_)
+    yTemp_(n_, 0.0),
+    dydxTemp_(n_, 0.0),
+    g1_(n_, 0.0),
+    g2_(n_, 0.0),
+    g3_(n_, 0.0),
+    g4_(n_, 0.0),
+    yErr_(n_, 0.0),
+    dfdx_(n_, 0.0),
+    dfdy_(n_, n_, 0.0),
+    a_(n_, n_, 0.0),
+    pivotIndices_(n_, 0.0)
 {}
 
 
