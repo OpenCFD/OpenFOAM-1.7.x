@@ -938,6 +938,8 @@ void Foam::parMetisDecomp::calcMetisDistributedCSR
         nFacesPerCell[faceNeighbour[faceI]]++;
     }
     // Handle coupled faces
+    HashSet<edge, Hash<edge> > cellPair(mesh.nFaces()-mesh.nInternalFaces());
+
     forAll(patches, patchI)
     {
         const polyPatch& pp = patches[patchI];
@@ -948,8 +950,15 @@ void Foam::parMetisDecomp::calcMetisDistributedCSR
 
             forAll(pp, i)
             {
-                nCoupledFaces++;
-                nFacesPerCell[faceOwner[faceI++]]++;
+                label own = faceOwner[faceI];
+                label globalNei = globalNeighbour[faceI-mesh.nInternalFaces()];
+
+                if (cellPair.insert(edge(own, globalNei)))
+                {
+                    nCoupledFaces++;
+                    nFacesPerCell[faceOwner[faceI]]++;
+                }
+                faceI++;
             }
         }
     }
@@ -989,6 +998,7 @@ void Foam::parMetisDecomp::calcMetisDistributedCSR
         adjncy[xadj[nei] + nFacesPerCell[nei]++] = globalCells.toGlobal(own);
     }
     // For boundary faces is offsetted coupled neighbour
+    cellPair.clear();
     forAll(patches, patchI)
     {
         const polyPatch& pp = patches[patchI];
@@ -1001,8 +1011,13 @@ void Foam::parMetisDecomp::calcMetisDistributedCSR
             forAll(pp, i)
             {
                 label own = faceOwner[faceI];
-                adjncy[xadj[own] + nFacesPerCell[own]++] =
-                    globalNeighbour[bFaceI];
+                label globalNei = globalNeighbour[bFaceI];
+
+                if (cellPair.insert(edge(own, globalNei)))
+                {
+                    adjncy[xadj[own] + nFacesPerCell[own]++] =
+                        globalNeighbour[bFaceI];
+                }
 
                 faceI++;
                 bFaceI++;

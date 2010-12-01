@@ -423,6 +423,9 @@ bool Foam::sampledIsoSurface::updateGeometry() const
     surfPtr_.clear();
     facesPtr_.clear();
 
+    // Clear derived data
+    clearGeom();
+
     if (subMeshPtr_.valid())
     {
         surfPtr_.reset
@@ -560,6 +563,9 @@ bool Foam::sampledIsoSurface::expire()
     surfPtr_.clear();
     facesPtr_.clear();
     subMeshPtr_.clear();
+
+    // Clear derived data
+    clearGeom();
 
     // already marked as expired
     if (prevTimeIndex_ == -1)

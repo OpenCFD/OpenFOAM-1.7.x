@@ -44,6 +44,10 @@ Description
         # Distribute
         mpirun -np ddd redistributeMeshPar -parallel
 
+    Note: you might want to unset FOAM_SIGFPE and FOAM_SETNAN since
+    patchfields that hold additional data might not be initialised
+    (since mapped from 0 faces)
+
 \*---------------------------------------------------------------------------*/
 
 #include "fvMesh.H"
@@ -505,16 +509,14 @@ int main(int argc, char *argv[])
 #   include "addRegionOption.H"
     argList::validOptions.insert("mergeTol", "relative merge distance");
 
-    // Create argList. This will check for non-existing processor dirs.
 #   include "setRootCase.H"
 
-    //- Not useful anymore. See above.
-    //// Create processor directory if non-existing
-    //if (!Pstream::master() && !isDir(args.path()))
-    //{
-    //    Pout<< "Creating case directory " << args.path() << endl;
-    //    mkDir(args.path());
-    //}
+    // Create processor directory if non-existing
+    if (!Pstream::master() && !isDir(args.path()))
+    {
+        Pout<< "Creating case directory " << args.path() << endl;
+        mkDir(args.path());
+    }
 
 #   include "createTime.H"
 
