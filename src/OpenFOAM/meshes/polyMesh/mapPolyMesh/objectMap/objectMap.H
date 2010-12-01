@@ -49,6 +49,7 @@ class objectMap;
 inline bool operator==(const objectMap& a, const objectMap& b);
 inline bool operator!=(const objectMap& a, const objectMap& b);
 inline Ostream& operator<<(Ostream&, const objectMap&);
+inline Istream& operator>>(Istream&, objectMap&);
 
 
 /*---------------------------------------------------------------------------*\
@@ -100,6 +101,8 @@ public:
     // IOstream Operators
 
         friend Ostream& operator<<(Ostream&, const objectMap&);
+
+        friend Istream& operator>>(Istream&, objectMap&);
 };
 
 

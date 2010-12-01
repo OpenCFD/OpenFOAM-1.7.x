@@ -122,6 +122,18 @@ inline Ostream& operator<<(Ostream& os, const objectMap& a)
 }
 
 
+inline Istream& operator>>(Istream& is, objectMap& a)
+{
+    is.readBegin("objectMap");
+    is  >> a.index_ >> a.masterObjects_;
+    is.readEnd("objectMap");
+
+    // Check state of Istream
+    is.check("Istream& operator>>(Istream&, objectMap&)");
+
+    return is;
+}
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // Master namespace Foam
