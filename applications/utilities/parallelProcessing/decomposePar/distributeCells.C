@@ -116,13 +116,46 @@ void domainDecomposition::distributeCells()
 
     if (sameProcFaces.empty())
     {
-        cellToProc_ = decomposePtr().decompose(cellCentres());
+        if (decompositionDict_.found("weightField"))
+        {
+            word weightName = decompositionDict_.lookup("weightField");
+
+            volScalarField weights
+            (
+                IOobject
+                (
+                    weightName,
+                    time().timeName(),
+                    *this,
+                    IOobject::MUST_READ,
+                    IOobject::NO_WRITE
+                ),
+                *this
+            );
+
+            cellToProc_ = decomposePtr().decompose
+            (
+                cellCentres(),
+                weights.internalField()
+            );
+        }
+        else
+        {
+            cellToProc_ = decomposePtr().decompose(cellCentres());
+        }
     }
     else
     {
         Info<< "Selected " << sameProcFaces.size()
             << " faces whose owner and neighbour cell should be kept on the"
             << " same processor" << endl;
+
+        if (decompositionDict_.found("weightField"))
+        {
+            WarningIn("void domainDecomposition::distributeCells()")
+                << "weightField not supported when agglomerated "
+                << "decomposition required" << endl;
+        }
 
         // Faces where owner and neighbour are not 'connected' (= all except
         // sameProcFaces)
