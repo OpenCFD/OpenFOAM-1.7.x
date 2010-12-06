@@ -44,9 +44,26 @@ addToRunTimeSelectionTable(LESModel, SpalartAllmarasIDDES, dictionary);
 
 tmp<volScalarField> SpalartAllmarasIDDES::alpha() const
 {
+    volScalarField delta
+    (
+        IOobject
+        (
+            "delta",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar("zero", dimLength, SMALL),
+        calculatedFvPatchScalarField::typeName
+    );
+
+    delta.internalField() = pow(mesh_.V(), 1.0/3.0);
+
     return max
     (
-        0.25 - y_/dimensionedScalar("hMax", dimLength, max(cmptMax(delta()))),
+        0.25 - y_/delta,
         scalar(-5)
     );
 }

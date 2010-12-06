@@ -41,39 +41,26 @@ namespace Foam
 void Foam::IDDESDelta::calcDelta()
 {
     label nD = mesh().nGeometricD();
+    
+    volScalarField delta  
+    (
+        IOobject
+        (
+            "delta",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar("zero", dimLength, SMALL),
+        calculatedFvPatchScalarField::typeName
+    );
+
+    delta.internalField() = pow(mesh_.V(), 1.0/3.0);
 
     // initialise hwn as wall distance
     volScalarField hwn = wallDist(mesh()).y();
-
-    scalar deltamaxTmp = 0.;
-
-    const cellList& cells = mesh().cells();
-
-    forAll(cells,cellI)
-    {
-        scalar deltaminTmp = 1.e10;
-        const labelList& cFaces = mesh().cells()[cellI];
-        const point& centrevector = mesh().cellCentres()[cellI];
-
-        forAll(cFaces, cFaceI)
-        {
-            label faceI = cFaces[cFaceI];
-            const point& facevector = mesh().faceCentres()[faceI];
-            scalar tmp = mag(facevector - centrevector);
-
-            if (tmp > deltamaxTmp)
-            {
-                deltamaxTmp = tmp;
-            }
-            if (tmp < deltaminTmp)
-            {
-                deltaminTmp = tmp;
-            }
-        }
-        hwn[cellI] = 2.0*deltaminTmp;
-    }
-
-    dimensionedScalar deltamax("deltamax",dimLength,2.0*deltamaxTmp);
 
     if (nD == 3)
     {
@@ -81,8 +68,8 @@ void Foam::IDDESDelta::calcDelta()
             deltaCoeff_
            *min
             (
-                max(max(cw_*wallDist(mesh()).y(), cw_*deltamax), hwn),
-                deltamax
+                max(max(cw_*wallDist(mesh()).y(), cw_*delta), hwn),
+                delta
             );
     }
     else if (nD == 2)
@@ -95,8 +82,8 @@ void Foam::IDDESDelta::calcDelta()
             deltaCoeff_
            *min
             (
-                max(max(cw_*wallDist(mesh()).y(), cw_*deltamax), hwn),
-                deltamax
+                max(max(cw_*wallDist(mesh()).y(), cw_*delta), hwn),
+                delta
             );
     }
     else
