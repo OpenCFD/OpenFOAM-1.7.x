@@ -27,7 +27,12 @@ Class
 Description
     kOmegaSSTSAS LES turbulence model for incompressible flows
 
-    Reference:
+    References:
+
+    A Scale-Adaptive Simulation Model using Two-Equation Models
+    AIAA 2005-1095
+    F. R. Menter and Y. Egorov
+
     DESider A European Effort on Hybrid RANS-LES Modelling:
     Results of the European-Union Funded Project, 2004 - 2007
     (Notes on Numerical Fluid Mechanics and Multidisciplinary Design).

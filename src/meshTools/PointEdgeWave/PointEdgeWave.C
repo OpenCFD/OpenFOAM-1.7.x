@@ -516,7 +516,7 @@ void Foam::PointEdgeWave<Type>::handleProcPatches()
             // Apply transform to received data for non-parallel planes
             if (!procPatch.parallel())
             {
-                transform(procPatch.reverseT(), patchInfo);
+                transform(procPatch.forwardT(), patchInfo);
             }
 
             updateFromPatchInfo
@@ -633,10 +633,10 @@ void Foam::PointEdgeWave<Type>::handleCyclicPatches()
             if (!cycPatch.parallel())
             {
                 // received data from half1
-                transform(cycPatch.forwardT(), halfAInfo);
+                transform(cycPatch.reverseT(), halfAInfo);
 
                 // received data from half2
-                transform(cycPatch.reverseT(), halfBInfo);
+                transform(cycPatch.forwardT(), halfBInfo);
             }
 
             if (debug)

@@ -29,13 +29,7 @@ Description
 #include "mpi.h"
 
 #include "OPstream.H"
-
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-// Outstanding non-blocking operations.
-//! @cond fileScope
-Foam::DynamicList<MPI_Request> OPstream_outstandingRequests_;
-//! @endcond fileScope
+#include "PstreamGlobals.H"
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
@@ -110,7 +104,7 @@ bool Foam::OPstream::write
             &request
         );
 
-        OPstream_outstandingRequests_.append(request);
+        PstreamGlobals::OPstream_outstandingRequests_.append(request);
     }
     else
     {
@@ -128,14 +122,14 @@ bool Foam::OPstream::write
 
 void Foam::OPstream::waitRequests()
 {
-    if (OPstream_outstandingRequests_.size())
+    if (PstreamGlobals::OPstream_outstandingRequests_.size())
     {
         if
         (
             MPI_Waitall
             (
-                OPstream_outstandingRequests_.size(),
-                OPstream_outstandingRequests_.begin(),
+                PstreamGlobals::OPstream_outstandingRequests_.size(),
+                PstreamGlobals::OPstream_outstandingRequests_.begin(),
                 MPI_STATUSES_IGNORE
             )
         )
@@ -146,19 +140,20 @@ void Foam::OPstream::waitRequests()
             )   << "MPI_Waitall returned with error" << Foam::endl;
         }
 
-        OPstream_outstandingRequests_.clear();
+        PstreamGlobals::OPstream_outstandingRequests_.clear();
     }
 }
 
 
 bool Foam::OPstream::finishedRequest(const label i)
 {
-    if (i >= OPstream_outstandingRequests_.size())
+    if (i >= PstreamGlobals::OPstream_outstandingRequests_.size())
     {
         FatalErrorIn
         (
             "OPstream::finishedRequest(const label)"
-        )   << "There are " << OPstream_outstandingRequests_.size()
+        )   << "There are "
+            << PstreamGlobals::OPstream_outstandingRequests_.size()
             << " outstanding send requests and you are asking for i=" << i
             << nl
             << "Maybe you are mixing blocking/non-blocking comms?"
@@ -166,7 +161,12 @@ bool Foam::OPstream::finishedRequest(const label i)
     }
 
     int flag;
-    MPI_Test(&OPstream_outstandingRequests_[i], &flag, MPI_STATUS_IGNORE);
+    MPI_Test
+    (
+        &PstreamGlobals::OPstream_outstandingRequests_[i],
+        &flag,
+        MPI_STATUS_IGNORE
+    );
 
     return flag != 0;
 }

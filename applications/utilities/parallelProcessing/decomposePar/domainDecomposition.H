@@ -40,6 +40,8 @@ SourceFiles
 #include "SLList.H"
 #include "PtrList.H"
 #include "point.H"
+#include "Time.H"
+#include "volFields.H"
 
 #ifndef namespaceFoam
 #define namespaceFoam
@@ -78,7 +80,7 @@ class domainDecomposition
         // original face. In order to do this properly, all face
         // indices will be incremented by 1 and the decremented as
         // necessary t avoid the problem of face number zero having no
-        // sign.  
+        // sign.
         labelListList procFaceAddressing_;
 
         //- Labels of cells for each processor

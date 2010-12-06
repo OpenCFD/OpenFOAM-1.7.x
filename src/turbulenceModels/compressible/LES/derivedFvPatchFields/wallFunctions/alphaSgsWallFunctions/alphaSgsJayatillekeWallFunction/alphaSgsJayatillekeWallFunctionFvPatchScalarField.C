@@ -115,7 +115,8 @@ alphaSgsJayatillekeWallFunctionFvPatchScalarField
     fixedValueFvPatchScalarField(p, iF),
     Prt_(0.85),
     kappa_(0.41),
-    E_(9.8)
+    E_(9.8),
+    hsName_("hs")
 {
     checkType();
 }
@@ -133,7 +134,8 @@ alphaSgsJayatillekeWallFunctionFvPatchScalarField
     fixedValueFvPatchScalarField(ptf, p, iF, mapper),
     Prt_(ptf.Prt_),
     kappa_(ptf.kappa_),
-    E_(ptf.E_)
+    E_(ptf.E_),
+    hsName_(ptf.hsName_)
 {}
 
 
@@ -148,7 +150,8 @@ alphaSgsJayatillekeWallFunctionFvPatchScalarField
     fixedValueFvPatchScalarField(p, iF, dict),
     Prt_(dict.lookupOrDefault<scalar>("Prt", 0.85)),
     kappa_(dict.lookupOrDefault<scalar>("kappa", 0.41)),
-    E_(dict.lookupOrDefault<scalar>("E", 9.8))
+    E_(dict.lookupOrDefault<scalar>("E", 9.8)),
+    hsName_(dict.lookupOrDefault<word>("hs", "hs"))
 {
     checkType();
 }
@@ -163,7 +166,8 @@ alphaSgsJayatillekeWallFunctionFvPatchScalarField
     fixedValueFvPatchScalarField(awfpsf),
     Prt_(awfpsf.Prt_),
     kappa_(awfpsf.kappa_),
-    E_(awfpsf.E_)
+    E_(awfpsf.E_),
+    hsName_(awfpsf.hsName_)
 {
     checkType();
 }
@@ -179,7 +183,8 @@ alphaSgsJayatillekeWallFunctionFvPatchScalarField
     fixedValueFvPatchScalarField(awfpsf, iF),
     Prt_(awfpsf.Prt_),
     kappa_(awfpsf.kappa_),
-    E_(awfpsf.E_)
+    E_(awfpsf.E_),
+    hsName_(awfpsf.hsName_)
 {
     checkType();
 }
@@ -209,7 +214,7 @@ void alphaSgsJayatillekeWallFunctionFvPatchScalarField::evaluate
 
     const scalarField& rhow = lesModel.rho().boundaryField()[patchI];
     const fvPatchScalarField& hw =
-        patch().lookupPatchField<volScalarField, scalar>("h");
+        patch().lookupPatchField<volScalarField, scalar>(hsName_);
 
     const scalarField& ry = patch().deltaCoeffs();
 
@@ -312,6 +317,7 @@ void alphaSgsJayatillekeWallFunctionFvPatchScalarField::write(Ostream& os) const
     os.writeKeyword("Prt") << Prt_ << token::END_STATEMENT << nl;
     os.writeKeyword("kappa") << kappa_ << token::END_STATEMENT << nl;
     os.writeKeyword("E") << E_ << token::END_STATEMENT << nl;
+    os.writeKeyword("hs") << hsName_ << token::END_STATEMENT << nl;
     writeEntry("value", os);
 }
 

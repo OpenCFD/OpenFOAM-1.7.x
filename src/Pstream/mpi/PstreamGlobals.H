@@ -21,98 +21,46 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    Foam::objectMap
+Namespace
+    Foam::PstreamGlobals
 
 Description
-    An objectMap is a pair of labels defining the mapping of an object from
-    another object, e.g. a cell mapped from a point.
+    Global functions and variables for working with parallel streams,
+    but principally for gamma/mpi
 
 SourceFiles
-    objectMapI.H
+    PstreamGlobals.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef objectMap_H
-#define objectMap_H
+#ifndef PstreamGlobals_H
+#define PstreamGlobals_H
 
-#include "labelList.H"
+#include "mpi.h"
+
+#include "DynamicList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
-// Forward declaration of friend functions and operators
-
-class objectMap;
-inline bool operator==(const objectMap& a, const objectMap& b);
-inline bool operator!=(const objectMap& a, const objectMap& b);
-inline Ostream& operator<<(Ostream&, const objectMap&);
-inline Istream& operator>>(Istream&, objectMap&);
-
-
 /*---------------------------------------------------------------------------*\
-                           Class objectMap Declaration
+                           Class PstreamGlobals Declaration
 \*---------------------------------------------------------------------------*/
 
-class objectMap
+namespace PstreamGlobals
 {
-    // Private data
 
-        //- Object index
-        label index_;
+extern DynamicList<MPI_Request> IPstream_outstandingRequests_;
+extern DynamicList<MPI_Request> OPstream_outstandingRequests_;
 
-        //- Master object index
-        labelList masterObjects_;
-
-
-public:
-
-    // Constructors
-
-        //- Null constructor for lists
-        inline objectMap();
-
-        //- Construct from components
-        inline objectMap(const label index, const labelList& master);
-
-        //- Construct from Istream
-        inline objectMap(Istream&);
-
-
-    // Member Functions
-
-        //- Return object index
-        inline label& index();
-        inline label index() const;
-
-        //- Return master object index
-        inline labelList& masterObjects();
-        inline const labelList& masterObjects() const;
-
-
-    // Friend Operators
-
-        friend bool operator==(const objectMap& a, const objectMap& b);
-        friend bool operator!=(const objectMap& a, const objectMap& b);
-
-
-    // IOstream Operators
-
-        friend Ostream& operator<<(Ostream&, const objectMap&);
-
-        friend Istream& operator>>(Istream&, objectMap&);
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#include "objectMapI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
