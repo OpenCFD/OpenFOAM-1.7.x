@@ -187,6 +187,14 @@ void Foam::sampledSets::combineSampledSets
             )
         );
 
+
+        if (Pstream::master() && allCurveDist.size() == 0)
+        {
+            WarningIn("sampledSets::combineSampledSets(..)")
+                << "Sample set " << samplePts.name()
+                << " has zero points." << endl;
+        }
+
         // Sort curveDist and use to fill masterSamplePts
         SortableList<scalar> sortedDist(allCurveDist);
         indexSets[seti] = sortedDist.indices();

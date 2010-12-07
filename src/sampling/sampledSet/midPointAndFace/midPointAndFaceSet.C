@@ -55,7 +55,7 @@ void Foam::midPointAndFaceSet::genSamples()
 
     label sampleI = 0;
 
-    while(true)
+    while(true && size()>0)
     {
         // sampleI is start of segment
 
