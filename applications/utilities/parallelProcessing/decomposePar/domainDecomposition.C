@@ -24,7 +24,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "domainDecomposition.H"
-#include "Time.H"
 #include "dictionary.H"
 #include "labelIOList.H"
 #include "processorPolyPatch.H"

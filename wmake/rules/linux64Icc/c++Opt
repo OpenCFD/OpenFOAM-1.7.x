@@ -1,2 +1,2 @@
-c++DBUG     = 
-c++OPT      = -xT -O3 -no-prec-div
+c++DBUG     =
+c++OPT      = -xSSE3 -O3 -no-prec-div

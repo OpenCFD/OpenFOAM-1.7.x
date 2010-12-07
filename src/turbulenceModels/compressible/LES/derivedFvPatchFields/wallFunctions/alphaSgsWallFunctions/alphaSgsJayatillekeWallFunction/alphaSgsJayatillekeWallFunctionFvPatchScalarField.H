@@ -66,6 +66,9 @@ class alphaSgsJayatillekeWallFunctionFvPatchScalarField
         //- E coefficient
         scalar E_;
 
+        //- Name of (sensible/total) enthalpy field
+        word hsName_;
+
 
         // Solution parameters
 

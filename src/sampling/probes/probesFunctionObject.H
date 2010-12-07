@@ -37,6 +37,7 @@ SourceFiles
 #define probesFunctionObject_H
 
 #include "probes.H"
+#include "patchProbes.H"
 #include "OutputFilterFunctionObject.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -44,6 +45,7 @@ SourceFiles
 namespace Foam
 {
     typedef OutputFilterFunctionObject<probes> probesFunctionObject;
+    typedef OutputFilterFunctionObject<patchProbes> patchProbesFunctionObject;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -1,5 +1,6 @@
 probes/probes.C
 probes/probesFunctionObject.C
+probes/patchProbes.C
 
 sampledSet/coordSet/coordSet.C
 sampledSet/sampledSet/sampledSet.C
