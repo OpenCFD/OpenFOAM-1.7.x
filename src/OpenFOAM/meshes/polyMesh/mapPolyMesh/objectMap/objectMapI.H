@@ -134,6 +134,7 @@ inline Istream& operator>>(Istream& is, objectMap& a)
     return is;
 }
 
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // Master namespace Foam
