@@ -111,7 +111,7 @@ bool Foam::sampledPatch::update()
         return false;
     }
 
-    label patchI = mesh().boundaryMesh().findPatchID(patchName_);
+    const label patchI = mesh().boundaryMesh().findPatchID(patchName_);
 
     if (patchI != -1)
     {
@@ -139,7 +139,7 @@ bool Foam::sampledPatch::update()
     if (debug)
     {
         print(Pout);
-        Pout << endl;
+        Pout<< endl;
     }
 
     needsUpdate_ = false;
@@ -157,6 +157,10 @@ void Foam::sampledPatch::remapFaces
     if (&faceMap && faceMap.size())
     {
         MeshStorage::remapFaces(faceMap);
+        patchFaceLabels_ = labelList
+        (
+            UIndirectList<label>(patchFaceLabels_, faceMap)
+        );
     }
 }
 
