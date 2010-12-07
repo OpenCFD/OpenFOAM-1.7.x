@@ -60,7 +60,9 @@ class mapPolyMesh;
 
 class probes
 {
-    // Private classes
+protected:
+
+    // Protected classes
 
         //- Class used for grouping field types
         template<class Type>
@@ -83,7 +85,7 @@ class probes
         };
 
 
-    // Private data
+    // Protected data
 
         //- Name of this set of probes,
         //  Also used as the name of the probes directory.
@@ -115,7 +117,7 @@ class probes
             fieldGroup<tensor> tensorFields_;
 
             // Cells to be probed (obtained from the locations)
-            labelList cellList_;
+            labelList elementList_;
 
             //- Current open files
             HashPtrTable<OFstream> probeFilePtrs_;
@@ -123,8 +125,8 @@ class probes
 
     // Private Member Functions
 
-        //- Find cells containing probes
-        void findCells(const fvMesh&);
+        //- Find element containing probes
+        virtual void findElements(const fvMesh&);
 
         //- classify field types, return true if nFields > 0
         bool checkFieldTypes();
@@ -136,6 +138,9 @@ class probes
             fieldGroup<Type>& fieldList,
             const wordList& fieldTypes
         ) const;
+
+
+private:
 
         //- Sample and write a particular volume field
         template<class Type>
@@ -199,9 +204,9 @@ public:
         }
 
         //- Cells to be probed (obtained from the locations)
-        const labelList& cells() const
+        const labelList& elements() const
         {
-            return cellList_;
+            return elementList_;
         }
 
         //- Execute, currently does nothing

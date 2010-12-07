@@ -38,28 +38,28 @@ namespace Foam
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-void Foam::probes::findCells(const fvMesh& mesh)
+void Foam::probes::findElements(const fvMesh& mesh)
 {
-    if (cellList_.empty())
+    if (elementList_.empty())
     {
-        cellList_.setSize(probeLocations_.size());
+        elementList_.setSize(probeLocations_.size());
 
         forAll(probeLocations_, probeI)
         {
-            cellList_[probeI] = mesh.findCell(probeLocations_[probeI]);
+            elementList_[probeI] = mesh.findCell(probeLocations_[probeI]);
 
-            if (debug && cellList_[probeI] != -1)
+            if (debug && elementList_[probeI] != -1)
             {
                 Pout<< "probes : found point " << probeLocations_[probeI]
-                    << " in cell " << cellList_[probeI] << endl;
+                    << " in cell " << elementList_[probeI] << endl;
             }
         }
 
 
         // Check if all probes have been found.
-        forAll(cellList_, probeI)
+        forAll(elementList_, probeI)
         {
-            label cellI = cellList_[probeI];
+            label cellI = elementList_[probeI];
 
             // Check at least one processor with cell.
             reduce(cellI, maxOp<label>());
@@ -76,12 +76,12 @@ void Foam::probes::findCells(const fvMesh& mesh)
             else
             {
                 // Make sure location not on two domains.
-                if (cellList_[probeI] != -1 && cellList_[probeI] != cellI)
+                if (elementList_[probeI] != -1 && elementList_[probeI] != cellI)
                 {
                     WarningIn("probes::read()")
                         << "Location " << probeLocations_[probeI]
                         << " seems to be on multiple domains:"
-                        << " cell " << cellList_[probeI]
+                        << " cell " << elementList_[probeI]
                         << " on my domain " << Pstream::myProcNo()
                         << " and cell " << cellI << " on some other domain."
                         << endl
@@ -291,7 +291,7 @@ Foam::probes::probes
     sphericalTensorFields_(),
     symmTensorFields_(),
     tensorFields_(),
-    cellList_(0),
+    elementList_(0),
     probeFilePtrs_(0)
 {
     read(dict);
@@ -337,8 +337,8 @@ void Foam::probes::read(const dictionary& dict)
     dict.lookup("probeLocations") >> probeLocations_;
 
     // Force all cell locations to be redetermined
-    cellList_.clear();
-    findCells(refCast<const fvMesh>(obr_));
+    elementList_.clear();
+    findElements(refCast<const fvMesh>(obr_));
     checkFieldTypes();
 }
 
