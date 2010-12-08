@@ -26,6 +26,7 @@ License
 #include "directMappedFixedValueFvPatchField.H"
 #include "directMappedPatchBase.H"
 #include "volFields.H"
+#include "mapDistribute.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

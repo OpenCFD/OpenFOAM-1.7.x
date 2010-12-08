@@ -32,6 +32,7 @@ License
 #include "Random.H"
 #include "treeDataFace.H"
 #include "indexedOctree.H"
+#include "mapDistribute.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,34 +50,6 @@ namespace Foam
 
     const NamedEnum<directMappedPatchBase::sampleMode, 3>
         directMappedPatchBase::sampleModeNames_;
-
-
-    //- Private class for finding nearest
-    //  - point+local index
-    //  - sqr(distance)
-    //  - processor
-    typedef Tuple2<pointIndexHit, Tuple2<scalar, label> > nearInfo;
-
-    class nearestEqOp
-    {
-
-    public:
-
-        void operator()(nearInfo& x, const nearInfo& y) const
-        {
-            if (y.first().hit())
-            {
-                if (!x.first().hit())
-                {
-                    x = y;
-                }
-                else if (y.second().first() < x.second().first())
-                {
-                    x = y;
-                }
-            }
-        }
-    };
 }
 
 

@@ -37,11 +37,6 @@ SourceFiles
 #ifndef patchProbes_H
 #define patchProbes_H
 
-#include "HashPtrTable.H"
-#include "OFstream.H"
-#include "polyMesh.H"
-#include "pointField.H"
-#include "volFieldsFwd.H"
 #include "probes.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

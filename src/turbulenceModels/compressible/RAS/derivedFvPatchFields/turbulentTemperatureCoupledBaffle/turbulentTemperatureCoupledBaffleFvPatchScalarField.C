@@ -31,6 +31,7 @@ License
 #include "regionProperties.H"
 #include "basicThermo.H"
 #include "RASModel.H"
+#include "mapDistribute.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
