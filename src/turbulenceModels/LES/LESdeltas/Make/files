@@ -2,5 +2,6 @@ LESdelta/LESdelta.C
 cubeRootVolDelta/cubeRootVolDelta.C
 PrandtlDelta/PrandtlDelta.C
 smoothDelta/smoothDelta.C
+maxhxhyhzDelta/maxhxhyhzDelta.C
 
 LIB = $(FOAM_LIBBIN)/libLESdeltas

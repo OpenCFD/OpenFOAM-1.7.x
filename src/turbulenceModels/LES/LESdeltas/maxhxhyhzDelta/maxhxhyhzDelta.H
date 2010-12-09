@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,20 +22,20 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::IDDESDelta
+    Foam::maxhxhyhzDelta
 
 Description
-    IDDESDelta used by the IDDES (improved low Re Spalart-Allmaras DES model)
-    The min and max delta are calculated using the double distance of the min or
-    max from the face centre to the cell centre.
+    maxhxhyhzDelta takes the maximum of the three dimensions per cell:
+    max(hx, hy, hz). Valid for structures hexahedral cells only.
+
 
 SourceFiles
-    IDDESDelta.C
+    maxhxhyhzDelta.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef IDDESDeltaDelta_H
-#define IDDESDeltaDelta_H
+#ifndef maxhxhyhzDeltaDelta_H
+#define maxhxhyhzDeltaDelta_H
 
 #include "LESdelta.H"
 
@@ -45,40 +45,38 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                         Class IDDESDelta Declaration
+                           Class maxhxhyhzDelta Declaration
 \*---------------------------------------------------------------------------*/
 
-class IDDESDelta
+class maxhxhyhzDelta
 :
     public LESdelta
 {
     // Private data
 
-        autoPtr<LESdelta> hmax_;
-        scalar deltaCoeff_;
-        scalar cw_;
+        scalar deltaCoeff_; //
 
 
     // Private Member Functions
 
         //- Disallow default bitwise copy construct and assignment
-        IDDESDelta(const IDDESDelta&);
-        void operator=(const IDDESDelta&);
+        maxhxhyhzDelta(const maxhxhyhzDelta&);
+        void operator=(const maxhxhyhzDelta&);
 
-        //- Calculate the delta values
+        // Calculate the delta values
         void calcDelta();
 
 
 public:
 
     //- Runtime type information
-    TypeName("IDDESDelta");
+    TypeName("maxhxhyhzDelta");
 
 
     // Constructors
 
         //- Construct from name, mesh and IOdictionary
-        IDDESDelta
+        maxhxhyhzDelta
         (
             const word& name,
             const fvMesh& mesh,
@@ -86,19 +84,18 @@ public:
         );
 
 
-    // Destructor
-
-        ~IDDESDelta()
-        {}
+    //- Destructor
+    virtual ~maxhxhyhzDelta()
+    {}
 
 
     // Member Functions
 
         //- Read the LESdelta dictionary
-        void read(const dictionary&);
+        virtual void read(const dictionary&);
 
         // Correct values
-        void correct();
+        virtual void correct();
 };
 
 
@@ -107,6 +104,7 @@ public:
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
 
 #endif
 

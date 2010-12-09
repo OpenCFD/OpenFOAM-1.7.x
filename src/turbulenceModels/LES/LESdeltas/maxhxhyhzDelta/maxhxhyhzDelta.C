@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,40 +23,32 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "IDDESDelta.H"
+#include "maxhxhyhzDelta.H"
 #include "addToRunTimeSelectionTable.H"
-#include "wallDistReflection.H"
-#include "wallDist.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    defineTypeNameAndDebug(IDDESDelta, 0);
-    addToRunTimeSelectionTable(LESdelta, IDDESDelta, dictionary);
-}
 
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+defineTypeNameAndDebug(maxhxhyhzDelta, 0);
+addToRunTimeSelectionTable(LESdelta, maxhxhyhzDelta, dictionary);
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-void Foam::IDDESDelta::calcDelta()
+void maxhxhyhzDelta::calcDelta()
 {
     label nD = mesh().nGeometricD();
 
-    const volScalarField& hmax = hmax_();
-
-    // initialise wallNorm
-    wallDistReflection wallNorm(mesh());
-
-    const volVectorField& n = wallNorm.n();
-
-    tmp<volScalarField> faceToFacenMax
+    tmp<volScalarField> hmax
     (
         new volScalarField
         (
             IOobject
             (
-                "faceToFaceMax",
+                "hmax",
                 mesh().time().timeName(),
                 mesh(),
                 IOobject::NO_READ,
@@ -73,53 +65,37 @@ void Foam::IDDESDelta::calcDelta()
     {
         scalar deltaMaxTmp = 0.0;
         const labelList& cFaces = mesh().cells()[cellI];
-        const point& faceCentre = mesh().faceCentres()[cFaces[0]];
-        const vector nCell = n[cellI];
+        const point& centrevector = mesh().cellCentres()[cellI];
+
         forAll(cFaces, cFaceI)
         {
             label faceI = cFaces[cFaceI];
-            const point& faceCentreTwo = mesh().faceCentres()[faceI];
-            scalar tmp = (faceCentre - faceCentreTwo) & nCell;
+            const point& facevector = mesh().faceCentres()[faceI];
+            scalar tmp = mag(facevector - centrevector);
             if (tmp > deltaMaxTmp)
             {
                 deltaMaxTmp = tmp;
             }
         }
-        faceToFacenMax()[cellI] = deltaMaxTmp;
+        hmax()[cellI] = deltaCoeff_*deltaMaxTmp;
     }
 
     if (nD == 3)
     {
-        delta_.internalField() =
-            deltaCoeff_
-           *min
-            (
-                max
-                (
-                    max(cw_*wallDist(mesh()).y(), cw_*hmax),
-                    faceToFacenMax()
-                ),
-                hmax
-            );
+        delta_.internalField() = hmax();
     }
     else if (nD == 2)
     {
-        WarningIn("IDDESDelta::calcDelta()")
+        WarningIn("maxhxhyhzDelta::calcDelta()")
             << "Case is 2D, LES is not strictly applicable\n"
             << endl;
 
-        delta_.internalField() =
-            deltaCoeff_
-           *min
-            (
-                max(max(cw_*wallDist(mesh()).y(), cw_*hmax), faceToFacenMax()),
-                hmax
-            );
+        delta_.internalField() = hmax();
     }
     else
     {
-        FatalErrorIn("IDDESDelta::calcDelta()")
-            << "Case is not 3D or 2D, LES is not strictly applicable"
+        FatalErrorIn("maxhxhyhzDelta::calcDelta()")
+            << "Case is not 3D or 2D, LES is not applicable"
             << exit(FatalError);
     }
 }
@@ -127,7 +103,7 @@ void Foam::IDDESDelta::calcDelta()
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::IDDESDelta::IDDESDelta
+maxhxhyhzDelta::maxhxhyhzDelta
 (
     const word& name,
     const fvMesh& mesh,
@@ -135,35 +111,32 @@ Foam::IDDESDelta::IDDESDelta
 )
 :
     LESdelta(name, mesh),
-    hmax_(LESdelta::New("hmax", mesh, dd.parent())),
-    deltaCoeff_
-    (
-        readScalar(dd.subDict(type()+"Coeffs").lookup("deltaCoeff"))
-    ),
-    cw_(0.15)
+    deltaCoeff_(readScalar(dd.subDict(type() + "Coeffs").lookup("deltaCoeff")))
 {
-    dd.subDict(type() + "Coeffs").readIfPresent("cw", cw_);
     calcDelta();
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void Foam::IDDESDelta::read(const dictionary& dd)
+void maxhxhyhzDelta::read(const dictionary& dd)
 {
     dd.subDict(type() + "Coeffs").lookup("deltaCoeff") >> deltaCoeff_;
     calcDelta();
 }
 
 
-void Foam::IDDESDelta::correct()
+void maxhxhyhzDelta::correct()
 {
     if (mesh_.changing())
     {
         calcDelta();
-        hmax_().correct();
     }
 }
 
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace Foam
 
 // ************************************************************************* //
