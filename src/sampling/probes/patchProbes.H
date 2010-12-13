@@ -62,10 +62,10 @@ class patchProbes
     // Private Member Functions
 
         //- Sample and write a particular volume field
-        template<class Type>
+        template<class Type,template<class> class PatchField,class GeoMesh>
         void sampleAndWrite
         (
-            const GeometricField<Type, fvPatchField, volMesh>&
+            const GeometricField<Type, PatchField, GeoMesh>&
         );
 
 
@@ -75,16 +75,25 @@ class patchProbes
 
 
         //- Sample a volume field at all locations
-        template<class Type>
+        template<class Type,template<class> class PatchField,class GeoMesh>
         tmp<Field<Type> > sample
         (
-            const GeometricField<Type, fvPatchField, volMesh>&
+            const GeometricField<Type, PatchField, GeoMesh>&
         ) const;
 
 
         //- Sample a single field on all sample locations
         template <class Type>
         tmp<Field<Type> > sample(const word& fieldName) const;
+
+
+        //- Find the fields in the list of the given type, return count
+        template<class Type>
+        label countFields
+        (
+            fieldGroup<Type>& fieldList,
+            const wordList& fieldTypes
+        ) const;
 
 
         //- Disallow default bitwise copy construct

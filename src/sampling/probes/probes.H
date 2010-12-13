@@ -131,6 +131,8 @@ protected:
         //- classify field types, return true if nFields > 0
         bool checkFieldTypes();
 
+private:
+
         //- Find the fields in the list of the given type, return count
         template<class Type>
         label countFields
@@ -139,8 +141,6 @@ protected:
             const wordList& fieldTypes
         ) const;
 
-
-private:
 
         //- Sample and write a particular volume field
         template<class Type>
