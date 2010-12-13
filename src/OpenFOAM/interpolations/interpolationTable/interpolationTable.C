@@ -380,11 +380,9 @@ Type Foam::interpolationTable<Type>::operator()(const scalar value) const
             }
             case interpolationTable::REPEAT:
             {
-                // adjust lookupValue to >= 0
-                while (lookupValue < 0)
-                {
-                    lookupValue += maxLimit;
-                }
+                // adjust lookupValue to >= minLimit
+                scalar span = maxLimit-minLimit;
+                lookupValue = fmod(lookupValue-minLimit, span) + minLimit;
                 break;
             }
         }
@@ -422,10 +420,8 @@ Type Foam::interpolationTable<Type>::operator()(const scalar value) const
             case interpolationTable::REPEAT:
             {
                 // adjust lookupValue <= maxLimit
-                while (lookupValue > maxLimit)
-                {
-                    lookupValue -= maxLimit;
-                }
+                scalar span = maxLimit-minLimit;
+                lookupValue = fmod(lookupValue-minLimit, span) + minLimit;
                 break;
             }
         }
