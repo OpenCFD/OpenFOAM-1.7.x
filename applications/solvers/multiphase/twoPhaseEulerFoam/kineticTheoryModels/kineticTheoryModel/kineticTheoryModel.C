@@ -218,7 +218,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
     //  The solution is higly unstable close to the packing limit.
     gs0_ = radialModel_->g0
     (
-        min(max(alpha_, 1e-6), alphaMax_ - 0.01),
+        min(max(alpha_, scalar(1e-6)), alphaMax_ - 0.01),
         alphaMax_
     );
 
@@ -255,7 +255,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
     volScalarField J1 = 3.0*betaPrim;
     volScalarField J2 =
         0.25*sqr(betaPrim)*da_*sqr(Ur)
-       /(max(alpha_, 1e-6)*rhoa_*sqrtPi*(ThetaSqrt + TsmallSqrt));
+       /(max(alpha_, scalar(1e-6))*rhoa_*sqrtPi*(ThetaSqrt + TsmallSqrt));
 
     // bulk viscosity  p. 45 (Lun et al. 1984).
     lambda_ = (4.0/3.0)*sqr(alpha_)*rhoa_*da_*gs0_*(1.0+e_)*ThetaSqrt/sqrtPi;
@@ -309,7 +309,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
         volScalarField t1 = K1*alpha_ + rhoa_;
         volScalarField l1 = -t1*trD;
         volScalarField l2 = sqr(t1)*tr2D;
-        volScalarField l3 = 4.0*K4*max(alpha_, 1e-6)*(2.0*K3*trD2 + K2*tr2D);
+        volScalarField l3 = 4.0*K4*max(alpha_, scalar(1e-6))*(2.0*K3*trD2 + K2*tr2D);
 
         Theta_ = sqr((l1 + sqrt(l2 + l3))/(2.0*(alpha_ + 1.0e-4)*K4));
     }
