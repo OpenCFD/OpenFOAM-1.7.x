@@ -42,6 +42,11 @@ boundaryField
         E               9.8;
         value           uniform 0;
     }
+    "procBoundary.*"
+    {
+        type            processor;
+        value           uniform 0;
+    }
 }
 
 

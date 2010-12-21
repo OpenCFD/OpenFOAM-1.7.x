@@ -35,6 +35,11 @@ boundaryField
     {
         type            zeroGradient;
     }
+    "procBoundary.*"
+    {
+        type            processor;
+        value           uniform 0;
+    }
 }
 
 
