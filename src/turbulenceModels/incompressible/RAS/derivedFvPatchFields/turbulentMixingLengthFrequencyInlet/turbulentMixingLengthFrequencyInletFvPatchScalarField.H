@@ -46,7 +46,7 @@ SourceFiles
 #ifndef incompressibleturbulentMixingLengthFrequencyInletFvPatchScalarField_H
 #define incompressibleturbulentMixingLengthFrequencyInletFvPatchScalarField_H
 
-#include "mixedFvPatchFields.H"
+#include "inletOutletFvPatchFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -61,7 +61,7 @@ namespace incompressible
 
 class turbulentMixingLengthFrequencyInletFvPatchScalarField
 :
-    public mixedFvPatchScalarField
+    public inletOutletFvPatchScalarField
 {
     // Private data
 
