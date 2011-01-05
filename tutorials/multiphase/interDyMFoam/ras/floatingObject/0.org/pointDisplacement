@@ -41,6 +41,14 @@ boundaryField
         report          on;
         value           uniform (0 0 0);
     }
+    "procBoundary.*"
+    {
+        type            processor;
+    }
+    global
+    {
+        type            global;
+    }
 }
 
 
