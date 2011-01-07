@@ -35,7 +35,7 @@ SourceFiles
 #ifndef inletOutletTotalTemperatureFvPatchScalarField_H
 #define inletOutletTotalTemperatureFvPatchScalarField_H
 
-#include "mixedFvPatchFields.H"
+#include "inletOutletFvPatchFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -48,7 +48,7 @@ namespace Foam
 
 class inletOutletTotalTemperatureFvPatchScalarField
 :
-    public mixedFvPatchScalarField
+    public inletOutletFvPatchScalarField
 {
     // Private data
 
