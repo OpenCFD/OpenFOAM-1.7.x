@@ -21,8 +21,6 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Description
-
 \*---------------------------------------------------------------------------*/
 
 #include "triangle.H"
@@ -126,6 +124,13 @@ inline vector tetrahedron<Point, PointRef>::Sd() const
 
 
 template<class Point, class PointRef>
+inline Point tetrahedron<Point, PointRef>::centre() const
+{
+    return 0.25*(a_ + b_ + c_ + d_);
+}
+
+
+template<class Point, class PointRef>
 inline scalar tetrahedron<Point, PointRef>::mag() const
 {
     return (1.0/6.0)*(((b_ - a_) ^ (c_ - a_)) & (d_ - a_));
@@ -133,7 +138,7 @@ inline scalar tetrahedron<Point, PointRef>::mag() const
 
 
 template<class Point, class PointRef>
-inline vector tetrahedron<Point, PointRef>::circumCentre() const
+inline Point tetrahedron<Point, PointRef>::circumCentre() const
 {
     vector a = b_ - a_;
     vector b = c_ - a_;
