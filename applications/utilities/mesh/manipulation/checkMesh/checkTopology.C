@@ -181,8 +181,8 @@ Foam::label Foam::checkTopology
             }
         }
 
-        faceSet oneCells(mesh, "oneInternalFaceCells", mesh.nCells()/100);
-        faceSet twoCells(mesh, "twoInternalFacesCells", mesh.nCells()/100);
+        cellSet oneCells(mesh, "oneInternalFaceCells", mesh.nCells()/100);
+        cellSet twoCells(mesh, "twoInternalFacesCells", mesh.nCells()/100);
 
         forAll(nInternalFaces, cellI)
         {
