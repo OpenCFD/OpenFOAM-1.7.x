@@ -189,7 +189,7 @@ Foam::radiation::fvDOM::fvDOM(const volScalarField& T)
                         nLambda_,
                         absorptionEmission_,
                         blackBody_,
-		        i
+		                i
                     )
                 );
                 i++;
@@ -220,7 +220,7 @@ Foam::radiation::fvDOM::fvDOM(const volScalarField& T)
                         nLambda_,
                         absorptionEmission_,
                         blackBody_,
-			i
+			            i
                     )
                 );
                 i++;
