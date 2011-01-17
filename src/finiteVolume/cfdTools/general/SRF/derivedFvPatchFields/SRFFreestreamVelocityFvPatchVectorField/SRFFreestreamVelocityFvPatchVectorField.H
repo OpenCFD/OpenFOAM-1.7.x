@@ -25,18 +25,18 @@ Class
     Foam::SRFVelocityFvPatchVectorField
 
 Description
-    Velocity patch to be used with SRF model
+    Freestream velocity patch to be used with SRF model
+    to apply the appropriate rotation transformation in time and space.
 
 SourceFiles
     SRFVelocityFvPatchVectorField.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef SRFVelocityFvPatchVectorField_H
-#define SRFVelocityFvPatchVectorField_H
+#ifndef SRFFreestreamVelocityFvPatchVectorField_H
+#define SRFFreestreamVelocityFvPatchVectorField_H
 
-#include "fixedValueFvPatchFields.H"
-#include "Switch.H"
+#include "inletOutletFvPatchFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,59 +44,56 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-               Class SRFVelocityFvPatchVectorField Declaration
+               Class SRFFreestreamVelocityFvPatchVectorField Declaration
 \*---------------------------------------------------------------------------*/
 
-class SRFVelocityFvPatchVectorField
+class SRFFreestreamVelocityFvPatchVectorField
 :
-    public fixedValueFvPatchVectorField
+    public inletOutletFvPatchVectorField
 {
     // Private data
 
-        //- Is the supplied inlet value already in the SRF
-        Switch relative_;
-
-        //- Inlet value
-        vectorField inletValue_;
+        //- Velocity of the free stream in the absolute frame
+        vector UInf_;
 
 
 public:
 
     //- Runtime type information
-    TypeName("SRFVelocity");
+    TypeName("SRFFreestreamVelocity");
 
 
     // Constructors
 
         //- Construct from patch and internal field
-        SRFVelocityFvPatchVectorField
+        SRFFreestreamVelocityFvPatchVectorField
         (
             const fvPatch&,
             const DimensionedField<vector, volMesh>&
         );
 
         //- Construct from patch, internal field and dictionary
-        SRFVelocityFvPatchVectorField
+        SRFFreestreamVelocityFvPatchVectorField
         (
             const fvPatch&,
             const DimensionedField<vector, volMesh>&,
             const dictionary&
         );
 
-        //- Construct by mapping given SRFVelocityFvPatchVectorField
+        //- Construct by mapping given SRFFreestreamVelocityFvPatchVectorField
         //  onto a new patch
-        SRFVelocityFvPatchVectorField
+        SRFFreestreamVelocityFvPatchVectorField
         (
-            const SRFVelocityFvPatchVectorField&,
+            const SRFFreestreamVelocityFvPatchVectorField&,
             const fvPatch&,
             const DimensionedField<vector, volMesh>&,
             const fvPatchFieldMapper&
         );
 
         //- Construct as copy
-        SRFVelocityFvPatchVectorField
+        SRFFreestreamVelocityFvPatchVectorField
         (
-            const SRFVelocityFvPatchVectorField&
+            const SRFFreestreamVelocityFvPatchVectorField&
         );
 
         //- Construct and return a clone
@@ -104,14 +101,14 @@ public:
         {
             return tmp<fvPatchVectorField>
             (
-                new SRFVelocityFvPatchVectorField(*this)
+                new SRFFreestreamVelocityFvPatchVectorField(*this)
             );
         }
 
         //- Construct as copy setting internal field reference
-        SRFVelocityFvPatchVectorField
+        SRFFreestreamVelocityFvPatchVectorField
         (
-            const SRFVelocityFvPatchVectorField&,
+            const SRFFreestreamVelocityFvPatchVectorField&,
             const DimensionedField<vector, volMesh>&
         );
 
@@ -123,7 +120,7 @@ public:
         {
             return tmp<fvPatchVectorField>
             (
-                new SRFVelocityFvPatchVectorField(*this, iF)
+                new SRFFreestreamVelocityFvPatchVectorField(*this, iF)
             );
         }
 
@@ -132,27 +129,17 @@ public:
 
         // Access
 
-            //- Return const access to the relative flag
-            const Switch& relative() const
+            //- Return the velocity at infinity
+            const vector& UInf() const
             {
-                return relative_;
+                return UInf_;
             }
 
-
-        // Mapping functions
-
-            //- Map (and resize as needed) from self given a mapping object
-            virtual void autoMap
-            (
-                const fvPatchFieldMapper&
-            );
-
-            //- Reverse map the given fvPatchField onto this fvPatchField
-            virtual void rmap
-            (
-                const fvPatchVectorField&,
-                const labelList&
-            );
+            //- Return reference to the velocity at infinity to allow adjustment
+            vector& UInf()
+            {
+                return UInf_;
+            }
 
 
         // Evaluation functions
