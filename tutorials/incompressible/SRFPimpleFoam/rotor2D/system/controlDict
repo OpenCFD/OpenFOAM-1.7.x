@@ -9,48 +9,44 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      Urel;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+application     SRFPimpleFoam;
 
-internalField   uniform (0 0 0);
+startFrom       startTime;
 
-boundaryField
-{
-    inlet
-    {
-        type            SRFVelocity;
-        inletValue      uniform (0 0 -10);
-        relative        no;
-        value           uniform (0 0 0);
-    }
+startTime       0;
 
-    outlet
-    {
-        type            zeroGradient;
-    }
+stopAt          endTime;
 
-    innerWall
-    {
-        type            fixedValue;
-        value           uniform (0 0 0);
-    }
+endTime         2;
 
-    outerWall
-    {
-        type            SRFVelocity;
-        inletValue      uniform (0 0 0);
-        relative        no;
-        value           uniform (0 0 0);
-    }
+deltaT          2e-4;
 
-    cyclic
-    {
-        type            cyclic;
-    }
-}
+writeControl    runTime;
+
+writeInterval   2e-2;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression uncompressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
+
+adjustTimeStep  no;
+
+maxCo           0.5;
 
 // ************************************************************************* //

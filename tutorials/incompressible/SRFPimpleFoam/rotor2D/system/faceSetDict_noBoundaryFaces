@@ -9,48 +9,17 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      Urel;
+    class       dictionary;
+    location    "system";
+    object      faceSetDict_noBoundaryFaces;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+name            rotor;
 
-internalField   uniform (0 0 0);
+action          delete;
 
-boundaryField
-{
-    inlet
-    {
-        type            SRFVelocity;
-        inletValue      uniform (0 0 -10);
-        relative        no;
-        value           uniform (0 0 0);
-    }
+topoSetSources  ( boundaryToFace { } );
 
-    outlet
-    {
-        type            zeroGradient;
-    }
-
-    innerWall
-    {
-        type            fixedValue;
-        value           uniform (0 0 0);
-    }
-
-    outerWall
-    {
-        type            SRFVelocity;
-        inletValue      uniform (0 0 0);
-        relative        no;
-        value           uniform (0 0 0);
-    }
-
-    cyclic
-    {
-        type            cyclic;
-    }
-}
 
 // ************************************************************************* //

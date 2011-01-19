@@ -27,10 +27,6 @@ License
 #include "fvm.H"
 #include "fvDOM.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-Foam::label Foam::radiation::radiativeIntensityRay::rayId(0);
-
 const Foam::word
 Foam::radiation::radiativeIntensityRay::intensityPrefix("ILambda");
 
@@ -47,7 +43,8 @@ Foam::radiation::radiativeIntensityRay::radiativeIntensityRay
     const scalar deltaTheta,
     const label nLambda,
     const absorptionEmissionModel& absorptionEmission,
-    const blackBodyEmission& blackBody
+    const blackBodyEmission& blackBody,
+    const label rayId
 )
 :
     dom_(dom),
@@ -164,7 +161,6 @@ Foam::radiation::radiativeIntensityRay::radiativeIntensityRay
             );
         }
     }
-    rayId++;
 }
 
 
@@ -179,7 +175,6 @@ Foam::radiation::radiativeIntensityRay::~radiativeIntensityRay()
 Foam::scalar Foam::radiation::radiativeIntensityRay::correct()
 {
     // reset boundary heat flux to zero
-    //Qr_ = dimensionedScalar("zero", dimMass/pow3(dimTime), 0.0);
     Qr_.boundaryField() = 0.0;
 
     scalar maxResidual = -GREAT;

@@ -20,36 +20,27 @@ internalField   uniform (0 0 0);
 
 boundaryField
 {
-    inlet
-    {
-        type            SRFVelocity;
-        inletValue      uniform (0 0 -10);
-        relative        no;
-        value           uniform (0 0 0);
-    }
-
-    outlet
-    {
-        type            zeroGradient;
-    }
-
-    innerWall
+    rotor
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
 
-    outerWall
+    freestream
     {
-        type            SRFVelocity;
-        inletValue      uniform (0 0 0);
-        relative        no;
+        type            SRFFreestreamVelocity;
+        UInf            (1 0 0);
         value           uniform (0 0 0);
     }
 
-    cyclic
+    front
     {
-        type            cyclic;
+        type            empty;
+    }
+
+    back
+    {
+        type            empty;
     }
 }
 

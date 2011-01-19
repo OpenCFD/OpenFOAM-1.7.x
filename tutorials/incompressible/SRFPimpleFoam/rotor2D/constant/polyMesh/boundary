@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.7.1                                 |
+|  \\    /   O peration     | Version:  1.7.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -9,48 +9,38 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      Urel;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
-
-internalField   uniform (0 0 0);
-
-boundaryField
-{
-    inlet
+4
+(
+    rotor
     {
-        type            SRFVelocity;
-        inletValue      uniform (0 0 -10);
-        relative        no;
-        value           uniform (0 0 0);
+        type            wall;
+        nFaces          144;
+        startFace       5640;
     }
-
-    outlet
+    freestream
     {
-        type            zeroGradient;
+        type            patch;
+        nFaces          96;
+        startFace       5784;
     }
-
-    innerWall
+    front
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+        type            empty;
+        nFaces          2880;
+        startFace       5880;
     }
-
-    outerWall
+    back
     {
-        type            SRFVelocity;
-        inletValue      uniform (0 0 0);
-        relative        no;
-        value           uniform (0 0 0);
+        type            empty;
+        nFaces          2880;
+        startFace       8760;
     }
-
-    cyclic
-    {
-        type            cyclic;
-    }
-}
+)
 
 // ************************************************************************* //

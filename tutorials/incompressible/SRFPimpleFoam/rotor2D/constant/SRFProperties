@@ -9,48 +9,20 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      Urel;
+    class       dictionary;
+    location    "constant";
+    object      SRFProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+SRFModel        rpm;
 
-internalField   uniform (0 0 0);
+axis            (0 0 1);
 
-boundaryField
+rpmCoeffs
 {
-    inlet
-    {
-        type            SRFVelocity;
-        inletValue      uniform (0 0 -10);
-        relative        no;
-        value           uniform (0 0 0);
-    }
-
-    outlet
-    {
-        type            zeroGradient;
-    }
-
-    innerWall
-    {
-        type            fixedValue;
-        value           uniform (0 0 0);
-    }
-
-    outerWall
-    {
-        type            SRFVelocity;
-        inletValue      uniform (0 0 0);
-        relative        no;
-        value           uniform (0 0 0);
-    }
-
-    cyclic
-    {
-        type            cyclic;
-    }
+    rpm             60;
 }
+
 
 // ************************************************************************* //
