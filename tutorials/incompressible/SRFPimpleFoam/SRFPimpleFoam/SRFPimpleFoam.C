@@ -76,26 +76,13 @@ int main(int argc, char *argv[])
                 #include "pEqn.H"
             }
 
+            // Update the absolute velocity
+            U = Urel + SRF->U();
+
             turbulence->correct();
         }
 
-        if (runTime.outputTime())
-        {
-            volVectorField Uabs
-            (
-                IOobject
-                (
-                    "Uabs",
-                    runTime.timeName(),
-                    mesh,
-                    IOobject::NO_READ,
-                    IOobject::AUTO_WRITE
-                ),
-                Urel + SRF->U()
-            );
-
-            runTime.write();
-        }
+        runTime.write();
 
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
             << "  ClockTime = " << runTime.elapsedClockTime() << " s"

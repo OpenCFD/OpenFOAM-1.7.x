@@ -56,3 +56,17 @@ autoPtr<SRF::SRFModel> SRF
 (
     SRF::SRFModel::New(Urel)
 );
+
+// Create the absolute velocity
+volVectorField U
+(
+    IOobject
+    (
+        "U",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    Urel + SRF->U()
+);
