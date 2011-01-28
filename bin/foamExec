@@ -59,10 +59,10 @@ USAGE
 # This script must exist in <foamInstall>/OpenFOAM-<VERSION>/bin/
 # or <foamInstall>/openfoam<VERSION>/bin/ (for the debian version)
 #
-# foamEtcFile is found in the same directory
+# foamEtcFile must be found in the same directory as this script
 #-------------------------------------------------------------------------------
 
-unset etcOpts
+unset etcOpts version
 # parse options
 while [ "$#" -gt 0 ]
 do
@@ -72,7 +72,13 @@ do
         ;;
     -v | -version)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
-        etcOpts="-version $2"
+        version="$2"
+        etcOpts="$etcOpts $1 $2"    # pass-thru to foamEtcFile
+        shift
+        ;;
+    -m | -mode | -p | -prefix)
+        [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
+        etcOpts="$etcOpts $1 $2"    # pass-thru to foamEtcFile
         shift
         ;;
     --)
@@ -89,19 +95,28 @@ do
     shift
 done
 
-[ "$#" -ge 1 ] || usage "no application specified"
 
-# find OpenFOAM settings (bashrc)
-foamDotFile="$(${0%/*}/foamEtcFile $etcOpts bashrc)" || {
-    echo "Error : bashrc file could not be found for OpenFOAM-$version" 1>&2
-    exit 1
+#
+# Find and source OpenFOAM settings (bashrc)
+# placed in function to preserve command-line arguments
+#
+sourceRc()
+{
+    # default is the current version
+    : ${version:=${WM_PROJECT_VERSION:-unknown}}
+
+    foamDotFile="$(${0%/*}/foamEtcFile $etcOpts bashrc)" || {
+        echo "Error : bashrc file could not be found for OpenFOAM-$version" 1>&2
+        exit 1
+    }
+
+    . $foamDotFile
 }
 
-# preserve arguments (can otherwise get lost when sourcing the foamDotFile)
-args="$*"
-. $foamDotFile
 
-# execute
-exec $args
+[ "$#" -ge 1 ] || usage "no application specified"
+
+sourceRc
+exec "$@"
 
 #------------------------------------------------------------------------------
