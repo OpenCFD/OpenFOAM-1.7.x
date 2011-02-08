@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2009-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -85,32 +85,32 @@ Type Foam::fieldValues::faceSource::processValues
     {
         case opSum:
         {
-            result = sum(values);
+            result = gSum(values);
             break;
         }
         case opAreaAverage:
         {
-            result = sum(values*magSf)/sum(magSf);
+            result = gSum(values*magSf)/sum(magSf);
             break;
         }
         case opAreaIntegrate:
         {
-            result = sum(values*magSf);
+            result = gSum(values*magSf);
             break;
         }
         case opWeightedAverage:
         {
-            result = sum(values*weightField)/sum(weightField);
+            result = gSum(values*weightField)/gSum(weightField);
             break;
         }
         case opMin:
         {
-            result = min(values);
+            result = gMin(values);
             break;
         }
         case opMax:
         {
-            result = max(values);
+            result = gMax(values);
             break;
         }
         default:
@@ -142,10 +142,10 @@ bool Foam::fieldValues::faceSource::writeValues(const word& fieldName)
         scalarField weightField =
             combineFields(setFieldValues<scalar>(weightFieldName_));
 
+        Type result = processValues(values, magSf, weightField);
+
         if (Pstream::master())
         {
-            Type result = processValues(values, magSf, weightField);
-
             if (valueOutput_)
             {
                 IOList<Type>
