@@ -90,7 +90,7 @@ Type Foam::fieldValues::faceSource::processValues
         }
         case opAreaAverage:
         {
-            result = gSum(values*magSf)/gSum(magSf);
+            result = gSum(values*magSf)/sum(magSf);
             break;
         }
         case opAreaIntegrate:
