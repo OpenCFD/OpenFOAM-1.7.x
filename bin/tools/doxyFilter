@@ -1,11 +1,11 @@
 #!/bin/sh
-#---------------------------------*- sh -*-------------------------------------
+#------------------------------------------------------------------------------
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+#   \\  /    A nd           | Copyright (C) 2004-2011 OpenCFD Ltd.
 #    \\/     M anipulation  |
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # License
 #     This file is part of OpenFOAM.
 #
@@ -23,7 +23,7 @@
 #     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Script
-#     doxyFilt
+#     doxyFilter
 #
 # Description
 #     pass-through filter for doxygen
@@ -43,19 +43,19 @@ then
     dirName=${filePath%/[^/]*}
     fileName=${filePath##*/}
 
-    awkScript=$WM_PROJECT_DIR/bin/tools/doxyFilt.awk
+    awkScript=$WM_PROJECT_DIR/bin/tools/doxyFilter.awk
 
     case "$1" in
     */applications/solvers/*.C | */applications/utilities/*.C )
-        awkScript=$WM_PROJECT_DIR/bin/tools/doxyFilt-top.awk
+        awkScript=$WM_PROJECT_DIR/bin/tools/doxyFilter-top.awk
         ;;
 #    */applications/solvers/*.H | */applications/utilities/*.H )
-#        awkScript=$WM_PROJECT_DIR/bin/tools/doxyFilt-ignore.awk
+#        awkScript=$WM_PROJECT_DIR/bin/tools/doxyFilter-ignore.awk
 #        ;;
-   esac
+    esac
 
     awk -f $awkScript $1 | \
-    sed -f $WM_PROJECT_DIR/bin/tools/doxyFilt.sed \
+    sed -f $WM_PROJECT_DIR/bin/tools/doxyFilter.sed \
         -e s@%filePath%@$filePath@g \
         -e s@%fileName%@$fileName@g \
         -e s@%dirName%@$dirName@g
