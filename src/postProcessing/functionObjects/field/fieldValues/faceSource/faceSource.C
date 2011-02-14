@@ -331,11 +331,11 @@ void Foam::fieldValues::faceSource::write()
 
     if (active_)
     {
+        const scalar totalArea = gSum(filterField(mesh().magSf(), false));
+
         if (Pstream::master())
         {
-            outputFilePtr_()
-                << obr_.time().value() << tab
-                << sum(filterField(mesh().magSf(), false));
+            outputFilePtr_() << obr_.time().value() << tab << totalArea;
         }
 
         forAll(fields_, i)

@@ -1,10 +1,10 @@
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+#   \\  /    A nd           | Copyright (C) 2004-2011 OpenCFD Ltd.
 #    \\/     M anipulation  |
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # License
 #     This file is part of OpenFOAM.
 #
@@ -22,7 +22,7 @@
 #     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Script
-#     doxyFilt-ignore.awk
+#     doxyFilter-ignore.awk
 #
 # Description
 #     - Prefix file contents with doxygen @file tag and %filePath% tag
@@ -37,8 +37,8 @@ BEGIN {
 }
 
 { print }
-        
+
 END {
-   print "//! @endcond OpenFOAMIgnoreAppDoxygen"
+   print "//! @endcond"
 }
 # -----------------------------------------------------------------------------

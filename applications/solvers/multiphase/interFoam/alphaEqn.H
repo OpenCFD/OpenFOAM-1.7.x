@@ -5,8 +5,6 @@
     surfaceScalarField phic = mag(phi/mesh.magSf());
     phic = min(interface.cAlpha()*phic, max(phic));
     surfaceScalarField phir = phic*interface.nHatf();
-    //surfaceScalarField phir = -phic*(vector(0, 0, 1) & mesh.Sf());
-    //surfaceScalarField phir = -phic*(vector(0, 1, 0) & mesh.Sf());
 
     for (int aCorr=0; aCorr<nAlphaCorr; aCorr++)
     {

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -40,7 +40,8 @@ bool Foam::adjustPhi
 {
     if (p.needReference())
     {
-        p.boundaryField().updateCoeffs();
+        // p coefficients should not be updated here
+        // p.boundaryField().updateCoeffs();
 
         scalar massIn = 0.0;
         scalar fixedMassOut = 0.0;

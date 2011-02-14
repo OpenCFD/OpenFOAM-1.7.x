@@ -55,7 +55,7 @@ else
         fvc::interpolate(rho)*
         (
             (fvc::interpolate(U) & mesh.Sf())
-        //+ fvc::ddtPhiCorr(rUA, rho, U, phi)
+          + fvc::ddtPhiCorr(rUA, rho, U, phi)
         );
 
     for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
