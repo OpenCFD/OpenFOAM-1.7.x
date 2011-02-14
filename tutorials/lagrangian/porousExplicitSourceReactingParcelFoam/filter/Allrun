@@ -14,11 +14,15 @@ setSet -batch system/sets.setSet > log.setSet1 2>&1
 # convert sets to zones
 setsToZones -noFlipMap > log.setsToZones 2>&1
 
-# create the first cyclic - lhs of porous zone
-unset FOAM_SETNAN
+# create the first cyclic - lhs of porous zone.
+# Note that we don't know what value to give these patches-out-of-nothing so
+# - use binary writing to avoid 'nan'
+# - use setFields to set values
+unset FOAM_SIGFPE
 createBaffles cycLeft cycLeft -overwrite > log.createBaffles1 2>&1
 
 # create the second cyclic - rhs of porous zone
 createBaffles cycRight cycRight -overwrite > log.createBaffles2 2>&1
+changeDictionary
 
 runApplication $application
