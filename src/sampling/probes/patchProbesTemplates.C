@@ -25,18 +25,15 @@ License
 
 #include "patchProbes.H"
 #include "volFields.H"
-#include "surfaceMesh.H"
 #include "IOmanip.H"
-#include "fvPatchFieldsFwd.H"
-#include "fvsPatchFieldsFwd.H"
+
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-
-template<class Type, template<class> class PatchField, class GeoMesh>
+template<class Type>
 void Foam::patchProbes::sampleAndWrite
 (
-    const GeometricField<Type, PatchField, GeoMesh>& vField
+    const GeometricField<Type, fvPatchField, volMesh>& vField
 )
 {
     Field<Type> values = sample(vField);
@@ -57,46 +54,6 @@ void Foam::patchProbes::sampleAndWrite
 }
 
 
-template<class Type>
-Foam::label Foam::patchProbes::countFields
-(
-    fieldGroup<Type>& fieldList,
-    const wordList& fieldTypes
-) const
-{
-    fieldList.setSize(fieldNames_.size());
-    label nFields = 0;
-
-    forAll(fieldNames_, fieldI)
-    {
-        if
-        (
-            (
-                fieldTypes[fieldI]
-             == GeometricField<Type, fvPatchField, volMesh>::typeName
-            ) ||
-            (
-                fieldTypes[fieldI]
-             == GeometricField<Type, fvsPatchField, surfaceMesh>::typeName
-            )
-        )
-        {
-            fieldList[nFields] = fieldNames_[fieldI];
-            nFields++;
-        }
-        
-        if(1)
-        {
-            Info << "fields: " << fieldNames_[fieldI] << "added " << endl;
-        }
-    }
-
-    fieldList.setSize(nFields);
-
-    return nFields;
-}
-
-
 template <class Type>
 void Foam::patchProbes::sampleAndWrite
 (
@@ -105,61 +62,28 @@ void Foam::patchProbes::sampleAndWrite
 {
     forAll(fields, fieldI)
     {
-        objectRegistry::const_iterator iter = obr_.find(fields[fieldI]);
-
-        if(loadFromFiles_ && iter != obr_.end())
+        if (loadFromFiles_)
         {
-            if
+            sampleAndWrite
             (
-                iter()->type()
-             == GeometricField<Type, fvPatchField, volMesh>::typeName
-            )
-            {            
-                sampleAndWrite
+                GeometricField<Type, fvPatchField, volMesh>
                 (
-                    GeometricField<Type, fvPatchField, volMesh>
+                    IOobject
                     (
-                        IOobject
-                        (
-                            fields[fieldI],
-                            obr_.time().timeName(),
-                            refCast<const polyMesh>(obr_),
-                            IOobject::MUST_READ,
-                            IOobject::NO_WRITE,
-                            false
-                        ),
-                        refCast<const fvMesh>(obr_)
-                    )
-                );
-            }
-            else if
-            (
-                iter()->type()
-             == GeometricField<Type, fvsPatchField, surfaceMesh>::typeName
-            )
-            {
-
-                sampleAndWrite
-                (
-                    GeometricField<Type, fvsPatchField, surfaceMesh>
-                    (
-                        IOobject
-                        (
-                            fields[fieldI],
-                            obr_.time().timeName(),
-                            refCast<const polyMesh>(obr_),
-                            IOobject::MUST_READ,
-                            IOobject::NO_WRITE
-                        ),
-                        refCast<const fvMesh>(obr_)
-                    )
-                );
-
-            }
+                        fields[fieldI],
+                        obr_.time().timeName(),
+                        refCast<const polyMesh>(obr_),
+                        IOobject::MUST_READ,
+                        IOobject::NO_WRITE,
+                        false
+                    ),
+                    refCast<const fvMesh>(obr_)
+                )
+            );
         }
         else
         {
-            //objectRegistry::const_iterator iter = obr_.find(fields[fieldI]);
+            objectRegistry::const_iterator iter = obr_.find(fields[fieldI]);
 
             if
             (
@@ -177,70 +101,18 @@ void Foam::patchProbes::sampleAndWrite
                     )
                 );
             }
-            else if 
-            (
-                iter != obr_.end()
-             && iter()->type()
-             == GeometricField<Type, fvsPatchField, surfaceMesh>::typeName
-            )
-            {
-                sampleAndWrite
-                (
-                    obr_.lookupObject
-                    <GeometricField<Type, fvsPatchField, surfaceMesh> >
-                    (
-                        fields[fieldI]
-                    )
-                );
-            }
-
         }
     }
 }
 
 
-template<class Type, template<class> class PatchField, class GeoMesh>
-Foam::tmp<Foam::Field<Type> >
-Foam::patchProbes::sample
-(
-    const GeometricField<Type, PatchField, GeoMesh>& vField
-) const
-{
-    const Type unsetVal(-VGREAT*pTraits<Type>::one);
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-    tmp<Field<Type> > tValues
-    (
-        new Field<Type>(probeLocations_.size(), unsetVal)
-    );
-
-    Field<Type>& values = tValues();
-
-    const polyBoundaryMesh& patches = vField.mesh().boundaryMesh();
-
-    forAll(probeLocations_, probeI)
-    {
-        label faceI = elementList_[probeI];
-
-        if (faceI >= 0)
-        {
-            label patchI = patches.whichPatch(faceI);
-            label localFaceI = patches[patchI].whichFace(faceI);
-            values[probeI] = vField.boundaryField()[patchI][localFaceI];
-        }
-    }
-
-    Pstream::listCombineGather(values, isNotEqOp<Type>());
-    Pstream::listCombineScatter(values);
-
-    return tValues;
-}
-
-/*
 template<class Type>
 Foam::tmp<Foam::Field<Type> >
 Foam::patchProbes::sample
 (
-    const GeometricField<Type, fvsPatchField, surfaceMesh>& vField
+    const GeometricField<Type, fvPatchField, volMesh>& vField
 ) const
 {
     const Type unsetVal(-VGREAT*pTraits<Type>::one);
@@ -271,8 +143,6 @@ Foam::patchProbes::sample
 
     return tValues;
 }
-
-*/
 
 
 template<class Type>

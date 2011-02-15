@@ -25,7 +25,6 @@ License
 
 #include "patchProbes.H"
 #include "volFields.H"
-#include "surfaceFields.H"
 #include "IOmanip.H"
 // For 'nearInfo' helper class only
 #include "directMappedPatchBase.H"
