@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.7.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      dynamicMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dynamicFvMeshLib "libtopoChangerFvMesh.so";
+
+dynamicFvMesh   mixerFvMesh;
+
+mixerFvMeshCoeffs
+{
+    coordinateSystem
+    {
+        type            cylindrical;
+        origin          ( 0 0 0 );
+        axis            ( 0 0 1 );
+        direction       ( 1 0 0 );
+    }
+
+    rpm             10;
+
+    slider
+    {
+        inside          insideSlider;
+        outside         outsideSlider;
+    }
+}
+
+
+// ************************************************************************* //

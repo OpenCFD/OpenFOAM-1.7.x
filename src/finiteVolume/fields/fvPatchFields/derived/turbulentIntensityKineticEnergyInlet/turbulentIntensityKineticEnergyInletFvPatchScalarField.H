@@ -46,7 +46,7 @@ SourceFiles
 #ifndef turbulentIntensityKineticEnergyInletFvPatchScalarField_H
 #define turbulentIntensityKineticEnergyInletFvPatchScalarField_H
 
-#include "mixedFvPatchFields.H"
+#include "inletOutletFvPatchFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -59,7 +59,7 @@ namespace Foam
 
 class turbulentIntensityKineticEnergyInletFvPatchScalarField
 :
-    public mixedFvPatchScalarField
+    public inletOutletFvPatchScalarField
 {
     // Private data
 

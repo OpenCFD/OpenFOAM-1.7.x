@@ -102,9 +102,6 @@ private:
         //- List of pointers to radiative intensity fields for given wavelengths
         PtrList<volScalarField> ILambda_;
 
-        //- Global ray id - incremented in constructor
-        static label rayId;
-
 
     // Private member functions
 
@@ -130,7 +127,8 @@ public:
             const scalar deltaTheta,
             const label lambda,
             const absorptionEmissionModel& absEmmModel_,
-            const blackBodyEmission& blackBody
+            const blackBodyEmission& blackBody,
+            const label rayId
         );
 
 

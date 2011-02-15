@@ -133,12 +133,14 @@ public:
 
             inline vector Sd() const;
 
+            //- Return centre (centroid)
+            inline Point centre() const;
 
             //- Return volume
             inline scalar mag() const;
 
             //- Return circum-centre
-            inline vector circumCentre() const;
+            inline Point circumCentre() const;
 
             //- Return circum-radius
             inline scalar circumRadius() const;

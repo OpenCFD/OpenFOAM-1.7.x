@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2006-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2006-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -46,7 +46,7 @@ turbulentMixingLengthFrequencyInletFvPatchScalarField
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    mixedFvPatchScalarField(p, iF),
+    inletOutletFvPatchScalarField(p, iF),
     mixingLength_(0.0),
     phiName_("undefined-phi"),
     kName_("undefined-k")
@@ -65,7 +65,7 @@ turbulentMixingLengthFrequencyInletFvPatchScalarField
     const fvPatchFieldMapper& mapper
 )
 :
-    mixedFvPatchScalarField(ptf, p, iF, mapper),
+    inletOutletFvPatchScalarField(ptf, p, iF, mapper),
     mixingLength_(ptf.mixingLength_),
     phiName_(ptf.phiName_),
     kName_(ptf.kName_)
@@ -79,7 +79,7 @@ turbulentMixingLengthFrequencyInletFvPatchScalarField
     const dictionary& dict
 )
 :
-    mixedFvPatchScalarField(p, iF),
+    inletOutletFvPatchScalarField(p, iF),
     mixingLength_(readScalar(dict.lookup("mixingLength"))),
     phiName_(dict.lookupOrDefault<word>("phi", "phi")),
     kName_(dict.lookupOrDefault<word>("k", "k"))
@@ -97,7 +97,7 @@ turbulentMixingLengthFrequencyInletFvPatchScalarField
     const turbulentMixingLengthFrequencyInletFvPatchScalarField& ptf
 )
 :
-    mixedFvPatchScalarField(ptf),
+    inletOutletFvPatchScalarField(ptf),
     mixingLength_(ptf.mixingLength_),
     phiName_(ptf.phiName_),
     kName_(ptf.kName_)
@@ -110,7 +110,7 @@ turbulentMixingLengthFrequencyInletFvPatchScalarField
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    mixedFvPatchScalarField(ptf, iF),
+    inletOutletFvPatchScalarField(ptf, iF),
     mixingLength_(ptf.mixingLength_),
     phiName_(ptf.phiName_),
     kName_(ptf.kName_)
@@ -143,7 +143,7 @@ void turbulentMixingLengthFrequencyInletFvPatchScalarField::updateCoeffs()
     this->refValue() = sqrt(kp)/(Cmu25*mixingLength_);
     this->valueFraction() = 1.0 - pos(phip);
 
-    mixedFvPatchScalarField::updateCoeffs();
+    inletOutletFvPatchScalarField::updateCoeffs();
 }
 
 

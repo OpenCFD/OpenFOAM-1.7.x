@@ -2,9 +2,9 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+#   \\  /    A nd           | Copyright (C) 2004-2011 OpenCFD Ltd.
 #    \\/     M anipulation  |
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # License
 #     This file is part of OpenFOAM.
 #
@@ -22,60 +22,68 @@
 #     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Script
-#     doxyFilt-top.awk
+#     doxyFilter.awk
 #
 # Description
-#     Only output the first /* ... */ comment section found in the file
-#     Use @cond / @endcond to suppress documenting all classes/variables
-#     - This is useful for application files in which only the first
-#       block documents the application itself.
+#     Converts cocoon style sentinel strings into doxygen style strings
 #
+#     Assumes comment strings are formatted as follows
+#         //- general description
+#         //  more information
+#         //  and even more information
+#     This should be re-formatted as the following
+#         //! general description
+#         /*!
+#         more information
+#         and even more information
+#         */
+#     The intermediate "/*! ... */" block is left-justified to handle
+#     possible verbatim text
 # -----------------------------------------------------------------------------
+
 BEGIN {
     state = 0
 }
 
-# a '/*' at the beginning of a line starts a comment block
-/^ *\/\*/ {
-   state++
+/^ *\/\/-/ {
+    state = 1
+    sub(/\/\/-/, "//!")
+    print
+    next
 }
 
-# check first line
-# either started with a comment or skip documentation for the whole file
-FNR == 1 {
-   if (!state)
-   {
-      print "//! @cond OpenFOAMIgnoreAppDoxygen"
-      state = 2
-   }
-}
 
-# a '*/' ends the comment block
-# skip documentation for rest of the file
-/\*\// {
+/^ *\/\// {
+    # start comment block
     if (state == 1)
     {
-        print
-        print "//! @cond OpenFOAMIgnoreAppDoxygen"
+        printf "/*! "
+        state = 2
     }
-    state = 2
-    next
-}
 
-# print everything within the first comment block
-{
-    if (state)
-    {
-        print
-    }
-    next
-}
-
-END {
+    # inside comment block
     if (state == 2)
     {
-        print "//! @endcond OpenFOAMIgnoreAppDoxygen"
+        if (!sub(/^ *\/\/  /, ""))
+        {
+            sub(/^ *\/\//, "")
+        }
     }
+
+    print
+    next
+}
+
+
+{
+    # end comment block
+    if (state == 2)
+    {
+        printf "*/ "
+    }
+    state = 0
+    print
+    next
 }
 
 # -----------------------------------------------------------------------------

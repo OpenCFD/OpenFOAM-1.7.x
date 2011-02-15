@@ -38,7 +38,7 @@ turbulentIntensityKineticEnergyInletFvPatchScalarField
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    mixedFvPatchScalarField(p, iF),
+    inletOutletFvPatchScalarField(p, iF),
     intensity_(0.0),
     UName_("undefined-U"),
     phiName_("undefined-phi")
@@ -57,7 +57,7 @@ turbulentIntensityKineticEnergyInletFvPatchScalarField
     const fvPatchFieldMapper& mapper
 )
 :
-    mixedFvPatchScalarField(ptf, p, iF, mapper),
+    inletOutletFvPatchScalarField(ptf, p, iF, mapper),
     intensity_(ptf.intensity_),
     UName_(ptf.UName_),
     phiName_(ptf.phiName_)
@@ -71,7 +71,7 @@ turbulentIntensityKineticEnergyInletFvPatchScalarField
     const dictionary& dict
 )
 :
-    mixedFvPatchScalarField(p, iF),
+    inletOutletFvPatchScalarField(p, iF),
     intensity_(readScalar(dict.lookup("intensity"))),
     UName_(dict.lookupOrDefault<word>("U", "U")),
     phiName_(dict.lookupOrDefault<word>("phi", "phi"))
@@ -106,7 +106,7 @@ turbulentIntensityKineticEnergyInletFvPatchScalarField
     const turbulentIntensityKineticEnergyInletFvPatchScalarField& ptf
 )
 :
-    mixedFvPatchScalarField(ptf),
+    inletOutletFvPatchScalarField(ptf),
     intensity_(ptf.intensity_),
     UName_(ptf.UName_),
     phiName_(ptf.phiName_)
@@ -120,7 +120,7 @@ turbulentIntensityKineticEnergyInletFvPatchScalarField
     const DimensionedField<scalar, volMesh>& iF
 )
 :
-    mixedFvPatchScalarField(ptf, iF),
+    inletOutletFvPatchScalarField(ptf, iF),
     intensity_(ptf.intensity_),
     UName_(ptf.UName_),
     phiName_(ptf.phiName_)
@@ -146,7 +146,7 @@ updateCoeffs()
     this->refValue() = 1.5*sqr(intensity_)*magSqr(Up);
     this->valueFraction() = 1.0 - pos(phip);
 
-    mixedFvPatchScalarField::updateCoeffs();
+    inletOutletFvPatchScalarField::updateCoeffs();
 }
 
 

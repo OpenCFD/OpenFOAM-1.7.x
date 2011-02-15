@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,110 +22,80 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    cellPointWeight
+    Foam::maxDeltaxyz
 
 Description
+    maxDeltaxyz takes the maximum of the three dimensions per cell:
+    max(hx, hy, hz). Valid for structures hexahedral cells only.
+
 
 SourceFiles
-    cellPointWeight.C
-    findCellPointTet.H
-    findCellPointTriangle.H
+    maxDeltaxyz.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef cellPointWeight_H
-#define cellPointWeight_H
+#ifndef maxDeltaxyzDelta_H
+#define maxDeltaxyzDelta_H
 
-#include "vector.H"
+#include "LESdelta.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
-class polyMesh;
-
 /*---------------------------------------------------------------------------*\
-                           Class cellPointWeight Declaration
+                           Class maxDeltaxyz Declaration
 \*---------------------------------------------------------------------------*/
 
-class cellPointWeight
+class maxDeltaxyz
+:
+    public LESdelta
 {
     // Private data
 
-       vector position_;
-       label cellNo_;
-       label face_;
-       FixedList<scalar, 4> weights_;
-       FixedList<label, 3> faceVertices_;
-       label cellFace_;
+        scalar deltaCoeff_; //
 
-       
+
     // Private Member Functions
 
-        bool findTet
-        (
-            const polyMesh& mesh,
-            const label nFace,
-            vector tetPoints[],
-            label tetLabelCandidate[],
-            scalar phiCandidate[],
-            label& closestFace,
-            scalar& minDistance
-        );
+        //- Disallow default bitwise copy construct and assignment
+        maxDeltaxyz(const maxDeltaxyz&);
+        void operator=(const maxDeltaxyz&);
 
-        bool findTriangle
-        (
-            const polyMesh& mesh,
-            const label nFace
-        );
+        // Calculate the delta values
+        void calcDelta();
 
 
 public:
 
+    //- Runtime type information
+    TypeName("maxDeltaxyz");
+
+
     // Constructors
 
-        //- Construct from components
-        cellPointWeight
+        //- Construct from name, mesh and IOdictionary
+        maxDeltaxyz
         (
-            const polyMesh& mesh,
-            const vector& position, 
-            const label nCell,
-            const label facei = -1
+            const word& name,
+            const fvMesh& mesh,
+            const dictionary&
         );
+
+
+    //- Destructor
+    virtual ~maxDeltaxyz()
+    {}
 
 
     // Member Functions
 
-        //- cell label
-        inline label cell() const
-        {
-            return cellNo_;
-        }
+        //- Read the LESdelta dictionary
+        virtual void read(const dictionary&);
 
-        //- face label
-        inline label face() const
-        {
-            return face_;
-        }
-        
-        //- interpolation weights
-        inline const FixedList<scalar, 4>& weights() const
-        {
-            return weights_;
-        }
-        
-        //- interpolation addressing for points on face
-        inline const FixedList<label, 3>& faceVertices() const
-        {
-            return faceVertices_;
-        }
-
-        //- face label
-        inline label cellFace() const
-        {
-            return cellFace_;
-        }
+        // Correct values
+        virtual void correct();
 };
 
 
@@ -134,6 +104,7 @@ public:
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
 
 #endif
 

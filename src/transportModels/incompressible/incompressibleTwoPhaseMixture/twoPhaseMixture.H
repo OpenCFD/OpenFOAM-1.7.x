@@ -147,7 +147,7 @@ public:
             return nu_;
         }
 
-        //- Return the face-interpolated dynamic laminar viscosity
+        //- Return the face-interpolated kinematic laminar viscosity
         tmp<surfaceScalarField> nuf() const;
 
         //- Correct the laminar viscosity

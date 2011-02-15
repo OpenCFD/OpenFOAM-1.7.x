@@ -2,8 +2,8 @@
     word scheme("div(phi,alpha)");
     word schemer("div(phir,alpha)");
 
-    surfaceScalarField phic = phi;
-    surfaceScalarField phir = phia - phib;
+    surfaceScalarField phic("phic", phi);
+    surfaceScalarField phir("phir", phia - phib);
 
     if (g0.value() > 0.0)
     {
@@ -41,7 +41,7 @@
         alphaEqn.relax();
         alphaEqn.solve();
 
-#       include "packingLimiter.H"
+        #include "packingLimiter.H"
 
         beta = scalar(1) - alpha;
 
