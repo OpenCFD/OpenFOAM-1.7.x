@@ -134,7 +134,6 @@ Foam::radiation::fvDOM::fvDOM(const volScalarField& T)
         scalar deltaPhi = mathematicalConstant::pi/(2.0*nPhi_);
         scalar deltaTheta = mathematicalConstant::pi/nTheta_;
         label i = 0;
-	Info << "name :" << mesh_.name() << endl;
         for (label n = 1; n <= nTheta_; n++)
         {
             for (label m = 1; m <= 4*nPhi_; m++)
