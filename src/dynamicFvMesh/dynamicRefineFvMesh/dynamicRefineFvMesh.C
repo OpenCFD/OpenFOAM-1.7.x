@@ -885,31 +885,25 @@ dynamicRefineFvMesh::dynamicRefineFvMesh(const IOobject& io)
     // Count number of points <= cellLevel
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    labelList nAnchors(nCells(), 0);
-
     label nProtected = 0;
 
-    forAll(pointCells(), pointI)
+    forAll(cellLevel, cellI)
     {
-        const labelList& pCells = pointCells()[pointI];
+        const labelList& cPoints = cellPoints(cellI);
 
-        forAll(pCells, i)
+        label nAnchors = 0;
+        forAll(cPoints, cPointI)
         {
-            label cellI = pCells[i];
-
-            if (protectedCell_.get(cellI) == 0)
+            label pointI = cPoints[cPointI];
+            if (pointLevel[pointI] <= cellLevel[cellI])
             {
-                if (pointLevel[pointI] <= cellLevel[cellI])
-                {
-                    nAnchors[cellI]++;
-
-                    if (nAnchors[cellI] > 8)
-                    {
-                        protectedCell_.set(cellI, 1);
-                        nProtected++;
-                    }
-                }
+                nAnchors++;
             }
+        }
+        if (nAnchors != 8)
+        {
+            protectedCell_.set(cellI, 1);
+            nProtected++;
         }
     }
 
@@ -952,13 +946,12 @@ dynamicRefineFvMesh::dynamicRefineFvMesh(const IOobject& io)
                 if (pointLevel[f[fp]] <= faceLevel)
                 {
                     nAnchors++;
-
-                    if (nAnchors > 4)
-                    {
-                        protectedFace[faceI] = true;
-                        break;
-                    }
                 }
+            }
+
+            if (nAnchors != 4)
+            {
+                protectedFace[faceI] = true;
             }
         }
 
@@ -974,23 +967,37 @@ dynamicRefineFvMesh::dynamicRefineFvMesh(const IOobject& io)
         {
             if (protectedFace[faceI])
             {
-                protectedCell_.set(faceOwner()[faceI], 1);
-                nProtected++;
-                protectedCell_.set(faceNeighbour()[faceI], 1);
-                nProtected++;
+                if (protectedCell_.set(faceOwner()[faceI], 1))
+                {
+                    nProtected++;
+                }
+                if (protectedCell_.set(faceNeighbour()[faceI], 1))
+                {
+                    nProtected++;
+                }
             }
         }
         for (label faceI = nInternalFaces(); faceI < nFaces(); faceI++)
         {
             if (protectedFace[faceI])
             {
-                protectedCell_.set(faceOwner()[faceI], 1);
-                nProtected++;
+                if (protectedCell_.set(faceOwner()[faceI], 1))
+                {
+                    nProtected++;
+                }
             }
         }
     }
 
-    if (returnReduce(nProtected, sumOp<label>()) == 0)
+    reduce(nProtected, sumOp<label>());
+
+    //Info<< "Protecting " << nProtected << " out of "
+    //    << returnReduce(nCells(), sumOp<label>())
+    //    << endl;
+
+
+
+    if (nProtected == 0)
     {
         protectedCell_.clear();
     }
