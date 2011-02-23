@@ -67,19 +67,6 @@ class cyclicPolyPatch
 :
     public coupledPolyPatch
 {
-public:
-
-    enum transformType
-    {
-        UNKNOWN,
-        ROTATIONAL,
-        TRANSLATIONAL
-    };
-    static const NamedEnum<transformType, 3> transformTypeNames;
-
-
-private:
-
     // Private data
 
         //- List of edges formed from connected points. e[0] is the point on
