@@ -59,7 +59,7 @@ surfaceNormalFixedValueFvPatchVectorField
     fixedValueFvPatchVectorField(p, iF),
     refValue_(ptf.refValue_, mapper)
 {
-    fvPatchVectorField::operator=(refValue_*patch().nf());
+//    fvPatchVectorField::operator=(refValue_*patch().nf());
 }
 
 
