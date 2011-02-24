@@ -75,11 +75,13 @@ void Foam::Time::adjustDeltaT()
             (outputTimeIndex_ + 1)*writeInterval_ - (value() - startTime_)
         );
 
-        label nStepsToNextWrite = label(timeToNextWrite/deltaT_ - SMALL) + 1;
+        scalar nSteps = timeToNextWrite/deltaT_ - SMALL;
 
         // For tiny deltaT the label can overflow!
-        if (nStepsToNextWrite > 0)
+        if (nSteps < labelMax)
         {
+            label nStepsToNextWrite = label(nSteps) + 1;
+
             scalar newDeltaT = timeToNextWrite/nStepsToNextWrite;
 
             // Control the increase of the time step to within a factor of 2
