@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -54,7 +54,7 @@ Foam::viscosityModels::HerschelBulkley::calcNu() const
     dimensionedScalar rtone("rtone", dimless/dimTime, 1.0);
     tmp<volScalarField> sr(strainRate());
     return (min(nu0_,(tau0_ + k_* rtone *( pow(tone * sr(), n_)
-        + pow(tone*tau0_/nu0_,n_))) / (max(sr(), dimensionedScalar
+        - pow(tone*tau0_/nu0_,n_))) / (max(sr(), dimensionedScalar
         ("VSMALL", dimless/dimTime, VSMALL)))));
 }
 
