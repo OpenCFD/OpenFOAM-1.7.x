@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -75,18 +75,25 @@ void Foam::Time::adjustDeltaT()
             (outputTimeIndex_ + 1)*writeInterval_ - (value() - startTime_)
         );
 
-        label nStepsToNextWrite = label(timeToNextWrite/deltaT_ - SMALL) + 1;
-        scalar newDeltaT = timeToNextWrite/nStepsToNextWrite;
+        scalar nSteps = timeToNextWrite/deltaT_ - SMALL;
 
-        // Control the increase of the time step to within a factor of 2
-        // and the decrease within a factor of 5.
-        if (newDeltaT >= deltaT_)
+        // For tiny deltaT the label can overflow!
+        if (nSteps < labelMax)
         {
-            deltaT_ = min(newDeltaT, 2.0*deltaT_);
-        }
-        else
-        {
-            deltaT_ = max(newDeltaT, 0.2*deltaT_);
+            label nStepsToNextWrite = label(nSteps) + 1;
+
+            scalar newDeltaT = timeToNextWrite/nStepsToNextWrite;
+
+            // Control the increase of the time step to within a factor of 2
+            // and the decrease within a factor of 5.
+            if (newDeltaT >= deltaT_)
+            {
+                deltaT_ = min(newDeltaT, 2.0*deltaT_);
+            }
+            else
+            {
+                deltaT_ = max(newDeltaT, 0.2*deltaT_);
+            }
         }
     }
 }
