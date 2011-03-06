@@ -47,7 +47,6 @@ void Foam::patchProbes::findElements(const fvMesh& mesh)
 
     if (elementList_.empty())
     {
-
         elementList_.setSize(probeLocations_.size());
 
         // Octree based search engine
@@ -59,23 +58,15 @@ void Foam::patchProbes::findElements(const fvMesh& mesh)
 
             label faceI = meshSearchEngine.findNearestBoundaryFace(sample);
 
-            if (faceI == -1)
-            {
-                nearest[probeI].second().first() = Foam::sqr(GREAT);
-                nearest[probeI].second().second() = Pstream::myProcNo();
-            }
-            else
-            {
-                const point& fc = mesh.faceCentres()[faceI];
-                nearest[probeI].first() = pointIndexHit
-                (
-                    true,
-                    fc,
-                    faceI
-                );
-                nearest[probeI].second().first() = magSqr(fc-sample);
-                nearest[probeI].second().second() = Pstream::myProcNo();
-            }
+            const point& fc = mesh.faceCentres()[faceI];
+            nearest[probeI].first() = pointIndexHit
+            (
+                true,
+                fc,
+                faceI
+            );
+            nearest[probeI].second().first() = magSqr(fc-sample);
+            nearest[probeI].second().second() = Pstream::myProcNo();
         }
     }
 
@@ -98,27 +89,16 @@ void Foam::patchProbes::findElements(const fvMesh& mesh)
         }
     }
 
-
-
     // Check if all patchProbes have been found.
     forAll(nearest, sampleI)
     {
-        label localI = nearest[sampleI].first().index();
+        label localI = -1;
+        if (nearest[sampleI].second().second() == Pstream::myProcNo())
+        {
+            localI = nearest[sampleI].first().index();
+        }
 
-        if (localI == -1)
-        {
-             if (Pstream::master())
-             {
-                WarningIn("patchProbes::findElements()")
-                    << "Did not find location "
-                    <<  nearest[sampleI].second().first()
-                    << " in any cell. Skipping location." << endl;
-             }
-        }
-        else
-        {
-            elementList_[sampleI] = localI;
-        }
+        elementList_[sampleI] = localI;
     }
 }
 

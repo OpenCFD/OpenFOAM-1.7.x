@@ -636,6 +636,7 @@ DebugSwitches
     partialSlip         0;
     passiveParticle     0;
     patch               0;
+    patchProbes         0;
     patchToFace         0;
     patchZones          0;
     pdf                 0;
