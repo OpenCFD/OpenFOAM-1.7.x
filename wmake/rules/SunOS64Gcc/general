@@ -1,7 +1,7 @@
 CPP        = cpp $(GFLAGS)
 LD         = ld -64
 
-PROJECT_LIBS = -l$(WM_PROJECT) -liberty -lnsl -lsocket -L$(FOAM_LIBBIN)/dummy -lPstream
+PROJECT_LIBS = -l$(WM_PROJECT) -lnsl -lsocket -L$(FOAM_LIBBIN)/dummy -lPstream
 
 include $(GENERAL_RULES)/standard
 

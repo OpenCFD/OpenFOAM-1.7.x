@@ -4,7 +4,7 @@ ARFLAGS    = cr
 RANLIB     = ranlib
 LD         = ld
 
-GLIBS      = -liberty
+GLIBS      =
 
 include $(GENERAL_RULES)/standard
 
