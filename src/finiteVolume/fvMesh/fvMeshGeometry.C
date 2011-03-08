@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -64,7 +64,10 @@ void fvMesh::makeSf() const
             "S",
             pointsInstance(),
             meshSubDir,
-            *this
+            *this,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE,
+            false
         ),
         *this,
         dimArea,
