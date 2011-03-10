@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -468,11 +468,11 @@ void Foam::MULES::limiter
     else
     {
         psiMaxn =
-            V*((rho/deltaT - Sp)*psiMaxn - (rho.oldTime()/deltaT)*psi0 - Su)
+            V*((rho/deltaT - Sp)*psiMaxn - Su - (rho.oldTime()/deltaT)*psi0)
           + sumPhiBD;
 
         psiMinn =
-            V*((rho/deltaT)*psi0 - (rho.oldTime()/deltaT - Sp)*psiMinn + Su)
+            V*(Su - (rho/deltaT - Sp)*psiMinn + (rho.oldTime()/deltaT)*psi0)
           - sumPhiBD;
     }
 
