@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -110,7 +110,20 @@ laplacian
     const word& name
 )
 {
-    return gamma*fvc::laplacian(vf, name);
+    GeometricField<GType, fvsPatchField, surfaceMesh> Gamma
+    (
+        IOobject
+        (
+            gamma.name(),
+            vf.instance(),
+            vf.mesh(),
+            IOobject::NO_READ
+        ),
+        vf.mesh(),
+        gamma
+    );
+
+    return fvc::laplacian(Gamma, vf, name);
 }
 
 
@@ -140,10 +153,20 @@ laplacian
     const GeometricField<Type, fvPatchField, volMesh>& vf
 )
 {
-    return gamma*fvc::laplacian
+    GeometricField<GType, fvsPatchField, surfaceMesh> Gamma
     (
-        vf, "laplacian(" + gamma.name() + ',' + vf.name() + ')'
+        IOobject
+        (
+            gamma.name(),
+            vf.instance(),
+            vf.mesh(),
+            IOobject::NO_READ
+        ),
+        vf.mesh(),
+        gamma
     );
+
+    return fvc::laplacian(Gamma, vf);
 }
 
 
