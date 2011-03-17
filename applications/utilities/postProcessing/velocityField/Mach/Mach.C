@@ -63,7 +63,15 @@ void Foam::calc(const argList& args, const Time& runTime, const fvMesh& mesh)
 
         volVectorField U(Uheader, mesh);
 
-        if (isFile(runTime.constantPath()/"thermophysicalProperties"))
+        if
+        (
+            IOobject
+            (
+                "thermophysicalProperties",
+                runTime.constant(),
+                mesh
+            ).headerOk()
+        )
         {
             // thermophysical Mach
             autoPtr<basicPsiThermo> thermo

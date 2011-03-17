@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -489,11 +489,29 @@ void Foam::cyclicPolyPatch::getCentresAndAnchors
             // Rotation
             forAll(half0Ctrs, faceI)
             {
-                half0Ctrs[faceI] = Foam::transform(reverseT, half0Ctrs[faceI]);
-                anchors0[faceI] = Foam::transform(reverseT, anchors0[faceI]);
+                half0Ctrs[faceI] =
+                    Foam::transform
+                    (
+                        reverseT,
+                        half0Ctrs[faceI] - rotationCentre_
+                    )
+                  + rotationCentre_;
+                anchors0[faceI] =
+                    Foam::transform
+                    (
+                        reverseT,
+                        anchors0[faceI] - rotationCentre_
+                    )
+                  + rotationCentre_;
             }
 
-            ppPoints = Foam::transform(reverseT, pp.points());
+            ppPoints =
+                Foam::transform
+                (
+                    reverseT,
+                    (pp.points() - rotationCentre_)()
+                )
+              + rotationCentre_;
 
             break;
         }
@@ -506,7 +524,8 @@ void Foam::cyclicPolyPatch::getCentresAndAnchors
         //    if (debug)
         //    {
         //        Pout<< "cyclicPolyPatch::getCentresAndAnchors :"
-        //            << "Specified translation : " << separationVector_ << endl;
+        //            << "Specified translation : " << separationVector_
+        //            << endl;
         //    }
         //
         //    half0Ctrs += separationVector_;
@@ -680,33 +699,20 @@ Foam::label Foam::cyclicPolyPatch::getConsistentRotationFace
     const pointField& faceCentres
 ) const
 {
+    // Determine a face furthest away from the axis
+
     const scalarField magRadSqr =
         magSqr((faceCentres - rotationCentre_) ^ rotationAxis_);
-    scalarField axisLen = (faceCentres - rotationCentre_) & rotationAxis_;
-    axisLen = axisLen - min(axisLen);
-    const scalarField magLenSqr = magRadSqr + axisLen*axisLen;
 
-    label rotFace = -1;
-    scalar maxMagLenSqr = -GREAT;
-    scalar maxMagRadSqr = -GREAT;
-    forAll(faceCentres, i)
-    {
-        if (magLenSqr[i] >= maxMagLenSqr)
-        {
-            if (magRadSqr[i] > maxMagRadSqr)
-            {
-                rotFace = i;
-                maxMagLenSqr = magLenSqr[i];
-                maxMagRadSqr = magRadSqr[i];
-            }
-        }
-    }
+    label rotFace = findMax(magRadSqr);
 
     if (debug)
     {
         Info<< "getConsistentRotationFace(const pointField&)" << nl
-            << "    rotFace = " << rotFace << nl
-            << "    point =  " << faceCentres[rotFace] << endl;
+            << "    rotFace  = " << rotFace << nl
+            << "    point    =  " << faceCentres[rotFace] << nl
+            << "    distance = " << Foam::sqrt(magRadSqr[rotFace])
+            << endl;
     }
 
     return rotFace;
@@ -1196,28 +1202,23 @@ bool Foam::cyclicPolyPatch::order
             << " faces to OBJ file " << nm1 << endl;
         writeOBJ(nm1, half1Faces, pp.points());
 
-        OFstream ccStr
-        (
-            boundaryMesh().mesh().time().path()
-           /"match1_"+ name() + "_faceCentres.obj"
-        );
-        Pout<< "cyclicPolyPatch::order : "
-            << "Dumping currently found cyclic match as lines between"
-            << " corresponding face centres to file " << ccStr.name()
-            << endl;
-
-        // Recalculate untransformed face centres
-        //pointField rawHalf0Ctrs = calcFaceCentres(half0Faces, pp.points());
-        label vertI = 0;
-
-        forAll(half1Ctrs, i)
+        if (matchedAll)
         {
-            //if (from1To0[i] != -1)
+            OFstream ccStr
+            (
+                boundaryMesh().mesh().time().path()
+               /"match1_"+ name() + "_faceCentres.obj"
+            );
+            Pout<< "cyclicPolyPatch::order : "
+                << "Dumping currently found cyclic match as lines between"
+                << " corresponding face centres to file " << ccStr.name()
+                << endl;
+
+            label vertI = 0;
+            forAll(half1Ctrs, i)
             {
                 // Write edge between c1 and c0
-                //const point& c0 = rawHalf0Ctrs[from1To0[i]];
-                //const point& c0 = half0Ctrs[from1To0[i]];
-                const point& c0 = half0Ctrs[i];
+                const point& c0 = half0Ctrs[from1To0[i]];
                 const point& c1 = half1Ctrs[i];
                 writeOBJ(ccStr, c0, c1, vertI);
             }

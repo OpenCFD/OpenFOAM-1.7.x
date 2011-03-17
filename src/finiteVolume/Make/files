@@ -201,6 +201,7 @@ $(surfaceInterpolation)/surfaceInterpolationScheme/surfaceInterpolationSchemes.C
 
 schemes = $(surfaceInterpolation)/schemes
 $(schemes)/linear/linear.C
+$(schemes)/pointLinear/pointLinear.C
 $(schemes)/midPoint/midPoint.C
 $(schemes)/downwind/downwind.C
 $(schemes)/weighted/weighted.C
