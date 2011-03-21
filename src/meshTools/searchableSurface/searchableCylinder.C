@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -91,7 +91,24 @@ Foam::pointIndexHit Foam::searchableCylinder::findNearest
         // distance to cylinder wall: magV-radius_
 
         // Nearest cylinder point
-        point cylPt = sample + (radius_-magV)*v;
+        point cylPt;
+        if (magV < ROOTVSMALL)
+        {
+            // Point exactly on centre line. Take any point on wall.
+            vector e1 = point(1,0,0) ^ unitDir_;
+            scalar magE1 = mag(e1);
+            if (magE1 < SMALL)
+            {
+                e1 = point(0,1,0) ^ unitDir_;
+                magE1 = mag(e1);
+            }
+            e1 /= magE1;
+            cylPt = sample + radius_*e1;
+        }
+        else
+        {
+            cylPt = sample + (radius_-magV)*v;
+        }
 
         if (parallel < 0.5*magDir_)
         {
