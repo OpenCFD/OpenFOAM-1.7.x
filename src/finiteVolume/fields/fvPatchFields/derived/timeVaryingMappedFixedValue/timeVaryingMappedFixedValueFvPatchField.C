@@ -338,7 +338,19 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
     (
         referenceCS().localPosition(samplePoints)
     );
-    const vectorField& localVertices = tlocalVertices();
+    vectorField& localVertices = tlocalVertices();
+
+    // Shear to avoid degenerate cases
+    forAll(localVertices, i)
+    {
+        point& pt = localVertices[i];
+        const scalar magPt = mag(pt);
+        const point nptDir = pt/magPt;
+        if (magPt > ROOTVSMALL)
+        {
+            pt += pow(magPt, 1.1 + Foam::sqrt(SMALL))*nptDir;
+        }
+    }
 
     // Determine triangulation
     List<vector2D> localVertices2D(localVertices.size());
@@ -350,13 +362,26 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
 
     triSurface s(triSurfaceTools::delaunay2D(localVertices2D));
 
-    tmp<pointField> localFaceCentres
+    tmp<pointField> tlocalFaceCentres
     (
         referenceCS().localPosition
         (
             this->patch().patch().faceCentres()
         )
     );
+
+    pointField& localFaceCentres = tlocalFaceCentres();
+    // Shear to avoid degenerate cases
+    forAll(localFaceCentres, i)
+    {
+        point& pt = localFaceCentres[i];
+        const scalar magPt = mag(pt);
+        const point nptDir = pt/magPt;
+        if (magPt > ROOTVSMALL)
+        {
+            pt += pow(magPt, 1.1 + Foam::sqrt(SMALL))*nptDir;
+        }
+    }
 
     if (debug)
     {
@@ -368,9 +393,9 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
         Pout<< "readSamplePoints :"
             << " Dumping face centres to " << str.name() << endl;
 
-        forAll(localFaceCentres(), i)
+        forAll(localFaceCentres, i)
         {
-            const point& p = localFaceCentres()[i];
+            const point& p = localFaceCentres[i];
             str<< "v " << p.x() << ' ' << p.y() << ' ' << p.z() << nl;
         }
     }
