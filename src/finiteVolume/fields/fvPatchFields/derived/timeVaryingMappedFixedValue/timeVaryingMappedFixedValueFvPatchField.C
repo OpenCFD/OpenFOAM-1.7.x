@@ -375,13 +375,14 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
 
     triSurface s(triSurfaceTools::delaunay2D(localVertices2D));
 
-    tmp<pointField> localFaceCentres
+    tmp<pointField> tlocalFaceCentres
     (
         referenceCS().localPosition
         (
             this->patch().patch().faceCentres()
         )
     );
+    const pointField& localFaceCentres = tlocalFaceCentres();
 
     if (debug)
     {
@@ -393,9 +394,9 @@ void timeVaryingMappedFixedValueFvPatchField<Type>::readSamplePoints()
         Pout<< "readSamplePoints :"
             << " Dumping face centres to " << str.name() << endl;
 
-        forAll(localFaceCentres(), i)
+        forAll(localFaceCentres, i)
         {
-            const point& p = localFaceCentres()[i];
+            const point& p = localFaceCentres[i];
             str<< "v " << p.x() << ' ' << p.y() << ' ' << p.z() << nl;
         }
     }
