@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -72,18 +72,18 @@ Foam::Pair<Foam::vector> Foam::searchableSurfaceWithGaps::offsetVecs
         }
 
         offsets[0][minCmpt] = 1.0;
-        // Orthogonalise
+        // Orthonormalise
         offsets[0] -= n[minCmpt]*n;
-        // Scale
-        offsets[0] *= gap_/mag(offsets[0]);
-
-
+        offsets[0] /= mag(offsets[0]);
         // Do second offset vector perp to original edge and first offset vector
         offsets[1] = n ^ offsets[0];
+
+        // Scale
+        offsets[0] *= gap_;
         offsets[1] *= gap_;
     }
 
-    return offsets;    
+    return offsets;
 }
 
 
