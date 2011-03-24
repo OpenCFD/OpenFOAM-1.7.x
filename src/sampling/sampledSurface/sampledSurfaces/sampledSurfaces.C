@@ -362,6 +362,8 @@ void Foam::sampledSurfaces::read(const dictionary& dict)
 void Foam::sampledSurfaces::updateMesh(const mapPolyMesh&)
 {
     expire();
+
+    // pointMesh and interpolation will have been reset in mesh.update
 }
 
 
@@ -411,10 +413,6 @@ bool Foam::sampledSurfaces::expire()
             mergeList_[surfI].clear();
         }
     }
-
-    // reset interpolation
-    pointMesh::Delete(mesh_);
-    volPointInterpolation::Delete(mesh_);
 
     // true if any surfaces just expired
     return justExpired;
