@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,6 +26,36 @@ Class
 
 Description
     Foam::timeVaryingMappedFixedValueFvPatchField
+
+    Interpolates from a set of supplied points in space and time. Supplied
+    data in constant/boundaryData/<patchname>:
+        - points : pointField with locations
+        - ddd    : supplied values at time ddd
+    Points need to be more or less on a plane since get triangulated in 2D.
+
+    At startup this bc does the triangulation and determines linear
+    interpolation (triangle it is in and weights to the 3 vertices)
+    for every face centre. Interpolates linearly inbetween times.
+
+    @verbatim
+        inlet
+        {
+            type            timeVaryingMappedFixedValue;
+
+            // Maintain average to that of the supplied values
+            setAverage      false;
+
+            // Optional: change perturbation (default 1E-5) to avoid any ties
+            // in triangulating regular geometries.
+            //perturb       0.0;
+
+            // Optional: use name instead of patchname for location of data
+            //fieldTableName samples;
+        }
+    @endverbatim
+
+    Switch on debug flag to have it dump the triangulation (in transformed
+    space) and transform face centres.
 
 SourceFiles
     timeVaryingMappedFixedValueFvPatchField.C
@@ -61,6 +91,9 @@ class timeVaryingMappedFixedValueFvPatchField
 
         //- If true adjust the mapped field to maintain average value
         bool setAverage_;
+
+        //- Fraction of perturbation (fraction of bounding box) to add
+        scalar perturb_;
 
         //- Coordinate system
         autoPtr<coordinateSystem> referenceCS_;
