@@ -77,6 +77,32 @@ Foam::radiation::radiativeIntensityRay::radiativeIntensityRay
         mesh_,
         dimensionedScalar("Qr", dimMass/pow3(dimTime), 0.0)
     ),
+    Qin_
+    (
+        IOobject
+        (
+            "Qin" + name(rayId),
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar("Qin", dimMass/pow3(dimTime), 0.0)
+    ),
+    Qem_
+    (
+        IOobject
+        (
+            "Qem" + name(rayId),
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedScalar("Qem", dimMass/pow3(dimTime), 0.0)
+    ),
     d_(vector::zero),
     dAve_(vector::zero),
     theta_(theta),
