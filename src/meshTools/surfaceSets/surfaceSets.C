@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -247,27 +247,6 @@ void Foam::surfaceSets::getSurfaceSets
 {
     // Construct search engine on mesh
     meshSearch queryMesh(mesh, true);
-
-
-    // Check all 'outside' points
-    forAll(outsidePts, outsideI)
-    {
-        const point& outsidePoint = outsidePts[outsideI];
-
-        // Find cell point is in. Linear search.
-        if (queryMesh.findCell(outsidePoint, -1, false) == -1)
-        {
-            FatalErrorIn
-            (
-                "surfaceSets::getSurfaceSets"
-                "(const polyMesh&, const fileName&, const triSurface&"
-                ", const triSurfaceSearch&, const pointField&"
-                ", labelHashSet&, labelHashSet&, labelHashSet&)"
-            )   << "outsidePoint " << outsidePoint
-                << " is not inside any cell"
-                << exit(FatalError);
-        }
-    }
 
     // Cut faces with surface and classify cells
     cellClassification cellType
