@@ -23,13 +23,15 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-inline const Foam::volScalarField& Foam::radiation::radiativeIntensityRay::I() const
+inline const Foam::volScalarField& Foam::radiation::
+radiativeIntensityRay::I() const
 {
     return I_;
 }
 
 
-inline const Foam::volScalarField& Foam::radiation::radiativeIntensityRay::Qr() const
+inline const Foam::volScalarField& Foam::radiation::
+radiativeIntensityRay::Qr() const
 {
     return Qr_;
 }
@@ -38,6 +40,32 @@ inline const Foam::volScalarField& Foam::radiation::radiativeIntensityRay::Qr() 
 inline Foam::volScalarField& Foam::radiation::radiativeIntensityRay::Qr()
 {
     return Qr_;
+}
+
+
+inline const Foam::volScalarField& Foam::radiation::
+radiativeIntensityRay::Qin() const
+{
+    return Qin_;
+}
+
+
+inline Foam::volScalarField& Foam::radiation::radiativeIntensityRay::Qin()
+{
+    return Qin_;
+}
+
+
+inline const Foam::volScalarField& Foam::radiation::
+radiativeIntensityRay::Qem() const
+{
+    return Qem_;
+}
+
+
+inline Foam::volScalarField& Foam::radiation::radiativeIntensityRay::Qem()
+{
+    return Qem_;
 }
 
 
@@ -77,7 +105,8 @@ inline Foam::scalar Foam::radiation::radiativeIntensityRay::omega() const
 }
 
 
-inline const Foam::volScalarField& Foam::radiation::radiativeIntensityRay::ILambda
+inline const Foam::volScalarField& Foam::radiation::
+radiativeIntensityRay::ILambda
 (
     const label lambdaI
 ) const

@@ -83,6 +83,12 @@ class fvDOM
         //- Total radiative heat flux [W/m2]
         volScalarField Qr_;
 
+        //- Emmited radiative heat flux [W/m2]
+        volScalarField Qem_;
+
+        //- Incidet radiative heat flux [W/m2]
+        volScalarField Qin_;
+
         //- Total absorption coefficient [1/m]
         volScalarField a_;
 
@@ -212,6 +218,12 @@ public:
 
             //- Const access to total radiative heat flux field
             inline const volScalarField& Qr() const;
+
+            //- Const access to incident radiative heat flux field
+            inline const volScalarField& Qin() const;
+
+            //- Const access to emitted radiative heat flux field
+            inline const volScalarField& Qem() const;
 
             //- Const access to black body
             inline const blackBodyEmission& blackBody() const;

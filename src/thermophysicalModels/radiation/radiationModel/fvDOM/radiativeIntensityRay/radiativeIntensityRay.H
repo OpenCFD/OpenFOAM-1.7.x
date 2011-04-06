@@ -81,6 +81,12 @@ private:
         //- Total radiative heat flux on boundary
         volScalarField Qr_;
 
+        //- Incident radiative heat flux on boundary
+        volScalarField Qin_;
+
+        //- Emitted radiative heat flux on boundary
+        volScalarField Qem_;
+
         //- Direction
         vector d_;
 
@@ -167,6 +173,18 @@ public:
 
             //- Return non-const access to the boundary heat flux
             inline volScalarField& Qr();
+
+            //- Return non-const access to the boundary incident heat flux
+            inline volScalarField& Qin();
+
+            //- Return non-const access to the boundary emmited heat flux
+            inline volScalarField& Qem();
+
+            //- Return const access to the boundary incident heat flux
+            inline const volScalarField& Qin() const;
+
+            //- Return const access to the boundary emmited heat flux
+            inline const volScalarField& Qem() const;
 
             //- Return direction
             inline const vector& d() const;
