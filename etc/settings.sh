@@ -243,6 +243,11 @@ SYSTEMOPENMPI)
     export PLIBS="`mpicc --showme:link`"
     libDir=`echo "$PLIBS" | sed -e 's/.*-L\([^ ]*\).*/\1/'`
 
+    # Bit of a hack: strip off 'lib' and hope this is the path to openmpi
+    # include files and libraries.
+    export MPI_ARCH_PATH="${libDir%/*}"
+
+
     if [ "$FOAM_VERBOSE" -a "$PS1" ]
     then
         echo "Using system installed MPI:"

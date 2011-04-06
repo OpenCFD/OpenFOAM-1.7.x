@@ -219,6 +219,10 @@ case SYSTEMOPENMPI:
     setenv PLIBS "`mpicc --showme:link`"
     set libDir=`echo "$PLIBS" | sed -e 's/.*-L\([^ ]*\).*/\1/'`
 
+    # Bit of a hack: strip off 'lib' and hope this is the path to openmpi
+    # include files and libraries.
+    setenv MPI_ARCH_PATH "${libDir:h}"
+
     if ($?FOAM_VERBOSE && $?prompt) then
         echo "Using system installed MPI:"
         echo "    compile flags : $PINC"
