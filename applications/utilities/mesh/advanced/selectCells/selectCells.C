@@ -267,7 +267,7 @@ label selectOutsideCells
         // Find cell containing point. Linear search.
         label cellI = queryMesh.findCell(outsidePts[outsidePtI], -1, false);
 
-        if (cellType[cellI] == MESH)
+        if (cellI != -1 && cellType[cellI] == MESH)
         {
             Info<< "Marking cell " << cellI << " containing outside point "
                 << outsidePts[outsidePtI] << " with type " << cellType[cellI]
