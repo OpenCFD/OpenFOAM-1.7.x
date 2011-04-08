@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2009-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,8 +26,7 @@ License
 #include "faceSource.H"
 #include "surfaceFields.H"
 #include "volFields.H"
-#include "IOList.H"
-#include "ListListOps.H"
+#include "sampledSurface.H"
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
@@ -37,7 +36,7 @@ bool Foam::fieldValues::faceSource::validField(const word& fieldName) const
     typedef GeometricField<Type, fvsPatchField, surfaceMesh> sf;
     typedef GeometricField<Type, fvPatchField, volMesh> vf;
 
-    if (obr_.foundObject<sf>(fieldName))
+    if (source_ != stSampledSurface && obr_.foundObject<sf>(fieldName))
     {
         return true;
     }
@@ -59,13 +58,20 @@ Foam::tmp<Foam::Field<Type> > Foam::fieldValues::faceSource::setFieldValues
     typedef GeometricField<Type, fvsPatchField, surfaceMesh> sf;
     typedef GeometricField<Type, fvPatchField, volMesh> vf;
 
-    if (obr_.foundObject<sf>(fieldName))
+    if (source_ != stSampledSurface && obr_.foundObject<sf>(fieldName))
     {
         return filterField(obr_.lookupObject<sf>(fieldName), true);
     }
     else if (obr_.foundObject<vf>(fieldName))
     {
-        return filterField(obr_.lookupObject<vf>(fieldName), true);
+        if (surfacePtr_.valid())
+        {
+            return surfacePtr_().sample(obr_.lookupObject<vf>(fieldName));
+        }
+        else
+        {
+            return filterField(obr_.lookupObject<vf>(fieldName), true);
+        }
     }
 
     return tmp<Field<Type> >(new Field<Type>(0));
@@ -133,14 +139,23 @@ bool Foam::fieldValues::faceSource::writeValues(const word& fieldName)
     if (ok)
     {
         // Get (correctly oriented) field
-        Field<Type> values = combineFields(setFieldValues<Type>(fieldName));
+        Field<Type> values = combineFields(setFieldValues<Type>(fieldName)());
 
         // Get unoriented magSf
-        scalarField magSf = combineFields(filterField(mesh().magSf(), false));
+        scalarField magSf;
+
+        if (surfacePtr_.valid())
+        {
+            magSf = combineFields(surfacePtr_().magSf());
+        }
+        else
+        {
+            magSf = combineFields(filterField(mesh().magSf(), false)());
+        }
 
         // Get (correctly oriented) weighting field
         scalarField weightField =
-            combineFields(setFieldValues<scalar>(weightFieldName_));
+            combineFields(setFieldValues<scalar>(weightFieldName_)());
 
         if (Pstream::master())
         {

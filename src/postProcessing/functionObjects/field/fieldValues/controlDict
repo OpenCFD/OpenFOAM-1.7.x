@@ -53,17 +53,36 @@ functions
         functionObjectLibs ("libfieldFunctionObjects.so");
         enabled         true;
         outputControl   outputTime;
+
+        // Output to log&file (true) or to file only
         log             true;
+        // Output field values as well
         valueOutput     true;
+        // Type of source: patch/faceZone/sampledSurface
         source          patch;
+        // if patch or faceZone: name of patch or faceZone
         sourceName      movingWall;
-//        source          faceZone;
-//        sourceName      f0;
+
+        //// if source=sampledSurface: dictionary with a sampledSurface
+        //// Note: the sampledSurfaces will have cell-values, i.e.
+        //// non-interpolated. Also will not sample surface fields.
+        //sampledSurfaceDict
+        //{
+        //    type            cuttingPlane;
+        //    planeType       pointAndNormal;
+        //    pointAndNormalDict
+        //    {
+        //        basePoint       (0 0.099 0);
+        //        normalVector    (0 1 0);
+        //    }
+        //}
+
+        // Operation: areaAverage/sum/weightedAverage ...
         operation       areaAverage;
         fields
         (
             p
-            phi
+            phi // surface fields not supported for sampledSurface
             U
         );
     }
