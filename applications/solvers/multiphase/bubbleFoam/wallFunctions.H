@@ -34,7 +34,7 @@
         {
             const scalarField& nuw = nutb.boundaryField()[patchi];
 
-            scalarField magFaceGradU = mag(U.boundaryField()[patchi].snGrad());
+            scalarField magFaceGradU = mag(Ub.boundaryField()[patchi].snGrad());
 
             forAll(currPatch, facei)
             {
