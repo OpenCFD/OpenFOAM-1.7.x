@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "dynSmagorinsky.H"
+#include "homogeneousDynSmagorinsky.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -37,19 +37,25 @@ namespace LESModels
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-defineTypeNameAndDebug(dynSmagorinsky, 0);
-addToRunTimeSelectionTable(LESModel, dynSmagorinsky, dictionary);
+defineTypeNameAndDebug(homogeneousDynSmagorinsky, 0);
+addToRunTimeSelectionTable(LESModel, homogeneousDynSmagorinsky, dictionary);
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-void dynSmagorinsky::updateSubGridScaleFields(const volSymmTensorField& D)
+void homogeneousDynSmagorinsky::updateSubGridScaleFields
+(
+    const volSymmTensorField& D
+)
 {
     nuSgs_ = cD(D)*sqr(delta())*sqrt(magSqr(D));
     nuSgs_.correctBoundaryConditions();
 }
 
 
-dimensionedScalar dynSmagorinsky::cD(const volSymmTensorField& D) const
+dimensionedScalar homogeneousDynSmagorinsky::cD
+(
+    const volSymmTensorField& D
+) const
 {
     volSymmTensorField LL = dev(filter_(sqr(U())) - (sqr(filter_(U()))));
 
@@ -69,7 +75,10 @@ dimensionedScalar dynSmagorinsky::cD(const volSymmTensorField& D) const
 }
 
 
-dimensionedScalar dynSmagorinsky::cI(const volSymmTensorField& D) const
+dimensionedScalar homogeneousDynSmagorinsky::cI
+(
+    const volSymmTensorField& D
+) const
 {
     volScalarField KK = 0.5*(filter_(magSqr(U())) - magSqr(filter_(U())));
 
@@ -91,7 +100,7 @@ dimensionedScalar dynSmagorinsky::cI(const volSymmTensorField& D) const
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-dynSmagorinsky::dynSmagorinsky
+homogeneousDynSmagorinsky::homogeneousDynSmagorinsky
 (
     const volVectorField& U,
     const surfaceScalarField& phi,
@@ -125,7 +134,7 @@ dynSmagorinsky::dynSmagorinsky
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void dynSmagorinsky::correct(const tmp<volTensorField>& gradU)
+void homogeneousDynSmagorinsky::correct(const tmp<volTensorField>& gradU)
 {
     LESModel::correct(gradU);
 
@@ -137,7 +146,7 @@ void dynSmagorinsky::correct(const tmp<volTensorField>& gradU)
 }
 
 
-bool dynSmagorinsky::read()
+bool homogeneousDynSmagorinsky::read()
 {
     if (GenEddyVisc::read())
     {
