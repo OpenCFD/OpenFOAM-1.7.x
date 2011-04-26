@@ -507,6 +507,10 @@ interpolations = interpolations
 interpolation = $(interpolations)/interpolation
 $(interpolations)/patchToPatchInterpolation/PatchToPatchInterpolationName.C
 
+$(interpolations)/interpolationTable/tableReaders/tableReaders.C
+$(interpolations)/interpolationTable/tableReaders/openFoam/openFoamTableReaders.C
+$(interpolations)/interpolationTable/tableReaders/csv/csvTableReaders.C
+
 algorithms/MeshWave/MeshWaveName.C
 algorithms/MeshWave/FaceCellWaveName.C
 

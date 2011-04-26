@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -106,8 +106,7 @@ void Foam::writer<Type>::writeTable
     forAll(points, pointI)
     {
         writeCoord(points, pointI, os);
-
-        os << token::SPACE;
+        writeSeparator(os);
         write(values[pointI], os);
         os << nl;
     }
@@ -128,7 +127,8 @@ void Foam::writer<Type>::writeTable
 
         forAll(valuesPtrList, i)
         {
-            os << token::SPACE;
+            writeSeparator(os);
+
             const List<Type>& values = *valuesPtrList[i];
             write(values[pointI], os);
         }
@@ -174,14 +174,24 @@ Foam::Ostream& Foam::writer<Type>::writeVS
 {
     for (direction d=0; d<VSType::nComponents; d++)
     {
-        os << value.component(d);
-
-        if (d <= VSType::nComponents-1)
+        if (d > 0)
         {
-            os << ' ' << token::TAB;
+            writeSeparator(os);
         }
+
+        os << value.component(d);
     }
     return os;
+}
+
+
+template<class Type>
+void Foam::writer<Type>::writeSeparator
+(
+    Ostream& os
+) const
+{
+    os << token::SPACE << token::TAB;
 }
 
 

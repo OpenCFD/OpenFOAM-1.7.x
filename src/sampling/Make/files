@@ -1,6 +1,10 @@
 probes/probes.C
 probes/probesFunctionObject.C
 probes/patchProbes.C
+/*
+probes/csvProbes.C
+probes/csvProbesFunctionObject.C
+*/
 
 sampledSet/coordSet/coordSet.C
 sampledSet/sampledSet/sampledSet.C
@@ -20,6 +24,7 @@ $(setWriters)/gnuplot/gnuplotSetWriterRunTime.C
 $(setWriters)/jplot/jplotSetWriterRunTime.C
 $(setWriters)/raw/rawSetWriterRunTime.C
 $(setWriters)/xmgrace/xmgraceSetWriterRunTime.C
+$(setWriters)/csv/csvSetWriterRunTime.C
 
 cuttingPlane/cuttingPlane.C
 

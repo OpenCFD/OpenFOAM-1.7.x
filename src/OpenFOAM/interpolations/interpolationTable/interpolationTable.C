@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,6 +25,7 @@ License
 
 #include "interpolationTable.H"
 #include "IFstream.H"
+#include "openFoamTableReader.H"
 
 // * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * * //
 
@@ -38,19 +39,19 @@ void Foam::interpolationTable<Type>::readTable()
     fName.expand();
 
     // Read data from file
-    IFstream(fName)() >> *this;
-
-    // Check that the data are okay
-    check();
+    reader_()(fName, *this);
 
     if (this->empty())
     {
         FatalErrorIn
         (
             "Foam::interpolationTable<Type>::readTable()"
-        )   << "table is empty" << nl
+        )   << "table read from " << fName << " is empty" << nl
             << exit(FatalError);
     }
+
+    // Check that the data are okay
+    check();
 }
 
 
@@ -61,7 +62,8 @@ Foam::interpolationTable<Type>::interpolationTable()
 :
     List<Tuple2<scalar, Type> >(),
     boundsHandling_(interpolationTable::WARN),
-    fileName_("fileNameIsUndefined")
+    fileName_("fileNameIsUndefined"),
+    reader_(NULL)
 {}
 
 
@@ -75,7 +77,8 @@ Foam::interpolationTable<Type>::interpolationTable
 :
     List<Tuple2<scalar, Type> >(values),
     boundsHandling_(bounds),
-    fileName_(fName)
+    fileName_(fName),
+    reader_(NULL)
 {}
 
 
@@ -84,7 +87,8 @@ Foam::interpolationTable<Type>::interpolationTable(const fileName& fName)
 :
     List<Tuple2<scalar, Type> >(),
     boundsHandling_(interpolationTable::WARN),
-    fileName_(fName)
+    fileName_(fName),
+    reader_(new openFoamTableReader<Type>())
 {
     readTable();
 }
@@ -95,7 +99,8 @@ Foam::interpolationTable<Type>::interpolationTable(const dictionary& dict)
 :
     List<Tuple2<scalar, Type> >(),
     boundsHandling_(wordToBoundsHandling(dict.lookup("outOfBounds"))),
-    fileName_(dict.lookup("fileName"))
+    fileName_(dict.lookup("fileName")),
+    reader_(tableReader<Type>::New(dict))
 {
     readTable();
 }
@@ -109,9 +114,9 @@ Foam::interpolationTable<Type>::interpolationTable
 :
     List<Tuple2<scalar, Type> >(interpTable),
     boundsHandling_(interpTable.boundsHandling_),
-    fileName_(interpTable.fileName_)
+    fileName_(interpTable.fileName_),
+    reader_(interpTable.reader_)    // note: steals reader. Used in write().
 {}
-
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -233,6 +238,10 @@ void Foam::interpolationTable<Type>::write(Ostream& os) const
         << fileName_ << token::END_STATEMENT << nl;
     os.writeKeyword("outOfBounds")
         << boundsHandlingToWord(boundsHandling_) << token::END_STATEMENT << nl;
+    if (reader_.valid())
+    {
+        reader_->write(os);
+    }
 }
 
 

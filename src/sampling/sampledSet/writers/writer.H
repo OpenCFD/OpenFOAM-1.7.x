@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -107,6 +107,8 @@ protected:
         Ostream& os
     ) const;
 
+    //- Writes a separator. Used by write functions.
+    virtual void writeSeparator(Ostream& os) const;
 
 public:
 
