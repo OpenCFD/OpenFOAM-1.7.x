@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,6 +37,10 @@ Class
 //- Calculate and return the laminar viscosity
 void Foam::threePhaseMixture::calcNu()
 {
+    nuModel1_->correct();
+    nuModel2_->correct();
+    nuModel3_->correct();
+
     // Average kinematic viscosity calculated from dynamic viscosity
     nu_ = mu()/(alpha1_*rho1_ + alpha2_*rho2_ + alpha3_*rho3_);
 }

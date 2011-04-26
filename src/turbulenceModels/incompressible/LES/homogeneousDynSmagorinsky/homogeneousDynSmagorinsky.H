@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,10 +22,11 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::incompressible::LESModels::dynSmagorinsky
+    Foam::incompressible::LESModels::homogeneousDynSmagorinsky
 
 Description
-    The Isochoric dynamic Smagorinsky Model for incompressible flows.
+    The Isochoric homogeneous dynamic Smagorinsky Model for
+    incompressible flows.
 
     Algebraic eddy viscosity SGS model founded on the assumption that
     local equilibrium prevails.
@@ -55,15 +56,18 @@ Description
         m = delta^2*(4*||F(D)||^2 - F(||D||^2))
         L = dev(F(U*U) - F(U)*F(U))
         M = delta^2*(F(||D||*dev(D)) - 4*||F(D)||*F(dev(D)))
+
+    The averaging <...> is over the whole domain, i.e. homogeneous turbulence
+    is assumed.
     @endverbatim
 
 SourceFiles
-    dynSmagorinsky.C
+    homogeneousDynSmagorinsky.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef dynSmagorinsky_H
-#define dynSmagorinsky_H
+#ifndef homogeneousDynSmagorinsky_H
+#define homogeneousDynSmagorinsky_H
 
 #include "Smagorinsky.H"
 #include "LESfilter.H"
@@ -78,10 +82,10 @@ namespace LESModels
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class dynSmagorinsky Declaration
+                           Class homogeneousDynSmagorinsky Declaration
 \*---------------------------------------------------------------------------*/
 
-class dynSmagorinsky
+class homogeneousDynSmagorinsky
 :
     public GenEddyVisc
 {
@@ -103,19 +107,19 @@ class dynSmagorinsky
         dimensionedScalar cI(const volSymmTensorField& D) const;
 
         // Disallow default bitwise copy construct and assignment
-        dynSmagorinsky(const dynSmagorinsky&);
-        dynSmagorinsky& operator=(const dynSmagorinsky&);
+        homogeneousDynSmagorinsky(const homogeneousDynSmagorinsky&);
+        homogeneousDynSmagorinsky& operator=(const homogeneousDynSmagorinsky&);
 
 
 public:
 
     //- Runtime type information
-    TypeName("dynSmagorinsky");
+    TypeName("homogeneousDynSmagorinsky");
 
     // Constructors
 
         //- Construct from components
-        dynSmagorinsky
+        homogeneousDynSmagorinsky
         (
             const volVectorField& U,
             const surfaceScalarField& phi,
@@ -124,7 +128,7 @@ public:
 
 
     //- Destructor
-    virtual ~dynSmagorinsky()
+    virtual ~homogeneousDynSmagorinsky()
     {}
 
 

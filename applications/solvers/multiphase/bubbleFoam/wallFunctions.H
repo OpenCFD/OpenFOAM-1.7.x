@@ -4,6 +4,7 @@
     scalar Cmu25 = ::pow(Cmu.value(), 0.25);
     scalar Cmu75 = ::pow(Cmu.value(), 0.75);
     scalar kappa_ = kappa.value();
+    scalar nub_ = nub.value();
 
     const fvPatchList& patches = mesh.boundary();
 
@@ -32,9 +33,9 @@
 
         if (isA<wallFvPatch>(currPatch))
         {
-            const scalarField& nuw = nutb.boundaryField()[patchi];
+            const scalarField& nutbw = nutb.boundaryField()[patchi];
 
-            scalarField magFaceGradU = mag(U.boundaryField()[patchi].snGrad());
+            scalarField magFaceGradU(mag(Ub.boundaryField()[patchi].snGrad()));
 
             forAll(currPatch, facei)
             {
@@ -43,7 +44,7 @@
                 scalar yPlus =
                     Cmu25*y[patchi][facei]
                     *::sqrt(k[faceCelli])
-                    /nub.value();
+                    /nub_;
 
 
                 // For corner cells (with two boundary or more faces),
@@ -59,7 +60,7 @@
                 if (yPlus > 11.6)
                 {
                     G[faceCelli] +=
-                        nuw[facei]*magFaceGradU[facei]
+                        (nutbw[facei] + nub_)*magFaceGradU[facei]
                         *Cmu25*::sqrt(k[faceCelli])
                         /(kappa_*y[patchi][facei]);
                 }

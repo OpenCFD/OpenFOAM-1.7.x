@@ -15,14 +15,13 @@ oneEqEddy/oneEqEddy.C
 dynOneEqEddy/dynOneEqEddy.C
 locDynOneEqEddy/locDynOneEqEddy.C
 Smagorinsky/Smagorinsky.C
-dynSmagorinsky/dynSmagorinsky.C
+homogeneousDynSmagorinsky/homogeneousDynSmagorinsky.C
 LRRDiffStress/LRRDiffStress.C
 DeardorffDiffStress/DeardorffDiffStress.C
 spectEddyVisc/spectEddyVisc.C
 
 scaleSimilarity/scaleSimilarity.C
 mixedSmagorinsky/mixedSmagorinsky.C
-dynMixedSmagorinsky/dynMixedSmagorinsky.C
 
 /*Smagorinsky2/Smagorinsky2.C*/
 

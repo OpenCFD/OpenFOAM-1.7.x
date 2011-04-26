@@ -24,12 +24,17 @@ boundaryField
     outlet
     {
         type            buoyantPressure;
-        value           uniform 101325;
+        value           $internalField;
     }
-
     sides
     {
-        type            fixedValue;
+        type            totalPressure;
+        p0              $internalField;
+        U               U;
+        phi             phi;
+        rho             none;
+        psi             none;
+        gamma           1;
         value           $internalField;
     }
     base
