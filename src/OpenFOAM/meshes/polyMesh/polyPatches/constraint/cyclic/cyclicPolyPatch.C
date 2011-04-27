@@ -222,7 +222,9 @@ void Foam::cyclicPolyPatch::calcTransforms()
                 {
                     Pout<< "cyclicPolyPatch::calcTransforms :"
                         << " Specified rotation :"
-                        << " n0:" << n0 << " n1:" << n1 << endl;
+                        << " n0:" << n0 << " from face " << half0Ctrs[face0]
+                        << " and n1:" << n1 << " from face " << half1Ctrs[face1]
+                        << endl;
                 }
 
                 // Calculate transformation tensors from face0,1 only.
@@ -236,6 +238,67 @@ void Foam::cyclicPolyPatch::calcTransforms()
                     scalarField(1, half0Tols[face0]),
                     1E-4,
                     ROTATIONAL
+                );
+
+                break;
+            }
+
+            case TRANSLATIONAL:
+            {
+                // Calculate transformation tensors from all faces just to
+                // compare against user provided tolerance.
+                calcTransformTensors
+                (
+                    half0Ctrs,
+                    half1Ctrs,
+                    half0Normals,
+                    half1Normals,
+                    half0Tols,
+                    matchTol,
+                    transform_
+                );
+
+                if (debug)
+                {
+                    Pout<< "cyclicPolyPatch::calcTransforms :"
+                        << " Specified separation vector : "
+                        << separationVector_
+                        << " . Calculated average separation : "
+                        << average(coupledPolyPatch::separation())
+                        << endl;
+                }
+
+                // Override computed transform with specified.
+                const scalar avgTol = average(half0Tols);
+                if
+                (
+                    coupledPolyPatch::separation().size() != 1
+                 || mag(separation(0) - separationVector_) > avgTol
+                )
+                {
+                    WarningIn
+                    (
+                        "cyclicPolyPatch::calcTransforms()"
+                    )   << "Specified separationVector " << separationVector_
+                        << " differs from computed separation vector "
+                        << coupledPolyPatch::separation() << endl
+                        << "This probably means your geometry is not consistent"
+                        << " with the specified separation and might lead"
+                        << " to problems." << endl
+                        << "Continuing with specified separation vector "
+                        << separationVector_ << endl
+                        << "patch:" << name()
+                        << endl;
+                }
+
+                // Set transformation tensor.
+                const_cast<tensorField&>(coupledPolyPatch::forwardT()).clear();
+                const_cast<tensorField&>(coupledPolyPatch::reverseT()).clear();
+                const_cast<vectorField&>(coupledPolyPatch::separation()) =
+                vectorField
+                (
+                    1,
+                    separationVector_
                 );
 
                 break;
@@ -515,23 +578,25 @@ void Foam::cyclicPolyPatch::getCentresAndAnchors
 
             break;
         }
-        //- Problem: usually specified translation is not accurate enough
-        //- to get proper match so keep automatic determination over here.
-        //case TRANSLATIONAL:
-        //{
-        //    // Transform 0 points.
-        //
-        //    if (debug)
-        //    {
-        //        Pout<< "cyclicPolyPatch::getCentresAndAnchors :"
-        //            << "Specified translation : " << separationVector_
-        //            << endl;
-        //    }
-        //
-        //    half0Ctrs += separationVector_;
-        //    anchors0 += separationVector_;
-        //    break;
-        //}
+
+        case TRANSLATIONAL:
+        {
+            // Transform 0 points.
+
+            if (debug)
+            {
+                Pout<< "cyclicPolyPatch::getCentresAndAnchors :"
+                    << "Specified translation : " << separationVector_
+                    << endl;
+            }
+
+            half0Ctrs += separationVector_;
+            anchors0 += separationVector_;
+            ppPoints = pp.points() + separationVector_;
+
+            break;
+        }
+
         default:
         {
             // Assumes that cyclic is planar. This is also the initial
@@ -1174,6 +1239,15 @@ bool Foam::cyclicPolyPatch::order
         anchors0,
         tols
     );
+
+    if (debug)
+    {
+        Pout<< "half0 transformed faceCentres (avg)   : "
+            << gAverage(half0Ctrs) << nl
+            << "half1 untransformed faceCentres (avg) : "
+            << gAverage(half1Ctrs) << endl;
+    }
+
 
     // Geometric match of face centre vectors
     labelList from1To0;

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -356,7 +356,7 @@ void Foam::coupledPolyPatch::calcTransformTensors
             forwardT_.setSize(0);
             reverseT_.setSize(0);
 
-            separation_ = (nf&(Cr - Cf))*nf;
+            separation_ = Cr - Cf;
 
             // Three situations:
             // - separation is zero. No separation.

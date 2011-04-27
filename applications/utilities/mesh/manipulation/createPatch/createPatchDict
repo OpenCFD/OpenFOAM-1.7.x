@@ -61,6 +61,9 @@ patchInfo
 
             // Optional: explicitly set transformation tensor.
             // Used when matching and synchronising points.
+            // In case of translational note that separationVector
+            // is the vector from master side to slave side so depends on
+            // the order in which faces get added.
             //transform translational;
             //separationVector (-2289 0 0);
             transform rotational;
