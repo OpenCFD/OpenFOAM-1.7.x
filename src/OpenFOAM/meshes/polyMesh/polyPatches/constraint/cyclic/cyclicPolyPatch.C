@@ -141,6 +141,9 @@ void Foam::cyclicPolyPatch::calcTransforms()
         vectorField half0Normals(half0.size());
         vectorField half1Normals(half1.size());
 
+        scalar maxAreaDiff = -GREAT;
+        label maxAreaFacei = -1;
+
         for (label facei = 0; facei < size()/2; facei++)
         {
             half0Normals[facei] = operator[](facei).normal(points);
@@ -159,37 +162,63 @@ void Foam::cyclicPolyPatch::calcTransforms()
                 half0Normals[facei] = point(1, 0, 0);
                 half1Normals[facei] = half0Normals[facei];
             }
-            else if (mag(magSf - nbrMagSf)/avSf > coupledPolyPatch::matchTol)
-            {
-                FatalErrorIn
-                (
-                    "cyclicPolyPatch::calcTransforms()"
-                )   << "face " << facei << " area does not match neighbour "
-                    << nbrFacei << " by "
-                    << 100*mag(magSf - nbrMagSf)/avSf
-                    << "% -- possible face ordering problem." << endl
-                    << "patch:" << name()
-                    << " my area:" << magSf
-                    << " neighbour area:" << nbrMagSf
-                    << " matching tolerance:" << coupledPolyPatch::matchTol
-                     << endl
-                    << "Mesh face:" << start()+facei
-                    << " vertices:"
-                    << UIndirectList<point>(points, operator[](facei))()
-                    << endl
-                    << "Neighbour face:" << start()+nbrFacei
-                    << " vertices:"
-                    << UIndirectList<point>(points, operator[](nbrFacei))()
-                    << endl
-                    << "Rerun with cyclic debug flag set"
-                    << " for more information." << exit(FatalError);
-            }
             else
             {
-                half0Normals[facei] /= magSf;
-                half1Normals[facei] /= nbrMagSf;
+                scalar areaDiff = mag(magSf - nbrMagSf)/avSf;
+
+                if (areaDiff > maxAreaDiff)
+                {
+                    maxAreaDiff = areaDiff;
+                    maxAreaFacei = facei;
+                }
+
+                if (areaDiff > coupledPolyPatch::matchTol)
+                {
+                    FatalErrorIn
+                    (
+                        "cyclicPolyPatch::calcTransforms()"
+                    )   << "face " << facei << " area does not match neighbour "
+                        << nbrFacei << " by "
+                        << 100*areaDiff
+                        << "% -- possible face ordering problem." << endl
+                        << "patch:" << name()
+                        << " my area:" << magSf
+                        << " neighbour area:" << nbrMagSf
+                        << " matching tolerance:"
+                        << coupledPolyPatch::matchTol
+                         << endl
+                        << "Mesh face:" << start()+facei
+                        << " vertices:"
+                        << UIndirectList<point>(points, operator[](facei))()
+                        << endl
+                        << "Neighbour face:" << start()+nbrFacei
+                        << " vertices:"
+                        << UIndirectList<point>(points, operator[](nbrFacei))()
+                        << endl
+                        << "Rerun with cyclic debug flag set"
+                        << " for more information." << exit(FatalError);
+                }
+                else
+                {
+                    half0Normals[facei] /= magSf;
+                    half1Normals[facei] /= nbrMagSf;
+                }
             }
         }
+
+
+        // Print area match
+        if (debug)
+        {
+            label nbrFacei = maxAreaFacei+size()/2;
+            Pout<< "cyclicPolyPatch::calcTransforms :"
+                << " Max area error:" << 100*maxAreaDiff << "% at face:"
+                << maxAreaFacei << " at:" << half0Ctrs[maxAreaFacei]
+                << " coupled face:" << nbrFacei
+                << " at:" << half1Ctrs[maxAreaFacei]
+                << endl;
+        }
+
 
 
         // See if transformation is prescribed
