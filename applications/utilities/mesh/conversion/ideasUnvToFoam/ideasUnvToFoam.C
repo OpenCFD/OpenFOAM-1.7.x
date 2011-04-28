@@ -41,11 +41,28 @@ Description
 #include "faceSet.H"
 #include "DynamicList.H"
 #include "triSurface.H"
+#include "SortableList.H"
+
+#include <cassert>
 
 using namespace Foam;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+namespace Foam
+{
+    template<>
+    inline unsigned Hash<face>::operator()(const face& t, unsigned seed) const
+    {
+        return Hasher(t.cdata(),t.size()*sizeof(label), seed);
+    }
+
+    template<>
+    inline unsigned Hash<face>::operator()(const face& t) const
+    {
+        return Hash<face>::operator()(t, 0);
+    }
+}
 const string SEPARATOR("    -1");
 
 bool isSeparator(const string& line)
@@ -117,10 +134,6 @@ void skipSection(IFstream& is)
         if (isSeparator(line))
         {
             break;
-        }
-        else
-        {
-//            Sout<< line << endl;
         }
     }
 }
@@ -234,6 +247,19 @@ void readPoints
     Sout<< "Read " << points.size() << " points." << endl;
 }
 
+void addAndExtend
+(
+    DynamicList<label>& indizes,
+    label cellI,
+    label val
+)
+{
+    if (indizes.size() < (cellI+1))
+    {
+        indizes.setSize(cellI+1,-1);
+    }
+    indizes[cellI] = val;
+}
 
 // Reads cells section. Read region as well? Not handled yet but should just
 // be a matter of reading corresponding to boundaryFaces the correct property
@@ -244,10 +270,21 @@ void readCells
     DynamicList<cellShape>& cellVerts,
     DynamicList<label>& cellMaterial,
     DynamicList<label>& boundaryFaceIndices,
-    DynamicList<face>& boundaryFaces
+    DynamicList<face>& boundaryFaces,
+    DynamicList<label>& cellCorrespondence,
+    DynamicList<label>& unvPointID  // unv index
 )
 {
     Sout<< "Starting reading cells at line " << is.lineNumber() << '.' << endl;
+
+    // Invert point numbering.
+    label maxUnvPoint = 0;
+    forAll(unvPointID, pointI)
+    {
+        maxUnvPoint = max(maxUnvPoint, unvPointID[pointI]);
+    }
+    labelList unvToFoam(invert(maxUnvPoint+1, unvPointID));
+
 
     const cellModel& hex = *(cellModeller::lookup("hex"));
     const cellModel& prism = *(cellModeller::lookup("prism"));
@@ -322,6 +359,7 @@ void readCells
 
             cellVerts.append(cellShape(tet, cVerts, true));
             cellMaterial.append(physProp);
+            addAndExtend(cellCorrespondence,cellI,cellMaterial.size()-1);
 
             if (cellVerts[cellVerts.size()-1].size() != cVerts.size())
             {
@@ -345,6 +383,7 @@ void readCells
 
             cellVerts.append(cellShape(prism, cVerts, true));
             cellMaterial.append(physProp);
+            addAndExtend(cellCorrespondence,cellI,cellMaterial.size()-1);
 
             if (cellVerts[cellVerts.size()-1].size() != cVerts.size())
             {
@@ -369,6 +408,7 @@ void readCells
 
             cellVerts.append(cellShape(hex, cVerts, true));
             cellMaterial.append(physProp);
+            addAndExtend(cellCorrespondence,cellI,cellMaterial.size()-1);
 
             if (cellVerts[cellVerts.size()-1].size() != cVerts.size())
             {
@@ -383,6 +423,7 @@ void readCells
         else if (feID == 118)
         {
             // Parabolic Tet
+
             is.getLine(line);
 
             labelList cVerts(4);
@@ -390,7 +431,8 @@ void readCells
             {
                 IStringStream lineStr(line);
                 lineStr
-                    >> cVerts[0] >> dummy >> cVerts[1] >> dummy >> cVerts[2];
+                    >> cVerts[0] >> dummy >> cVerts[1] >> dummy
+                    >> cVerts[2];
             }
             is.getLine(line);
             {
@@ -400,6 +442,7 @@ void readCells
 
             cellVerts.append(cellShape(tet, cVerts, true));
             cellMaterial.append(physProp);
+            addAndExtend(cellCorrespondence,cellI,cellMaterial.size()-1);
 
             if (cellVerts[cellVerts.size()-1].size() != cVerts.size())
             {
@@ -426,13 +469,14 @@ void readCells
     cellMaterial.shrink();
     boundaryFaces.shrink();
     boundaryFaceIndices.shrink();
+    cellCorrespondence.shrink();
 
     Sout<< "Read " << cellVerts.size() << " cells"
         << " and " << boundaryFaces.size() << " boundary faces." << endl;
 }
 
 
-void readPatches
+void readSets
 (
     IFstream& is,
     DynamicList<word>& patchNames,
@@ -502,7 +546,7 @@ void readPatches
         }
         else
         {
-            IOWarningIn("readPatches(..)", is)
+            IOWarningIn("readSets(..)", is)
                 << "When reading patches expect entity type code 8"
                 << nl << "    Skipping group code " << groupType
                 << endl;
@@ -602,6 +646,8 @@ label findPatch(const List<labelHashSet>& dofGroups, const face& f)
     return -1;
 }
 
+// Additional output while we're unsure
+const bool verbose=false;
 
 // Main program:
 
@@ -640,6 +686,7 @@ int main(int argc, char *argv[])
     // Cells
     DynamicList<cellShape> cellVerts;
     DynamicList<label> cellMat;
+    DynamicList<label> cellCorrespondence;
 
     // Boundary faces
     DynamicList<label> boundaryFaceIndices;
@@ -690,13 +737,15 @@ int main(int argc, char *argv[])
                     cellVerts,
                     cellMat,
                     boundaryFaceIndices,
-                    boundaryFaces
+                    boundaryFaces,
+                    cellCorrespondence,
+                    unvPointID
                 );
             break;
 
             case 2452:
             case 2467:
-                readPatches
+                readSets
                 (
                     inFile,
                     patchNames,
@@ -788,6 +837,58 @@ int main(int argc, char *argv[])
 
     List<faceList> patchFaceVerts;
 
+    labelList nrFaceCells(boundaryFaces.size(),0);
+    HashTable<label,label> faceToCell[2];
+
+    {
+        HashTable<label, face, Hash<face> > faceToFaceID(boundaryFaces.size());
+        forAll(boundaryFaces,faceI)
+        {
+            SortableList<label> foo(boundaryFaces[faceI]);
+            face theFace(foo);
+            faceToFaceID.insert(theFace,faceI);
+        }
+
+        forAll(cellVerts,cellI)
+        {
+            faceList faces = cellVerts[cellI].faces();
+            forAll(faces,i)
+            {
+                SortableList<label> foo(faces[i]);
+                face theFace(foo);
+                if (faceToFaceID.found(theFace))
+                {
+                    label faceI = faceToFaceID[theFace];
+                    if (nrFaceCells[faceI] < 2)
+                    {
+                        faceToCell[nrFaceCells[faceI]].insert(faceI,cellI);
+                    }
+                    nrFaceCells[faceI]++;
+                }
+            }
+        }
+
+        label cnt = 0;
+        forAll(nrFaceCells, faceI)
+        {
+            assert(nrFaceCells[faceI] == 1 || nrFaceCells[faceI] == 2);
+            if (nrFaceCells[faceI]>1)
+            {
+                cnt++;
+            }
+        }
+
+        if (cnt>0)
+        {
+            Info << "Of " << boundaryFaces.size() << " so-called"
+                << " boundary faces " << cnt << " belong to two cells "
+                << "and are therefore internal" << endl;
+        }
+    }
+
+    HashTable<labelList,word> cellZones;
+    HashTable<labelList,word> faceZones;
+    List<bool> isAPatch(patchNames.size(),true);
 
     if (dofVertIndices.size())
     {
@@ -857,6 +958,10 @@ int main(int argc, char *argv[])
 
         Info<< "Sorting boundary faces according to group (patch)" << endl;
 
+        // make sure that no face is used twice on the boundary
+        // (possible for boundary-only faceZones)
+        labelHashSet alreadyOnBoundary;
+
         // Construct map from boundaryFaceIndices
         Map<label> boundaryFaceToIndex(boundaryFaceIndices.size());
 
@@ -867,16 +972,101 @@ int main(int argc, char *argv[])
 
         forAll(patchFaceVerts, patchI)
         {
+            Info << patchI << ": " << patchNames[patchI] << " is " << flush;
+
             faceList& patchFaces = patchFaceVerts[patchI];
             const labelList& faceIndices = patchFaceIndices[patchI];
 
             patchFaces.setSize(faceIndices.size());
 
+            bool duplicateFaces = false;
+
+            label cnt = 0;
             forAll(patchFaces, i)
             {
-                label bFaceI = boundaryFaceToIndex[faceIndices[i]];
+                if (boundaryFaceToIndex.found(faceIndices[i]))
+                {
+                    label bFaceI = boundaryFaceToIndex[faceIndices[i]];
+                    if (nrFaceCells[bFaceI] == 1)
+                    {
+                        patchFaces[cnt] = boundaryFaces[bFaceI];
+                        cnt++;
+                        if (alreadyOnBoundary.found(bFaceI))
+                        {
+                            duplicateFaces = true;
+                        }
+                    }
+                }
+            }
 
-                patchFaces[i] = boundaryFaces[bFaceI];
+            if (cnt!=patchFaces.size() || duplicateFaces)
+            {
+                isAPatch[patchI] = false;
+
+                if (verbose)
+                {
+                    if (cnt != patchFaces.size())
+                    {
+                        WarningIn(args.executable())
+                            << "For patch " << patchI << " there were "
+                            << patchFaces.size()-cnt
+                            << " faces not used because they seem"
+                            << " to be internal. "
+                            << "This seems to be a face or a cell-zone"
+                            << endl;
+                    }
+                    else
+                    {
+                        WarningIn(args.executable())
+                            << "Patch "
+                            << patchI << " has faces that are already "
+                            << " in use on other boundary-patches,"
+                            << " Assuming faceZoneset." << endl;
+                    }
+                }
+
+                patchFaces.setSize(0); // Assume that this is no patch at all
+
+                if (cellCorrespondence[faceIndices[0]] >= 0)
+                {
+                    Info << "cellZone" << endl;
+                    labelList theCells(faceIndices.size());
+                    forAll(faceIndices, i)
+                    {
+                        if (cellCorrespondence[faceIndices[0]] < 0)
+                        {
+                            FatalErrorIn(args.executable())
+                                << "The face index " << faceIndices[i]
+                                << " was not found amongst the cells."
+                                << " This kills the theory that "
+                                << patchNames[patchI] << " is a cell zone"
+                                << endl
+                                << abort(FatalError);
+                        }
+                        theCells[i] = cellCorrespondence[faceIndices[i]];
+                    }
+                    cellZones.insert(patchNames[patchI], theCells);
+                }
+                else
+                {
+                    Info << "faceZone" << endl;
+                    labelList theFaces(faceIndices.size());
+                    forAll(faceIndices, i)
+                    {
+                        theFaces[i] = boundaryFaceToIndex[faceIndices[i]];
+                    }
+                    faceZones.insert(patchNames[patchI],theFaces);
+                }
+            }
+            else
+            {
+                Info << "patch" << endl;
+
+                forAll(patchFaces, i)
+                {
+                    label bFaceI = boundaryFaceToIndex[faceIndices[i]];
+                    alreadyOnBoundary.insert(bFaceI);
+                }
             }
         }
     }
@@ -925,12 +1115,22 @@ int main(int argc, char *argv[])
     }
 
 
-    Info<< "Constructing mesh with non-default patches of size:" << nl;
+    Info<< "\nConstructing mesh with non-default patches of size:" << nl;
+    DynamicList<word> usedPatchNames;
+    DynamicList<faceList> usedPatchFaceVerts;
+
     forAll(patchNames, patchI)
     {
-        Info<< "    " << patchNames[patchI] << '\t'
-            << patchFaceVerts[patchI].size() << nl;
+        if (isAPatch[patchI]) {
+            Info<< "    " << patchNames[patchI] << '\t'
+                << patchFaceVerts[patchI].size() << nl;
+            usedPatchNames.append(patchNames[patchI]);
+            usedPatchFaceVerts.append(patchFaceVerts[patchI]);
+        }
     }
+    usedPatchNames.shrink();
+    usedPatchFaceVerts.shrink();
+
     Info<< endl;
 
 
@@ -946,13 +1146,123 @@ int main(int argc, char *argv[])
         ),
         xferMove(polyPoints),
         cellVerts,
-        patchFaceVerts,             // boundaryFaces,
-        patchNames,                 // boundaryPatchNames,
+        usedPatchFaceVerts,             // boundaryFaces,
+        usedPatchNames,                 // boundaryPatchNames,
         wordList(patchNames.size(), polyPatch::typeName), // boundaryPatchTypes,
         "defaultFaces",             // defaultFacesName
         polyPatch::typeName,        // defaultFacesType,
         wordList(0)                 // boundaryPatchPhysicalTypes
     );
+
+
+    if (faceZones.size()>0 || cellZones.size()>0)
+    {
+        Info << "Adding cell and face zones" << endl;
+
+        List<pointZone*> pZones(0);
+        List<faceZone*> fZones(faceZones.size());
+        List<cellZone*> cZones(cellZones.size());
+
+        if (cellZones.size()>0)
+        {
+            forAll(cellZones.toc(),cnt)
+            {
+                word name = cellZones.toc()[cnt];
+                Info<< " Cell Zone " << name << " " << tab
+                    << cellZones[name].size() << endl;
+
+                cZones[cnt] = new cellZone
+                (
+                    name,
+                    cellZones[name],
+                    cnt,
+                    mesh.cellZones()
+                );
+            }
+        }
+        if (faceZones.size() > 0)
+        {
+            const labelList& own = mesh.faceOwner();
+            const labelList& nei = mesh.faceNeighbour();
+            const pointField& centers = mesh.faceCentres();
+            const pointField& points = mesh.points();
+
+            forAll(faceZones.toc(), cnt)
+            {
+                word name = faceZones.toc()[cnt];
+                const labelList& oldIndizes = faceZones[name];
+                labelList indizes(oldIndizes.size());
+
+                Info<< " Face Zone " << name << " " << tab
+                    << oldIndizes.size() << endl;
+
+                forAll(indizes, i)
+                {
+                    const label old = oldIndizes[i];
+                    label noveau = -1;
+                    label c1 = -1, c2 = -1;
+                    if (faceToCell[0].found(old))
+                    {
+                        c1 = faceToCell[0][old];
+                    }
+                    if (faceToCell[1].found(old))
+                    {
+                        c2 = faceToCell[1][old];
+                    }
+                    if (c1<c2)
+                    {
+                        label tmp = c1;
+                        c1 = c2;
+                        c2 = tmp;
+                    }
+                    if (c2 == -1)
+                    {
+                        // Boundary face is part of the faceZone
+                        forAll(own, j)
+                        {
+                            if (own[j] == c1)
+                            {
+                                const face& f = boundaryFaces[old];
+                                if (mag(centers[j]-f.centre(points))<SMALL)
+                                {
+                                    noveau = j;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        forAll(nei, j)
+                        {
+                            if
+                            (
+                                (c1 == own[j] && c2 == nei[j])
+                             || (c2 == own[j] && c1 == nei[j])
+                            )
+                            {
+                                noveau = j;
+                                break;
+                            }
+                        }
+                    }
+                    assert(noveau>-1);
+                    indizes[i] = noveau;
+                }
+                fZones[cnt] = new faceZone
+                (
+                    faceZones.toc()[cnt],
+                    indizes,
+                    boolList(indizes.size(),false),
+                    cnt,
+                    mesh.faceZones()
+                );
+            }
+        }
+        mesh.addZones(pZones, fZones, cZones);
+
+        Info << endl;
+    }
 
     mesh.write();
 
