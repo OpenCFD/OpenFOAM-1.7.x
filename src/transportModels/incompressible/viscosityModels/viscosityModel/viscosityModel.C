@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -57,7 +57,7 @@ Foam::viscosityModel::viscosityModel
 
 Foam::tmp<Foam::volScalarField> Foam::viscosityModel::strainRate() const
 {
-    return mag(symm(fvc::grad(U_)));
+    return sqrt(2.0)*mag(symm(fvc::grad(U_)));
 }
 
 
