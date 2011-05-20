@@ -1,3 +1,6 @@
+partialWrite/partialWrite.C
+partialWrite/partialWriteFunctionObject.C
+
 writeRegisteredObject/writeRegisteredObject.C
 writeRegisteredObject/writeRegisteredObjectFunctionObject.C
 
