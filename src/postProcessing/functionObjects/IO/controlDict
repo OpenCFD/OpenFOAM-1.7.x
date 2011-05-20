@@ -55,7 +55,7 @@ functions
         type            partialWrite;
 
         // Where to load it from
-        functionObjectLibs ("libIOFunctionObjects");
+        functionObjectLibs ("libIOFunctionObjects.so");
 
         // Execute upon outputTime
         outputControl   outputTime;
@@ -74,7 +74,7 @@ functions
         type            writeRegisteredObject;
 
         // Where to load it from
-        functionObjectLibs ("libIOFunctionObjects");
+        functionObjectLibs ("libIOFunctionObjects.so");
 
         // Execute upon outputTime
         outputControl   outputTime;
