@@ -49,7 +49,7 @@ Foam::PatchTools::sortedEdgeFaces
     const Field<PointType>& localPoints = p.localPoints();
 
     // create the lists for the various results. (resized on completion)
-    labelListList& sortedEdgeFaces = labelListList(edgeFaces.size());
+    labelListList sortedEdgeFaces = labelListList(edgeFaces.size());
 
     forAll(edgeFaces, edgeI)
     {
