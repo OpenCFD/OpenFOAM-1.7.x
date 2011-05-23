@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -151,6 +151,7 @@ Foam::octree<Type>::octree
     //  - has some guaranteed maximum size (maxShapeRatio)
 
     label oldNLeaves = -1;  // make test below pass first time.
+    label oldNNodes  = -1;
     deepestLevel_ = 1;
     while
     (
@@ -171,11 +172,11 @@ Foam::octree<Type>::octree
             break;
         }
 
-        if (oldNLeaves == nLeaves())
+        if ((oldNLeaves == nLeaves()) && (oldNNodes == nNodes()))
         {
             if (debug & 1)
             {
-                Pout<< "octree : exiting since nLeaves does not change"
+                Pout<< "octree : exiting since nLeaves and nNodes do not change"
                     << endl;
             }
             break;
@@ -187,6 +188,7 @@ Foam::octree<Type>::octree
         }
 
         oldNLeaves = nLeaves();
+        oldNNodes  = nNodes();
 
         topNode_->redistribute
         (
