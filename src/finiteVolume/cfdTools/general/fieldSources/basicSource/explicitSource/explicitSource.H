@@ -86,7 +86,7 @@ class explicitSource
             fieldList()
             :
                 HashTable<Type>(0),
-                OwnerPtr_()
+                OwnerPtr_(*this)
             {}
 
 
