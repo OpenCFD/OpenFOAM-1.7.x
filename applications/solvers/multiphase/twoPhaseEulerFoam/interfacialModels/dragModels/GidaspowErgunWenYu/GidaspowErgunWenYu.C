@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -73,34 +73,19 @@ Foam::tmp<Foam::volScalarField> Foam::GidaspowErgunWenYu::K
     volScalarField bp = pow(beta, -2.65);
     volScalarField Re = max(Ur*phasea_.d()/phaseb_.nu(), scalar(1.0e-3));
 
-    volScalarField Cds = 24.0*(1.0 + 0.15*pow(Re, 0.687))/Re;
+    volScalarField Cds =
+        neg(Re - 1000)*(24.0*(1.0 + 0.15*pow(Re, 0.687))/Re)
+      + pos(Re - 1000)*0.44;
 
-    forAll(Re, celli)
-    {
-        if(Re[celli] > 1000.0)
-        {
-            Cds[celli] = 0.44;
-        }
-    }
-    
     // Wen and Yu (1966)
-    tmp<volScalarField> tKWenYu = 0.75*Cds*phaseb_.rho()*Ur*bp/phasea_.d();
-    volScalarField& KWenYu = tKWenYu();
-
-    // Ergun
-    forAll (beta, cellj)
-    {
-        if (beta[cellj] <= 0.8)
-        {
-            KWenYu[cellj] =
-                150.0*alpha_[cellj]*phaseb_.nu().value()*phaseb_.rho().value()
-               /sqr(beta[cellj]*phasea_.d().value())
-              + 1.75*phaseb_.rho().value()*Ur[cellj]
-               /(beta[cellj]*phasea_.d().value());
-        }
-    }
-
-    return tKWenYu;
+    return
+        pos(beta - 0.8)
+       *(0.75*alpha_*beta*Cds*phaseb_.rho()*Ur*bp/phasea_.d())
+      + neg(beta - 0.8)
+       *(
+           150.0*sqr(alpha_)*phaseb_.nu()*phaseb_.rho()/(beta*sqr(phasea_.d()))
+         + 1.75*alpha_*phaseb_.rho()*Ur/phasea_.d()
+        );
 }
 
 
