@@ -40,6 +40,48 @@ Foam::dynamicFvMesh::dynamicFvMesh(const IOobject& io)
 {}
 
 
+Foam::dynamicFvMesh::dynamicFvMesh
+(
+    const IOobject& io,
+    const Xfer<pointField>& points,
+    const Xfer<faceList>& faces,
+    const Xfer<labelList>& allOwner,
+    const Xfer<labelList>& allNeighbour,
+    const bool syncPar
+)
+:
+    fvMesh
+    (
+        io,
+        points,
+        faces,
+        allOwner,
+        allNeighbour,
+        syncPar
+    )
+{}
+
+
+Foam::dynamicFvMesh::dynamicFvMesh
+(
+    const IOobject& io,
+    const Xfer<pointField>& points,
+    const Xfer<faceList>& faces,
+    const Xfer<cellList>& cells,
+    const bool syncPar
+)
+:
+    fvMesh
+    (
+        io,
+        points,
+        faces,
+        cells,
+        syncPar
+    )
+{}
+
+
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 Foam::dynamicFvMesh::~dynamicFvMesh()
