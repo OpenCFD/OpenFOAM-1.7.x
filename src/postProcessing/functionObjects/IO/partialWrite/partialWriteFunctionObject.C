@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2011-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,69 +23,24 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "dynamicFvMesh.H"
+#include "partialWriteFunctionObject.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-defineTypeNameAndDebug(Foam::dynamicFvMesh, 0);
-
-defineRunTimeSelectionTable(Foam::dynamicFvMesh, IOobject);
-
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-Foam::dynamicFvMesh::dynamicFvMesh(const IOobject& io)
-:
-    fvMesh(io)
-{}
-
-
-Foam::dynamicFvMesh::dynamicFvMesh
-(
-    const IOobject& io,
-    const Xfer<pointField>& points,
-    const Xfer<faceList>& faces,
-    const Xfer<labelList>& allOwner,
-    const Xfer<labelList>& allNeighbour,
-    const bool syncPar
-)
-:
-    fvMesh
+namespace Foam
+{
+    defineNamedTemplateTypeNameAndDebug
     (
-        io,
-        points,
-        faces,
-        allOwner,
-        allNeighbour,
-        syncPar
-    )
-{}
+        partialWriteFunctionObject,
+        0
+    );
 
-
-Foam::dynamicFvMesh::dynamicFvMesh
-(
-    const IOobject& io,
-    const Xfer<pointField>& points,
-    const Xfer<faceList>& faces,
-    const Xfer<cellList>& cells,
-    const bool syncPar
-)
-:
-    fvMesh
+    addToRunTimeSelectionTable
     (
-        io,
-        points,
-        faces,
-        cells,
-        syncPar
-    )
-{}
-
-
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
-
-Foam::dynamicFvMesh::~dynamicFvMesh()
-{}
-
+        functionObject,
+        partialWriteFunctionObject,
+        dictionary
+    );
+}
 
 // ************************************************************************* //

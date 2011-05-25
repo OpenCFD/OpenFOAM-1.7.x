@@ -251,28 +251,20 @@ addLayersControls
     // Per final patch (so not geometry!) the layer information
     layers
     {
-	//flowAirDuctReagent_flowAirDuctReagent
-        //{
-        //    nSurfaceLayers 1;
-        //}
-	//flowAirDuctReagent_inlet1
-        //{
-        //    nSurfaceLayers 1;
-        //}
-	//flowAirDuctReagent_inlet2
-        //{
-        //    nSurfaceLayers 1;
-        //}
+        maxY
+        {
+            nSurfaceLayers 3;
+        }
     }
 
     // Expansion factor for layer mesh
-    expansionRatio 1.0;
+    expansionRatio 1.3;
 
     //- Wanted thickness of final added cell layer. If multiple layers
     //  is the
     //  thickness of the layer furthest away from the wall.
     //  Relative to undistorted size of cell outside layer.
-    finalLayerThickness 0.3; 
+    finalLayerThickness 1;
 
     //- Minimum thickness of cell layer. If for any reason layer
     //  cannot be above minThickness do not add layer.
@@ -295,27 +287,32 @@ addLayersControls
     //  before upon reaching a correct mesh.
     nRelaxIter 3;
 
-    // Number of smoothing iterations of surface normals 
+    // Number of smoothing iterations of surface normals
     nSmoothSurfaceNormals 1;
 
-    // Number of smoothing iterations of interior mesh movement direction  
+    // Number of smoothing iterations of interior mesh movement direction
     nSmoothNormals 3;
 
     // Smooth layer thickness over surface patches
-    nSmoothThickness 10;
+    nSmoothThickness 2;
 
-    // Stop layer growth on highly warped cells 
+    // Stop layer growth on highly warped cells
     maxFaceThicknessRatio 0.5;
 
-    // Reduce layer growth where ratio thickness to medial 
-    // distance is large 
-    maxThicknessToMedialRatio 0.3;
+    // Reduce layer growth where ratio thickness to medial
+    // distance is large
+    maxThicknessToMedialRatio 1;
 
     // Angle used to pick up medial axis points
     minMedianAxisAngle 130;
 
     // Create buffer region for new layer terminations
     nBufferCellsNoExtrude 0;
+
+    // Overall max number of layer addition iterations. The mesher will exit
+    // if it reaches this number of iterations; possibly with an illegal
+    // mesh.
+    nLayerIter 50;
 }
 
 

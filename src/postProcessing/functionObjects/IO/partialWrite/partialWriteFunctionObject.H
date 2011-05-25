@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2011-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -21,63 +21,31 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    Foam::lduScheduleEntry
+Typedef
+    Foam::partialWriteFunctionObject
 
 Description
-    Struct to hold the patch index and the initialisation flag for
-    the patch schedule
+    FunctionObject wrapper around partialWrite to allow them to be
+    created via the functions list within controlDict.
+
+SourceFiles
+    partialWriteFunctionObject.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef lduSchedule_H
-#define lduSchedule_H
+#ifndef partialWriteFunctionObject_H
+#define partialWriteFunctionObject_H
 
-#include "List.H"
+#include "partialWrite.H"
+#include "OutputFilterFunctionObject.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-// Forward declaration of friend functions and operators
-
-struct lduScheduleEntry;
-Ostream& operator<<(Ostream& os, const lduScheduleEntry& lb);
-
-
-/*---------------------------------------------------------------------------*\
-                      Class lduSchedule Declaration
-\*---------------------------------------------------------------------------*/
-
-struct lduScheduleEntry
-{
-    label patch;
-    bool init;
-
-    friend bool operator!=
-    (
-        const lduScheduleEntry& lb1,
-        const lduScheduleEntry& lb2
-    )
-    {
-        return true;
-    }
-
-    friend Ostream& operator<<(Ostream& os, const lduScheduleEntry& lb)
-    {
-        os  << lb.patch << token::SPACE << lb.init;
-        return os;
-    }
-};
-
-
-typedef List<lduScheduleEntry> lduSchedule;
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
+    typedef OutputFilterFunctionObject<partialWrite>
+        partialWriteFunctionObject;
+}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
