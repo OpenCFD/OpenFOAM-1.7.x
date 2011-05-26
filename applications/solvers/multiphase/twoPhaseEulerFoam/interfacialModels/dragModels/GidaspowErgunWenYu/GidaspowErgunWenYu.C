@@ -80,11 +80,11 @@ Foam::tmp<Foam::volScalarField> Foam::GidaspowErgunWenYu::K
     // Wen and Yu (1966)
     return
         pos(beta - 0.8)
-       *(0.75*alpha_*beta*Cds*phaseb_.rho()*Ur*bp/phasea_.d())
+       *(0.75*Cds*phaseb_.rho()*Ur*bp/phasea_.d())
       + neg(beta - 0.8)
        *(
-           150.0*sqr(alpha_)*phaseb_.nu()*phaseb_.rho()/(beta*sqr(phasea_.d()))
-         + 1.75*alpha_*phaseb_.rho()*Ur/phasea_.d()
+           150.0*alpha_*phaseb_.nu()*phaseb_.rho()/(sqr(beta*phasea_.d()))
+         + 1.75*phaseb_.rho()*Ur/(beta*phasea_.d())
         );
 }
 
