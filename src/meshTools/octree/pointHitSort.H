@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -65,7 +65,7 @@ public:
         //- Construct null
         pointHitSort()
         :
-            inter_(false, vector::zero, GREAT),
+            inter_(false, vector::zero, GREAT, false),
             index_(-1)
         {}
 
@@ -96,9 +96,9 @@ public:
             return inter_.distance() == rhs.inter().distance();
         }
 
-        bool operator>(const pointHitSort& rhs) const
+        bool operator<(const pointHitSort& rhs) const
         {
-            return inter_.distance() > rhs.inter().distance();
+            return inter_.distance() < rhs.inter().distance();
         }
 
 };
