@@ -397,7 +397,7 @@ void kOmegaSSTSAS::correct(const tmp<volTensorField>& gradU)
            *max
             (
                 dimensionedScalar("zero",dimensionSet(0, 0 , -2, 0, 0),0. ),
-                zetaTilda2_*kappa_*S2*(L/Lvk2(S2))
+                zetaTilda2_*kappa_*S2*sqr(L/Lvk2(S2))
               - 2.0/alphaPhi_*k_*grad_omega_k
             )
         );

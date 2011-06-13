@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,84 +22,104 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::pointHitSort
+    Foam::cylinderAnnulusToCell
 
 Description
-    Container for sorting intersections
+    A topoSetSource to select cells based on cell centres inside a
+    cylinder annulus.
 
 SourceFiles
+    cylinderAnnulusToCell.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef pointHitSort_H
-#define pointHitSort_H
+#ifndef cylinderAnnulusToCell_H
+#define cylinderAnnulusToCell_H
 
-#include "pointHit.H"
-#include "label.H"
+#include "topoSetSource.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
-// Forward declaration of classes
-
 /*---------------------------------------------------------------------------*\
-                           Class pointHitSort Declaration
+                       Class cylinderAnnulusToCell Declaration
 \*---------------------------------------------------------------------------*/
 
-class pointHitSort
+class cylinderAnnulusToCell
+:
+    public topoSetSource
 {
+
     // Private data
 
-        //- intersection
-        pointHit inter_;
+        //- Add usage string
+        static addToUsageTable usage_;
 
-        //- original index
-        label index_;
+        //- First point on cylinder axis
+        vector p1_;
+
+        //- Second point on cylinder axis
+        vector p2_;
+
+        //- Outer Radius
+        scalar outerRadius_;
+
+        //- Inner Radius
+        scalar innerRadius_;
+
+
+    // Private Member Functions
+
+        void combine(topoSet& set, const bool add) const;
+
 
 public:
 
+    //- Runtime type information
+    TypeName("cylinderAnnulusToCell");
+
+
     // Constructors
 
-        //- Construct null
-        pointHitSort()
-        :
-            inter_(false, vector::zero, GREAT, false),
-            index_(-1)
-        {}
+        //- Construct from components
+        cylinderAnnulusToCell
+        (
+            const polyMesh& mesh,
+            const vector& p1,
+            const vector& p2,
+            const scalar outerRadius,
+            const scalar innerRadius
+        );
 
-        //- Construct from intersection, index
-        pointHitSort(const pointHit& inter, const label index)
-        :
-            inter_(inter),
-            index_(index)
-        {}
+        //- Construct from dictionary
+        cylinderAnnulusToCell
+        (
+            const polyMesh& mesh,
+            const dictionary& dict
+        );
+
+        //- Construct from Istream
+        cylinderAnnulusToCell
+        (
+            const polyMesh& mesh,
+            Istream&
+        );
+
+
+    // Destructor
+
+        virtual ~cylinderAnnulusToCell();
 
 
     // Member Functions
 
-        const pointHit& inter() const
-        {
-            return inter_;
-        }
-
-        label index() const
-        {
-            return index_;
-        }
-
-    // Member Operators
-
-        bool operator==(const pointHitSort& rhs) const
-        {
-            return inter_.distance() == rhs.inter().distance();
-        }
-
-        bool operator<(const pointHitSort& rhs) const
-        {
-            return inter_.distance() < rhs.inter().distance();
-        }
+        virtual void applyToSet
+        (
+            const topoSetSource::setAction action,
+            topoSet&
+        ) const;
 
 };
 
