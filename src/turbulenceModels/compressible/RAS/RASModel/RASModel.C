@@ -165,7 +165,7 @@ scalar RASModel::yPlusLam(const scalar kappa, const scalar E) const
 
     for (int i=0; i<10; i++)
     {
-        ypl = log(E*ypl)/kappa;
+        ypl = log(max(E*ypl, 1))/kappa;
     }
 
     return ypl;
