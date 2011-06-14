@@ -6,10 +6,10 @@
       + turbulence->divDevReff(U)
     );
 
-    UEqn().relax();
-
     // Add resistance on the actuation disks
     actuationDisks.addSu(UEqn());
+
+    UEqn().relax();
 
     eqnResidual = solve
     (
