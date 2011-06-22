@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 1991-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -66,7 +66,7 @@ bool Foam::matchPoints
 
         scalar matchDist = matchDistances[face0I];
 
-        label startI = findLower(pts1MagSqr, 0.99999*dist0 - matchDist);
+        label startI = findLower(pts1MagSqr, 0.99999*dist0 - 2*matchDist);
 
         if (startI == -1)
         {
@@ -83,7 +83,7 @@ bool Foam::matchPoints
             label j = startI;
             (
                 (j < pts1MagSqr.size())
-             && (pts1MagSqr[j] < 1.00001*dist0 + matchDist)
+             && (pts1MagSqr[j] < 1.00001*dist0 + 2*matchDist)
             );
             j++
         )
@@ -117,7 +117,7 @@ bool Foam::matchPoints
                     label j = startI;
                     (
                         (j < pts1MagSqr.size())
-                     && (pts1MagSqr[j] < 1.00001*dist0 + matchDist)
+                     && (pts1MagSqr[j] < 1.00001*dist0 + 2*matchDist)
                     );
                     j++
                 )
