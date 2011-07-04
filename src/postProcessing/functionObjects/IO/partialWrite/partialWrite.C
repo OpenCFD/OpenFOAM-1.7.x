@@ -27,6 +27,7 @@ License
 #include "dictionary.H"
 #include "Time.H"
 #include "IOobjectList.H"
+#include "polyMesh.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -123,14 +124,26 @@ void Foam::partialWrite::write()
         else
         {
             // Delete all but marked objects
+            fileName dbDir;
+            if (isA<polyMesh>(obr_))
+            {
+                dbDir = dynamic_cast<const polyMesh&>(obr_).dbDir();
+            }
+
             IOobjectList objects(obr_, obr_.time().timeName());
 
             forAllConstIter(HashPtrTable<IOobject>, objects, iter)
             {
                 if (!objectNames_.found(iter()->name()))
                 {
-                    const fileName f = obr_.time().timePath()/iter()->name();
-                    //Pout<< "   rm " << f << endl;
+                    const fileName f =
+                        obr_.time().timePath()
+                       /dbDir
+                       /iter()->name();
+                    if (debug)
+                    {
+                        Pout<< "   rm " << f << endl;
+                    }
                     rm(f);
                 }
             }
