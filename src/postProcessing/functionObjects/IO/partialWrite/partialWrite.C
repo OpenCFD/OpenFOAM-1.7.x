@@ -28,6 +28,7 @@ License
 #include "Time.H"
 #include "IOobjectList.H"
 #include "polyMesh.H"
+#include "cloud.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -132,7 +133,12 @@ void Foam::partialWrite::write()
 
             IOobjectList objects(obr_, obr_.time().timeName());
 
-            forAllConstIter(HashPtrTable<IOobject>, objects, iter)
+            if (debug)
+            {
+                Pout<< "For region:" << obr_.name() << endl;
+            }
+
+            forAllConstIter(IOobjectList, objects, iter)
             {
                 if (!objectNames_.found(iter()->name()))
                 {
@@ -145,6 +151,47 @@ void Foam::partialWrite::write()
                         Pout<< "   rm " << f << endl;
                     }
                     rm(f);
+                }
+            }
+
+            // Do the lagrangian files as well.
+            fileNameList cloudDirs
+            (
+                readDir
+                (
+                    obr_.time().timePath()/dbDir/cloud::prefix,
+                    fileName::DIRECTORY
+                )
+            );
+            forAll(cloudDirs, i)
+            {
+                if (debug)
+                {
+                    Pout<< "For cloud:" << cloudDirs[i] << endl;
+                }
+
+                IOobjectList sprayObjs
+                (
+                    obr_,
+                    obr_.time().timeName(),
+                    cloud::prefix/cloudDirs[i]
+                );
+                forAllConstIter(IOobjectList, sprayObjs, iter)
+                {
+                    if (!objectNames_.found(iter()->name()))
+                    {
+                        const fileName f =
+                            obr_.time().timePath()
+                           /dbDir
+                           /cloud::prefix
+                           /cloudDirs[i]
+                           /iter()->name();
+                        if (debug)
+                        {
+                            Pout<< "   rm " << f << endl;
+                        }
+                        rm(f);
+                    }
                 }
             }
         }
