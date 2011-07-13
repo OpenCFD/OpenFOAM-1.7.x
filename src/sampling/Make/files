@@ -7,6 +7,7 @@ probes/csvProbesFunctionObject.C
 */
 
 sampledSet/coordSet/coordSet.C
+sampledSet/patchCloud/patchCloudSet.C
 sampledSet/sampledSet/sampledSet.C
 sampledSet/cloud/cloudSet.C
 sampledSet/face/faceOnlySet.C
