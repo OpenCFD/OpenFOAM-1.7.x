@@ -130,7 +130,7 @@ void Foam::patchCloudSet::calcSamples
         // Find the nearest locally
         if (patchFaces.size())
         {
-            nearInfo = patchTree.findNearest(sample, magSqr(bb.span()));
+            nearInfo = patchTree.findNearest(sample, sqr(searchDist_));
         }
         else
         {
@@ -179,11 +179,14 @@ void Foam::patchCloudSet::calcSamples
 
         forAll(nearest, i)
         {
-            meshTools::writeOBJ(str, sampleCoords_[i]);
-            vertI++;
-            meshTools::writeOBJ(str, nearest[i].first().hitPoint());
-            vertI++;
-            str << "l " << vertI-1 << ' ' << vertI << nl;
+            if (nearest[i].first().hit())
+            {
+                meshTools::writeOBJ(str, sampleCoords_[i]);
+                vertI++;
+                meshTools::writeOBJ(str, nearest[i].first().hitPoint());
+                vertI++;
+                str << "l " << vertI-1 << ' ' << vertI << nl;
+            }
         }
     }
 
@@ -193,19 +196,31 @@ void Foam::patchCloudSet::calcSamples
     {
         const pointIndexHit& nearInfo = nearest[sampleI].first();
 
-        if
-        (
-            nearInfo.hit()
-         && nearest[sampleI].second().second() == Pstream::myProcNo()
-        )
+        if (nearInfo.hit())
         {
-            label faceI = nearInfo.index();
+            if (nearest[sampleI].second().second() == Pstream::myProcNo())
+            {
+                label faceI = nearInfo.index();
 
-            samplingPts.append(nearInfo.hitPoint());
-            samplingCells.append(mesh().faceOwner()[faceI]);
-            samplingFaces.append(faceI);
-            samplingSegments.append(0);
-            samplingCurveDist.append(1.0 * sampleI);
+                samplingPts.append(nearInfo.hitPoint());
+                samplingCells.append(mesh().faceOwner()[faceI]);
+                samplingFaces.append(faceI);
+                samplingSegments.append(0);
+                samplingCurveDist.append(1.0 * sampleI);
+            }
+        }
+        else
+        {
+            // No processor found point near enough. Mark with special value
+            // which is intercepted when interpolating
+            if (Pstream::master())
+            {
+                samplingPts.append(sampleCoords_[sampleI]);
+                samplingCells.append(-1);
+                samplingFaces.append(-1);
+                samplingSegments.append(0);
+                samplingCurveDist.append(1.0 * sampleI);
+            }
         }
     }
 }
@@ -255,12 +270,14 @@ Foam::patchCloudSet::patchCloudSet
     meshSearch& searchEngine,
     const word& axis,
     const List<point>& sampleCoords,
-    const labelHashSet& patchSet
+    const labelHashSet& patchSet,
+    const scalar searchDist
 )
 :
     sampledSet(name, mesh, searchEngine, axis),
     sampleCoords_(sampleCoords),
-    patchSet_(patchSet)
+    patchSet_(patchSet),
+    searchDist_(searchDist)
 {
     genSamples();
 
@@ -287,7 +304,8 @@ Foam::patchCloudSet::patchCloudSet
         (
             wordList(dict.lookup("patches"))
         )
-    )
+    ),
+    searchDist_(readScalar(dict.lookup("maxDistance")))
 {
     genSamples();
 

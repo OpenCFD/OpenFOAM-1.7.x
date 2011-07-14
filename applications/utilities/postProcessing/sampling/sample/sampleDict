@@ -109,15 +109,18 @@ sets
 
     somePatchPoints
     {
-        // Sample nearest points on selected patches. Use with
-        // interpolations:
+        // Sample nearest points on selected patches. Looks only up to
+        // maxDistance away. Any sampling point not found will get value
+        // pTraits<Type>::max (usually VGREAT)
+        // Use with interpolations:
         // - cell (cell value)
         // - cellPatchConstrained (boundary value)
         // - cellPoint (interpolated boundary value)
-        type    patchCloud;
-        axis    xyz;
-        points  ((0.049 0.099 0.005)(0.051 0.054 0.005));
-        patches (".*Wall.*");
+        type        patchCloud;
+        axis        xyz;
+        points      ((0.049 0.099 0.005)(0.051 0.054 0.005));
+        maxDistance 0.1;    // maximum distance to search
+        patches     (".*Wall.*");
     }
 );
 

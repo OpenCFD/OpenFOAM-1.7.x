@@ -56,10 +56,14 @@ class patchCloudSet
     // Private data
 
         //- Sampling points
-        List<point> sampleCoords_;
+        const List<point> sampleCoords_;
 
         //- Patches to sample
-        labelHashSet patchSet_;
+        const labelHashSet patchSet_;
+
+        //- Maximum distance to look for nearest
+        const scalar searchDist_;
+
 
     // Private Member Functions
 
@@ -93,7 +97,8 @@ public:
             meshSearch& searchEngine,
             const word& axis,
             const List<point>& sampleCoords,
-            const labelHashSet& patchSet
+            const labelHashSet& patchSet,
+            const scalar searchDist
         );
 
         //- Construct from dictionary
